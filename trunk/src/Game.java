@@ -2,10 +2,12 @@ import java.awt.*;
 import javax.swing.*;
 
 
-public class Game extends JPanel implements Runnable {
+public class Game extends JPanel implements Runnable 
+{
 	private static final int FPS = 1000 / 60;
-	
-	public static void main(String[] args){
+	boolean running = true;
+	public static void main(String[] args)
+	{
 		JFrame parentWindow = new JFrame("The game");
     	
     	parentWindow.getContentPane().add(new Game());
@@ -25,8 +27,8 @@ public class Game extends JPanel implements Runnable {
 	{
     	// Remember the starting time
     	long tm = System.currentTimeMillis();
-    	
-    	while(true){
+    	Log.initialize();
+    	while(running){
     		repaint();
     		
     		try {
@@ -38,6 +40,7 @@ public class Game extends JPanel implements Runnable {
             	System.out.println(e);
             }
     	}
+    	Log.close();
 		
 	}
 	
