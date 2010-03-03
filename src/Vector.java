@@ -17,6 +17,7 @@
 //*
 //********************************************************************************************
 
+
 public class Vector {
 	public float x, y;
 	
@@ -78,5 +79,13 @@ public class Vector {
 	
 	public void rotateToDegree(float degree){
 		rotateTo((float)Math.toRadians(degree));
+	}
+	
+	public void setLength(float length){
+		float hyp = length();
+		float fx = x / hyp;
+		float fy = y / hyp;
+		x = fx * length;
+		y = fy * length;
 	}
 }
