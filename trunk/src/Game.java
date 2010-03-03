@@ -26,7 +26,7 @@ public class Game extends JPanel implements Runnable
 {
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;
-	boolean running = true;
+	private boolean running;
 	
 	public static void main(String[] args)
 	{
@@ -37,11 +37,12 @@ public class Game extends JPanel implements Runnable
     	parentWindow.setSize(800 , 600);
         parentWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         parentWindow.setVisible(true);
-	}
+ 	}
 	
 	public Game()
 	{
 		new Thread(this).start();
+		running = true;
 	}
 	
 	public void run() 
@@ -49,7 +50,7 @@ public class Game extends JPanel implements Runnable
     	// Remember the starting time
     	long tm = System.currentTimeMillis();
     	Log.initialize();
-    	Sound.testPlaySound("data/test.wav");
+    	
     	while(running){
     		repaint();
     		
@@ -59,11 +60,10 @@ public class Game extends JPanel implements Runnable
             }
             catch(InterruptedException e)
             {
-            	System.out.println(e);
+            	Log.println(e);
             }
     	}
-    	Log.close();
-		
+       	Log.close();
 	}
 	
 	public void paint(Graphics g)

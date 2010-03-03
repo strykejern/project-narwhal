@@ -4,7 +4,7 @@ import  java.io.*;
 public class Sound 
 {
 
-	static public void testPlaySound(String filename)
+	public void testPlaySound(String filename)
 	{
 		InputStream in;
 		AudioStream as;
