@@ -65,4 +65,18 @@ public class Vector {
 	public Vector dividedBy(float val){
 		return new Vector(this.x / val, this.y / val);
 	}
+	
+	public float length(){
+		return (float)Math.sqrt((x*x)+(y*y));
+	}
+	
+	public void rotateTo(float radian){
+		float length = length();
+		x = (float)Math.cos(radian) * length;
+		y = (float)Math.sin(radian) * length;
+	}
+	
+	public void rotateToDegree(float degree){
+		rotateTo((float)Math.toRadians(degree));
+	}
 }
