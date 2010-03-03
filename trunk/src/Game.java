@@ -39,7 +39,7 @@ public class Game extends JPanel implements Runnable
         parentWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         parentWindow.setVisible(true);
  	}
-	
+		
 	public Game()
 	{
 		new Thread(this).start();
@@ -76,6 +76,13 @@ public class Game extends JPanel implements Runnable
 		g.setColor(Color.cyan);
 		int x = MouseInfo.getPointerInfo().getLocation().x;
 		int y = MouseInfo.getPointerInfo().getLocation().y;
-		g.fillOval(x, y, 100, 100);
+		//g.fillOval(x, y, 100, 100);
+		g.drawImage( loadImage("data/icon.png"), x, y, Color.black, null );
 	}
+	
+	private Image loadImage( String fileName )
+	{
+		return Toolkit.getDefaultToolkit().getImage( fileName );
+	}
+
 }
