@@ -74,6 +74,8 @@ public class Log
 	//JJ> Writes the specified text to the log file
 	static void print(String text)
 	{
+		if( logFile == null ) return;
+		
 		String message = getTime() + " " + text;
 	    try  {
 	    	 
