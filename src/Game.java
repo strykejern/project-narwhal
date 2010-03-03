@@ -36,6 +36,11 @@ public class Game extends JPanel implements Runnable, KeyListener
 	Image2D ship;
 	Image2D background;
 	
+	// Create a new blank cursor.
+	final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+			new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "blank cursor");
+
+	
 	public static void main(String[] args) throws InterruptedException{	
 		JFrame parentWindow = new JFrame("Project Narwhal");		
     	parentWindow.getContentPane().add(new Game(parentWindow));
@@ -57,11 +62,19 @@ public class Game extends JPanel implements Runnable, KeyListener
 		ship.resize(64, 64);
 	}
 	
+	//JJ> This is the main game loop
 	public void run() {
+		
     	// Remember the starting time
     	long tm = System.currentTimeMillis();
+    	
+    	//Initialize the logging system
     	Log.initialize();
     	
+		// Set the blank cursor to the JFrame.
+		frame.getContentPane().setCursor(blankCursor);
+    	
+		// da loop
     	while(running){
     		repaint();
     		
@@ -74,6 +87,7 @@ public class Game extends JPanel implements Runnable, KeyListener
             	Log.warning(e.toString());
             }
     	}
+    	
     	//TODO: This never happens!?!
        	Log.close();
 	}
@@ -82,25 +96,14 @@ public class Game extends JPanel implements Runnable, KeyListener
 	
 		//draw backdrop
 		g.drawImage( background.toImage(), 0, 0, this);
-
-		int x = MouseInfo.getPointerInfo().getLocation().x - frame.getX();
-		int y = MouseInfo.getPointerInfo().getLocation().y - frame.getY();
-	
-		// Transparent 16 x 16 pixel cursor image.
-		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-
-		// Create a new blank cursor.
-		Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-		    cursorImg, new Point(0, 0), "blank cursor");
-
-		// Set the blank cursor to the JFrame.
-		frame.getContentPane().setCursor(blankCursor);
 		
 		//Draw input string
 		g.setColor(Color.white);
 		g.drawString("Test = " + input, 20, 20);
 		
 		//Draw the little ship
+		int x = MouseInfo.getPointerInfo().getLocation().x - frame.getX();
+		int y = MouseInfo.getPointerInfo().getLocation().y - frame.getY();
 		g.drawImage( ship.toImage(), x-ship.getWidth()/2, y-ship.getHeight()/2, ship.getWidth(), ship.getHeight(), this );		
 	}
 	
