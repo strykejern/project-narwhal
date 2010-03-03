@@ -95,6 +95,9 @@ public class Game extends JPanel implements Runnable, KeyListener
 		
 		//g.fillOval(x, y, 100, 100);
 		Image ship = loadImage("data/spaceship.png");
+		Graphics2D g2d=(Graphics2D)g; // Create a Java2D version of g.
+		g2d.translate(170, 0); // Translate the center of our coordinates.
+		g2d.rotate(1);  // Rotate the image by 1 radian.
 
 		g.drawImage( ship, x, y, 64, 64, null, null );
 	}
@@ -102,7 +105,11 @@ public class Game extends JPanel implements Runnable, KeyListener
 	private Image loadImage( String fileName )	{
 		return Toolkit.getDefaultToolkit().getImage( fileName );
 	}
-
+	
+	private void rotateImage(Image image)
+	{
+	}
+	
 	public void keyPressed(KeyEvent arg0) {
 		
 	}
