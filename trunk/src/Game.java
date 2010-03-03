@@ -1,5 +1,6 @@
 import java.awt.*;
 import javax.swing.*;
+import java.awt.MouseInfo;
 
 
 public class Game extends JPanel implements Runnable 
@@ -50,6 +51,8 @@ public class Game extends JPanel implements Runnable
 		g.fillRect(0, 0, getWidth(), getHeight());
 		
 		g.setColor(Color.cyan);
-		g.fillOval(50, 50, 100, 100);
+		int x = MouseInfo.getPointerInfo().getLocation().x;
+		int y = MouseInfo.getPointerInfo().getLocation().y;
+		g.fillOval(x, y, 100, 100);
 	}
 }
