@@ -25,7 +25,7 @@ import java.awt.MouseInfo;
 public class Game extends JPanel implements Runnable 
 {
 	private static final long serialVersionUID = 1L;
-	private static final int FPS = 1000 / 60;
+	private static final int TARGET_FPS = 1000 / 60;
 	boolean running = true;
 	
 	public static void main(String[] args)
@@ -49,11 +49,12 @@ public class Game extends JPanel implements Runnable
     	// Remember the starting time
     	long tm = System.currentTimeMillis();
     	Log.initialize();
+    	Sound.testPlaySound("data/test.wav");
     	while(running){
     		repaint();
     		
     		try {
-                tm += FPS;
+                tm += TARGET_FPS;
                 Thread.sleep(Math.max(0, tm - System.currentTimeMillis()));
             }
             catch(InterruptedException e)

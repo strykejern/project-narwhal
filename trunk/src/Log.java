@@ -28,7 +28,6 @@ public class Log
 {
 	static BufferedWriter logFile = null;
     
-    
 	//JJ> Initialize the logging system
 	public static boolean initialize()
 	{
