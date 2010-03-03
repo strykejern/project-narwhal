@@ -46,13 +46,14 @@ public class Game extends JPanel implements Runnable, KeyListener
 	
 	public Game(JFrame frame){
 		this.frame = frame;
-		frame.setIconImage( loadImage("data/icon.png") );
+		Image2D icon = new Image2D("data/icon.png");
+		frame.setIconImage( icon.toImage() );
 		new Thread(this).start();
 		running = true;
 		frame.addKeyListener(this);
 		ship = new Image2D("data/spaceship.png");
 		background = new Image2D("data/starfield.jpg");
-		ship.rotate(128);
+		ship.resize(128, 128);
 	}
 	
 	public void run() {
@@ -100,13 +101,6 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//Draw the little ship
 		g.drawImage( ship.toImage(), x, y, ship.getWidth(), ship.getHeight(), this );		
 	}
-	
-	//-----------------------------------------------------------
-	//move this into a image class?
-	private Image loadImage( String fileName )	{
-		return Toolkit.getDefaultToolkit().getImage( fileName );
-	}	
-	//-----------------------------------------------------------
 	
 	public void keyPressed(KeyEvent arg0) {
 		
