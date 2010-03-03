@@ -68,7 +68,10 @@ public class Vector {
 	}
 	
 	public float length(){
-		return (float)Math.sqrt((x*x)+(y*y));
+		if (x != 0.0f || y != 0.0f)
+			return (float)Math.sqrt((x*x)+(y*y));
+		else
+			return 0.01f;
 	}
 	
 	public void rotateTo(float radian){
@@ -78,14 +81,23 @@ public class Vector {
 	}
 	
 	public void rotateToDegree(float degree){
-		rotateTo((float)Math.toRadians(degree));
+		this.rotateTo((float)Math.toRadians(degree));
 	}
 	
 	public void setLength(float length){
 		float hyp = length();
-		float fx = x / hyp;
-		float fy = y / hyp;
-		x = fx * length;
-		y = fy * length;
+		float fx, fy;
+		if (hyp != 0)
+		{
+			fx = x / hyp;
+			fy = y / hyp;
+		}
+		else
+		{
+			fx = 1;
+			fy = 1;
+		}
+		this.x = fx * length;
+		this.y = fy * length;
 	}
 }

@@ -18,13 +18,15 @@
 //********************************************************************************************
 
 public class SpaceShip {
-	Vector speed = new Vector(0, 0);
-	Vector pos = new Vector(0, 0);
+	Vector speed;
+	Vector pos;
 	Image2D sprite;
 	
 	public SpaceShip()	{
 		sprite = new Image2D("data/spaceship.png");
 		sprite.resize(64, 64);
+		speed = new Vector();
+		pos = new Vector();
 	}
 	
 	void Update() {

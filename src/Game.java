@@ -110,10 +110,20 @@ public class Game extends JPanel implements Runnable, KeyListener
 	
 	public void keyPressed(KeyEvent arg0) {
 		Vector acc = new Vector(1,1);
-		if( arg0.getKeyCode() == KeyEvent.VK_UP ) ship.speed.add(acc);
-		if( arg0.getKeyCode() == KeyEvent.VK_DOWN ) ship.speed.sub(acc);
-		if( arg0.getKeyCode() == KeyEvent.VK_LEFT) ship.sprite.rotate(-5);
-		if( arg0.getKeyCode() == KeyEvent.VK_RIGHT) ship.sprite.rotate(5);
+		Log.message(ship.speed.length() + " " + ship.speed.x + " " + ship.speed.y + " " + ship.sprite.getAngle());
+		if( arg0.getKeyCode() == KeyEvent.VK_UP ) ship.speed.setLength(ship.speed.length()*1.2f);
+		if( arg0.getKeyCode() == KeyEvent.VK_DOWN ) ship.speed.setLength(ship.speed.length()/1.5f);
+		if( arg0.getKeyCode() == KeyEvent.VK_LEFT)
+		{
+			ship.sprite.rotate(-5);
+			ship.speed.rotateToDegree(ship.sprite.getAngle()-90);
+		}
+		if( arg0.getKeyCode() == KeyEvent.VK_RIGHT) 
+		{
+			ship.sprite.rotate(5);
+			ship.speed.rotateToDegree(ship.sprite.getAngle()-90);
+			
+		}
 	}
 
 	public void keyReleased(KeyEvent arg0) {
