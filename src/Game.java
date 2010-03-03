@@ -18,6 +18,7 @@
 //********************************************************************************************
 
 import java.awt.*;
+
 import javax.swing.*;
 import java.awt.MouseInfo;
 import java.awt.event.KeyEvent;
@@ -53,8 +54,9 @@ public class Game extends JPanel implements Runnable, KeyListener
 		frame.addKeyListener(this);
 		ship = new Image2D("data/spaceship.png");
 		background = new Image2D("data/starfield.jpg");
-		ship.resize(128, 128);
+		ship.resize(64, 64);
 		ship.setAlpha(0.5f);
+		ship.setAlpha(1);
 	}
 	
 	public void run() {
@@ -74,6 +76,7 @@ public class Game extends JPanel implements Runnable, KeyListener
             	Log.warning(e.toString());
             }
     	}
+    	//TODO: This never happens!?!
        	Log.close();
 	}
 	
@@ -98,9 +101,9 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//Draw input string
 		g.setColor(Color.white);
 		g.drawString("Test = " + input, 20, 20);
-				
+		
 		//Draw the little ship
-		g.drawImage( ship.toImage(), x, y, ship.getWidth(), ship.getHeight(), this );		
+		g.drawImage( ship.toImage(), x-ship.getWidth()/2, y-ship.getHeight()/2, ship.getWidth(), ship.getHeight(), this );		
 	}
 	
 	public void keyPressed(KeyEvent arg0) {
