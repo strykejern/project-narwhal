@@ -31,9 +31,7 @@ public class Game extends JPanel implements Runnable
 	private JFrame frame;
 	
 	public static void main(String[] args){
-		JFrame parentWindow = new JFrame("Project Narwhal");
-		parentWindow.setIconImage( Toolkit.getDefaultToolkit().getImage("data/icon.png")  );
-		
+		JFrame parentWindow = new JFrame("Project Narwhal");		
     	parentWindow.getContentPane().add(new Game(parentWindow));
     	
     	parentWindow.setSize(800 , 600);
@@ -43,6 +41,7 @@ public class Game extends JPanel implements Runnable
 		
 	public Game(JFrame frame){
 		this.frame = frame;
+		frame.setIconImage( loadImage("data/icon.png") );
 		new Thread(this).start();
 		running = true;
 	}
@@ -69,9 +68,10 @@ public class Game extends JPanel implements Runnable
 	
 	public void paint(Graphics g){
 		g.setColor(Color.black);
-
 		g.fillRect(0, 0, getWidth(), getHeight());
 		
+		g.drawImage(loadImage("data/starfield.jpg"), 0, 0, getWidth(), getHeight(), Color.black, null);
+
 		g.setColor(Color.cyan);
 		int x = MouseInfo.getPointerInfo().getLocation().x - frame.getX();
 		int y = MouseInfo.getPointerInfo().getLocation().y - frame.getY();
@@ -90,8 +90,7 @@ public class Game extends JPanel implements Runnable
 		g.drawImage( loadImage("data/icon.png"), x, y, Color.black, null );
 	}
 	
-	private Image loadImage( String fileName )
-	{
+	private Image loadImage( String fileName )	{
 		return Toolkit.getDefaultToolkit().getImage( fileName );
 	}
 
