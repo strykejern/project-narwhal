@@ -27,27 +27,26 @@ public class Game extends JPanel implements Runnable
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;
 	private boolean running;
+	private JFrame frame;
 	
-	public static void main(String[] args)
-	{
+	public static void main(String[] args){
 		JFrame parentWindow = new JFrame("Project Narwhal");
 		parentWindow.setIconImage( Toolkit.getDefaultToolkit().getImage("data/icon.png")  );
 		
-    	parentWindow.getContentPane().add(new Game());
+    	parentWindow.getContentPane().add(new Game(parentWindow));
     	
     	parentWindow.setSize(800 , 600);
         parentWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         parentWindow.setVisible(true);
  	}
 		
-	public Game()
-	{
+	public Game(JFrame frame){
+		this.frame = frame;
 		new Thread(this).start();
 		running = true;
 	}
 	
-	public void run() 
-	{
+	public void run() {
     	// Remember the starting time
     	long tm = System.currentTimeMillis();
     	Log.initialize();
@@ -67,15 +66,14 @@ public class Game extends JPanel implements Runnable
        	Log.close();
 	}
 	
-	public void paint(Graphics g)
-	{
+	public void paint(Graphics g){
 		g.setColor(Color.black);
 
 		g.fillRect(0, 0, getWidth(), getHeight());
 		
 		g.setColor(Color.cyan);
-		int x = MouseInfo.getPointerInfo().getLocation().x;
-		int y = MouseInfo.getPointerInfo().getLocation().y;
+		int x = MouseInfo.getPointerInfo().getLocation().x - frame.getX();
+		int y = MouseInfo.getPointerInfo().getLocation().y - frame.getY();
 		//g.fillOval(x, y, 100, 100);
 		g.drawImage( loadImage("data/icon.png"), x, y, Color.black, null );
 	}
