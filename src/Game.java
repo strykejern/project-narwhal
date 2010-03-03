@@ -94,7 +94,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		g.drawString("Test = " + input, 20, 20);
 		
 		//g.fillOval(x, y, 100, 100);
-		g.drawImage( loadImage("data/icon.png"), x, y, Color.black, null );
+		g.drawImage( loadImage("data/spaceship.png"), x, y, 64, 64, Color.black, null );
 	}
 	
 	private Image loadImage( String fileName )	{
