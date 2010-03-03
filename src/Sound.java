@@ -5,7 +5,7 @@ import  java.io.*;
 public class Sound
 {
 	private AudioStream audio;
-
+	
 	//JJ> Constructor that opens an input stream  to the audio file.
 	public Sound( String fileName )
 	{
