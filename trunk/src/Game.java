@@ -32,6 +32,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	private boolean running;
 	private JFrame frame;
 	private String input = "";
+	Image ship;
 	
 	public static void main(String[] args){
 		JFrame parentWindow = new JFrame("Project Narwhal");		
@@ -48,6 +49,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		new Thread(this).start();
 		running = true;
 		frame.addKeyListener(this);
+		ship = loadImage("data/spaceship.png");
 	}
 	
 	public void run() {
@@ -70,11 +72,17 @@ public class Game extends JPanel implements Runnable, KeyListener
        	Log.close();
 	}
 	
+	private float rot = 0;
 	public void paint(Graphics g){
+		Graphics2D g2d=(Graphics2D)g;
+		g2d.translate(getWidth()/2, getHeight()/2);
+		rot += Math.PI/128;
+		g2d.rotate(rot);
+		
 		g.setColor(Color.black);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		
-		g.drawImage(loadImage("data/starfield.jpg"), 0, 0, getWidth(), getHeight(), null, null);
+		g.drawImage(loadImage("data/starfield.jpg"), -getWidth()/2, -getHeight()/2, getWidth(), getHeight(), null, null);
 
 		g.setColor(Color.cyan);
 		int x = MouseInfo.getPointerInfo().getLocation().x - frame.getX();
@@ -93,10 +101,8 @@ public class Game extends JPanel implements Runnable, KeyListener
 		g.setColor(Color.white);
 		g.drawString("Test = " + input, 20, 20);
 		
-		//g.fillOval(x, y, 100, 100);
-		Image ship = loadImage("data/spaceship.png");
-		Graphics2D g2d=(Graphics2D)g; // Create a Java2D version of g.
-		g2d.translate(170, 0); // Translate the center of our coordinates.
+		//g.fillOval(x, y, 100, 100); // Create a Java2D version of g.
+		//g2d.translate(170, 0); // Translate the center of our coordinates.
 		g2d.rotate(1);  // Rotate the image by 1 radian.
 
 		g.drawImage( ship, x, y, 64, 64, null, null );
