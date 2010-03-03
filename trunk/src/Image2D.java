@@ -27,6 +27,7 @@ import javax.imageio.ImageIO;
 public class Image2D
 {
 	private BufferedImage img;
+	private BufferedImage rotated;
 	private BufferedImage original;
 	
 	//JJ> Constructor makes sure the image is correctly loaded
@@ -43,6 +44,7 @@ public class Image2D
 			//This makes sure that the type of the image is valid so that it is safe to use
 			if( img.getType() == BufferedImage.TYPE_CUSTOM )
 			{
+				Log.message("Unknown image format. Converting to TYPE_INT_ARGB to prevent errors.");
 		        BufferedImage buffer = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);  
 		        
 		        Graphics2D g = buffer.createGraphics();  
@@ -51,7 +53,7 @@ public class Image2D
 		        
 		        img = buffer;
 			}
-			original = img;
+			rotated = original = img;
 			
 		} catch (IOException e) {
 			Log.warning(e.toString());
@@ -59,17 +61,19 @@ public class Image2D
 	}
 	
 	//JJ> Rotates an image with the specified degrees
-	public void rotate(float angle) {  
+	public void setRotate(float angle) {  
         int w = img.getWidth();  
         int h = img.getHeight();
         
         BufferedImage buffer = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = buffer.createGraphics();  
+    	g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+    	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
         g.rotate(Math.toRadians(angle), w/2, h/2);
         g.drawImage(img, null, 0, 0);
         
         //Make it so
-        img = buffer; 
+        rotated = buffer; 
     }  
 	
 	//JJ> direct scaling of a image using the resize method
@@ -177,7 +181,7 @@ public class Image2D
 	//JJ> Returns this Image2D as a Image instance
 	public Image toImage()
 	{
-		return img;
+		return rotated;
 	}
 	
 	//JJ> Get width and height for this buffered image

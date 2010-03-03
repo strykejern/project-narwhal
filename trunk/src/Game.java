@@ -33,8 +33,8 @@ public class Game extends JPanel implements Runnable, KeyListener
 	private boolean running;
 	private JFrame frame;
 	private String input = "";
-	Image2D ship;
 	Image2D background;
+	SpaceShip ship;
 	
 	// Create a new blank cursor.
 	final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
@@ -57,9 +57,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		new Thread(this).start();
 		running = true;
 		frame.addKeyListener(this);
-		ship = new Image2D("data/spaceship.png");
 		background = new Image2D("data/starfield.jpg");
-		ship.resize(64, 64);
 	}
 	
 	//JJ> This is the main game loop
@@ -73,11 +71,13 @@ public class Game extends JPanel implements Runnable, KeyListener
     	
 		// Set the blank cursor to the JFrame.
 		frame.getContentPane().setCursor(blankCursor);
-    	
+		
+		ship = new SpaceShip();
+		
 		// da loop
     	while(running){
     		repaint();
-    		
+    		ship.Update();
     		try {
                 tm += TARGET_FPS;
                 Thread.sleep(Math.max(0, tm - System.currentTimeMillis()));
@@ -101,14 +101,26 @@ public class Game extends JPanel implements Runnable, KeyListener
 		g.setColor(Color.white);
 		g.drawString("Test = " + input, 20, 20);
 		
+		//int x = MouseInfo.getPointerInfo().getLocation().x - frame.getX();
+		//int y = MouseInfo.getPointerInfo().getLocation().y - frame.getY();
+		
 		//Draw the little ship
-		int x = MouseInfo.getPointerInfo().getLocation().x - frame.getX();
-		int y = MouseInfo.getPointerInfo().getLocation().y - frame.getY();
-		g.drawImage( ship.toImage(), x-ship.getWidth()/2, y-ship.getHeight()/2, ship.getWidth(), ship.getHeight(), this );		
+		g.drawImage( ship.sprite.toImage(), (int)(ship.xPos-ship.sprite.getWidth()/2), (int)(ship.yPos-ship.sprite.getHeight()/2), ship.sprite.getWidth(), ship.sprite.getHeight(), this );		
 	}
 	
 	public void keyPressed(KeyEvent arg0) {
-		
+
+		if( arg0.getKeyCode() == KeyEvent.VK_UP && ship.acceleration < 50) ship.acceleration += 10;
+		if( arg0.getKeyCode() == KeyEvent.VK_LEFT)
+			{
+				ship.direction-= 5;
+				ship.sprite.setRotate(ship.direction);
+			}
+		if( arg0.getKeyCode() == KeyEvent.VK_RIGHT)
+			{
+				ship.direction+=5;
+				ship.sprite.setRotate(ship.direction);
+			}
 	}
 
 	public void keyReleased(KeyEvent arg0) {
@@ -118,6 +130,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	public void keyTyped(KeyEvent arg0) {
 		// TODO Auto-generated method stub
 		input += arg0.getKeyChar();
+		
 	}
 
 }
