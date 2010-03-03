@@ -105,21 +105,15 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//int y = MouseInfo.getPointerInfo().getLocation().y - frame.getY();
 		
 		//Draw the little ship
-		g.drawImage( ship.sprite.toImage(), (int)(ship.xPos-ship.sprite.getWidth()/2), (int)(ship.yPos-ship.sprite.getHeight()/2), ship.sprite.getWidth(), ship.sprite.getHeight(), this );		
+		g.drawImage( ship.sprite.toImage(), (int)(ship.pos.x-ship.sprite.getWidth()/2), (int)(ship.pos.y-ship.sprite.getHeight()/2), ship.sprite.getWidth(), ship.sprite.getHeight(), this );		
 	}
 	
 	public void keyPressed(KeyEvent arg0) {
-
-		if( arg0.getKeyCode() == KeyEvent.VK_UP && ship.acceleration < 50) ship.acceleration += 10;
-		if( arg0.getKeyCode() == KeyEvent.VK_LEFT)
-			{
-				ship.sprite.rotate(-5);
-			}
-		if( arg0.getKeyCode() == KeyEvent.VK_RIGHT)
-			{
-				ship.sprite.rotate(5);
-			}
-		if( arg0.getKeyCode() == KeyEvent.VK_DOWN && ship.acceleration > -50) ship.acceleration -= 10;
+		Vector acc = new Vector(1,1);
+		if( arg0.getKeyCode() == KeyEvent.VK_UP ) ship.speed.add(acc);
+		if( arg0.getKeyCode() == KeyEvent.VK_DOWN ) ship.speed.sub(acc);
+		if( arg0.getKeyCode() == KeyEvent.VK_LEFT) ship.sprite.rotate(-5);
+		if( arg0.getKeyCode() == KeyEvent.VK_RIGHT) ship.sprite.rotate(5);
 	}
 
 	public void keyReleased(KeyEvent arg0) {
