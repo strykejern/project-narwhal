@@ -72,17 +72,31 @@ public class Image2D
         img = buffer; 
     }  
 	
-	//JJ> scaling a image using bilinear filtering
+	//JJ> direct scaling of a image using the resize method
+	public void scale(float multiplier)
+	{   
+        resize( (int)(img.getWidth() * multiplier), (int)(img.getHeight() * multiplier) );	
+	}
+	
+	//JJ> resizing a image using bilinear filtering
 	public void resize(int newW, int newH) {  
         int w = img.getWidth();  
         int h = img.getHeight();  
+        boolean highQuality = false;
         
         BufferedImage buffer = new BufferedImage(newW, newH, img.getType());  
-        Graphics2D g = buffer.createGraphics();  
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);  
+        Graphics2D g = buffer.createGraphics();
+        
+        if( highQuality )
+        {
+        	g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+        	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
+        	}
+        else g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR );  
+        
         g.drawImage(img, 0, 0, newW, newH, 0, 0, w, h, null);  
         g.dispose();
-        
+
         //Now set this as the new image
         img = buffer;  
     }
@@ -136,12 +150,15 @@ public class Image2D
         img = dimg; 
     }
 	
-	//JJ> Makes the image transparent
-	public void setAlpha(float transperancy) {  
-        // Create the image using the   
-        BufferedImage aimg = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TRANSLUCENT);  
+	//JJ> Makes the image transparent, value should be between 0.00 (completely 
+	//    transparent) and 1.00 (normal)
+	public void setAlpha(float transperancy) { 
+		
+		//Clip the parameter to a valid value so that we do not get an error message
+		transperancy = Math.min( 1.00f, Math.max(0.00f, transperancy) );
         
         // Get the images graphics  
+		BufferedImage aimg = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TRANSLUCENT);  
         Graphics2D g = aimg.createGraphics();  
         
         // Set the Graphics composite to Alpha  
