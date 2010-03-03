@@ -74,7 +74,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		g.setColor(Color.black);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		
-		g.drawImage(loadImage("data/starfield.jpg"), 0, 0, getWidth(), getHeight(), Color.black, null);
+		g.drawImage(loadImage("data/starfield.jpg"), 0, 0, getWidth(), getHeight(), null, null);
 
 		g.setColor(Color.cyan);
 		int x = MouseInfo.getPointerInfo().getLocation().x - frame.getX();
@@ -94,7 +94,9 @@ public class Game extends JPanel implements Runnable, KeyListener
 		g.drawString("Test = " + input, 20, 20);
 		
 		//g.fillOval(x, y, 100, 100);
-		g.drawImage( loadImage("data/spaceship.png"), x, y, 64, 64, Color.black, null );
+		Image ship = loadImage("data/spaceship.png");
+
+		g.drawImage( ship, x, y, 64, 64, null, null );
 	}
 	
 	private Image loadImage( String fileName )	{
