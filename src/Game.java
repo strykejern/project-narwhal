@@ -18,6 +18,7 @@
 //********************************************************************************************
 
 import java.awt.*;
+
 import javax.swing.*;
 import java.awt.MouseInfo;
 import java.awt.event.KeyEvent;
@@ -77,17 +78,16 @@ public class Game extends JPanel implements Runnable, KeyListener
 		Graphics2D g2d=(Graphics2D)g;
 		g2d.translate(getWidth()/2, getHeight()/2);
 		rot += Math.PI/128;
-		g2d.rotate(rot);
 		
 		g.setColor(Color.black);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		
+		//draw backdrop
 		g.drawImage(loadImage("data/starfield.jpg"), -getWidth()/2, -getHeight()/2, getWidth(), getHeight(), null, null);
 
-		g.setColor(Color.cyan);
 		int x = MouseInfo.getPointerInfo().getLocation().x - frame.getX();
 		int y = MouseInfo.getPointerInfo().getLocation().y - frame.getY();
-		
+	
 		// Transparent 16 x 16 pixel cursor image.
 		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
 
@@ -101,20 +101,21 @@ public class Game extends JPanel implements Runnable, KeyListener
 		g.setColor(Color.white);
 		g.drawString("Test = " + input, 20, 20);
 		
-		//g.fillOval(x, y, 100, 100); // Create a Java2D version of g.
-		//g2d.translate(170, 0); // Translate the center of our coordinates.
-		g2d.rotate(1);  // Rotate the image by 1 radian.
-
+		g2d.rotate(rot);
 		g.drawImage( ship, x, y, 64, 64, null, null );
 	}
 	
+	//-----------------------------------------------------------
+	//move this into a image class?
 	private Image loadImage( String fileName )	{
 		return Toolkit.getDefaultToolkit().getImage( fileName );
 	}
 	
 	private void rotateImage(Image image)
 	{
+		//todo
 	}
+	//-----------------------------------------------------------
 	
 	public void keyPressed(KeyEvent arg0) {
 		
