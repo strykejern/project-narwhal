@@ -54,6 +54,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		ship = new Image2D("data/spaceship.png");
 		background = new Image2D("data/starfield.jpg");
 		ship.resize(128, 128);
+		ship.setAlpha(0.5f);
 	}
 	
 	public void run() {
