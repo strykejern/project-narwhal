@@ -30,8 +30,9 @@ public class Game extends JPanel implements Runnable
 	
 	public static void main(String[] args)
 	{
-		JFrame parentWindow = new JFrame("The game");
-    	
+		JFrame parentWindow = new JFrame("Project Narwhal");
+		parentWindow.setIconImage( Toolkit.getDefaultToolkit().getImage("data/icon.png")  );
+		
     	parentWindow.getContentPane().add(new Game());
     	
     	parentWindow.setSize(800 , 600);
