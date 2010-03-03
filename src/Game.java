@@ -103,26 +103,17 @@ public class Game extends JPanel implements Runnable, KeyListener
 		return Toolkit.getDefaultToolkit().getImage( fileName );
 	}
 
-	@Override
 	public void keyPressed(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		input += arg0.getKeyChar();
-		Log.println(arg0.getKeyChar()+"1");
 		
 	}
 
-	@Override
 	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		Log.println(arg0.getKeyChar()+"2");
 		
 	}
 
-	@Override
 	public void keyTyped(KeyEvent arg0) {
 		// TODO Auto-generated method stub
 		input += arg0.getKeyChar();
-		Log.println(arg0.getKeyChar()+"3");
 	}
 
 }
