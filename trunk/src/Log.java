@@ -36,8 +36,8 @@ public class Log
 	          logFile = new BufferedWriter(new FileWriter("game.log"));
 	          
 	          //Start writing to the output stream
-	          println("System date is: " +  getDate());
-	          println("Initializing logging system... Success!");
+	          message("System date is: " +  getDate());
+	          message("Initializing logging system... Success!");
 	          return true;
 	      } 
 	       
@@ -54,22 +54,27 @@ public class Log
 		
 	
 	//JJ> Writes the specified text to the log file and adds a new line feed	
-	static void println(String text)
+	static void message(String rawText)
 	{
-		print(text + "\n");
-		//logFile.newLine();		//JJ> should use this function instead of \n
-								 	//    since new line feeds are system dependent
+		//logFile.newLine();		//@TODO: JJ> should use this function instead of \n
+	 	//    							since new line feeds are system dependent
+		String text = "INFO: " + rawText + "\n"; 
+
+		System.out.print(text);
+		print(text);
 	}
-	static void println(InterruptedException e)
+	static void warning(String rawText)
 	{
-		println(e.toString());
+		String text = "WARNING: " + rawText + "\n"; 
+
+		System.err.print(text);
+		print(text);
 	}
 	
 	//JJ> Writes the specified text to the log file
 	static void print(String text)
 	{
-		String message = getTime() + " INFO: " + text;
-		System.out.print(message);
+		String message = getTime() + " " + text;
 	    try  {
 	    	 
 	        //Writing happens live, we want the log to be up to date if the 
@@ -107,7 +112,7 @@ public class Log
 
 		//Close the BufferedWriter
         try  {
-	        println("Shutting down logging system...");
+	        message("Shutting down logging system...");
             logFile.close();
         } 
         
