@@ -113,14 +113,13 @@ public class Game extends JPanel implements Runnable, KeyListener
 		if( arg0.getKeyCode() == KeyEvent.VK_UP && ship.acceleration < 50) ship.acceleration += 10;
 		if( arg0.getKeyCode() == KeyEvent.VK_LEFT)
 			{
-				ship.direction-= 5;
-				ship.sprite.setRotate(ship.direction);
+				ship.sprite.rotate(-5);
 			}
 		if( arg0.getKeyCode() == KeyEvent.VK_RIGHT)
 			{
-				ship.direction+=5;
-				ship.sprite.setRotate(ship.direction);
+				ship.sprite.rotate(5);
 			}
+		if( arg0.getKeyCode() == KeyEvent.VK_DOWN && ship.acceleration > -50) ship.acceleration -= 10;
 	}
 
 	public void keyReleased(KeyEvent arg0) {
