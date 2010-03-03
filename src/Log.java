@@ -53,25 +53,30 @@ public class Log
 	}
 		
 	
-	//JJ> Writes the specified text to the log file and adds a new line feed
+	//JJ> Writes the specified text to the log file and adds a new line feed	
 	static void println(String text)
 	{
 		print(text + "\n");
 		//logFile.newLine();		//JJ> should use this function instead of \n
 								 	//    since new line feeds are system dependent
 	}
+	static void println(InterruptedException e)
+	{
+		println(e.toString());
+	}
 	
 	//JJ> Writes the specified text to the log file
 	static void print(String text)
 	{
-	     try  {
+		String message = getTime() + " INFO: " + text;
+		System.out.print(message);
+	    try  {
 	    	 
 	        //Writing happens live, we want the log to be up to date if the 
 	        //program crashes for some reason
 	    	
-	        logFile.write(getTime() + " INFO: " + text);
-	        logFile.flush();
-	        
+	        logFile.write(message);
+	        logFile.flush();	        
 	     } 	       
 	     catch (FileNotFoundException ex) {
 	    	 ex.printStackTrace();
@@ -102,7 +107,7 @@ public class Log
 
 		//Close the BufferedWriter
         try  {
-        	logFile.flush();
+	        println("Shutting down logging system...");
             logFile.close();
         } 
         
