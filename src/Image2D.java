@@ -26,15 +26,15 @@ import javax.imageio.ImageIO;
 //JJ> Helper class to make image handling easier to do
 public class Image2D
 {
-	private BufferedImage img;
-	private BufferedImage rotated;
-	private BufferedImage original;
-	
+	private BufferedImage img;			//The image itself
+	private BufferedImage rotated;		//The image with effects added (rotation, alpha, etc.)
+	private BufferedImage original;		//The image when it was first loaded
+	private int currentAngle;
+		
 	//JJ> Constructor makes sure the image is correctly loaded
 	public Image2D( String fileName ) {
 		File f = new File( fileName );
-		if( !f.exists() )
-		{
+		if( !f.exists() ) {
 			Log.warning( "Failed loading image, does not exist: " + f.getAbsolutePath() );
 		}
 
@@ -42,8 +42,7 @@ public class Image2D
 			img = ImageIO.read(f);
 			
 			//This makes sure that the type of the image is valid so that it is safe to use
-			if( img.getType() == BufferedImage.TYPE_CUSTOM )
-			{
+			if( img.getType() == BufferedImage.TYPE_CUSTOM ) {
 				Log.message("Unknown image format. Converting to TYPE_INT_ARGB to prevent errors.");
 		        BufferedImage buffer = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);  
 		        
@@ -54,14 +53,25 @@ public class Image2D
 		        img = buffer;
 			}
 			rotated = original = img;
+			currentAngle = 0;
 			
 		} catch (IOException e) {
 			Log.warning(e.toString());
 		}
 	}
+
+	//JJ> Rotates an image with the specified degrees
+	public void rotate(float angle) {  
+		setDirection(currentAngle + angle);
+	}
 	
 	//JJ> Rotates an image with the specified degrees
-	public void setRotate(float angle) {  
+	public void setDirection(float angle) {  
+		
+		//Limit the angles
+		while(angle > 360) angle -= 360;
+		while(angle < 0) angle += 360;
+		
         int w = img.getWidth();  
         int h = img.getHeight();
         
@@ -73,12 +83,12 @@ public class Image2D
         g.drawImage(img, null, 0, 0);
         
         //Make it so
+        currentAngle = (int)angle;
         rotated = buffer; 
     }  
 	
 	//JJ> direct scaling of a image using the resize method
-	public void scale(float multiplier)
-	{   
+	public void scale(float multiplier) {   
         resize( (int)(img.getWidth() * multiplier), (int)(img.getHeight() * multiplier) );	
 	}
 	
@@ -193,7 +203,13 @@ public class Image2D
 	{
 		return img.getHeight();
 	}
-	
+
+	//JJ> Returns the current angle for this image
+	int getAngle()
+	{
+		return currentAngle;
+	}
+
 	//JJ> Returns the image to its original state when it was first loaded
 	public void reset() {  
 		img = original;
