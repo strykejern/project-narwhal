@@ -20,6 +20,7 @@
 import java.awt.*;
 import javax.swing.*;
 import java.awt.MouseInfo;
+import java.awt.image.BufferedImage;
 
 
 public class Game extends JPanel implements Runnable 
@@ -74,6 +75,17 @@ public class Game extends JPanel implements Runnable
 		g.setColor(Color.cyan);
 		int x = MouseInfo.getPointerInfo().getLocation().x - frame.getX();
 		int y = MouseInfo.getPointerInfo().getLocation().y - frame.getY();
+		
+		// Transparent 16 x 16 pixel cursor image.
+		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+
+		// Create a new blank cursor.
+		Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+		    cursorImg, new Point(0, 0), "blank cursor");
+
+		// Set the blank cursor to the JFrame.
+		frame.getContentPane().setCursor(blankCursor);
+		
 		//g.fillOval(x, y, 100, 100);
 		g.drawImage( loadImage("data/icon.png"), x, y, Color.black, null );
 	}
