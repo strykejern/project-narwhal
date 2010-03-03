@@ -21,11 +21,14 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Calendar;
+import java.text.SimpleDateFormat;
 
 public class Log 
 {
 	static BufferedWriter logFile = null;
-		
+    
+    
 	//JJ> Initialize the logging system
 	public static boolean initialize()
 	{
@@ -34,7 +37,9 @@ public class Log
 	          logFile = new BufferedWriter(new FileWriter("game.log"));
 	          
 	          //Start writing to the output stream
-	          println("Creating log file");    
+	          println("System date is: " +  getDate());
+	          println("Initializing logging system... Success!");
+	          return true;
 	      } 
 	       
 	      catch (FileNotFoundException ex) {
@@ -47,7 +52,7 @@ public class Log
 	        
 	   return false;
 	}
-	
+		
 	
 	//JJ> Writes the specified text to the log file and adds a new line feed
 	static void println(String text)
@@ -64,7 +69,8 @@ public class Log
 	    	 
 	        //Writing happens live, we want the log to be up to date if the 
 	        //program crashes for some reason
-	        logFile.write("Creating log file");
+	    	
+	        logFile.write(getTime() + " INFO: " + text);
 	        logFile.flush();
 	        
 	     } 	       
@@ -76,6 +82,19 @@ public class Log
 	     } 
 	}
 	
+	//JJ> Helper functions to quickly get time and date
+    static private String getDate()
+    {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
+    	return date.format( cal.getTime() );
+    }
+    static private String getTime()
+    {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat date = new SimpleDateFormat("HH:mm:ss");
+    	return date.format( cal.getTime() );
+    }
 	
 	//JJ> Close log file
 	static void close()
@@ -92,5 +111,4 @@ public class Log
             ex.printStackTrace();
         }
 	}
-	
 }
