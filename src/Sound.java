@@ -1,37 +1,38 @@
 import  sun.audio.*;    //import the sun.audio package
 import  java.io.*;
 
-public class Sound 
+//JJ> Sound class to make using sound effects easier
+public class Sound
 {
+	private AudioStream audio;
 
-	public void testPlaySound(String filename)
+	//JJ> Constructor that opens an input stream  to the audio file.
+	public Sound( String fileName )
 	{
-		InputStream in;
-		AudioStream as;
-		
-		//** add this into your application code as appropriate
-		// Open an input stream  to the audio file.
 		try 
 		{
-			in = new FileInputStream(filename);
-		
 			// Create an AudioStream object from the input stream.
-			as = new AudioStream(in);
+			audio = new AudioStream(new FileInputStream(fileName));
 		} 
 		catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return;
+			Log.warning(e.toString());
 		}
 		catch (IOException e) {
-			e.printStackTrace();
-			return;
+			Log.warning(e.toString());
 		}
-	
-		// Use the static class member "player" from class AudioPlayer to play
-		// clip.
-		AudioPlayer.player.start(as);            
-		
-		// Similarly, to stop the audio.
-		//AudioPlayer.player.stop(as); 		
 	}
+		
+	//JJ> Use the static class member "player" from class AudioPlayer to play
+	// clip.
+	public void play()
+	{		
+		AudioPlayer.player.start(audio);
+	}
+	
+	//JJ> to stop the audio.
+	public void stop()
+	{
+		AudioPlayer.player.stop(audio); 			
+	}
+
 }

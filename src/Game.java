@@ -36,7 +36,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	Image2D ship;
 	Image2D background;
 	
-	public static void main(String[] args){
+	public static void main(String[] args) throws InterruptedException{	
 		JFrame parentWindow = new JFrame("Project Narwhal");		
     	parentWindow.getContentPane().add(new Game(parentWindow));
     	
@@ -55,8 +55,6 @@ public class Game extends JPanel implements Runnable, KeyListener
 		ship = new Image2D("data/spaceship.png");
 		background = new Image2D("data/starfield.jpg");
 		ship.resize(64, 64);
-		ship.setAlpha(0.5f);
-		ship.setAlpha(1);
 	}
 	
 	public void run() {
