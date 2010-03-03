@@ -20,15 +20,18 @@
 import java.awt.*;
 import javax.swing.*;
 import java.awt.MouseInfo;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
 
-public class Game extends JPanel implements Runnable 
+public class Game extends JPanel implements Runnable, KeyListener
 {
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;
 	private boolean running;
 	private JFrame frame;
+	private String input = "";
 	
 	public static void main(String[] args){
 		JFrame parentWindow = new JFrame("Project Narwhal");		
@@ -44,6 +47,7 @@ public class Game extends JPanel implements Runnable
 		frame.setIconImage( loadImage("data/icon.png") );
 		new Thread(this).start();
 		running = true;
+		frame.addKeyListener(this);
 	}
 	
 	public void run() {
@@ -86,12 +90,37 @@ public class Game extends JPanel implements Runnable
 		// Set the blank cursor to the JFrame.
 		frame.getContentPane().setCursor(blankCursor);
 		
+		g.setColor(Color.white);
+		g.drawString("Test = " + input, 20, 20);
+		
 		//g.fillOval(x, y, 100, 100);
 		g.drawImage( loadImage("data/icon.png"), x, y, Color.black, null );
 	}
 	
 	private Image loadImage( String fileName )	{
 		return Toolkit.getDefaultToolkit().getImage( fileName );
+	}
+
+	@Override
+	public void keyPressed(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		input += arg0.getKeyChar();
+		Log.println(arg0.getKeyChar()+"1");
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		Log.println(arg0.getKeyChar()+"2");
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		input += arg0.getKeyChar();
+		Log.println(arg0.getKeyChar()+"3");
 	}
 
 }
