@@ -17,21 +17,45 @@
 //*
 //********************************************************************************************
 
-public class SpaceShip {
-	Vector speed;
+/**
+ * JJ> Standarized object class. An object is anything in space. Such as a ship, planet, missile
+ * or even an asteroid
+ * @author Johan Jansen og Anders Eie
+ */
+public class Object {
+	private boolean allowCollision;
+	Vector velocity;
 	Vector pos;
 	Image2D sprite;
 	
-	public SpaceShip()	{
-		sprite = new Image2D("data/spaceship.png");
-		sprite.resize(64, 64);
-		speed = new Vector();
-		pos = new Vector();
+	public Object( Image2D copySprite, int x, int y ) {
+		sprite = copySprite;
+		velocity = new Vector();
+		pos = new Vector(x, y);
+		allowCollision = false;
 	}
 	
-	void Update() {
-		pos.add(speed);
+	public void Move() {
+		pos.add(velocity);
+	}
+	
+	//JJ> Helper functions to set and disable collisions for this object
+	public boolean isCollidable() {
+		return allowCollision;
+	}
+	public void disableCollision() {
+		allowCollision = false;
+	}
+	public void enableCollision() {
+		allowCollision = true;
 	}
 
-
+	//JJ> TODO: implement this function
+	public boolean collidesWith( Object target ) {
+		
+		//Are both collidable?
+		if( !this.allowCollision || target.isCollidable() ) return false;
+		
+		return this.pos == target.pos;
+	}
 }
