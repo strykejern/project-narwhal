@@ -20,10 +20,11 @@
 import java.awt.*;
 
 import javax.swing.*;
-import java.awt.MouseInfo;
+//import java.awt.MouseInfo;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 
 public class Game extends JPanel implements Runnable, KeyListener
@@ -75,10 +76,12 @@ public class Game extends JPanel implements Runnable, KeyListener
 		ship = new SpaceShip();
 
 		// da loop
-    	while(running){
+    	while(running)
+    	{
     		repaint();
     		ship.Update();
-    		try {
+    		try 
+    		{
                 tm += TARGET_FPS;
                 Thread.sleep(Math.max(0, tm - System.currentTimeMillis()));
             }
@@ -94,13 +97,19 @@ public class Game extends JPanel implements Runnable, KeyListener
 	
 	public void paint(Graphics g){		
 	
+		Random r = new Random();
 		//Make it a true black background first
 		g.setColor( Color.black );
 		g.fillRect(0, 0, frame.getWidth(), frame.getHeight() );
+		for(int count = 0; count <= 200; count++) 
+		{
+		    g.setColor(Color.LIGHT_GRAY);
+		    g.drawOval(r.nextInt(frame.getWidth()),r.nextInt(frame.getHeight()),2,2);
+		}
 		
 		//draw the backdrop
-		background.resize(frame.getWidth(), frame.getHeight() );
-		g.drawImage( background.toImage(), 0, 0, this );
+		//background.resize(frame.getWidth(), frame.getHeight() );
+		//g.drawImage( background.toImage(), 0, 0, this );
 		
 		//Draw input string
 		g.setColor(Color.white);
@@ -113,15 +122,15 @@ public class Game extends JPanel implements Runnable, KeyListener
 		g.drawImage( ship.sprite.toImage(), (int)(ship.pos.x-ship.sprite.getWidth()/2), (int)(ship.pos.y-ship.sprite.getHeight()/2), ship.sprite.getWidth(), ship.sprite.getHeight(), this );		
 	}
 	
-	public void keyPressed(KeyEvent arg0) {
-		if( arg0.getKeyCode() == KeyEvent.VK_UP ) ship.speed.setLength(ship.speed.length()*1.2f);
-		if( arg0.getKeyCode() == KeyEvent.VK_DOWN ) ship.speed.setLength(ship.speed.length()/1.5f);
-		if( arg0.getKeyCode() == KeyEvent.VK_LEFT)
+	public void keyPressed(KeyEvent key) {
+		if( key.getKeyCode() == KeyEvent.VK_UP ) ship.speed.setLength(ship.speed.length()*1.2f);
+		else if( key.getKeyCode() == KeyEvent.VK_DOWN ) ship.speed.setLength(ship.speed.length()/1.5f);
+		else if( key.getKeyCode() == KeyEvent.VK_LEFT)
 		{
 			ship.sprite.rotate(-5);
 			ship.speed.rotateToDegree(ship.sprite.getAngle()-90);
 		}
-		if( arg0.getKeyCode() == KeyEvent.VK_RIGHT) 
+		else if( key.getKeyCode() == KeyEvent.VK_RIGHT) 
 		{
 			ship.sprite.rotate(5);
 			ship.speed.rotateToDegree(ship.sprite.getAngle()-90);

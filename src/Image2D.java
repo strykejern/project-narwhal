@@ -33,31 +33,49 @@ public class Image2D
 		
 	//JJ> Constructor makes sure the image is correctly loaded
 	public Image2D( String fileName ) {
+		
+		//First make sure the file actually exists
 		File f = new File( fileName );
-		if( !f.exists() ) {
+		if( !f.exists() ) 
+		{
 			Log.warning( "Failed loading image, does not exist: " + f.getAbsolutePath() );
 		}
 
-		try {
+		//Now try reading it
+		try 
+		{
 			img = ImageIO.read(f);
-			
-			//This makes sure that the type of the image is valid so that it is safe to use
-			if( img.getType() == BufferedImage.TYPE_CUSTOM ) {
-				Log.message("Unknown image format. Converting to TYPE_INT_ARGB to prevent errors.");
-		        BufferedImage buffer = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);  
-		        
-		        Graphics2D g = buffer.createGraphics();  
-		        g.drawImage(img, null, 0, 0 ); 
-		        g.dispose();
-		        
-		        img = buffer;
-			}
+			this.makeValid();
 			rotated = original = img;
 			currentAngle = 0;
 			
-		} catch (IOException e) {
+		} 		
+		catch (IOException e) 
+		{
 			Log.warning(e.toString());
 		}
+	}
+	
+	public Image2D( BufferedImage copyImg ) {
+		img = copyImg;
+		this.makeValid();
+		rotated = original = img;
+		currentAngle = 0;
+	}
+	
+	//JJ> This makes sure that the type of the image is valid so that it is safe to use
+	private void makeValid() {
+		if( img.getType() == BufferedImage.TYPE_CUSTOM ) 
+		{
+			Log.message("Unknown image format. Converting to TYPE_INT_ARGB to prevent errors.");
+	        BufferedImage buffer = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);  
+	        
+	        Graphics2D g = buffer.createGraphics();  
+	        g.drawImage(img, null, 0, 0 ); 
+	        g.dispose();
+	        
+	        img = buffer;
+		}	
 	}
 
 	//JJ> Rotates an image with the specified degrees
@@ -65,7 +83,7 @@ public class Image2D
 		setDirection(currentAngle + angle);
 	}
 	
-	//JJ> Rotates an image with the specified degrees
+	//JJ> Sets the image rotation to the specified degrees
 	public void setDirection(float angle) {  
 		
 		//Limit the angles
@@ -105,7 +123,7 @@ public class Image2D
         {
         	g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
-        	}
+        }
         else g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR );  
         
         g.drawImage(img, 0, 0, newW, newH, 0, 0, w, h, null);  
@@ -152,10 +170,13 @@ public class Image2D
         g.dispose();
         
         //This does all the work and makes the correct pixels transparent
-        for(int i = 0; i < dimg.getHeight(); i++) {  
-            for(int j = 0; j < dimg.getWidth(); j++) {  
-                if(dimg.getRGB(j, i) == color.getRGB()) {  
-                dimg.setRGB(j, i, 0x8F1C1C);  
+        for(int i = 0; i < dimg.getHeight(); i++) 
+        {  
+            for(int j = 0; j < dimg.getWidth(); j++) 
+            {  
+                if( dimg.getRGB(j, i) == color.getRGB() ) 
+                {  
+                	dimg.setRGB(j, i, 0x8F1C1C);  
                 }  
             }  
         }
@@ -189,24 +210,20 @@ public class Image2D
     }  
 		
 	//JJ> Returns this Image2D as a Image instance
-	public Image toImage()
-	{
+	public Image toImage(){
 		return rotated;
 	}
 	
 	//JJ> Get width and height for this buffered image
-	public int getWidth() 
-	{
+	public int getWidth() {
 		return img.getWidth();
 	}
-	public int getHeight() 
-	{
+	public int getHeight() {
 		return img.getHeight();
 	}
 
 	//JJ> Returns the current angle for this image
-	int getAngle()
-	{
+	int getAngle(){
 		return currentAngle;
 	}
 
