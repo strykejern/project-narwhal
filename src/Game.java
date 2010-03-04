@@ -29,7 +29,7 @@ import java.awt.image.BufferedImage;
 public class Game extends JPanel implements Runnable, KeyListener
 {
 	private static final long serialVersionUID = 1L;
-	private static final int TARGET_FPS = 1000 / 60;
+	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
 	private boolean running;
 	private JFrame frame;
 	private String input = "";
@@ -73,7 +73,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		frame.getContentPane().setCursor(blankCursor);
 		
 		ship = new SpaceShip();
-		
+
 		// da loop
     	while(running){
     		repaint();
@@ -94,8 +94,13 @@ public class Game extends JPanel implements Runnable, KeyListener
 	
 	public void paint(Graphics g){		
 	
-		//draw backdrop
-		g.drawImage( background.toImage(), 0, 0, this);
+		//Make it a true black background first
+		g.setColor( Color.black );
+		g.fillRect(0, 0, frame.getWidth(), frame.getHeight() );
+		
+		//draw the backdrop
+		background.resize(frame.getWidth(), frame.getHeight() );
+		g.drawImage( background.toImage(), 0, 0, this );
 		
 		//Draw input string
 		g.setColor(Color.white);
@@ -109,8 +114,6 @@ public class Game extends JPanel implements Runnable, KeyListener
 	}
 	
 	public void keyPressed(KeyEvent arg0) {
-		Vector acc = new Vector(1,1);
-		Log.message(ship.speed.length() + " " + ship.speed.x + " " + ship.speed.y + " " + ship.sprite.getAngle());
 		if( arg0.getKeyCode() == KeyEvent.VK_UP ) ship.speed.setLength(ship.speed.length()*1.2f);
 		if( arg0.getKeyCode() == KeyEvent.VK_DOWN ) ship.speed.setLength(ship.speed.length()/1.5f);
 		if( arg0.getKeyCode() == KeyEvent.VK_LEFT)

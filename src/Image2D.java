@@ -77,8 +77,8 @@ public class Image2D
         
         BufferedImage buffer = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = buffer.createGraphics();  
-    	g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-    	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
+    	//g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+    	//g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
         g.rotate(Math.toRadians(angle), w/2, h/2);
         g.drawImage(img, null, 0, 0);
         
@@ -112,7 +112,7 @@ public class Image2D
         g.dispose();
 
         //Now set this as the new image
-        img = buffer;  
+        img = rotated = buffer;  
     }
 	
 	//JJ> Flips the image horizontally
