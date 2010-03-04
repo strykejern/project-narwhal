@@ -20,11 +20,10 @@
 import java.awt.*;
 
 import javax.swing.*;
-//import java.awt.MouseInfo;
+import java.awt.MouseInfo;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 
 
 public class Game extends JPanel implements Runnable, KeyListener
@@ -36,6 +35,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	private String input = "";
 	Image2D background;
 	SpaceShip ship;
+	Background bg;
 	
 	// Create a new blank cursor.
 	final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
@@ -59,6 +59,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		running = true;
 		frame.addKeyListener(this);
 		background = new Image2D("data/starfield.jpg");
+		bg = new Background(800, 600);
 	}
 	
 	//JJ> This is the main game loop
@@ -97,19 +98,15 @@ public class Game extends JPanel implements Runnable, KeyListener
 	
 	public void paint(Graphics g){		
 	
-		Random r = new Random();
 		//Make it a true black background first
 		g.setColor( Color.black );
 		g.fillRect(0, 0, frame.getWidth(), frame.getHeight() );
-		for(int count = 0; count <= 200; count++) 
-		{
-		    g.setColor(Color.LIGHT_GRAY);
-		    g.drawOval(r.nextInt(frame.getWidth()),r.nextInt(frame.getHeight()),2,2);
-		}
 		
 		//draw the backdrop
 		//background.resize(frame.getWidth(), frame.getHeight() );
 		//g.drawImage( background.toImage(), 0, 0, this );
+		
+		bg.draw(g);
 		
 		//Draw input string
 		g.setColor(Color.white);
