@@ -4,7 +4,9 @@ import java.util.Random;
 public class Background {
 	private int[] x, y, size;
 	
-	public Background(int width, int height){
+	public Background(int width, int height, int seed){
+		Random rand = new Random(seed);
+		rand = new Random(seed);
 		int s = 250;
 		x = new int[s];
 		y = new int[s];
@@ -12,11 +14,10 @@ public class Background {
 		
 		for (int i = 0; i < s; ++i)
 		{
-			Random rand = new Random();
 			x[i] = rand.nextInt(width);
 			y[i] = rand.nextInt(height);
 			
-			size[i] = rand.nextInt(40);
+			size[i] = rand.nextInt(30)+1;
 		}
 	}
 	
@@ -25,6 +26,10 @@ public class Background {
 	}
 	
 	public void draw(Graphics g){
+		
+		//Black background
+		g.setColor(Color.black);
+		g.fillRect(0, 0, 800, 600);
 		
 		for (int i = 0; i < size.length; ++i)
 		{
@@ -37,7 +42,7 @@ public class Background {
 			}
 			
 			/*
-			g.setColor(Color.GRAY);
+			g.setColor(Color.LIGHT_GRAY);
 			g.drawLine(x[i], y[i], x[i]+size[i], y[i]+size[i]);
 			g.drawLine(x[i]+size[i], y[i], x[i], y[i]+size[i]);
 			g.drawLine(x[i]+(size[i]/2), y[i], x[i]+(size[i]/2), y[i]+size[i]);
