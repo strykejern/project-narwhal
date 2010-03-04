@@ -29,9 +29,9 @@ public class Log
 	static BufferedWriter logFile = null;
     
 	//JJ> Initialize the logging system
-	public static boolean initialize()
-	{
-	     try {	            
+	public static boolean initialize() {
+	     try 
+	     {	            
 	          //Construct the BufferedWriter object
 	          logFile = new BufferedWriter(new FileWriter("game.log"));
 	          
@@ -40,48 +40,47 @@ public class Log
 	          message("Initializing logging system... Success!");
 	          return true;
 	      } 
-	       
-	      catch (FileNotFoundException ex) {
-	            ex.printStackTrace();
+	      catch (FileNotFoundException ex) 
+	      {
+	          ex.printStackTrace();
+	      }   
+	      catch (IOException ex) 
+	      {
+	          ex.printStackTrace();
 	      } 
-	        
-	        catch (IOException ex) {
-	            ex.printStackTrace();
-	        } 
 	        
 	   return false;
 	}
 		
 	
 	//JJ> Writes the specified text to the log file and adds a new line feed	
-	static void message(String rawText)
-	{
+	static void message(String rawText) {
 		//logFile.newLine();		//@TODO: JJ> should use this function instead of \n
 	 	//    							since new line feeds are system dependent
 		String text = "INFO: " + rawText + "\n"; 
-
 		System.out.print(text);
 		print(text);
 	}
-	static void warning(String rawText)
-	{
+	static void warning(String rawText) {
 		String text = "WARNING: " + rawText + "\n"; 
-
+		System.err.print(text);
+		print(text);
+	}
+	static void error(String rawText) {
+		String text = "ERROR: " + rawText + "\n"; 
 		System.err.print(text);
 		print(text);
 	}
 	
 	//JJ> Writes the specified text to the log file
-	static void print(String text)
-	{
+	static void print(String text) {
 		if( logFile == null ) return;
 		
 		String message = getTime() + " " + text;
-	    try  {
-	    	 
+	    try  
+	    {	 
 	        //Writing happens live, we want the log to be up to date if the 
 	        //program crashes for some reason
-	    	
 	        logFile.write(message);
 	        logFile.flush();	        
 	     } 	       
@@ -94,31 +93,29 @@ public class Log
 	}
 	
 	//JJ> Helper functions to quickly get time and date
-    static private String getDate()
-    {
+    static private String getDate() {
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
     	return date.format( cal.getTime() );
     }
-    static private String getTime()
-    {
+    static private String getTime() {
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat date = new SimpleDateFormat("HH:mm:ss");
     	return date.format( cal.getTime() );
     }
 	
 	//JJ> Close log file
-	static void close()
-	{
+	static void close() {
 		if (logFile == null) return; 
 
 		//Close the BufferedWriter
-        try  {
+        try  
+        {
 	        message("Shutting down logging system...");
             logFile.close();
         } 
-        
-        catch (IOException ex) {
+        catch (IOException ex) 
+        {
             ex.printStackTrace();
         }
 	}
