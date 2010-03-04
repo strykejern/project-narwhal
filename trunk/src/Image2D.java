@@ -23,7 +23,11 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-//JJ> Helper class to make image handling easier to do
+/**
+ * JJ> Helper class to make image handling easier to do
+ * @author Johan Jansen og Anders Eie
+ *
+ */
 public class Image2D
 {
 	private BufferedImage img;			//The image itself
@@ -31,7 +35,10 @@ public class Image2D
 	private BufferedImage original;		//The image when it was first loaded
 	private int currentAngle;
 		
-	//JJ> Constructor makes sure the image is correctly loaded
+	/**
+	 * JJ> Constructor makes sure the image is correctly loaded
+	 * @param fileName: the path and name of the file to load
+	 */
 	public Image2D( String fileName ) {
 		
 		//First make sure the file actually exists
@@ -56,6 +63,10 @@ public class Image2D
 		}
 	}
 	
+	/**
+	 * JJ> Constructor makes sure the image is correctly loaded
+	 * @param copyImg: which BufferedImage to use as the sprite
+	 */
 	public Image2D( BufferedImage copyImg ) {
 		img = copyImg;
 		this.makeValid();
@@ -63,7 +74,9 @@ public class Image2D
 		currentAngle = 0;
 	}
 	
-	//JJ> This makes sure that the type of the image is valid so that it is safe to use
+	/**
+	 * JJ> This makes sure that the type of the image is valid so that it is safe to use
+	 */
 	private void makeValid() {
 		if( img.getType() == BufferedImage.TYPE_CUSTOM ) 
 		{
@@ -78,12 +91,18 @@ public class Image2D
 		}	
 	}
 
-	//JJ> Rotates an image with the specified degrees
+	/**
+	 * JJ> Rotates an image with the specified degrees
+	 * @param angle: how much to rotate by
+	 */
 	public void rotate(float angle) {  
 		setDirection(currentAngle + angle);
 	}
 	
-	//JJ> Sets the image rotation to the specified degrees
+	/**
+	 * JJ> Sets the image rotation to the specified degrees
+	 * @param angle: the new direction
+	 */
 	public void setDirection(float angle) {  
 		
 		//Limit the angles
@@ -105,12 +124,16 @@ public class Image2D
         rotated = buffer; 
     }  
 	
-	//JJ> direct scaling of a image using the resize method
+	/**
+	 * JJ> direct scaling of a image using the resize method
+	 */
 	public void scale(float multiplier) {   
         resize( (int)(img.getWidth() * multiplier), (int)(img.getHeight() * multiplier) );	
 	}
 	
-	//JJ> resizing a image using bilinear filtering
+	/**
+	 * JJ> resizing a image using bilinear filtering
+	 */
 	public void resize(int newW, int newH) {  
         int w = img.getWidth();  
         int h = img.getHeight();  
@@ -133,7 +156,9 @@ public class Image2D
         img = rotated = buffer;  
     }
 	
-	//JJ> Flips the image horizontally
+	/**
+	 * JJ> Flips the image horizontally
+	 */
 	public void horizontalflip() {  
         int w = img.getWidth();  
         int h = img.getHeight();  
@@ -146,7 +171,9 @@ public class Image2D
         img = dimg;
 	}
 	
-	//JJ> Flips the image vertically
+	/**
+	 * JJ> Flips the image vertically
+	 */
 	public void verticalflip() {  
         int w = img.getWidth();  
         int h = img.getHeight();  
@@ -159,7 +186,10 @@ public class Image2D
         img = dimg;  
     } 
 	
-	//JJ> Makes a certain color transparent
+	/**
+	 * JJ> Makes a certain color transparent
+	 * @param color: Which color to make transparent
+	 */
 	public void makeColorTransparent(Color color) {  
         BufferedImage dimg = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);  
         
@@ -185,8 +215,10 @@ public class Image2D
         img = dimg; 
     }
 	
-	//JJ> Makes the image transparent, value should be between 0.00 (completely 
-	//    transparent) and 1.00 (normal)
+	/**
+	 * JJ> Makes the image partially or fully transparent 
+	 * @param transperancy: value should be between 0.00 (completely transparent) and 1.00 (normal)
+     */
 	public void setAlpha(float transperancy) { 
 		
 		//Clip the parameter to a valid value so that we do not get an error message
@@ -209,25 +241,39 @@ public class Image2D
         img = aimg;  
     }  
 		
-	//JJ> Returns this Image2D as a Image instance
+	/**
+	 * JJ> Returns this Image2D as a Image instance
+	 * @return the image ready to be drawn with proper rotation and all
+	 */
 	public Image toImage(){
 		return rotated;
 	}
 	
-	//JJ> Get width and height for this buffered image
+	/**
+	 * JJ> Get width for this buffered image
+	 */
 	public int getWidth() {
 		return img.getWidth();
 	}
+	
+	/**
+	 * JJ> Get height for this buffered image
+	 */
 	public int getHeight() {
 		return img.getHeight();
 	}
 
-	//JJ> Returns the current angle for this image
+	/**
+	 * JJ> Returns the current angle for this image
+	 */
 	int getAngle(){
 		return currentAngle;
 	}
 
-	//JJ> Returns the image to its original state when it was first loaded
+	/**
+	 * JJ> Returns the image to its original state when it was first loaded
+	 * @warning: All changes are permanently lost!
+	 */
 	public void reset() {  
 		img = original;
 	}

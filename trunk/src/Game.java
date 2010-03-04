@@ -26,6 +26,11 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
 
+/**
+ * JJ> Main game class, here the important top stuff happens
+ * @author Johan Jansen og Anders Eie
+ *
+ */
 public class Game extends JPanel implements Runnable, KeyListener
 {
 	private static final long serialVersionUID = 1L;
@@ -34,7 +39,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	private JFrame frame;
 	private String input = "";
 	Image2D background;
-	SpaceShip ship;
+	Object ship;
 	Background bg;
 	
 	// Create a new blank cursor.
@@ -74,13 +79,13 @@ public class Game extends JPanel implements Runnable, KeyListener
 		// Set the blank cursor to the JFrame.
 		frame.getContentPane().setCursor(blankCursor);
 		
-		ship = new SpaceShip();
+		ship = new Object( new Image2D("data/spaceship.png"), 0, 0 );
 
 		// da loop
     	while(running)
     	{
     		repaint();
-    		ship.Update();
+    		ship.Move();
     		try 
     		{
                 tm += TARGET_FPS;
@@ -97,11 +102,6 @@ public class Game extends JPanel implements Runnable, KeyListener
 	}
 	
 	public void paint(Graphics g){		
-	
-		//Make it a true black background first
-		g.setColor( Color.black );
-		g.fillRect(0, 0, frame.getWidth(), frame.getHeight() );
-		
 		//draw the backdrop
 		//background.resize(frame.getWidth(), frame.getHeight() );
 		//g.drawImage( background.toImage(), 0, 0, this );
@@ -120,17 +120,17 @@ public class Game extends JPanel implements Runnable, KeyListener
 	}
 	
 	public void keyPressed(KeyEvent key) {
-		if( key.getKeyCode() == KeyEvent.VK_UP ) ship.speed.setLength(ship.speed.length()*1.2f);
-		else if( key.getKeyCode() == KeyEvent.VK_DOWN ) ship.speed.setLength(ship.speed.length()/1.5f);
+		if( key.getKeyCode() == KeyEvent.VK_UP ) ship.velocity.setLength(ship.velocity.length()*1.2f);
+		else if( key.getKeyCode() == KeyEvent.VK_DOWN ) ship.velocity.setLength(ship.velocity.length()/1.5f);
 		else if( key.getKeyCode() == KeyEvent.VK_LEFT)
 		{
 			ship.sprite.rotate(-5);
-			ship.speed.rotateToDegree(ship.sprite.getAngle()-90);
+			ship.velocity.rotateToDegree(ship.sprite.getAngle()-90);
 		}
 		else if( key.getKeyCode() == KeyEvent.VK_RIGHT) 
 		{
 			ship.sprite.rotate(5);
-			ship.speed.rotateToDegree(ship.sprite.getAngle()-90);
+			ship.velocity.rotateToDegree(ship.sprite.getAngle()-90);
 			
 		}
 	}
