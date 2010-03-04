@@ -1,3 +1,4 @@
+package gameEngine;
 //********************************************************************************************
 //*
 //*    This file is part of Project Narwhal.
@@ -140,4 +141,21 @@ public class Vector {
 		this.x = fx * length;
 		this.y = fy * length;
 	}
+	
+	/**
+	 * JJ> Gets the X value in this vector as a integer
+	 * @return this.x as an integer
+	 */
+	public int getX() {
+		return (int)x;
+	}
+	
+	/**
+	 * JJ> Gets the Y value in this vector as a integer
+	 * @return this.y as an integer
+	 */
+	public int getY() {
+		return (int)y;
+	}
+
 }
