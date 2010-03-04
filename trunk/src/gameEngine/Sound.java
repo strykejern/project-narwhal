@@ -1,4 +1,6 @@
+package gameEngine;
 import  sun.audio.*;    //import the sun.audio package
+
 import  java.io.*;
 
 //JJ> Sound class to make using sound effects easier

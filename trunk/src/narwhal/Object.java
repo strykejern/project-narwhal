@@ -1,3 +1,7 @@
+package narwhal;
+import gameEngine.Image2D;
+import gameEngine.Vector;
+
 //********************************************************************************************
 //*
 //*    This file is part of Project Narwhal.
@@ -18,22 +22,34 @@
 //********************************************************************************************
 
 /**
- * JJ> Standarized object class. An object is anything in space. Such as a ship, planet, missile
+ * JJ> Standardized object class. An object is anything in space. Such as a ship, planet, missile
  * or even an asteroid
- * @author Johan Jansen og Anders Eie
+ * @author Johan Jansen and Anders Eie
  */
 public class Object {
 	private boolean allowCollision;
 	Vector velocity;
 	Vector pos;
 	Image2D sprite;
-	
+		
 	public Object( Image2D copySprite, int x, int y ) {
+		this.initialize(copySprite, x, y);
+	}
+	public Object( String fileName, int x, int y ) {
+		this.initialize(new Image2D(fileName), x, y);
+	}
+	
+	/*
+	 * JJ> This allows multiple constructor overloads
+	 */
+	private void initialize(Image2D copySprite, int x, int y)
+	{
 		sprite = copySprite;
 		velocity = new Vector();
 		pos = new Vector(x, y);
-		allowCollision = false;
+		allowCollision = false;		
 	}
+	
 	
 	public void Move() {
 		pos.add(velocity);

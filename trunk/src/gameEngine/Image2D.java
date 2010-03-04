@@ -1,3 +1,4 @@
+package gameEngine;
 //********************************************************************************************
 //*
 //*    This file is part of Project Narwhal.
@@ -16,6 +17,7 @@
 //*    along with Project Narwhal.  If not, see <http://www.gnu.org/licenses/>.
 //*
 //********************************************************************************************
+
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -266,7 +268,7 @@ public class Image2D
 	/**
 	 * JJ> Returns the current angle for this image
 	 */
-	int getAngle(){
+	public int getAngle(){
 		return currentAngle;
 	}
 

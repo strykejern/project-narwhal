@@ -1,3 +1,4 @@
+package gameEngine;
 //********************************************************************************************
 //*
 //*    This file is part of Project Narwhal.
@@ -54,26 +55,26 @@ public class Log
 		
 	
 	//JJ> Writes the specified text to the log file and adds a new line feed	
-	static void message(String rawText) {
+	public static void message(String rawText) {
 		//logFile.newLine();		//@TODO: JJ> should use this function instead of \n
 	 	//    							since new line feeds are system dependent
 		String text = "INFO: " + rawText + "\n"; 
 		System.out.print(text);
 		print(text);
 	}
-	static void warning(String rawText) {
+	public static void warning(String rawText) {
 		String text = "WARNING: " + rawText + "\n"; 
 		System.err.print(text);
 		print(text);
 	}
-	static void error(String rawText) {
+	public static void error(String rawText) {
 		String text = "ERROR: " + rawText + "\n"; 
 		System.err.print(text);
 		print(text);
 	}
 	
 	//JJ> Writes the specified text to the log file
-	static void print(String text) {
+	public static void print(String text) {
 		if( logFile == null ) return;
 		
 		String message = getTime() + " " + text;
@@ -105,7 +106,7 @@ public class Log
     }
 	
 	//JJ> Close log file
-	static void close() {
+    public static void close() {
 		if (logFile == null) return; 
 
 		//Close the BufferedWriter
