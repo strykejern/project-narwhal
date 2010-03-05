@@ -188,7 +188,6 @@ public class Game extends JPanel implements Runnable, KeyListener
 		if( nextScreen ) 
 		{
 			seed = addBits(x, y);
-			Log.message( "X: " + x + ", Y: " + y + ", Seed: " +  seed );
 			bg = new Background(800, 600, seed );
 		}
 		

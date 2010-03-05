@@ -164,23 +164,34 @@ public class Background {
 	}
 	
 	private void init(){
-		Profiler.begin("Loading background effects into memory");
 		initialized = true;
-		Random rand = new Random();
-		
+		loadNebulas();
+		loadPlanets();
+		loadStars();
+	}
+	
+	private void loadNebulas(){
 		//Load nebulas into memory
 		nebulaList = new ArrayList<Object>();
 		for(int i = 0; i < 6; i++) nebulaList.add( new Object( "data/nebula/nebula" + i + ".jpg", 0, 0));
-		
+	}
+	
+	private void loadPlanets(){
 		//Load all planets as well
 		planetList = new ArrayList<Object>();
 		planetList.add( new Object( "data/planet/planet.png", 0, 0) );
 		planetList.add( new Object( "data/planet/venus.png", 0, 0) );
 		planetList.add( new Object( "data/planet/exoplanet.png", 0, 0) );
 		planetList.add( new Object( "data/planet/mineral.png", 0, 0) );
-		planetList.add( new Object( "data/planet/jupiter.png", 0, 0) );		
-		
+		planetList.add( new Object( "data/planet/jupiter.png", 0, 0) );	
+	}
+
+	/**
+	 * Predrawing the stars and placing them in the static ArrayList stars
+	 */
+	private void loadStars(){
 		//Load Stars into memory
+		Random rand = new Random();
 		stars = new ArrayList<BufferedImage>();
 		for (int s = 1; s < 30; ++s)
 		{
@@ -205,7 +216,6 @@ public class Background {
 				starGraph.dispose();
 			}
 		}
-		Profiler.end("Loading background effects into memory");
 	}
 			
 	/**
