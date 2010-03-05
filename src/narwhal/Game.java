@@ -20,6 +20,7 @@ package narwhal;
 
 import gameEngine.Image2D;
 import gameEngine.Log;
+import gameEngine.Sound;
 
 import java.awt.*;
 import javax.swing.*;
@@ -41,12 +42,12 @@ public class Game extends JPanel implements Runnable, KeyListener
 	private boolean running;
 	private JFrame frame;
 	private String input = "";
-	Object ship;
+	Object ship, planet;
 	Background bg;
 	
 	//Player position in the universe
 	Random rand = new Random();
-	int x = rand.nextInt(), y = rand.nextInt();
+	int x = rand.nextInt(100), y = rand.nextInt(100);
 	
 	// Create a new blank cursor.
 	final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
@@ -69,14 +70,17 @@ public class Game extends JPanel implements Runnable, KeyListener
 		new Thread(this).start();
 		running = true;
 		frame.addKeyListener(this);
-		bg = new Background(800, 600, 2*x+(y+1));
+		bg = new Background(800, 600, addBits(x,y) );
 	}
 	
 	//JJ> This is the main game loop
 	public void run() {
 		
-    	// Remember the starting time
+		// Remember the starting time
     	long tm = System.currentTimeMillis();
+    	
+    	Sound music = new Sound("data/orbit1.au");
+    	music.play();
     	
     	//Initialize the logging system
     	Log.initialize();
@@ -87,7 +91,12 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//Initialize the player ship
 		ship = new Object( new Image2D("data/spaceship.png"), 400, 200 );
 		ship.sprite.resize(64, 64);
+		ship.enableCollision();
 		keepPlayerWithinBounds( ship );
+		
+		//Crashable planet test
+		//planet = new Object( new Image2D("data/planet/planet.png"), 400, 200 );
+		//planet.enableCollision();
 		
 		// da loop
     	while(running)
@@ -96,6 +105,8 @@ public class Game extends JPanel implements Runnable, KeyListener
     		repaint();
     		ship.Move();
     		
+    		//if( planet.collidesWith(ship) ) Log.message("crash!");
+
     		try 
     		{
                 tm += TARGET_FPS;
@@ -111,36 +122,45 @@ public class Game extends JPanel implements Runnable, KeyListener
        	Log.close();
 	}
 	
-	//JJ> Keeps the specified object within the game screen
+	/**
+	 * JJ> This function puts together the bits of two integers and returns it as one long
+	 * @param a 110001
+	 * @param b 000111
+	 * @return 000111 + 11001 = 00011111001
+	 */
+	long addBits(int a, int b) {
+		return (a << 16) | b;
+	}
+	
+	/**
+	 * JJ> Keeps the specified object within the game screen
+	 * @param player Who are we supposed to keep within bounds?
+	 */
 	void keepPlayerWithinBounds( Object player ) {
 		boolean nextScreen = false;
-		int seed = 0;
-		
+		long seed = 0;
+				
 		if( player.pos.x > 800 ) 
 		{
 			x++;
-			seed = 2*x+(y+1);
 			player.pos.x = 0;
 			nextScreen = true;
 		}
 		else if( player.pos.x < 0 ) 
 		{
 			x--;
-			seed = 2*x+(y+1);
 			player.pos.x = 800;
 			nextScreen = true;
 		}
 		else if( player.pos.y > 600 ) 
 		{
 			y++;
-			seed = 2*x+(y+1);
 			player.pos.y = 0;
 			nextScreen = true;
 		}
 		else if( player.pos.y < 0 ) 
 		{
 			y--;
-			seed = 2*x+(y+1);
 			player.pos.y = 600;
 			nextScreen = true;
 		}
@@ -148,7 +168,8 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//Did we cross into a new screen?
 		if( nextScreen ) 
 		{
-			//Log.message( "X: " + x + ", Y: " + y + ", Seed: " +  seed );
+			seed = addBits(x, y);
+			Log.message( "X: " + x + ", Y: " + y + ", Seed: " +  seed );
 			bg = new Background(800, 600, seed );
 		}
 		
@@ -166,6 +187,9 @@ public class Game extends JPanel implements Runnable, KeyListener
 		
 		//Draw the little ship
 		g.drawImage( ship.sprite.toImage(), ship.pos.getX()-ship.sprite.getWidth()/2, ship.pos.getY()-ship.sprite.getHeight()/2, this );
+		
+		//DEBUG
+		//g.drawImage( planet.sprite.toImage(), planet.pos.getX()-planet.sprite.getWidth()/2, planet.pos.getY()-planet.sprite.getHeight()/2, this );
 	}
 	
 	public void keyPressed(KeyEvent key) {

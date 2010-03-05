@@ -15,14 +15,14 @@ import java.util.Random;
  *
  */
 public class Background {
-	static Map<Integer, BufferedImage> imageHashMap = new HashMap<Integer, BufferedImage>(20, 0.5f);
-	static int randomSeed;
+	private static Map<Long, BufferedImage> imageHashMap = new HashMap<Long, BufferedImage>(20, 0.5f);
+	private static long randomSeed;
 	
 	/**
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
 	 *     component every update. Instead we just draw the BufferedImage.
 	 */
-	public Background(int width, int height, int seed){
+	public Background(int width, int height, long seed){
 		Object planet = null;
 		Object nebula = null;
 		Random rand = new Random();
@@ -82,11 +82,13 @@ public class Background {
 			String whichPlanet;
 			
 			//Randomize the planet
-			switch( rand.nextInt(3) )
+			switch( rand.nextInt(5) )
 			{
 				default: case 0: whichPlanet = "planet.png"; break;
 				case 1: 		 whichPlanet = "venus.png"; break;
 				case 2: 		 whichPlanet = "exoplanet.png"; break;
+				case 3: 		 whichPlanet = "mineral.png"; break;
+				case 4: 		 whichPlanet = "jupiter.png"; break;
 			}
 			planet = new Object( "data/planet/" + whichPlanet, 0, 0);
 			
