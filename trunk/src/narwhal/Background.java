@@ -171,7 +171,7 @@ public class Background {
 		stars = new ArrayList<BufferedImage>();
 		for (int s = 1; s < 30; ++s)
 		{
-			for (int c = 0; c < 255; ++c)
+			for (int c = 0; c < 255; c += 16)
 			{
 				BufferedImage star = new BufferedImage(s, s, BufferedImage.TYPE_INT_ARGB);
 				Graphics2D starGraph = star.createGraphics();
@@ -197,7 +197,6 @@ public class Background {
 	 */
 	public void draw(Graphics g){
 		g.drawImage(imageHashMap.get(randomSeed), 0, 0, null);
-		g.drawImage(stars.get(1000), 20, 20, null);
 	}
 	
 }
