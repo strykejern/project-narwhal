@@ -1,4 +1,3 @@
-package narwhal;
 //********************************************************************************************
 //*
 //*    This file is part of Project Narwhal.
@@ -17,6 +16,7 @@ package narwhal;
 //*    along with Project Narwhal.  If not, see <http://www.gnu.org/licenses/>.
 //*
 //********************************************************************************************
+package narwhal;
 
 import gameEngine.Image2D;
 import gameEngine.Log;
@@ -24,6 +24,7 @@ import gameEngine.Sound;
 
 import java.awt.*;
 import javax.swing.*;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
@@ -33,6 +34,7 @@ import java.util.Random;
 /**
  * JJ> Main game class, here the important top stuff happens
  * @author Johan Jansen and Anders Eie
+ * @param <OggClip>
  *
  */
 public class Game extends JPanel implements Runnable, KeyListener
@@ -43,7 +45,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	private JFrame frame;
 	private String input = "";
 	Object ship, planet;
-	Background bg;
+	Background bg;	
 	private boolean up, down, left, right;
 	
 	//Player position in the universe
@@ -79,10 +81,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		
 		// Remember the starting time
     	long tm = System.currentTimeMillis();
-    	
-    	Sound music = new Sound("data/orbit1.au");
-    	//music.play();
-    	
+
     	//Initialize the logging system, do this first so that error logging happens correctly.
     	Log.initialize();
     	
@@ -99,6 +98,10 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//planet = new Object( new Image2D("data/planet/planet.png"), 400, 200 );
 		//planet.enableCollision();
 		
+		//Play some music
+    	Sound music = new Sound("data/test.wav");
+    	music.play();
+
 		// da loop
     	while(running)
     	{

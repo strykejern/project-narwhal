@@ -1,7 +1,3 @@
-package narwhal;
-import gameEngine.Image2D;
-import gameEngine.Vector;
-
 //********************************************************************************************
 //*
 //*    This file is part of Project Narwhal.
@@ -20,6 +16,10 @@ import gameEngine.Vector;
 //*    along with Project Narwhal.  If not, see <http://www.gnu.org/licenses/>.
 //*
 //********************************************************************************************
+package narwhal;
+
+import gameEngine.Image2D;
+import gameEngine.Vector;
 
 /**
  * JJ> Standardized object class. An object is anything in space. Such as a ship, planet, missile
