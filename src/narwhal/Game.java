@@ -72,7 +72,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		new Thread(this).start();
 		running = true;
 		frame.addKeyListener(this);
-		bg = new Background(800, 600, addBits(x,y) );
+		bg = new Background(800, 600);
 	}
 	
 	//JJ> This is the main game loop
@@ -183,7 +183,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		if( nextScreen ) 
 		{
 			seed = addBits(x, y);
-			bg = new Background(800, 600, seed );
+			bg.generate(seed);
 		}
 		
 	}
