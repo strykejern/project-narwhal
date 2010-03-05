@@ -44,6 +44,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	private String input = "";
 	Object ship, planet;
 	Background bg;
+	private boolean up, down, left, right;
 	
 	//Player position in the universe
 	Random rand = new Random();
@@ -80,7 +81,7 @@ public class Game extends JPanel implements Runnable, KeyListener
     	long tm = System.currentTimeMillis();
     	
     	Sound music = new Sound("data/orbit1.au");
-    	music.play();
+    	//music.play();
     	
     	//Initialize the logging system, do this first so that error logging happens correctly.
     	Log.initialize();
@@ -103,6 +104,20 @@ public class Game extends JPanel implements Runnable, KeyListener
     	{
     		keepPlayerWithinBounds(ship);
     		repaint();
+    		
+    		if (up) ship.velocity.setLength(ship.velocity.length()+0.5f);
+    		else if (down) ship.velocity.setLength(ship.velocity.length()/1.05f);
+    		if (left)
+    		{
+    			ship.sprite.rotate(-5);
+    			ship.velocity.rotateToDegree(ship.sprite.getAngle()-90);
+    		}
+    		else if (right)
+    		{
+    			ship.sprite.rotate(5);
+    			ship.velocity.rotateToDegree(ship.sprite.getAngle()-90);
+    		}
+    		
     		ship.Move();
     		
     		//if( planet.collidesWith(ship) ) Log.message("crash!");
@@ -195,24 +210,18 @@ public class Game extends JPanel implements Runnable, KeyListener
 	}
 	
 	public void keyPressed(KeyEvent key) {
-		
-		if( key.getKeyCode() == KeyEvent.VK_UP ) ship.velocity.setLength(ship.velocity.length()*1.2f);
-		else if( key.getKeyCode() == KeyEvent.VK_DOWN ) ship.velocity.setLength(ship.velocity.length()/1.5f);
-		else if( key.getKeyCode() == KeyEvent.VK_LEFT)
-		{
-			ship.sprite.rotate(-5);
-			ship.velocity.rotateToDegree(ship.sprite.getAngle()-90);
-		}
-		else if( key.getKeyCode() == KeyEvent.VK_RIGHT) 
-		{
-			ship.sprite.rotate(5);
-			ship.velocity.rotateToDegree(ship.sprite.getAngle()-90);	
-		}
+		if( key.getKeyCode() == KeyEvent.VK_UP ) 		up 	  = true;
+		else if( key.getKeyCode() == KeyEvent.VK_DOWN ) down  = true;
+		else if( key.getKeyCode() == KeyEvent.VK_LEFT)	left  = true;
+		else if( key.getKeyCode() == KeyEvent.VK_RIGHT) right = true;
 		
 	}
 
-	public void keyReleased(KeyEvent arg0) {
-		
+	public void keyReleased(KeyEvent key) {
+		if( key.getKeyCode() == KeyEvent.VK_UP ) 		up 	  = false;
+		else if( key.getKeyCode() == KeyEvent.VK_DOWN ) down  = false;
+		else if( key.getKeyCode() == KeyEvent.VK_LEFT)	left  = false;
+		else if( key.getKeyCode() == KeyEvent.VK_RIGHT) right = false;
 	}
 
 	public void keyTyped(KeyEvent arg0) {
