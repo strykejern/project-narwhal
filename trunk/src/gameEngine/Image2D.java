@@ -113,8 +113,8 @@ public class Image2D
 		while(angle > 360) angle -= 360;
 		while(angle < 0) angle += 360;
 		
-        int w = (int) (img.getWidth()*1.25);  
-        int h = (int) (img.getHeight()*1.25);
+        int w = (int) (img.getWidth()*1.42);  
+        int h = (int) (img.getHeight()*1.42);
         
         BufferedImage buffer = new BufferedImage( w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = buffer.createGraphics();  
@@ -122,8 +122,8 @@ public class Image2D
         //g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
     	//g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
         //cos(45) - cos(angle-45)
-        g.rotate(Math.toRadians(angle), (buffer.getWidth())/2.0, (buffer.getHeight())/2.0);
-        g.drawImage(img, null, 0, 0);
+        g.rotate(Math.toRadians(angle), w/2.0, h/2.0);
+        g.drawImage(img, null, (w-img.getWidth())/2, (h-img.getHeight())/2);
         
         
         //Make it so
