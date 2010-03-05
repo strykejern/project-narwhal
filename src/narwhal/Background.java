@@ -161,7 +161,7 @@ public class Background {
 				Color col;
 				for (int k = 0; k < s; ++k)
 				{
-					col = new Color(255, 255, c, (k/s)*255);
+					col = new Color(255, 255, c, (int)(((float)k/(float)s)*255f));
 					starGraph.setColor(col);
 					starGraph.fillOval(k, k, s-(2*k), s-(2*k));
 				}
