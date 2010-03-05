@@ -46,14 +46,14 @@ public class Background {
 	 */
 	public Background(int width, int height, long seed){
 		Profiler.begin("Generating Background");
-		
-		if (!initialized) init(); //Predraw stars
-		Random rand = new Random();
-		
+				
 		//Important, do first: generate the random seed
-		rand = new Random(seed);
+		Random rand = new Random(seed);
 		randomSeed = seed;
 		
+		//Predraw stars
+		if (!initialized) init();
+
 		//Have we visited this place before? No need to continue then!
 		if( imageHashMap.containsKey(seed) )
 		{
