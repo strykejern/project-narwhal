@@ -1,9 +1,16 @@
 package gameEngine;
 
 public class Collidable {
-	protected static final int SHAPE_RECT = 1, SHAPE_CIRCLE = 2, SHAPE_TRIANGLE = 3;
 	private int shape;
 	private float direction;
+	
+	static enum SHAPE_TYPE
+	{
+		SHAPE_RECT, 
+		SHAPE_CIRCLE, 
+		SHAPE_TRIANGLE,
+		SHAPE_COUNT;
+	}
 	
 	public Collidable(int shape){
 		this.shape = shape;
