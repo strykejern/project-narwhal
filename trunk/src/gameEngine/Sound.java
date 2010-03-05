@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileInputStream;
 
 import javax.sound.sampled.*;
+import javax.sound.sampled.Mixer.Info;
+
 import org.newdawn.easyogg.OggClip;
 
 

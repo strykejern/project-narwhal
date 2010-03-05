@@ -134,13 +134,19 @@ public class Background {
         Graphics2D g = imageHashMap.get(seed).createGraphics();
     	
         //Buff up the gfx =)
-/*        g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
-    	g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-       	g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
-*/
-       	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
-    	g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-
+        boolean highGFX = true;
+        if( highGFX )
+        {
+	  		g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
+	    	g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+	       	g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+ 		}
+        else
+        {
+        	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
+        	g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+        }
+        
        	//I: Black background
 		g.setColor(Color.black);
 		g.fillRect(0, 0, 800, 600);		
@@ -168,6 +174,8 @@ public class Background {
 	private void init(){
 		Profiler.begin("Predrawing all stars");
 		initialized = true;
+		Random rand = new Random();
+		
 		stars = new ArrayList<BufferedImage>();
 		for (int s = 1; s < 30; ++s)
 		{
@@ -177,9 +185,13 @@ public class Background {
 				Graphics2D starGraph = star.createGraphics();
 				
 				Color col;
+				int rareStar = rand.nextInt(20);				
 				for (int k = 0; k < s; ++k)
 				{
-					col = new Color(255, 255, c, (int)(((float)k/(float)s)*255f));
+					if(rareStar == 1)		col = new Color(c, 0, 0, (int)(((float)k/(float)s)*255f));
+					else if(rareStar == 2)	col = new Color(c, 0, 255, (int)(((float)k/(float)s)*255f));
+					else					col = new Color(255, 255, c, (int)(((float)k/(float)s)*255f));
+					
 					starGraph.setColor(col);
 					starGraph.fillOval(k, k, s-(2*k), s-(2*k));
 				}
