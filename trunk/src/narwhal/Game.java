@@ -26,7 +26,6 @@ import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.Random;
 
 
@@ -61,7 +60,7 @@ public class Game extends JPanel implements Runnable, KeyListener
     	parentWindow.setSize(800 , 600);
         parentWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         parentWindow.setVisible(true);
- 	}
+   	}
 	
 	public Game(JFrame frame){
 		this.frame = frame;
@@ -149,7 +148,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//Did we cross into a new screen?
 		if( nextScreen ) 
 		{
-			Log.message( "X: " + x + ", Y: " + y + ", Seed: " +  seed );
+			//Log.message( "X: " + x + ", Y: " + y + ", Seed: " +  seed );
 			bg = new Background(800, 600, seed );
 		}
 		
@@ -166,7 +165,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//int y = MouseInfo.getPointerInfo().getLocation().y - frame.getY();
 		
 		//Draw the little ship
-		g.drawImage( ship.sprite.toImage(), (int)(ship.pos.x-ship.sprite.getWidth()/2), (int)(ship.pos.y-ship.sprite.getHeight()/2), ship.sprite.getWidth(), ship.sprite.getHeight(), this );
+		g.drawImage( ship.sprite.toImage(), ship.pos.getX()-ship.sprite.getWidth()/2, ship.pos.getY()-ship.sprite.getHeight()/2, this );
 	}
 	
 	public void keyPressed(KeyEvent key) {

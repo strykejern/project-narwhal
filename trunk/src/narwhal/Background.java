@@ -1,19 +1,37 @@
 package narwhal;
 
+import gameEngine.Profiler;
+
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.Random;
 
+/**
+ * JJ> This class generates a nice random background for us
+ * @author Johan Jansen and Anders Eie
+ *
+ */
 public class Background {
-	private int[] x, y, size;
-	Random rand = new Random();
-	Object planet = null;
-	Object nebula = null;
-	
-	public Background(int width, int height, int seed){
+	private BufferedImage img;
 		
+	/**
+	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
+	 *     component every update. Instead we just draw the BufferedImage.
+	 */
+	public Background(int width, int height, int seed){
+		Object planet = null;
+		Object nebula = null;
+		Random rand = new Random();
+		int[] x, y, size;
+		
+		//Keep track of how much processing time this function uses
+		Profiler.begin();
+		
+		//PART 1: Initialization
 		//Important, do first: generate the random seed
 		rand = new Random(seed);
 		
+		//PART 2: Randomize the elements and effects
 		//Randomize the starfield
 		int numberOfStars = 125 + rand.nextInt(250);
 		x = new int[numberOfStars];
@@ -38,7 +56,7 @@ public class Background {
 			if( rand.nextBoolean() ) nebula.sprite.horizontalflip();
 			if( rand.nextBoolean() ) nebula.sprite.verticalflip();
 	
-		//	nebula.sprite.setDirection( rand.nextInt(360) );
+		    //nebula.sprite.setDirection( rand.nextInt(360) );
 	
 			//Center the planet position on the screen
 			nebula.pos.x = 400 - nebula.sprite.getWidth()/2;
@@ -59,8 +77,8 @@ public class Background {
 			}
 			planet = new Object( "data/planet/" + whichPlanet, 0, 0);
 			
-			int size = rand.nextInt(400) + 100;
-			planet.sprite.resize(size, size);
+			int planetSize = rand.nextInt(400) + 100;
+			planet.sprite.resize(planetSize, planetSize);
 			
 			if( rand.nextBoolean() ) planet.sprite.horizontalflip();
 			if( rand.nextBoolean() ) planet.sprite.verticalflip();
@@ -72,14 +90,11 @@ public class Background {
 			planet.pos.y = 300 - planet.sprite.getHeight()/2;
 		}
 		
-	}
-	
-	public void update(){
-		
-	}
-	
-	public void draw(Graphics g){
-		
+		//PART 3: Draw everything to a buffer. First things that are drawn appear behind other things.
+        img = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);				//No need for alpha on the background
+        Graphics2D g = img.createGraphics();  
+    	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
+
 		//I: Black background
 		g.setColor(Color.black);
 		g.fillRect(0, 0, 800, 600);
@@ -115,6 +130,16 @@ public class Background {
 		{
 			g.drawImage(planet.sprite.toImage(), planet.pos.getX(), planet.pos.getY(), null);
 		}
-
+		
+		Profiler.end();
 	}
+			
+	/**
+	 * JJ> Draw the finished background to the Graphics specified in the parameter
+	 * @param g
+	 */
+	public void draw(Graphics g){
+		g.drawImage(img, 0, 0, null);
+	}
+	
 }
