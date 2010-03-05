@@ -31,45 +31,13 @@ public class Vector {
 		this.y = y;
 	}
 	
-	/**
-	 * JJ> creates and returns a clone of this vector
-	 *  @return a clone of this instanced vector
-	 */
-    @Override
     public Vector clone() {
     	return new Vector(x,y);
     }
     
-    
-    /**
-     * JJ> Turns this vector into a negative opposite
-     * @return this Vector but "negated".
-     */
     public void negate() {
         x = -x;
         y = -y;
-    }
-		
-    
-    /**
-     * JJ> normalize this vector.
-     * 
-     * @return this vector after it has been normalized.
-     */
-    public Vector normalize() {
-        float norm = getNorm();
-        x = (float)((1/norm)*x);
-        y = (float)((1/norm)*y);
-        
-        return this;
-    }
-    
-    /**
-     * JJ> gets the normal for this vector
-     * @return
-     */
-    public float getNorm() {
-        return (float)( Math.sqrt(Math.pow(x,2) + Math.pow(y,2)) );
     }
     
 	public void add(Vector v){
