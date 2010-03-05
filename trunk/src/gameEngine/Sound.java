@@ -73,10 +73,10 @@ public class Sound
    			    // Create the clip
    			    DataLine.Info info = new DataLine.Info(
    			        Clip.class, stream.getFormat(), ((int)stream.getFrameLength()*format.getFrameSize()));
-   			    Clip clip = (Clip) AudioSystem.getLine(info);
+   			    raw = (Clip) AudioSystem.getLine(info);
 
    			    // This method does not return until the audio file is completely loaded
-   			    clip.open(stream);
+   			    raw.open(stream);
 	   		}
 		    catch (Exception e) { Log.warning( "Loading audio file failed - " + e.toString() ); }
 	}

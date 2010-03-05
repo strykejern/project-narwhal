@@ -34,7 +34,6 @@ import java.util.Random;
 /**
  * JJ> Main game class, here the important top stuff happens
  * @author Johan Jansen and Anders Eie
- * @param <OggClip>
  *
  */
 public class Game extends JPanel implements Runnable, KeyListener
@@ -99,7 +98,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//planet.enableCollision();
 		
 		//Play some music
-    	Sound music = new Sound("data/test.wav");
+    	Sound music = new Sound("data/space.ogg");
     	music.play();
 
 		// da loop
