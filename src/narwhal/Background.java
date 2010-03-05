@@ -52,7 +52,7 @@ public class Background {
 		generate(0);
 	}
 	
-	public void generate(long seed){
+	public void generate(long seed) {
 		Profiler.begin("Generating Background");
 		
 		//Important, do first: generate the random seed
@@ -90,8 +90,7 @@ public class Background {
 		Profiler.end("Generating Background");
 	}
 
-	private void drawPlanet( Random rand, Graphics2D g )
-	{
+	private void drawPlanet( Random rand, Graphics2D g ) {
 		Object planet = planetList.get( rand.nextInt(planetList.size()) );
 		planet.sprite.reset();
 		
@@ -110,8 +109,7 @@ public class Background {
 	}
 	
 	//Draw a random nebula
-	private void drawNebula(Random rand, Graphics2D g)
-	{
+	private void drawNebula(Random rand, Graphics2D g) {
 		Object nebula = nebulaList.get( rand.nextInt(nebulaList.size()) ) ;
 		nebula.sprite.reset();
 		
@@ -134,8 +132,7 @@ public class Background {
 	 * @param rand
 	 * @param g
 	 */
-	private void drawRandomStarfield(Random rand, Graphics2D g)
-	{
+	private void drawRandomStarfield(Random rand, Graphics2D g) {
 		int numberOfStars = 125 + rand.nextInt(250);
 		for (int i = 0; i < numberOfStars; ++i)
 		{
@@ -206,21 +203,3 @@ public class Background {
 	}
 	
 }
-
-
-//JJ> keep here for later use...
-//Buff up the gfx =)
-/*
-boolean highGFX = true;
-if( highGFX )
-{
-		g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
-	g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-   	g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
-	}
-else
-{
-	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
-	g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-} 
-*/

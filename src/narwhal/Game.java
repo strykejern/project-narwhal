@@ -38,6 +38,7 @@ import java.util.Random;
  */
 public class Game extends JPanel implements Runnable, KeyListener
 {
+	private static int SCREEN_X = 1024, SCREEN_Y = 768;
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
 	private boolean running;
@@ -60,7 +61,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		JFrame parentWindow = new JFrame("Project Narwhal");		
     	parentWindow.getContentPane().add(new Game(parentWindow));
 
-    	parentWindow.setSize(800 , 600);
+    	parentWindow.setSize(SCREEN_X , SCREEN_Y);
         parentWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         parentWindow.setVisible(true);
    	}
@@ -72,7 +73,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		new Thread(this).start();
 		running = true;
 		frame.addKeyListener(this);
-		bg = new Background(800, 600);
+		bg = new Background(SCREEN_X, SCREEN_Y);
 	}
 	
 	//JJ> This is the main game loop
@@ -88,8 +89,8 @@ public class Game extends JPanel implements Runnable, KeyListener
 		frame.getContentPane().setCursor(blankCursor);
 		
 		//Initialize the player ship
-		ship = new Object( new Image2D("data/spaceship.png"), 400, 200 );
-		ship.sprite.resize(64, 64);
+		ship = new Object( new Image2D("data/spaceship.png"), SCREEN_X/2, SCREEN_Y/2 );
+		ship.sprite.resize(SCREEN_X/12, SCREEN_Y/6);
 		ship.enableCollision();
 		keepPlayerWithinBounds( ship );
 				
@@ -154,7 +155,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		boolean nextScreen = false;
 		long seed = 0;
 				
-		if( player.pos.x > 800 ) 
+		if( player.pos.x > SCREEN_X ) 
 		{
 			x++;
 			player.pos.x = 0;
@@ -163,10 +164,10 @@ public class Game extends JPanel implements Runnable, KeyListener
 		else if( player.pos.x < 0 ) 
 		{
 			x--;
-			player.pos.x = 800;
+			player.pos.x = SCREEN_X;
 			nextScreen = true;
 		}
-		else if( player.pos.y > 600 ) 
+		else if( player.pos.y > SCREEN_Y ) 
 		{
 			y++;
 			player.pos.y = 0;
@@ -175,7 +176,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		else if( player.pos.y < 0 ) 
 		{
 			y--;
-			player.pos.y = 600;
+			player.pos.y = SCREEN_Y;
 			nextScreen = true;
 		}
 		
@@ -188,6 +189,10 @@ public class Game extends JPanel implements Runnable, KeyListener
 		
 	}
 	
+	/*
+	 * JJ> Paints every object of interest (not background)
+	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
+	 */
 	public void paint(Graphics g){		
 		bg.draw(g);
 		
@@ -200,7 +205,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	}
 	
 	public void keyPressed(KeyEvent key) {
-		if( key.getKeyCode() == KeyEvent.VK_UP ) 		up 	  = true;
+		if( 	 key.getKeyCode() == KeyEvent.VK_UP ) 	up 	  = true;
 		else if( key.getKeyCode() == KeyEvent.VK_DOWN ) down  = true;
 		else if( key.getKeyCode() == KeyEvent.VK_LEFT)	left  = true;
 		else if( key.getKeyCode() == KeyEvent.VK_RIGHT) right = true;
@@ -208,7 +213,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	}
 
 	public void keyReleased(KeyEvent key) {
-		if( key.getKeyCode() == KeyEvent.VK_UP ) 		up 	  = false;
+		if(      key.getKeyCode() == KeyEvent.VK_UP ) 	up 	  = false;
 		else if( key.getKeyCode() == KeyEvent.VK_DOWN ) down  = false;
 		else if( key.getKeyCode() == KeyEvent.VK_LEFT)	left  = false;
 		else if( key.getKeyCode() == KeyEvent.VK_RIGHT) right = false;
