@@ -40,15 +40,15 @@ public class Background {
 	private ArrayList<Object> nebulaList;
 	private ArrayList<Object> planetList;
 	
-	private int width, height;
+	private int WIDTH, HEIGHT;
 	
 	/**
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
 	 *     component every update. Instead we just draw the BufferedImage.
 	 */
 	public Background(int width, int height){
-		this.width = width;
-		this.height = height;
+		this.WIDTH = width;
+		this.HEIGHT = height;
 		generate(0);
 	}
 	
@@ -70,7 +70,7 @@ public class Background {
 		}
 		//Draw everything to a buffer. First things that are drawn appear behind other things.
         if( imageHashMap.size() == 20) imageHashMap.clear();									//Clear the entire hash map every 10 screens so we do not clutter memory        
-        imageHashMap.put( seed,  new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB) ); 	//No need for alpha on the background			
+        imageHashMap.put( seed,  new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB) ); 	//No need for alpha on the background			
         Graphics2D g = imageHashMap.get(seed).createGraphics();
 		
         //I: Nebula (10% chance) or Black background (90%)
@@ -78,7 +78,7 @@ public class Background {
 		else 
 		{
 			g.setColor(Color.black);
-			g.fillRect(0, 0, 800, 600);		
+			g.fillRect(0, 0, WIDTH, HEIGHT);		
 		}
 
 		//II: Stars
@@ -92,20 +92,19 @@ public class Background {
 
 	private void drawPlanet( Random rand, Graphics2D g )
 	{
-		Object planet = null;
-		planet = planetList.get( rand.nextInt(planetList.size()) );
+		Object planet = planetList.get( rand.nextInt(planetList.size()) );
 		planet.sprite.reset();
 		
 		//Make it unique
-		int planetSize = rand.nextInt(400) + 100;
+		int planetSize = rand.nextInt(WIDTH/2) + WIDTH/8;
 		planet.sprite.resize(planetSize, planetSize);			
 		if( rand.nextBoolean() ) planet.sprite.horizontalflip();
 		if( rand.nextBoolean() ) planet.sprite.verticalflip();
 		planet.sprite.setDirection( rand.nextInt(360) );
 
 		//Center the planet position on the screen
-		planet.pos.x = 400 - planet.sprite.getWidth()/2;
-		planet.pos.y = 300 - planet.sprite.getHeight()/2;
+		planet.pos.x = (WIDTH/2) - planet.sprite.getWidth()/2;
+		planet.pos.y = (HEIGHT/2) - planet.sprite.getHeight()/2;
 		
 		g.drawImage(planet.sprite.toImage(), planet.pos.getX(), planet.pos.getY(), null);
 	}
@@ -113,44 +112,35 @@ public class Background {
 	//Draw a random nebula
 	private void drawNebula(Random rand, Graphics2D g)
 	{
-		Object nebula = null;
-		
-		nebula = nebulaList.get( rand.nextInt(nebulaList.size()) ) ;
+		Object nebula = nebulaList.get( rand.nextInt(nebulaList.size()) ) ;
 		nebula.sprite.reset();
 		
 		//Make it unique
-		nebula.sprite.resize(800, 600);
+		nebula.sprite.resize(WIDTH, HEIGHT);
 		nebula.sprite.setAlpha( rand.nextFloat() );
 		if( rand.nextBoolean() ) nebula.sprite.horizontalflip();
 		if( rand.nextBoolean() ) nebula.sprite.verticalflip();
 
 		//Center the planet position on the screen
-		nebula.pos.x = 400 - nebula.sprite.getWidth()/2;
-		nebula.pos.y = 300 - nebula.sprite.getHeight()/2;
+		nebula.pos.x = (WIDTH/2) - nebula.sprite.getWidth()/2;
+		nebula.pos.y = (HEIGHT/2) - nebula.sprite.getHeight()/2;
 		
 		//Now draw it
 		g.drawImage(nebula.sprite.toImage(), nebula.pos.getX(), nebula.pos.getY(), null);
 	}
-	//Randomize the and draw the starfield
+	
+	/**
+	 * JJ> Randomly draw the starfield
+	 * @param rand
+	 * @param g
+	 */
 	private void drawRandomStarfield(Random rand, Graphics2D g)
 	{
-		int[] x, y, type;
 		int numberOfStars = 125 + rand.nextInt(250);
-		x 	 = new int[numberOfStars];
-		y 	 = new int[numberOfStars];
-		type = new int[numberOfStars];
 		for (int i = 0; i < numberOfStars; ++i)
 		{
-			x[i] = rand.nextInt(800);
-			y[i] = rand.nextInt(600);
-			
-			type[i] = rand.nextInt(stars.size());
-		}
-		
-		for (int i = 0; i < type.length; ++i)
-		{
-			g.drawImage(stars.get(type[i]), x[i], y[i], null);
-		}
+			g.drawImage(stars.get(rand.nextInt(stars.size())), rand.nextInt(WIDTH), rand.nextInt(HEIGHT), null);
+		}		
 	}
 	
 	private void init(){
@@ -177,7 +167,7 @@ public class Background {
 	}
 
 	/**
-	 * Predrawing the stars and placing them in the static ArrayList stars
+	 * AE> Predrawing the stars and placing them in the static ArrayList stars
 	 */
 	private void loadStars(){
 		//Load Stars into memory
