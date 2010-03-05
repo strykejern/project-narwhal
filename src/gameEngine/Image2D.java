@@ -82,8 +82,8 @@ public class Image2D
 	private void makeValid() {
 		if( img.getType() == BufferedImage.TYPE_CUSTOM ) 
 		{
-			Log.message("Unknown image format. Converting to TYPE_INT_ARGB to prevent errors.");
-	        BufferedImage buffer = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);  
+			//Log.message("Unknown image format. Converting to TYPE_INT_ARGB to prevent errors.");
+	        BufferedImage buffer = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_4BYTE_ABGR); //TYPE_INT_ARGB  
 	        
 	        Graphics2D g = buffer.createGraphics();  
 	        g.drawImage(img, null, 0, 0 ); 
