@@ -23,14 +23,13 @@ public class Background {
 	 *     component every update. Instead we just draw the BufferedImage.
 	 */
 	public Background(int width, int height, long seed){
-		Object planet = null;
 		Object nebula = null;
+		Object planet = null;
 		Random rand = new Random();
 		int[] x, y, size;
 		
-		
 		//Keep track of how much processing time this function uses
-		Profiler.begin("Generate Background");
+		Profiler.begin("Generating Background");
 		
 		//PART 1: Initialization
 		//Important, do first: generate the random seed
@@ -46,6 +45,7 @@ public class Background {
 		
 		//PART 2: Randomize the elements and effects
 		//Randomize the starfield
+		Profiler.begin("Randomization");
 		int numberOfStars = 125 + rand.nextInt(250);
 		x = new int[numberOfStars];
 		y = new int[numberOfStars];
@@ -104,7 +104,7 @@ public class Background {
 			planet.pos.x = 400 - planet.sprite.getWidth()/2;
 			planet.pos.y = 300 - planet.sprite.getHeight()/2;
 		}
-		
+
 		//PART 3: Draw everything to a buffer. First things that are drawn appear behind other things.
         if( imageHashMap.size() == 20) imageHashMap.clear();									//Clear the entire hash map every 10 screens so we do not clutter memory        
         imageHashMap.put( seed,  new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB) ); 	//No need for alpha on the background			
@@ -120,7 +120,7 @@ public class Background {
 
        	//I: Black background
 		g.setColor(Color.black);
-		g.fillRect(0, 0, 800, 600);
+		g.fillRect(0, 0, 800, 600);		
 		
 		//II: Draw any nebula
 		if( nebula != null )
@@ -128,7 +128,7 @@ public class Background {
 			g.drawImage(nebula.sprite.toImage(), nebula.pos.getX(), nebula.pos.getY(), null);
 		}
 	
-		//III: Draw each star
+		//III: Draw each star				
 		for (int i = 0; i < size.length; ++i)
 		{
 			Color col = new Color(1f, 1f, 1f, (float)((float)(0.5f)/(float)(size[i]+1)));
@@ -145,16 +145,15 @@ public class Background {
 			g.drawLine(x[i]+size[i], y[i], x[i], y[i]+size[i]);
 			g.drawLine(x[i]+(size[i]/2), y[i], x[i]+(size[i]/2), y[i]+size[i]);
 			g.drawLine(x[i], y[i]+(size[i]/2), x[i]+size[i], y[i]+(size[i]/2));
-			*/
+			 */	
 		}
-
+		
 		//IV: Draw any planets
 		if( planet != null )
 		{
 			g.drawImage(planet.sprite.toImage(), planet.pos.getX(), planet.pos.getY(), null);
-		}
-		
-		Profiler.end("Generate Background");
+		}				
+		Profiler.end("Generating Background");
 	}
 			
 	/**

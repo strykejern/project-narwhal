@@ -1,6 +1,5 @@
 package narwhal;
 import gameEngine.Image2D;
-import gameEngine.Log;
 import gameEngine.Vector;
 
 //********************************************************************************************
@@ -50,8 +49,7 @@ public class Object {
 		pos = new Vector(x, y);
 		allowCollision = false;		
 	}
-	
-	
+
 	public void Move() {
 		pos.add(velocity);
 	}
@@ -87,7 +85,7 @@ public class Object {
 		
 		//check it out
 		if( dtx <= ttx && dty <= tty  ) 
-			if( dbx >= ttx && dby >= tby ) return true;
+			if( dbx >= tbx && dby >= tby ) return true;
 		
 		return false;
 	}
