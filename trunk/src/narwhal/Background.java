@@ -38,7 +38,8 @@ public class Background {
 	private static long randomSeed;
 	private static boolean initialized = false;
 	private static ArrayList<BufferedImage> stars;
-	
+	private static ArrayList<Object> nebulaList;
+	private static ArrayList<Object> planetList;
 	/**
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
 	 *     component every update. Instead we just draw the BufferedImage.
@@ -85,10 +86,12 @@ public class Background {
 		if( rand.nextInt(100) <= 10 )
 		{
 			//Randomize the nebula
-			nebula = new Object( "data/nebula/nebula" + rand.nextInt(6) + ".jpg", 0, 0);
+			nebula = nebulaList.get( rand.nextInt(nebulaList.size()) ) ;
+			nebula.sprite.reset();
+			
+			//Make it unique
 			nebula.sprite.resize(800, 600);
 			nebula.sprite.setAlpha( rand.nextFloat() );
-			
 			if( rand.nextBoolean() ) nebula.sprite.horizontalflip();
 			if( rand.nextBoolean() ) nebula.sprite.verticalflip();
 	
@@ -102,25 +105,14 @@ public class Background {
 		//Do we want a planet as well? (25% chance)
 		if( rand.nextInt(100) <= 25 )
 		{
-			String whichPlanet;
+			planet = planetList.get( rand.nextInt(planetList.size()) );
+			planet.sprite.reset();
 			
-			//Randomize the planet
-			switch( rand.nextInt(5) )
-			{
-				default: case 0: whichPlanet = "planet.png"; break;
-				case 1: 		 whichPlanet = "venus.png"; break;
-				case 2: 		 whichPlanet = "exoplanet.png"; break;
-				case 3: 		 whichPlanet = "mineral.png"; break;
-				case 4: 		 whichPlanet = "jupiter.png"; break;
-			}
-			planet = new Object( "data/planet/" + whichPlanet, 0, 0);
-			
+			//Make it unique
 			int planetSize = rand.nextInt(400) + 100;
-			planet.sprite.resize(planetSize, planetSize);
-			
+			planet.sprite.resize(planetSize, planetSize);			
 			if( rand.nextBoolean() ) planet.sprite.horizontalflip();
 			if( rand.nextBoolean() ) planet.sprite.verticalflip();
-	
 			planet.sprite.setDirection( rand.nextInt(360) );
 	
 			//Center the planet position on the screen
@@ -172,10 +164,23 @@ public class Background {
 	}
 	
 	private void init(){
-		Profiler.begin("Predrawing all stars");
+		Profiler.begin("Loading background effects into memory");
 		initialized = true;
 		Random rand = new Random();
 		
+		//Load nebulas into memory
+		nebulaList = new ArrayList<Object>();
+		for(int i = 0; i < 6; i++) nebulaList.add( new Object( "data/nebula/nebula" + i + ".jpg", 0, 0));
+		
+		//Load all planets as well
+		planetList = new ArrayList<Object>();
+		planetList.add( new Object( "data/planet/planet.png", 0, 0) );
+		planetList.add( new Object( "data/planet/venus.png", 0, 0) );
+		planetList.add( new Object( "data/planet/exoplanet.png", 0, 0) );
+		planetList.add( new Object( "data/planet/mineral.png", 0, 0) );
+		planetList.add( new Object( "data/planet/jupiter.png", 0, 0) );		
+		
+		//Load Stars into memory
 		stars = new ArrayList<BufferedImage>();
 		for (int s = 1; s < 30; ++s)
 		{
@@ -200,7 +205,7 @@ public class Background {
 				starGraph.dispose();
 			}
 		}
-		Profiler.end("Predrawing all stars");
+		Profiler.end("Loading background effects into memory");
 	}
 			
 	/**
