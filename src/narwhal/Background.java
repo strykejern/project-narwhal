@@ -4,7 +4,10 @@ import gameEngine.Profiler;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
+
 
 /**
  * JJ> This class generates a nice random background for us
@@ -12,8 +15,9 @@ import java.util.Random;
  *
  */
 public class Background {
-	private BufferedImage img;
-		
+	static Map<Integer, BufferedImage> imageHashMap = new HashMap<Integer, BufferedImage>(20, 0.5f);
+	static int randomSeed;
+	
 	/**
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
 	 *     component every update. Instead we just draw the BufferedImage.
@@ -24,12 +28,21 @@ public class Background {
 		Random rand = new Random();
 		int[] x, y, size;
 		
+		
 		//Keep track of how much processing time this function uses
-		Profiler.begin();
+		Profiler.begin("Generate Background");
 		
 		//PART 1: Initialization
 		//Important, do first: generate the random seed
 		rand = new Random(seed);
+		randomSeed = seed;
+		
+		//Have we visited this place before? No need to continue then!
+		if( imageHashMap.containsKey(seed) )
+		{
+			Profiler.end("Generate Background");
+			return;
+		}
 		
 		//PART 2: Randomize the elements and effects
 		//Randomize the starfield
@@ -91,11 +104,19 @@ public class Background {
 		}
 		
 		//PART 3: Draw everything to a buffer. First things that are drawn appear behind other things.
-        img = new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB);				//No need for alpha on the background
-        Graphics2D g = img.createGraphics();  
-    	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
+        if( imageHashMap.size() == 20) imageHashMap.clear();									//Clear the entire hash map every 10 screens so we do not clutter memory        
+        imageHashMap.put( seed,  new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB) ); 	//No need for alpha on the background			
+        Graphics2D g = imageHashMap.get(seed).createGraphics();
+    	
+        //Buff up the gfx =)
+/*        g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
+    	g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+       	g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+*/
+       	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
+    	g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 
-		//I: Black background
+       	//I: Black background
 		g.setColor(Color.black);
 		g.fillRect(0, 0, 800, 600);
 		
@@ -131,7 +152,7 @@ public class Background {
 			g.drawImage(planet.sprite.toImage(), planet.pos.getX(), planet.pos.getY(), null);
 		}
 		
-		Profiler.end();
+		Profiler.end("Generate Background");
 	}
 			
 	/**
@@ -139,7 +160,7 @@ public class Background {
 	 * @param g
 	 */
 	public void draw(Graphics g){
-		g.drawImage(img, 0, 0, null);
+		g.drawImage(imageHashMap.get(randomSeed), 0, 0, null);
 	}
 	
 }
