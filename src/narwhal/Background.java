@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-
 /**
  * JJ> This class generates a nice random background for us
  * @author Johan Jansen and Anders Eie
@@ -40,22 +39,17 @@ public class Background {
 	private static ArrayList<BufferedImage> stars;
 	private static ArrayList<Object> nebulaList;
 	private static ArrayList<Object> planetList;
+	
 	/**
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
 	 *     component every update. Instead we just draw the BufferedImage.
 	 */
 	public Background(int width, int height, long seed){
-		if (!initialized) init(); //Predraw stars
-		
-		Object nebula = null;
-		Object planet = null;
-		Random rand = new Random();
-		int[] x, y, type;
-		
-		//Keep track of how much processing time this function uses
 		Profiler.begin("Generating Background");
 		
-		//PART 1: Initialization
+		if (!initialized) init(); //Predraw stars
+		Random rand = new Random();
+		
 		//Important, do first: generate the random seed
 		rand = new Random(seed);
 		randomSeed = seed;
@@ -66,101 +60,89 @@ public class Background {
 			Profiler.end("Generating Background");
 			return;
 		}
+		//Draw everything to a buffer. First things that are drawn appear behind other things.
+        if( imageHashMap.size() == 20) imageHashMap.clear();									//Clear the entire hash map every 10 screens so we do not clutter memory        
+        imageHashMap.put( seed,  new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB) ); 	//No need for alpha on the background			
+        Graphics2D g = imageHashMap.get(seed).createGraphics();
 		
-		//PART 2: Randomize the elements and effects
+        //I: Nebula (10% chance) or Black background (90%)
+		if( rand.nextInt(100) <= 10 ) drawNebula(rand, g);
+		else 
+		{
+			g.setColor(Color.black);
+			g.fillRect(0, 0, 800, 600);		
+		}
+
+		//II: Stars
+		drawRandomStarfield(rand, g);
 		
-		//Randomize the starfield
+		//III: Planets (25% chance)
+		if( rand.nextInt(100) <= 25 ) drawPlanet(rand, g);
+		        		
+		Profiler.end("Generating Background");
+	}
+
+	private void drawPlanet( Random rand, Graphics2D g )
+	{
+		Object planet = null;
+		planet = planetList.get( rand.nextInt(planetList.size()) );
+		planet.sprite.reset();
+		
+		//Make it unique
+		int planetSize = rand.nextInt(400) + 100;
+		planet.sprite.resize(planetSize, planetSize);			
+		if( rand.nextBoolean() ) planet.sprite.horizontalflip();
+		if( rand.nextBoolean() ) planet.sprite.verticalflip();
+		planet.sprite.setDirection( rand.nextInt(360) );
+
+		//Center the planet position on the screen
+		planet.pos.x = 400 - planet.sprite.getWidth()/2;
+		planet.pos.y = 300 - planet.sprite.getHeight()/2;
+		
+		g.drawImage(planet.sprite.toImage(), planet.pos.getX(), planet.pos.getY(), null);
+	}
+	
+	//Draw a random nebula
+	private void drawNebula(Random rand, Graphics2D g)
+	{
+		Object nebula = null;
+		
+		nebula = nebulaList.get( rand.nextInt(nebulaList.size()) ) ;
+		nebula.sprite.reset();
+		
+		//Make it unique
+		nebula.sprite.resize(800, 600);
+		nebula.sprite.setAlpha( rand.nextFloat() );
+		if( rand.nextBoolean() ) nebula.sprite.horizontalflip();
+		if( rand.nextBoolean() ) nebula.sprite.verticalflip();
+
+		//Center the planet position on the screen
+		nebula.pos.x = 400 - nebula.sprite.getWidth()/2;
+		nebula.pos.y = 300 - nebula.sprite.getHeight()/2;
+		
+		//Now draw it
+		g.drawImage(nebula.sprite.toImage(), nebula.pos.getX(), nebula.pos.getY(), null);
+	}
+	//Randomize the and draw the starfield
+	private void drawRandomStarfield(Random rand, Graphics2D g)
+	{
+		int[] x, y, type;
 		int numberOfStars = 125 + rand.nextInt(250);
 		x 	 = new int[numberOfStars];
 		y 	 = new int[numberOfStars];
 		type = new int[numberOfStars];
 		for (int i = 0; i < numberOfStars; ++i)
 		{
-			x[i] = rand.nextInt(width);
-			y[i] = rand.nextInt(height);
+			x[i] = rand.nextInt(800);
+			y[i] = rand.nextInt(600);
 			
 			type[i] = rand.nextInt(stars.size());
 		}
-
-		//Are we inside a nebula? (10% chance)
-		if( rand.nextInt(100) <= 10 )
-		{
-			//Randomize the nebula
-			nebula = nebulaList.get( rand.nextInt(nebulaList.size()) ) ;
-			nebula.sprite.reset();
-			
-			//Make it unique
-			nebula.sprite.resize(800, 600);
-			nebula.sprite.setAlpha( rand.nextFloat() );
-			if( rand.nextBoolean() ) nebula.sprite.horizontalflip();
-			if( rand.nextBoolean() ) nebula.sprite.verticalflip();
-	
-		    //nebula.sprite.setDirection( rand.nextInt(360) );
-	
-			//Center the planet position on the screen
-			nebula.pos.x = 400 - nebula.sprite.getWidth()/2;
-			nebula.pos.y = 300 - nebula.sprite.getHeight()/2;
-		}
-
-		//Do we want a planet as well? (25% chance)
-		if( rand.nextInt(100) <= 25 )
-		{
-			planet = planetList.get( rand.nextInt(planetList.size()) );
-			planet.sprite.reset();
-			
-			//Make it unique
-			int planetSize = rand.nextInt(400) + 100;
-			planet.sprite.resize(planetSize, planetSize);			
-			if( rand.nextBoolean() ) planet.sprite.horizontalflip();
-			if( rand.nextBoolean() ) planet.sprite.verticalflip();
-			planet.sprite.setDirection( rand.nextInt(360) );
-	
-			//Center the planet position on the screen
-			planet.pos.x = 400 - planet.sprite.getWidth()/2;
-			planet.pos.y = 300 - planet.sprite.getHeight()/2;
-		}
-
-		//PART 3: Draw everything to a buffer. First things that are drawn appear behind other things.
-        if( imageHashMap.size() == 20) imageHashMap.clear();									//Clear the entire hash map every 10 screens so we do not clutter memory        
-        imageHashMap.put( seed,  new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB) ); 	//No need for alpha on the background			
-        Graphics2D g = imageHashMap.get(seed).createGraphics();
-    	
-        //Buff up the gfx =)
-        boolean highGFX = true;
-        if( highGFX )
-        {
-	  		g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
-	    	g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-	       	g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
- 		}
-        else
-        {
-        	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
-        	g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-        }
-        
-       	//I: Black background
-		g.setColor(Color.black);
-		g.fillRect(0, 0, 800, 600);		
 		
-		//II: Draw any nebula
-		if( nebula != null )
-		{
-			g.drawImage(nebula.sprite.toImage(), nebula.pos.getX(), nebula.pos.getY(), null);
-		}
-	
-		//III: Draw each star						
 		for (int i = 0; i < type.length; ++i)
 		{
 			g.drawImage(stars.get(type[i]), x[i], y[i], null);
 		}
-		
-		//IV: Draw any planets
-		if( planet != null )
-		{
-			g.drawImage(planet.sprite.toImage(), planet.pos.getX(), planet.pos.getY(), null);
-		}				
-		Profiler.end("Generating Background");
 	}
 	
 	private void init(){
@@ -205,7 +187,6 @@ public class Background {
 				for (int k = 0; k < s; ++k)
 				{
 					if(rareStar == 1)		col = new Color(c, 0, 0, (int)(((float)k/(float)s)*255f));
-					else if(rareStar == 2)	col = new Color(c, 0, 255, (int)(((float)k/(float)s)*255f));
 					else					col = new Color(255, 255, c, (int)(((float)k/(float)s)*255f));
 					
 					starGraph.setColor(col);
@@ -227,3 +208,21 @@ public class Background {
 	}
 	
 }
+
+
+//JJ> keep here for later use...
+//Buff up the gfx =)
+/*
+boolean highGFX = true;
+if( highGFX )
+{
+		g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
+	g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+   	g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+	}
+else
+{
+	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
+	g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+} 
+*/

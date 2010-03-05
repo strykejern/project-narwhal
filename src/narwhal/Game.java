@@ -92,11 +92,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		ship.sprite.resize(64, 64);
 		ship.enableCollision();
 		keepPlayerWithinBounds( ship );
-		
-		//Crashable planet test
-		//planet = new Object( new Image2D("data/planet/planet.png"), 400, 200 );
-		//planet.enableCollision();
-		
+				
 		//Play some music
     	Sound music = new Sound("data/space.ogg");
     	//music.play();
@@ -122,8 +118,6 @@ public class Game extends JPanel implements Runnable, KeyListener
     		
     		ship.Move();
     		
-    		//if( planet.collidesWith(ship) ) Log.message("crash!");
-
     		try 
     		{
                 tm += TARGET_FPS;
@@ -146,9 +140,10 @@ public class Game extends JPanel implements Runnable, KeyListener
 	 * @return 000111 + 11001 = 00011111001
 	 */
 	long addBits(int a, int b) {
-		long x = (long)a;
+/*		long x = (long)a;
 		long y = (long)b;
-		return (x<<32) | (y);
+		return (x<<32) | (y);*/
+		return a*a - b*(b-1);
 	}
 	
 	/**
@@ -199,15 +194,9 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//Draw input string
 		g.setColor(Color.white);
 		g.drawString("Test = " + input, 20, 20);
-		
-		//int x = MouseInfo.getPointerInfo().getLocation().x - frame.getX();
-		//int y = MouseInfo.getPointerInfo().getLocation().y - frame.getY();
-		
+				
 		//Draw the little ship
-		g.drawImage( ship.sprite.toImage(), ship.pos.getX()-ship.sprite.getWidth()/2, ship.pos.getY()-ship.sprite.getHeight()/2, this );
-		
-		//DEBUG
-		//g.drawImage( planet.sprite.toImage(), planet.pos.getX()-planet.sprite.getWidth()/2, planet.pos.getY()-planet.sprite.getHeight()/2, this );
+		g.drawImage( ship.sprite.toImage(), ship.pos.getX()-ship.sprite.getWidth()/2, ship.pos.getY()-ship.sprite.getHeight()/2, this );		
 	}
 	
 	public void keyPressed(KeyEvent key) {
@@ -226,7 +215,6 @@ public class Game extends JPanel implements Runnable, KeyListener
 	}
 
 	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
 		input += arg0.getKeyChar();
 		
 	}
