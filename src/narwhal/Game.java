@@ -82,7 +82,7 @@ public class Game extends JPanel implements Runnable, KeyListener
     	Sound music = new Sound("data/orbit1.au");
     	music.play();
     	
-    	//Initialize the logging system
+    	//Initialize the logging system, do this first so that error logging happens correctly.
     	Log.initialize();
     	
 		// Set the blank cursor to the JFrame.
@@ -129,7 +129,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	 * @return 000111 + 11001 = 00011111001
 	 */
 	long addBits(int a, int b) {
-		return (a << 16) | b;
+		return (a*(a+1)) - (b*(b+1));
 	}
 	
 	/**
@@ -193,6 +193,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	}
 	
 	public void keyPressed(KeyEvent key) {
+		
 		if( key.getKeyCode() == KeyEvent.VK_UP ) ship.velocity.setLength(ship.velocity.length()*1.2f);
 		else if( key.getKeyCode() == KeyEvent.VK_DOWN ) ship.velocity.setLength(ship.velocity.length()/1.5f);
 		else if( key.getKeyCode() == KeyEvent.VK_LEFT)
@@ -205,6 +206,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 			ship.sprite.rotate(5);
 			ship.velocity.rotateToDegree(ship.sprite.getAngle()-90);	
 		}
+		
 	}
 
 	public void keyReleased(KeyEvent arg0) {

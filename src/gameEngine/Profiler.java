@@ -118,7 +118,7 @@ public class Profiler {
 		
 		//Tell them we have started
 		//We use system console directly to save time
-		System.out.println("PROFILER: " + profileName + " - Beginning profiling.");
+		//System.out.println("PROFILER: " + profileName + " - Beginning profiling.");
 	}
 
 	//Stop counting and spit out feedback
