@@ -4,6 +4,7 @@ import gameEngine.Profiler;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -17,16 +18,20 @@ import java.util.Random;
 public class Background {
 	private static Map<Long, BufferedImage> imageHashMap = new HashMap<Long, BufferedImage>(20, 0.5f);
 	private static long randomSeed;
+	private static boolean initialized = false;
+	private static ArrayList<BufferedImage> stars;
 	
 	/**
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
 	 *     component every update. Instead we just draw the BufferedImage.
 	 */
 	public Background(int width, int height, long seed){
+		if (!initialized) init(); //Predraw stars
+		
 		Object nebula = null;
 		Object planet = null;
 		Random rand = new Random();
-		int[] x, y, size;
+		int[] x, y, type;
 		
 		//Keep track of how much processing time this function uses
 		Profiler.begin("Generating Background");
@@ -47,15 +52,15 @@ public class Background {
 		//Randomize the starfield
 		Profiler.begin("Randomization");
 		int numberOfStars = 125 + rand.nextInt(250);
-		x = new int[numberOfStars];
-		y = new int[numberOfStars];
-		size = new int[numberOfStars];
+		x 	 = new int[numberOfStars];
+		y 	 = new int[numberOfStars];
+		type = new int[numberOfStars];
 		for (int i = 0; i < numberOfStars; ++i)
 		{
 			x[i] = rand.nextInt(width);
 			y[i] = rand.nextInt(height);
 			
-			size[i] = rand.nextInt(30)+1;
+			type[i] = rand.nextInt(stars.size());
 		}
 
 		//Are we inside a nebula? (10% chance)
@@ -129,23 +134,9 @@ public class Background {
 		}
 	
 		//III: Draw each star				
-		for (int i = 0; i < size.length; ++i)
+		for (int i = 0; i < type.length; ++i)
 		{
-			Color col = new Color(1f, 1f, 1f, (float)((float)(0.5f)/(float)(size[i]+1)));
-			for (int k = 0; k < size[i]; ++k)
-			{
-				g.setColor(col);
-				g.fillOval(x[i]+k, y[i]+k, size[i]-(2*k), size[i]-(2*k));
-				col = new Color(1f, 1f, ((float)i/(float)size.length), (float)((float)(k+1)/(float)(size[i]+1)));
-			}
-			
-			/*
-			g.setColor(Color.LIGHT_GRAY);
-			g.drawLine(x[i], y[i], x[i]+size[i], y[i]+size[i]);
-			g.drawLine(x[i]+size[i], y[i], x[i], y[i]+size[i]);
-			g.drawLine(x[i]+(size[i]/2), y[i], x[i]+(size[i]/2), y[i]+size[i]);
-			g.drawLine(x[i], y[i]+(size[i]/2), x[i]+size[i], y[i]+(size[i]/2));
-			 */	
+			g.drawImage(stars.get(type[i]), x[i], y[i], null);
 		}
 		
 		//IV: Draw any planets
@@ -155,6 +146,31 @@ public class Background {
 		}				
 		Profiler.end("Generating Background");
 	}
+	
+	private void init(){
+		Profiler.begin("Predrawing all stars");
+		initialized = true;
+		stars = new ArrayList<BufferedImage>();
+		for (int s = 1; s < 30; ++s)
+		{
+			for (int c = 0; c < 255; ++c)
+			{
+				BufferedImage star = new BufferedImage(s, s, BufferedImage.TYPE_INT_ARGB);
+				Graphics2D starGraph = star.createGraphics();
+				
+				Color col;
+				for (int k = 0; k < s; ++k)
+				{
+					col = new Color(255, 255, c, (k/s)*255);
+					starGraph.setColor(col);
+					starGraph.fillOval(k, k, s-(2*k), s-(2*k));
+				}
+				
+				stars.add(star);
+			}
+		}
+		Profiler.end("Predrawing all stars");
+	}
 			
 	/**
 	 * JJ> Draw the finished background to the Graphics specified in the parameter
@@ -162,6 +178,7 @@ public class Background {
 	 */
 	public void draw(Graphics g){
 		g.drawImage(imageHashMap.get(randomSeed), 0, 0, null);
+		g.drawImage(stars.get(1000), 20, 20, null);
 	}
 	
 }
