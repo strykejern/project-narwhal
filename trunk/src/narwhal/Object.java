@@ -1,5 +1,6 @@
 package narwhal;
 import gameEngine.Image2D;
+import gameEngine.Log;
 import gameEngine.Vector;
 
 //********************************************************************************************
@@ -68,10 +69,26 @@ public class Object {
 
 	//JJ> TODO: implement this function
 	public boolean collidesWith( Object target ) {
-		
+
 		//Are both collidable?
-		if( !this.allowCollision || target.isCollidable() ) return false;
+		if( !this.allowCollision || !target.isCollidable() ) return false;
+
+		//Rectangle this
+		int dtx = this.pos.getX() - this.sprite.getWidth()/2;
+		int dty = this.pos.getY() - this.sprite.getHeight()/2;
+		int dbx = this.pos.getX() + this.sprite.getWidth()/2;
+		int dby = this.pos.getY() + this.sprite.getHeight()/2;
 		
-		return this.pos == target.pos;
+		//Rectangle they
+		int ttx = target.pos.getX() - target.sprite.getWidth()/2;
+		int tty = target.pos.getY() - target.sprite.getHeight()/2;
+		int tbx = target.pos.getX() + target.sprite.getWidth()/2;
+		int tby = target.pos.getY() + target.sprite.getHeight()/2;
+		
+		//check it out
+		if( dtx <= ttx && dty <= tty  ) 
+			if( dbx >= ttx && dby >= tby ) return true;
+		
+		return false;
 	}
 }
