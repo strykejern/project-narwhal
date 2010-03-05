@@ -1,3 +1,21 @@
+//********************************************************************************************
+//*
+//*    This file is part of Project Narwhal.
+//*
+//*    Project Narwhal is free software: you can redistribute it and/or modify it
+//*    under the terms of the GNU General Public License as published by
+//*    the Free Software Foundation, either version 3 of the License, or
+//*    (at your option) any later version.
+//*
+//*    Project Narwhal is distributed in the hope that it will be useful, but
+//*    WITHOUT ANY WARRANTY; without even the implied warranty of
+//*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//*    General Public License for more details.
+//*
+//*    You should have received a copy of the GNU General Public License
+//*    along with Project Narwhal.  If not, see <http://www.gnu.org/licenses/>.
+//*
+//********************************************************************************************
 package narwhal;
 
 import gameEngine.Profiler;
@@ -49,8 +67,8 @@ public class Background {
 		}
 		
 		//PART 2: Randomize the elements and effects
+		
 		//Randomize the starfield
-		Profiler.begin("Randomization");
 		int numberOfStars = 125 + rand.nextInt(250);
 		x 	 = new int[numberOfStars];
 		y 	 = new int[numberOfStars];
@@ -121,7 +139,7 @@ public class Background {
        	g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
 */
        	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
-    	g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+    	g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 
        	//I: Black background
 		g.setColor(Color.black);
@@ -133,7 +151,7 @@ public class Background {
 			g.drawImage(nebula.sprite.toImage(), nebula.pos.getX(), nebula.pos.getY(), null);
 		}
 	
-		//III: Draw each star				
+		//III: Draw each star						
 		for (int i = 0; i < type.length; ++i)
 		{
 			g.drawImage(stars.get(type[i]), x[i], y[i], null);
@@ -167,6 +185,7 @@ public class Background {
 				}
 				
 				stars.add(star);
+				starGraph.dispose();
 			}
 		}
 		Profiler.end("Predrawing all stars");
