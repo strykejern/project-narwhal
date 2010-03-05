@@ -39,7 +39,7 @@ public class Background {
 		//Have we visited this place before? No need to continue then!
 		if( imageHashMap.containsKey(seed) )
 		{
-			Profiler.end("Generate Background");
+			Profiler.end("Generating Background");
 			return;
 		}
 		
