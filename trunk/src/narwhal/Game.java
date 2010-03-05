@@ -108,7 +108,7 @@ public class Game extends JPanel implements Runnable, KeyListener
     		keepPlayerWithinBounds(ship);
     		repaint();
     		
-    		if (up) ship.velocity.setLength(ship.velocity.length()+0.5f);
+    		if (up && ship.velocity.length() < 15f) ship.velocity.setLength(ship.velocity.length()+0.5f);
     		else if (down) ship.velocity.setLength(ship.velocity.length()/1.05f);
     		if (left)
     		{
