@@ -3,8 +3,7 @@ package gameEngine;
 public class Collidable {
 	private Shape shape;
 	private float direction;
-	private int width, height;
-	protected Vector pos;
+	protected Vector pos, size;
 	
 	public static enum Shape{
 		RECT,
@@ -17,8 +16,7 @@ public class Collidable {
 	 */
 	public Collidable(int size){
 		this.shape = null;
-		width = size;
-		height = size;
+		this.size = new Vector(size, size);
 		direction = 0;
 		pos = new Vector();
 	}
@@ -31,8 +29,7 @@ public class Collidable {
 	 */
 	public Collidable(Shape shape, int width, int height){
 		this.shape = shape;
-		this.width = width;
-		this.height = height;
+		size = new Vector(width, height);
 		direction = 0;
 		pos = new Vector();
 	}
@@ -52,18 +49,47 @@ public class Collidable {
 	}
 	
 	private float getRadius(){
-		return (float)width;
+		return (float)size.x;
 	}
 	
-	// TODO: implement
+	private boolean pointInsideShape(Vector point){
+		if 		(this.shape == null && pos.minus(point).length() < getRadius()) return true;
+		else if (this.shape == Shape.RECT)
+		{
+			// TODO: account for rotation
+			if (point.x < pos.x) 		  return false;
+			if (point.x > pos.x + size.x) return false;
+			if (point.y < pos.y)		  return false;
+			if (point.y > pos.y + size.y) return false;
+		}
+		else if (this.shape == Shape.TRIANGLE)
+		{
+			// TODO: Implement
+		}
+		return false;
+	}
+	
+	// TODO: Implement
 	public boolean collidesWith(Collidable object){
 		if (this.shape == null)
 		{
-			if (object.shape == null && this.pos.minus(object.pos).length() < this.getRadius() + object.getRadius()) return true;
+			if (object.shape == null)
+			{
+				if (this.pos.minus(object.pos).length() < this.getRadius() + object.getRadius()) return true;
+				else return false;
+			}
+			if (object.shape == Shape.RECT)
+			{
+				// Sloppy collision detection between circle and rectangle
+				Vector testPoint = object.pos.plus(object.size.dividedBy(2)).minus(this.pos);
+				testPoint.setLength(this.getRadius());
+				testPoint = this.pos.plus(testPoint);
+				return object.pointInsideShape(testPoint);
+			}
 		}
 		else if (this.shape == Shape.RECT)
 		{
-			
+			if (object.shape == null) return object.collidesWith(this);
 		}
 		else if (this.shape == Shape.TRIANGLE)
 		{
