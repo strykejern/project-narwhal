@@ -33,20 +33,28 @@ import java.util.Random;
  *
  */
 public class Background {
-	private static Map<Long, BufferedImage> imageHashMap = new HashMap<Long, BufferedImage>(20, 0.5f);
-	private static long randomSeed;
-	private static boolean initialized = false;
-	private static ArrayList<BufferedImage> stars;
-	private static ArrayList<Object> nebulaList;
-	private static ArrayList<Object> planetList;
+	private Map<Long, BufferedImage> imageHashMap = new HashMap<Long, BufferedImage>(20, 0.5f);
+	private long randomSeed;
+	private boolean initialized = false;
+	private ArrayList<BufferedImage> stars;
+	private ArrayList<Object> nebulaList;
+	private ArrayList<Object> planetList;
+	
+	private int width, height;
 	
 	/**
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
 	 *     component every update. Instead we just draw the BufferedImage.
 	 */
-	public Background(int width, int height, long seed){
+	public Background(int width, int height){
+		this.width = width;
+		this.height = height;
+		generate(0);
+	}
+	
+	public void generate(long seed){
 		Profiler.begin("Generating Background");
-				
+		
 		//Important, do first: generate the random seed
 		Random rand = new Random(seed);
 		randomSeed = seed;
