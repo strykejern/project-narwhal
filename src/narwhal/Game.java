@@ -32,7 +32,7 @@ import java.util.Random;
 
 /**
  * JJ> Main game class, here the important top stuff happens
- * @author Johan Jansen og Anders Eie
+ * @author Johan Jansen and Anders Eie
  *
  */
 public class Game extends JPanel implements Runnable, KeyListener
@@ -57,7 +57,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	public static void main(String[] args) throws InterruptedException{	
 		JFrame parentWindow = new JFrame("Project Narwhal");		
     	parentWindow.getContentPane().add(new Game(parentWindow));
-    	
+
     	parentWindow.setSize(800 , 600);
         parentWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         parentWindow.setVisible(true);
@@ -129,7 +129,9 @@ public class Game extends JPanel implements Runnable, KeyListener
 	 * @return 000111 + 11001 = 00011111001
 	 */
 	long addBits(int a, int b) {
-		return (a*(a+1)) - (b*(b+1));
+		long x = (long)a;
+		long y = (long)b;
+		return (x<<32) | (y);
 	}
 	
 	/**
