@@ -20,14 +20,16 @@ package gameEngine;
 
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
 /**
  * JJ> Helper class to make image handling easier to do
- * @author Johan Jansen og Anders Eie
+ * @author Johan Jansen and Anders Eie
  *
  */
 public class Image2D
@@ -111,15 +113,18 @@ public class Image2D
 		while(angle > 360) angle -= 360;
 		while(angle < 0) angle += 360;
 		
-        int w = img.getWidth();  
-        int h = img.getHeight();
+        int w = (int) (img.getWidth()*1.25);  
+        int h = (int) (img.getHeight()*1.25);
         
-        BufferedImage buffer = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage buffer = new BufferedImage( w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = buffer.createGraphics();  
-    	//g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+    	
+        //g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
     	//g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
-        g.rotate(Math.toRadians(angle), w/2, h/2);
+        //cos(45) - cos(angle-45)
+        g.rotate(Math.toRadians(angle), (buffer.getWidth())/2.0, (buffer.getHeight())/2.0);
         g.drawImage(img, null, 0, 0);
+        
         
         //Make it so
         currentAngle = (int)angle;
