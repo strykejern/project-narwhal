@@ -95,7 +95,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 
 		//Play some music
     	Sound music = new Sound("data/space.ogg");
-    	//music.play();
+    	music.play();
 
 		// da loop
     	while(running)
@@ -191,15 +191,13 @@ public class Game extends JPanel implements Runnable, KeyListener
 		if( nextScreen ) 
 		{
 			seed = addBits(x, y);
-			bg.generate(seed);
-			
 			Random rand = new Random(seed);
+			bg.generate(seed);
 			
 			planet = null;
 			if(rand.nextInt(100) <= 25)
 			planet = bg.generatePlanet(seed);
 		}
-		
 	}
 	
 	/*
