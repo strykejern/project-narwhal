@@ -49,7 +49,7 @@ public class Object extends Collidable {
 	{
 		sprite = copySprite;
 		velocity = new Vector();
-		pos = new Vector(x, y);
+		super.pos = pos = new Vector(x, y);
 		allowCollision = false;
 		super.setRadius( sprite.getWidth()/2 );
 	}

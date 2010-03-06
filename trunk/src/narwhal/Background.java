@@ -18,6 +18,7 @@
 //********************************************************************************************
 package narwhal;
 
+import gameEngine.Image2D;
 import gameEngine.Log;
 import gameEngine.Profiler;
 
@@ -38,7 +39,7 @@ public class Background {
 	private long randomSeed;
 	private boolean initialized = false;
 	private ArrayList<BufferedImage> stars;
-	private ArrayList<Object> nebulaList;
+	private ArrayList<Image2D> nebulaList;
 	private ArrayList<Object> planetList;
 	
 	private int WIDTH, HEIGHT;
@@ -110,21 +111,21 @@ public class Background {
 	
 	//Draw a random nebula
 	private void drawNebula(Random rand, Graphics2D g) {
-		Object nebula = nebulaList.get( rand.nextInt(nebulaList.size()) ) ;
-		nebula.sprite.reset();
+		Image2D nebula = nebulaList.get( rand.nextInt(nebulaList.size()) ) ;
+		nebula.reset();
 		
 		//Make it unique
-		nebula.sprite.resize(WIDTH, HEIGHT);
-		nebula.sprite.setAlpha( rand.nextFloat() );
-		if( rand.nextBoolean() ) nebula.sprite.horizontalFlip();
-		if( rand.nextBoolean() ) nebula.sprite.verticalFlip();
+		nebula.resize(WIDTH, HEIGHT);
+		nebula.setAlpha( rand.nextFloat() );
+		if( rand.nextBoolean() ) nebula.horizontalFlip();
+		if( rand.nextBoolean() ) nebula.verticalFlip();
 
 		//Center the planet position on the screen
-		nebula.pos.x = (WIDTH/2) - nebula.getWidth()/2;
-		nebula.pos.y = (HEIGHT/2) - nebula.getHeight()/2;
-		
+		int xPos = (WIDTH/2) - nebula.getWidth()/2;
+		int yPos = (HEIGHT/2) - nebula.getHeight()/2;
+			
 		//Now draw it
-		g.drawImage(nebula.sprite.toImage(), nebula.pos.getX(), nebula.pos.getY(), null);
+		g.drawImage(nebula.toImage(), xPos, yPos, null);
 	}
 	
 	/**
@@ -149,8 +150,8 @@ public class Background {
 	
 	private void loadNebulas(){
 		//Load nebulas into memory
-		nebulaList = new ArrayList<Object>();
-		for(int i = 0; i < 6; i++) nebulaList.add( new Object( "data/nebula/nebula" + i + ".jpg", 0, 0));
+		nebulaList = new ArrayList<Image2D>();
+		for(int i = 0; i < 6; i++) nebulaList.add( new Image2D( "data/nebula/nebula" + i + ".jpg"));
 	}
 	
 	private void loadPlanets(){
