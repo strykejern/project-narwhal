@@ -64,7 +64,12 @@ public class Object extends Collidable {
 	public void Move() {
 		pos.add(velocity);
 	}
-	
+
+	public void resizeObject( int width, int height ) {
+		super.setRadius( width/2 );
+		sprite.resize( width, height );
+	}
+
 	//JJ> Helper functions to set and disable collisions for this object
 	public boolean isCollidable() {
 		return allowCollision;

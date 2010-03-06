@@ -93,9 +93,8 @@ public class Game extends JPanel implements Runnable, KeyListener
 		planet.enableCollision();
 		
 		ship = new Object( new Image2D("data/spaceship.png"), SCREEN_X/2, SCREEN_Y/2 );
-		ship.sprite.resize(SCREEN_X/12, SCREEN_X/12);
+		ship.resizeObject(SCREEN_X/12, SCREEN_X/12);
 		ship.enableCollision();
-		keepPlayerWithinBounds( ship );
 				
 		//Play some music
     	Sound music = new Sound("data/space.ogg");
