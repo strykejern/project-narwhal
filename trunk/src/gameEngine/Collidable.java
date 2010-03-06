@@ -129,6 +129,7 @@ public class Collidable {
 						colVec.setLength(1);
 						object.speed = tmp.plus(colVec);
 						object.speed.setLength(length);
+						object.setDirection(tmp.plus(colVec).getAngle());
 					}
 					else if (!this.anchored && object.anchored)
 					{

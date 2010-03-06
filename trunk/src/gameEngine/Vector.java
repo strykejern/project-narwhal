@@ -125,5 +125,9 @@ public class Vector {
 	public int getY() {
 		return (int)y;
 	}
+	
+	public float getAngle(){
+		return (float)Math.atan2(y, x);
+	}
 
 }
