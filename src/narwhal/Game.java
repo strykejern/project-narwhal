@@ -119,12 +119,12 @@ public class Game extends JPanel implements Runnable, KeyListener
     		if (left)
     		{
     			ship.rotate(-5);
-    			ship.speed.rotateToDegree(ship.getAngle()-90);
+    			ship.speed.rotateToDegree(ship.getAngle());
     		}
     		else if (right)
     		{
     			ship.rotate(5);
-    			ship.speed.rotateToDegree(ship.getAngle()-90);
+    			ship.speed.rotateToDegree(ship.getAngle());
     		}
     		ship.update();
     		

@@ -122,14 +122,18 @@ public class Collidable {
 					if (this.anchored && !object.anchored)
 					{
 						colVec.negate();
+						object.speed.add(colVec);
 						object.pos.add(colVec);
+						object.speed.add(colVec);
+						/*
 						float length = object.speed.length();
 						Vector tmp = object.speed.clone();
 						tmp.setLength(1);
 						colVec.setLength(1);
-						object.speed = tmp.plus(colVec);
+						object.speed = tmp.plus(colVec).plus(colVec);
 						object.speed.setLength(length);
-						object.setDirection(tmp.plus(colVec).getAngle());
+						*/
+						object.direction = object.speed.getAngle();// + (float)(Math.PI / 2);
 					}
 					else if (!this.anchored && object.anchored)
 					{
