@@ -200,7 +200,7 @@ public class Background {
 				for (int k = 0; k < s; ++k)
 				{
 					if(rareStar == 1)		col = new Color(c, 0, 0, (int)(((float)k/(float)s)*255f));
-					else					col = new Color(255, 255, c, (int)(((float)k/(float)s)*255f));
+					else					col = new Color((int)(((float)k/(float)s)*255f), (int)(((float)k/(float)s)*255f), c, (int)(((float)k/(float)s)*255f));
 					
 					starGraph.setColor(col);
 					starGraph.fillOval(k, k, s-(2*k), s-(2*k));
