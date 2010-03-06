@@ -105,7 +105,7 @@ public class Game extends JPanel implements Runnable, KeyListener
     	{
     		keepPlayerWithinBounds(ship);
     		
-    		if( planet.collidesWith( ship ) ) Log.message("COLLISION!");
+    		if( planet.collidesWith( ship ) ) ship.velocity.negate();
     		
     		if (up && ship.velocity.length() < 15f) ship.velocity.setLength(ship.velocity.length()+0.5f);
     		else if (down) ship.velocity.setLength(ship.velocity.length()/1.05f);
