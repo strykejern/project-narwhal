@@ -19,11 +19,11 @@
 package narwhal;
 
 import gameEngine.Image2D;
-import gameEngine.Log;
 import gameEngine.Profiler;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,10 +48,10 @@ public class Background {
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
 	 *     component every update. Instead we just draw the BufferedImage.
 	 */
-	public Background(int width, int height){
+	public Background(int width, int height, long seed){
 		this.WIDTH = width;
 		this.HEIGHT = height;
-		generate(0);
+		generate(seed);
 	}
 	
 	public void generate(long seed) {
@@ -94,19 +94,20 @@ public class Background {
 
 	private void drawPlanet( Random rand, Graphics2D g ) {
 		Object planet = planetList.get( rand.nextInt(planetList.size()) );
-		planet.sprite.reset();
+		//planet.sprite.reset();
 		
 		//Make it unique
 		int planetSize = rand.nextInt(WIDTH/2) + WIDTH/8;
-		planet.sprite.resize(planetSize, planetSize);			
-		if( rand.nextBoolean() ) planet.sprite.horizontalFlip();
-		if( rand.nextBoolean() ) planet.sprite.verticalFlip();
-		planet.sprite.setDirection( rand.nextInt(360) );
+		
+		planet.resizeObject(planetSize, planetSize);
+		//if( rand.nextBoolean() ) planet.sprite.horizontalFlip();
+		//if( rand.nextBoolean() ) planet.sprite.verticalFlip();
+		planet.rotate( rand.nextInt(360) );
 
 		//Center the planet position on the screen
 		planet.pos.x = (WIDTH/2) - planet.getWidth()/2;
 		planet.pos.y = (HEIGHT/2) - planet.getHeight()/2;
-		g.drawImage(planet.sprite.toImage(), planet.pos.getX(), planet.pos.getY(), null);
+		g.drawImage(planet.getSprite(), planet.pos.getX(), planet.pos.getY(), null);
 	}
 	
 	//Draw a random nebula
@@ -149,25 +150,34 @@ public class Background {
 	}
 	
 	private void loadNebulas(){
+		File[] fileList = new File("data/nebula").listFiles();
+				
 		//Load nebulas into memory
 		nebulaList = new ArrayList<Image2D>();
-		for(int i = 0; i < 6; i++) nebulaList.add( new Image2D( "data/nebula/nebula" + i + ".jpg"));
+		for( File f : fileList )
+		{
+			if( !f.isFile() ) continue;
+			nebulaList.add( new Image2D( f.toString() )) ;
+		}
 	}
 	
 	private void loadPlanets(){
-		//Load all planets as well
+		
+		File[] fileList = new File("data/planets").listFiles();
+		
+		//Load planets into memory
 		planetList = new ArrayList<Object>();
-		planetList.add( new Object( "data/planet/planet.png", 0, 0) );
-		planetList.add( new Object( "data/planet/venus.png", 0, 0) );
-		planetList.add( new Object( "data/planet/exoplanet.png", 0, 0) );
-		planetList.add( new Object( "data/planet/mineral.png", 0, 0) );
-		planetList.add( new Object( "data/planet/jupiter.png", 0, 0) );	
+		for( File f : fileList )
+		{
+			if( !f.isFile() ) continue;
+			planetList.add( new Object( f.toString(), 0, 0 )) ;
+		}
 	}
 
 	/**
 	 * AE> Predrawing the stars and placing them in the static ArrayList stars
 	 */
-	private void loadStars(){
+	private void loadStars() {
 		//Load Stars into memory
 		Random rand = new Random();
 		stars = new ArrayList<BufferedImage>();

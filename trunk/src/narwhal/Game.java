@@ -73,7 +73,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		new Thread(this).start();
 		running = true;
 		frame.addKeyListener(this);
-		bg = new Background(SCREEN_X, SCREEN_Y);
+		bg = new Background(SCREEN_X, SCREEN_Y, addBits(x, y));
 	}
 	
 	//JJ> This is the main game loop
@@ -89,14 +89,15 @@ public class Game extends JPanel implements Runnable, KeyListener
 		frame.getContentPane().setCursor(blankCursor);
 		
 		//Initialize the player ship
-		planet = new Object( new Image2D("data/planet/planet.png"), SCREEN_X/2, SCREEN_Y/2 );
+		planet = new Object( new Image2D("data/planets/planet.png"), SCREEN_X/2, SCREEN_Y/2 );
 		planet.enableCollision();
+		
+		ship = new Object( new Image2D("data/spaceship.png"), SCREEN_X/2, SCREEN_Y/2+planet.getHeight() );
 		planet.anchored = true;
 		
-		ship = new Object( new Image2D("data/spaceship.png"), SCREEN_X/2, SCREEN_Y/2 );
 		ship.resizeObject(SCREEN_X/12, SCREEN_X/12);
 		ship.enableCollision();
-				
+
 		//Play some music
     	Sound music = new Sound("data/space.ogg");
     	//music.play();
@@ -104,23 +105,27 @@ public class Game extends JPanel implements Runnable, KeyListener
 		// da loop
     	while(running)
     	{
+    		//Keep the player from moving outside the screen
     		keepPlayerWithinBounds(ship);
     		
+    		//Basic collision loop (put all detection here
+    		if( planet.isCollidable() && ship.isCollidable() ) 
     		planet.collidesWith( ship );
     		
+    		//Calculate ship movement
     		if (up && ship.speed.length() < 15f) ship.speed.setLength(ship.speed.length()+0.5f);
     		else if (down) ship.speed.setLength(ship.speed.length()/1.05f);
+
     		if (left)
     		{
-    			ship.sprite.rotate(-5);
-    			ship.speed.rotateToDegree(ship.sprite.getAngle()-90);
+    			ship.rotate(-5);
+    			ship.speed.rotateToDegree(ship.getAngle()-90);
     		}
     		else if (right)
     		{
-    			ship.sprite.rotate(5);
-    			ship.speed.rotateToDegree(ship.sprite.getAngle()-90);
+    			ship.rotate(5);
+    			ship.speed.rotateToDegree(ship.getAngle()-90);
     		}
-    		
     		ship.Move();
     		
     		try 
@@ -207,10 +212,10 @@ public class Game extends JPanel implements Runnable, KeyListener
 		g.drawString("Test = " + input, 20, 20);
 
 		//Draw the little ship
-		g.drawImage( ship.sprite.toImage(), ship.pos.getX()-ship.sprite.getWidth()/2, ship.pos.getY()-ship.sprite.getHeight()/2, this );		
+		g.drawImage( ship.getSprite(), ship.pos.getX()-ship.getWidth()/2, ship.pos.getY()-ship.getHeight()/2, this );		
 		
-		//DEBUG
-		g.drawImage( planet.sprite.toImage(), planet.pos.getX()-planet.sprite.getWidth()/2, planet.pos.getY()-planet.sprite.getHeight()/2, this );		
+		//Draw the planet
+		g.drawImage( planet.getSprite(), planet.pos.getX()-planet.getWidth()/2, planet.pos.getY()-planet.getHeight()/2, this );		
 
 	}
 	

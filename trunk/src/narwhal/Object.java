@@ -18,6 +18,8 @@
 //********************************************************************************************
 package narwhal;
 
+import java.awt.Image;
+
 import gameEngine.Collidable;
 import gameEngine.Image2D;
 import gameEngine.Vector;
@@ -31,7 +33,7 @@ public class Object extends Collidable {
 	private boolean allowCollision;
 	Vector speed;
 	Vector pos;
-	Image2D sprite;
+    private Image2D sprite;
 		
 	public Object( Image2D copySprite, int x, int y ) {
 		super(0);
@@ -64,10 +66,23 @@ public class Object extends Collidable {
 	public void Move() {
 		pos.add(speed);
 	}
+	
+    public float getAngle() {
+	    return (float)Math.toDegrees(super.direction);
+    }
+	
+    public Image getSprite() {
+	    return sprite.toImage();
+    }
 
 	public void resizeObject( int width, int height ) {
 		super.setRadius( width/2 );
 		sprite.resize( width, height );
+	}
+	public void rotate( float degrees )
+	{
+		super.setDirection( (float)Math.toRadians(degrees) );
+		sprite.rotate( degrees );
 	}
 
 	//JJ> Helper functions to set and disable collisions for this object
