@@ -52,6 +52,10 @@ public class Collidable {
 		return (float)size.x;
 	}
 	
+	protected void setRadius(int radius){
+		size = new Vector(radius, radius);
+	}
+	
 	private boolean pointInsideShape(Vector point){
 		if 		(this.shape == null && pos.minus(point).length() < getRadius()) return true;
 		else if (this.shape == Shape.RECT)
