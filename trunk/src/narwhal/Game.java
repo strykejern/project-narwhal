@@ -88,13 +88,8 @@ public class Game extends JPanel implements Runnable, KeyListener
 		// Set the blank cursor to the JFrame.
 		frame.getContentPane().setCursor(blankCursor);
 		
-		//Initialize the player ship
-		planet = new Object( new Image2D("data/planets/planet.png"), SCREEN_X/2, SCREEN_Y/2 );
-		planet.enableCollision();
-		
-		ship = new Object( new Image2D("data/spaceship.png"), SCREEN_X/2, SCREEN_Y/2+planet.getHeight() );
-		planet.anchored = true;
-		
+		//Initialize the player ship		
+		ship = new Object( new Image2D("data/spaceship.png"), SCREEN_X/2, SCREEN_Y/2+100 );
 		ship.resizeObject(SCREEN_X/12, SCREEN_X/12);
 		ship.enableCollision();
 
@@ -109,6 +104,7 @@ public class Game extends JPanel implements Runnable, KeyListener
     		keepPlayerWithinBounds(ship);
     		
     		//Basic collision loop (put all detection here
+    		if(planet != null)
     		if( planet.isCollidable() && ship.isCollidable() ) 
     		planet.collidesWith( ship );
     		
@@ -197,8 +193,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 			Random rand = new Random();
 			seed = addBits(x, y);
 			bg.generate(seed);
-			int s = rand.nextInt(450);
-			planet.resizeObject(s, s);
+			planet = bg.getPlanet();
 		}
 		
 	}
@@ -215,10 +210,11 @@ public class Game extends JPanel implements Runnable, KeyListener
 		g.drawString("Test = " + input, 20, 20);
 
 		//Draw the planet
-		g.drawImage( planet.getSprite(), planet.pos.getX()-planet.getWidth()/2, planet.pos.getY()-planet.getHeight()/2, this );		
+		if(planet != null)
+		g.drawImage( planet.getImage(), planet.pos.getX()-planet.getWidth()/2, planet.pos.getY()-planet.getHeight()/2, this );		
 
 		//Draw the little ship
-		g.drawImage( ship.getSprite(), ship.pos.getX()-ship.getWidth()/2, ship.pos.getY()-ship.getHeight()/2, this );				
+		g.drawImage( ship.getImage(), ship.pos.getX()-ship.getWidth()/2, ship.pos.getY()-ship.getHeight()/2, this );				
 	}
 	
 	public void keyPressed(KeyEvent key) {
