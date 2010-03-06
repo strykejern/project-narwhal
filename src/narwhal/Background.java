@@ -19,6 +19,7 @@
 package narwhal;
 
 import gameEngine.Image2D;
+import gameEngine.Log;
 import gameEngine.Profiler;
 
 import java.awt.*;
@@ -35,7 +36,7 @@ import java.util.Random;
  *
  */
 public class Background {
-	private Map<Long, BufferedImage> imageHashMap = new HashMap<Long, BufferedImage>(20, 0.5f);
+	private Map<String, BufferedImage> imageHashMap = new HashMap<String, BufferedImage>(20, 0.5f);
 	private long randomSeed;
 	private boolean initialized = false;
 	private ArrayList<BufferedImage> stars;
@@ -71,9 +72,9 @@ public class Background {
 			return;
 		}
 		//Draw everything to a buffer. First things that are drawn appear behind other things.
-        if( imageHashMap.size() == 20) imageHashMap.clear();									//Clear the entire hash map every 10 screens so we do not clutter memory        
-        imageHashMap.put( seed,  new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB) ); 	//No need for alpha on the background			
-        Graphics2D g = imageHashMap.get(seed).createGraphics();
+        if( imageHashMap.size() >= 10) imageHashMap.clear();	//Clear the entire hash map every 10 screens so we do not clutter memory        
+        imageHashMap.put( Long.toString(seed),  new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB) ); 	//No need for alpha on the background			
+        Graphics2D g = imageHashMap.get(Long.toString(seed)).createGraphics();
 		
         //I: Nebula (10% chance) or Black background (90%)
 		if( rand.nextInt(100) <= 10 ) drawNebula(rand, g);
@@ -210,7 +211,7 @@ public class Background {
 	 * @param g
 	 */
 	public void draw(Graphics g){
-		g.drawImage(imageHashMap.get(randomSeed), 0, 0, null);
+		g.drawImage(imageHashMap.get(Long.toString(randomSeed)), 0, 0, null);
 	}
 	
 }

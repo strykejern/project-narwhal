@@ -107,6 +107,9 @@ public class Image2D
 	 */
 	public void setDirection(float angle) {  
 		
+		//No change
+		if( angle == currentAngle ) return;
+		
 		//Limit the angles
 		angle %= 360;
 		
