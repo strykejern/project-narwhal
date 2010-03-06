@@ -43,7 +43,6 @@ public class Background {
 	private ArrayList<BufferedImage> stars;
 	private ArrayList<Image2D> nebulaList;
 	private ArrayList<Object> planetList;
-	private Object planet;
 	
 	private int WIDTH, HEIGHT;
 	
@@ -83,29 +82,27 @@ public class Background {
 		else 
 		{
 			g.setColor(Color.black);
-			g.fillRect(0, 0, WIDTH, HEIGHT);		
+			g.fillRect(0, 0, WIDTH, HEIGHT);
 		}
 
 		//II: Stars
 		drawRandomStarfield(rand, g);
-		
-		//III: Planets (25% chance)
-		planet = null;
-		if( rand.nextInt(100) <= 25 ) drawPlanet(rand, g);
-		        		
+				        		
 		Profiler.end("Generating Background");
 	}
 
-	private void drawPlanet( Random rand, Graphics2D g ) {
-		planet = planetList.get( rand.nextInt(planetList.size()) );
+	public Object generatePlanet( long seed ) {
+		Random rand = new Random(seed);	
+		Object planet = planetList.get( rand.nextInt(planetList.size()) );
+		
 		planet.getSprite().reset();
 		
+		//Physics
 		planet.enableCollision();
 		planet.anchored = true;
 		
 		//Make it unique
 		int planetSize = rand.nextInt(WIDTH/2) + WIDTH/8;
-		
 		planet.resizeObject(planetSize, planetSize);
 		if( rand.nextBoolean() ) planet.getSprite().horizontalFlip();
 		if( rand.nextBoolean() ) planet.getSprite().verticalFlip();
@@ -114,7 +111,7 @@ public class Background {
 		//Center the planet position on the screen
 		planet.pos.x = (WIDTH/2);
 		planet.pos.y = (HEIGHT/2);
-//		g.drawImage(planet.getImage(), planet.pos.getX(), planet.pos.getY(), null);
+		return planet;
 	}
 	
 	//Draw a random nebula
@@ -169,7 +166,6 @@ public class Background {
 	}
 	
 	private void loadPlanets(){
-		
 		File[] fileList = new File("data/planets").listFiles();
 		
 		//Load planets into memory
@@ -178,9 +174,11 @@ public class Background {
 		{
 			if( !f.isFile() ) continue;
 			planetList.add( new Object( f.toString(), 0, 0 )) ;
+			
 		}
 	}
 
+	
 	/**
 	 * AE> Predrawing the stars and placing them in the static ArrayList stars
 	 */
@@ -211,12 +209,7 @@ public class Background {
 			}
 		}
 	}
-	
-	public Object getPlanet()
-	{
-		return planet;
-	}
-			
+				
 	/**
 	 * JJ> Draw the finished background to the Graphics specified in the parameter
 	 * @param g
