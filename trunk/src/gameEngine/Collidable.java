@@ -3,7 +3,9 @@ package gameEngine;
 public class Collidable {
 	private Shape shape;
 	private float direction;
-	protected Vector pos, size;
+	protected Vector pos;
+	private Vector size;
+	private float radius;
 	
 	public static enum Shape{
 		RECT,
@@ -49,11 +51,11 @@ public class Collidable {
 	}
 	
 	private float getRadius(){
-		return (float)size.x;
+		return radius;
 	}
 	
 	protected void setRadius(int radius){
-		size = new Vector(radius, radius);
+		this.radius = (float)radius;
 	}
 	
 	private boolean pointInsideShape(Vector point){
