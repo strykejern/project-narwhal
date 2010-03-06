@@ -143,7 +143,7 @@ public class Image2D
 	public void resize(int newW, int newH) {  
         int w = original.getWidth();  
         int h = original.getHeight();  
-        boolean highQuality = true;
+        boolean highQuality = false;
         
         //Valid resize?
         if( newW <= 0 || newH <= 0 ) return;

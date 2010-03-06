@@ -190,10 +190,14 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//Did we cross into a new screen?
 		if( nextScreen ) 
 		{
-			Random rand = new Random();
 			seed = addBits(x, y);
 			bg.generate(seed);
-			planet = bg.getPlanet();
+			
+			Random rand = new Random(seed);
+			
+			planet = null;
+			if(rand.nextInt(100) <= 25)
+			planet = bg.generatePlanet(seed);
 		}
 		
 	}
