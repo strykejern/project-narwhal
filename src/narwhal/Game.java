@@ -126,7 +126,7 @@ public class Game extends JPanel implements Runnable, KeyListener
     			ship.rotate(5);
     			ship.speed.rotateToDegree(ship.getAngle()-90);
     		}
-    		ship.Move();
+    		ship.update();
     		
     		try 
     		{
@@ -211,12 +211,11 @@ public class Game extends JPanel implements Runnable, KeyListener
 		g.setColor(Color.white);
 		g.drawString("Test = " + input, 20, 20);
 
-		//Draw the little ship
-		g.drawImage( ship.getSprite(), ship.pos.getX()-ship.getWidth()/2, ship.pos.getY()-ship.getHeight()/2, this );		
-		
 		//Draw the planet
 		g.drawImage( planet.getSprite(), planet.pos.getX()-planet.getWidth()/2, planet.pos.getY()-planet.getHeight()/2, this );		
 
+		//Draw the little ship
+		g.drawImage( ship.getSprite(), ship.pos.getX()-ship.getWidth()/2, ship.pos.getY()-ship.getHeight()/2, this );				
 	}
 	
 	public void keyPressed(KeyEvent key) {
