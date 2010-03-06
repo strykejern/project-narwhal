@@ -29,7 +29,7 @@ import gameEngine.Vector;
  */
 public class Object extends Collidable {
 	private boolean allowCollision;
-	Vector velocity;
+	Vector speed;
 	Vector pos;
 	Image2D sprite;
 		
@@ -48,7 +48,7 @@ public class Object extends Collidable {
 	private void initialize(Image2D copySprite, int x, int y)
 	{
 		sprite = copySprite;
-		velocity = new Vector();
+		super.speed = speed = new Vector();
 		super.pos = pos = new Vector(x, y);
 		allowCollision = false;
 		super.setRadius( sprite.getWidth()/2 );
@@ -62,7 +62,7 @@ public class Object extends Collidable {
 	}
 
 	public void Move() {
-		pos.add(velocity);
+		pos.add(speed);
 	}
 
 	public void resizeObject( int width, int height ) {
