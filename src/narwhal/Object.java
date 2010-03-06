@@ -51,6 +51,7 @@ public class Object extends Collidable {
 		velocity = new Vector();
 		pos = new Vector(x, y);
 		allowCollision = false;
+		super.setRadius( sprite.getWidth()/2 );
 	}
 	
 	public int getWidth() {

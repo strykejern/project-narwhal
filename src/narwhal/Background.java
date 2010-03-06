@@ -18,6 +18,7 @@
 //********************************************************************************************
 package narwhal;
 
+import gameEngine.Log;
 import gameEngine.Profiler;
 
 import java.awt.*;
@@ -104,7 +105,6 @@ public class Background {
 		//Center the planet position on the screen
 		planet.pos.x = (WIDTH/2) - planet.getWidth()/2;
 		planet.pos.y = (HEIGHT/2) - planet.getHeight()/2;
-		
 		g.drawImage(planet.sprite.toImage(), planet.pos.getX(), planet.pos.getY(), null);
 	}
 	

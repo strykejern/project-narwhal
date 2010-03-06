@@ -89,7 +89,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		frame.getContentPane().setCursor(blankCursor);
 		
 		//Initialize the player ship
-		planet = new Object( new Image2D("data/planet.png"), SCREEN_X/2, SCREEN_Y/2 );
+		planet = new Object( new Image2D("data/planet/planet.png"), SCREEN_X/2, SCREEN_Y/2 );
 		planet.enableCollision();
 		
 		ship = new Object( new Image2D("data/spaceship.png"), SCREEN_X/2, SCREEN_Y/2 );
@@ -105,7 +105,8 @@ public class Game extends JPanel implements Runnable, KeyListener
     	while(running)
     	{
     		keepPlayerWithinBounds(ship);
-    		repaint();
+    		
+    		if( planet.collidesWith( ship ) ) Log.message("COLLISION!");
     		
     		if (up && ship.velocity.length() < 15f) ship.velocity.setLength(ship.velocity.length()+0.5f);
     		else if (down) ship.velocity.setLength(ship.velocity.length()/1.05f);
@@ -131,6 +132,8 @@ public class Game extends JPanel implements Runnable, KeyListener
             {
             	Log.warning(e.toString());
             }
+            
+    		repaint();
     	}
     	
     	//TODO: This never happens!?!
