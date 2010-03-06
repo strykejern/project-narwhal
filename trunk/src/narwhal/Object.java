@@ -63,8 +63,9 @@ public class Object extends Collidable {
 		return sprite.getHeight();
 	}
 
-	public void Move() {
+	public void update() {
 		pos.add(speed);
+		sprite.setDirection( (float)Math.toDegrees(super.direction) );
 	}
 	
     public float getAngle() {
@@ -75,14 +76,23 @@ public class Object extends Collidable {
 	    return sprite.toImage();
     }
 
+    /**
+     * JJ> Resizes both the collision box and sprite for this object in space
+     * @param width New width int
+     * @param height New height int
+     */
 	public void resizeObject( int width, int height ) {
 		super.setRadius( width/2 );
 		sprite.resize( width, height );
 	}
+	
+	/**
+	 * JJ> Rotates both collision box and sprite for this object
+	 * @param degrees How many degrees to rotate it by
+	 */
 	public void rotate( float degrees )
 	{
 		super.setDirection( (float)Math.toRadians(degrees) + super.direction );
-		sprite.rotate( degrees );
 	}
 
 	//JJ> Helper functions to set and disable collisions for this object
