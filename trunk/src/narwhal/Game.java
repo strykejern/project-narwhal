@@ -91,6 +91,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//Initialize the player ship
 		planet = new Object( new Image2D("data/planet/planet.png"), SCREEN_X/2, SCREEN_Y/2 );
 		planet.enableCollision();
+		planet.anchored = true;
 		
 		ship = new Object( new Image2D("data/spaceship.png"), SCREEN_X/2, SCREEN_Y/2 );
 		ship.resizeObject(SCREEN_X/12, SCREEN_X/12);
@@ -105,19 +106,19 @@ public class Game extends JPanel implements Runnable, KeyListener
     	{
     		keepPlayerWithinBounds(ship);
     		
-    		if( planet.collidesWith( ship ) ) ship.velocity.negate();
+    		planet.collidesWith( ship );
     		
-    		if (up && ship.velocity.length() < 15f) ship.velocity.setLength(ship.velocity.length()+0.5f);
-    		else if (down) ship.velocity.setLength(ship.velocity.length()/1.05f);
+    		if (up && ship.speed.length() < 15f) ship.speed.setLength(ship.speed.length()+0.5f);
+    		else if (down) ship.speed.setLength(ship.speed.length()/1.05f);
     		if (left)
     		{
     			ship.sprite.rotate(-5);
-    			ship.velocity.rotateToDegree(ship.sprite.getAngle()-90);
+    			ship.speed.rotateToDegree(ship.sprite.getAngle()-90);
     		}
     		else if (right)
     		{
     			ship.sprite.rotate(5);
-    			ship.velocity.rotateToDegree(ship.sprite.getAngle()-90);
+    			ship.speed.rotateToDegree(ship.sprite.getAngle()-90);
     		}
     		
     		ship.Move();
