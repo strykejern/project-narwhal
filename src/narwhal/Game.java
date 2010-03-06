@@ -89,6 +89,9 @@ public class Game extends JPanel implements Runnable, KeyListener
 		frame.getContentPane().setCursor(blankCursor);
 		
 		//Initialize the player ship
+		planet = new Object( new Image2D("data/planet.png"), SCREEN_X/2, SCREEN_Y/2 );
+		planet.enableCollision();
+		
 		ship = new Object( new Image2D("data/spaceship.png"), SCREEN_X/2, SCREEN_Y/2 );
 		ship.sprite.resize(SCREEN_X/12, SCREEN_X/12);
 		ship.enableCollision();
@@ -199,9 +202,13 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//Draw input string
 		g.setColor(Color.white);
 		g.drawString("Test = " + input, 20, 20);
-				
+
 		//Draw the little ship
 		g.drawImage( ship.sprite.toImage(), ship.pos.getX()-ship.sprite.getWidth()/2, ship.pos.getY()-ship.sprite.getHeight()/2, this );		
+		
+		//DEBUG
+		g.drawImage( planet.sprite.toImage(), planet.pos.getX()-planet.sprite.getWidth()/2, planet.pos.getY()-planet.sprite.getHeight()/2, this );		
+
 	}
 	
 	public void keyPressed(KeyEvent key) {

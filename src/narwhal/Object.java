@@ -18,6 +18,7 @@
 //********************************************************************************************
 package narwhal;
 
+import gameEngine.Collidable;
 import gameEngine.Image2D;
 import gameEngine.Vector;
 
@@ -26,16 +27,18 @@ import gameEngine.Vector;
  * or even an asteroid
  * @author Johan Jansen and Anders Eie
  */
-public class Object {
+public class Object extends Collidable {
 	private boolean allowCollision;
 	Vector velocity;
 	Vector pos;
 	Image2D sprite;
 		
 	public Object( Image2D copySprite, int x, int y ) {
+		super(0);
 		this.initialize(copySprite, x, y);
 	}
 	public Object( String fileName, int x, int y ) {
+		super(0);
 		this.initialize(new Image2D(fileName), x, y);
 	}
 	
@@ -47,7 +50,14 @@ public class Object {
 		sprite = copySprite;
 		velocity = new Vector();
 		pos = new Vector(x, y);
-		allowCollision = false;		
+		allowCollision = false;
+	}
+	
+	public int getWidth() {
+		return sprite.getWidth();
+	}
+	public int getHeight() {
+		return sprite.getHeight();
 	}
 
 	public void Move() {
@@ -63,30 +73,5 @@ public class Object {
 	}
 	public void enableCollision() {
 		allowCollision = true;
-	}
-
-	//JJ> TODO: implement this function
-	public boolean collidesWith( Object target ) {
-
-		//Are both collidable?
-		if( !this.allowCollision || !target.isCollidable() ) return false;
-
-		//Rectangle this
-		int dtx = this.pos.getX() - this.sprite.getWidth()/2;
-		int dty = this.pos.getY() - this.sprite.getHeight()/2;
-		int dbx = this.pos.getX() + this.sprite.getWidth()/2;
-		int dby = this.pos.getY() + this.sprite.getHeight()/2;
-		
-		//Rectangle they
-		int ttx = target.pos.getX() - target.sprite.getWidth()/2;
-		int tty = target.pos.getY() - target.sprite.getHeight()/2;
-		int tbx = target.pos.getX() + target.sprite.getWidth()/2;
-		int tby = target.pos.getY() + target.sprite.getHeight()/2;
-		
-		//check it out
-		if( dtx <= ttx && dty <= tty  ) 
-			if( dbx >= tbx && dby >= tby ) return true;
-		
-		return false;
 	}
 }
