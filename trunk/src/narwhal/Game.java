@@ -98,15 +98,17 @@ public class Game extends JPanel implements Runnable, KeyListener
     	music.play();
 
 		// da loop
+    	Sound crash = new Sound("data/crash.au");
     	while(running)
     	{
     		//Keep the player from moving outside the screen
     		keepPlayerWithinBounds(ship);
-    		
+
     		//Basic collision loop (put all detection here
     		if(planet != null)
     		if( planet.isCollidable() && ship.isCollidable() ) 
-    		planet.collidesWith( ship );
+    			if( planet.collidesWith( ship ) )
+    		    	crash.play();
     		
     		//Calculate ship movement
     		if (up && ship.speed.length() < 15f) ship.speed.setLength(ship.speed.length()+0.5f);
