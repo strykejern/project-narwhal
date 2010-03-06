@@ -111,10 +111,13 @@ public class Collidable {
 		}
 		if (this.anchored && object.anchored) return collision;
 		
+		//Was it a collision?
 		if (collision)
 		{
+			//We are circle
 			if (this.shape == null)
 			{
+				//They are circle
 				if (object.shape == null)
 				{
 					Vector colVec = this.pos.minus(object.pos);
@@ -125,6 +128,7 @@ public class Collidable {
 						object.speed.add(colVec);
 						object.pos.add(colVec);
 						object.speed.add(colVec);
+						object.speed.multiply(0.8f);		//Lose 20% speed
 						/*
 						float length = object.speed.length();
 						Vector tmp = object.speed.clone();
@@ -137,23 +141,25 @@ public class Collidable {
 					}
 					else if (!this.anchored && object.anchored)
 					{
-						
+						// TODO: Implement					
 					}
 					else
 					{
-						
+						// TODO: Implement			
 					}
 					
 				}
 				else if (object.shape == Shape.RECT)
 				{
-					
+					// TODO: Implement
 				}
 				else if (object.shape == Shape.TRIANGLE)
 				{
 					// TODO: Implement
 				}
 			}
+			
+			//We are rectangle
 			else if (this.shape == Shape.RECT)
 			{
 				if (object.shape == Shape.TRIANGLE)

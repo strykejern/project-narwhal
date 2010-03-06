@@ -19,16 +19,13 @@
 package narwhal;
 
 import gameEngine.Image2D;
-import gameEngine.Log;
 import gameEngine.Profiler;
-import gameEngine.Vector;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Random;
 
 /**
@@ -37,8 +34,9 @@ import java.util.Random;
  *
  */
 public class Background {
-	private Map<String, BufferedImage> imageHashMap = new HashMap<String, BufferedImage>(20, 0.5f);
-	private long randomSeed;
+	private LinkedHashMap<Long, BufferedImage> imageHashMap = new LinkedHashMap<Long, BufferedImage>();
+//	private Map<Long, BufferedImage> imageHashMap = new HashMap<Long, BufferedImage>(20, 0.5f);
+	private long currentSeed;
 	private boolean initialized = false;
 	private ArrayList<BufferedImage> stars;
 	private ArrayList<Image2D> nebulaList;
@@ -53,29 +51,30 @@ public class Background {
 	public Background(int width, int height, long seed){
 		this.WIDTH = width;
 		this.HEIGHT = height;
-		generate(seed);
+		generate( seed );
 	}
 	
 	public void generate(long seed) {
 		Profiler.begin("Generating Background");
 		
 		//Important, do first: generate the random seed
-		Random rand = new Random(seed);
-		randomSeed = seed;
+		Random rand = new Random (seed);
+		currentSeed = seed;
 		
 		//Predraw stars
 		if (!initialized) init();
 
 		//Have we visited this place before? No need to continue then!
-		if( imageHashMap.containsKey(seed) )
+		if( imageHashMap.containsKey( currentSeed ) )
 		{
 			Profiler.end("Generating Background");
 			return;
 		}
 		//Draw everything to a buffer. First things that are drawn appear behind other things.
+		
         if( imageHashMap.size() >= 10) imageHashMap.clear();	//Clear the entire hash map every 10 screens so we do not clutter memory        
-        imageHashMap.put( Long.toString(seed),  new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB) ); 	//No need for alpha on the background			
-        Graphics2D g = imageHashMap.get(Long.toString(seed)).createGraphics();
+        imageHashMap.put( currentSeed,  new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB) ); 	//No need for alpha on the background			
+        Graphics2D g = imageHashMap.get(currentSeed).createGraphics();
 		
         //I: Nebula (10% chance) or Black background (90%)
 		if( rand.nextInt(100) <= 10 ) drawNebula(rand, g);
@@ -153,6 +152,7 @@ public class Background {
 		loadStars();
 	}
 	
+	//TODO: This function creates a 700 ms bottle neck
 	private void loadNebulas(){
 		File[] fileList = new File("data/nebula").listFiles();
 				
@@ -215,7 +215,7 @@ public class Background {
 	 * @param g
 	 */
 	public void draw(Graphics g){
-		g.drawImage(imageHashMap.get(Long.toString(randomSeed)), 0, 0, null);
+		g.drawImage(imageHashMap.get(currentSeed), 0, 0, null);
 	}
 	
 }
