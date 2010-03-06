@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileInputStream;
 
 import javax.sound.sampled.*;
-import javax.sound.sampled.Mixer.Info;
 
 import org.newdawn.easyogg.OggClip;
 
@@ -84,11 +83,15 @@ public class Sound
 	}
 		
 	/**
-	 * JJ> Play the clip once
+	 * JJ> Play the clip once, but only if it has finished playing
 	 */
 	public void play() {
-		if( raw != null ) raw.start();
-		else if( ogg != null ) ogg.play();
+		if( raw != null )
+		{
+			if( raw.getMicrosecondLength() <= raw.getMicrosecondPosition() ) raw.setMicrosecondPosition(0);
+			raw.start();
+		}
+		else if( ogg != null && ogg.stopped() ) ogg.play();
 	}
 
 	/**
