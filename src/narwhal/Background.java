@@ -21,6 +21,7 @@ package narwhal;
 import gameEngine.Image2D;
 import gameEngine.Log;
 import gameEngine.Profiler;
+import gameEngine.Vector;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -42,6 +43,7 @@ public class Background {
 	private ArrayList<BufferedImage> stars;
 	private ArrayList<Image2D> nebulaList;
 	private ArrayList<Object> planetList;
+	private Object planet;
 	
 	private int WIDTH, HEIGHT;
 	
@@ -88,27 +90,31 @@ public class Background {
 		drawRandomStarfield(rand, g);
 		
 		//III: Planets (25% chance)
+		planet = null;
 		if( rand.nextInt(100) <= 25 ) drawPlanet(rand, g);
 		        		
 		Profiler.end("Generating Background");
 	}
 
 	private void drawPlanet( Random rand, Graphics2D g ) {
-		Object planet = planetList.get( rand.nextInt(planetList.size()) );
-		//planet.sprite.reset();
+		planet = planetList.get( rand.nextInt(planetList.size()) );
+		planet.getSprite().reset();
+		
+		planet.enableCollision();
+		planet.anchored = true;
 		
 		//Make it unique
 		int planetSize = rand.nextInt(WIDTH/2) + WIDTH/8;
 		
 		planet.resizeObject(planetSize, planetSize);
-		//if( rand.nextBoolean() ) planet.sprite.horizontalFlip();
-		//if( rand.nextBoolean() ) planet.sprite.verticalFlip();
+		if( rand.nextBoolean() ) planet.getSprite().horizontalFlip();
+		if( rand.nextBoolean() ) planet.getSprite().verticalFlip();
 		planet.rotate( rand.nextInt(360) );
 
 		//Center the planet position on the screen
-		planet.pos.x = (WIDTH/2) - planet.getWidth()/2;
-		planet.pos.y = (HEIGHT/2) - planet.getHeight()/2;
-		g.drawImage(planet.getSprite(), planet.pos.getX(), planet.pos.getY(), null);
+		planet.pos.x = (WIDTH/2);
+		planet.pos.y = (HEIGHT/2);
+//		g.drawImage(planet.getImage(), planet.pos.getX(), planet.pos.getY(), null);
 	}
 	
 	//Draw a random nebula
@@ -204,6 +210,11 @@ public class Background {
 				starGraph.dispose();
 			}
 		}
+	}
+	
+	public Object getPlanet()
+	{
+		return planet;
 	}
 			
 	/**

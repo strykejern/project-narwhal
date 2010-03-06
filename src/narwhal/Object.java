@@ -71,9 +71,13 @@ public class Object extends Collidable {
     public float getAngle() {
 	    return (float)Math.toDegrees(super.direction);
     }
-	
-    public Image getSprite() {
+
+    public Image getImage() {
 	    return sprite.toImage();
+    }
+
+    public Image2D getSprite() {
+	    return sprite;
     }
 
     /**
