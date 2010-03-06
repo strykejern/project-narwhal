@@ -141,9 +141,9 @@ public class Image2D
 	 * JJ> resizing a image using bilinear filtering
 	 */
 	public void resize(int newW, int newH) {  
-        int w = img.getWidth();  
-        int h = img.getHeight();  
-        boolean highQuality = false;
+        int w = original.getWidth();  
+        int h = original.getHeight();  
+        boolean highQuality = true;
         
         BufferedImage buffer = new BufferedImage(newW, newH, img.getType());  
         Graphics2D g = buffer.createGraphics();
@@ -155,7 +155,7 @@ public class Image2D
         }
         else g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR );  
         
-        g.drawImage(img, 0, 0, newW, newH, 0, 0, w, h, null);  
+        g.drawImage(original, 0, 0, newW, newH, 0, 0, w, h, null);  
         g.dispose();
 
         //Now set this as the new image
