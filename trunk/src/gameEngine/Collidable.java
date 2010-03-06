@@ -121,14 +121,14 @@ public class Collidable {
 					colVec.setLength((this.getRadius() + object.getRadius()) - colVec.length());
 					if (this.anchored && !object.anchored)
 					{
-						Log.message("xspeed: " + this.speed.x);
-						this.pos.add(colVec);
-						float length = this.speed.length();
-						Vector tmp = this.speed.clone();
+						colVec.negate();
+						object.pos.add(colVec);
+						float length = object.speed.length();
+						Vector tmp = object.speed.clone();
 						tmp.setLength(1);
 						colVec.setLength(1);
-						this.speed = tmp.plus(colVec);
-						this.speed.setLength(length);
+						object.speed = tmp.plus(colVec);
+						object.speed.setLength(length);
 					}
 					else if (!this.anchored && object.anchored)
 					{
