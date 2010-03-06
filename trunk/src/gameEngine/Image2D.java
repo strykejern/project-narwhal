@@ -20,9 +20,7 @@ package gameEngine;
 
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -110,8 +108,7 @@ public class Image2D
 	public void setDirection(float angle) {  
 		
 		//Limit the angles
-		while(angle > 360) angle -= 360;
-		while(angle < 0) angle += 360;
+		angle %= 360;
 		
         int w = (int) (img.getWidth()*1.42);  
         int h = (int) (img.getHeight()*1.42);
@@ -124,8 +121,7 @@ public class Image2D
         //cos(45) - cos(angle-45)
         g.rotate(Math.toRadians(angle), w/2.0, h/2.0);
         g.drawImage(img, null, (w-img.getWidth())/2, (h-img.getHeight())/2);
-        
-        
+                
         //Make it so
         currentAngle = (int)angle;
         rotated = buffer; 
@@ -166,7 +162,7 @@ public class Image2D
 	/**
 	 * JJ> Flips the image horizontally
 	 */
-	public void horizontalflip() {  
+	public void horizontalFlip() {  
         int w = img.getWidth();  
         int h = img.getHeight();  
         BufferedImage dimg = new BufferedImage(w, h, img.getType());  
@@ -181,7 +177,7 @@ public class Image2D
 	/**
 	 * JJ> Flips the image vertically
 	 */
-	public void verticalflip() {  
+	public void verticalFlip() {  
         int w = img.getWidth();  
         int h = img.getHeight();  
         BufferedImage dimg = new BufferedImage(w, h, img.getColorModel().getTransparency());  

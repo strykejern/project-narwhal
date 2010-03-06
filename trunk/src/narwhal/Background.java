@@ -97,13 +97,13 @@ public class Background {
 		//Make it unique
 		int planetSize = rand.nextInt(WIDTH/2) + WIDTH/8;
 		planet.sprite.resize(planetSize, planetSize);			
-		if( rand.nextBoolean() ) planet.sprite.horizontalflip();
-		if( rand.nextBoolean() ) planet.sprite.verticalflip();
+		if( rand.nextBoolean() ) planet.sprite.horizontalFlip();
+		if( rand.nextBoolean() ) planet.sprite.verticalFlip();
 		planet.sprite.setDirection( rand.nextInt(360) );
 
 		//Center the planet position on the screen
-		planet.pos.x = (WIDTH/2) - planet.sprite.getWidth()/2;
-		planet.pos.y = (HEIGHT/2) - planet.sprite.getHeight()/2;
+		planet.pos.x = (WIDTH/2) - planet.getWidth()/2;
+		planet.pos.y = (HEIGHT/2) - planet.getHeight()/2;
 		
 		g.drawImage(planet.sprite.toImage(), planet.pos.getX(), planet.pos.getY(), null);
 	}
@@ -116,12 +116,12 @@ public class Background {
 		//Make it unique
 		nebula.sprite.resize(WIDTH, HEIGHT);
 		nebula.sprite.setAlpha( rand.nextFloat() );
-		if( rand.nextBoolean() ) nebula.sprite.horizontalflip();
-		if( rand.nextBoolean() ) nebula.sprite.verticalflip();
+		if( rand.nextBoolean() ) nebula.sprite.horizontalFlip();
+		if( rand.nextBoolean() ) nebula.sprite.verticalFlip();
 
 		//Center the planet position on the screen
-		nebula.pos.x = (WIDTH/2) - nebula.sprite.getWidth()/2;
-		nebula.pos.y = (HEIGHT/2) - nebula.sprite.getHeight()/2;
+		nebula.pos.x = (WIDTH/2) - nebula.getWidth()/2;
+		nebula.pos.y = (HEIGHT/2) - nebula.getHeight()/2;
 		
 		//Now draw it
 		g.drawImage(nebula.sprite.toImage(), nebula.pos.getX(), nebula.pos.getY(), null);
