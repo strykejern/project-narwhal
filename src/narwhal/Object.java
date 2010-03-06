@@ -81,7 +81,7 @@ public class Object extends Collidable {
 	}
 	public void rotate( float degrees )
 	{
-		super.setDirection( (float)Math.toRadians(degrees) );
+		super.setDirection( (float)Math.toRadians(degrees) + super.direction );
 		sprite.rotate( degrees );
 	}
 
