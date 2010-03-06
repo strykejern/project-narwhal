@@ -186,7 +186,7 @@ public class Background {
 		//Load Stars into memory
 		Random rand = new Random();
 		stars = new ArrayList<BufferedImage>();
-		for (int s = 1; s < 30; ++s)
+		for (int s = 1; s < 40; ++s)
 		{
 			for (int c = 0; c < 255; c += 16)
 			{
@@ -195,10 +195,10 @@ public class Background {
 				
 				Color col;
 				int rareStar = rand.nextInt(20);				
-				for (int k = 0; k < s; ++k)
+				for (int k = 0; k < s*0.6; ++k)
 				{
-					if(rareStar == 1)		col = new Color(c, 0, 0, (int)(((float)k/(float)s)*255f));
-					else					col = new Color((int)(((float)k/(float)s)*255f), (int)(((float)k/(float)s)*255f), c, (int)(((float)k/(float)s)*255f));
+					if(rareStar == 1)		col = new Color(c, 0, 0, (int)(Math.pow(255, ((float)k/(float)(s*0.6)))));
+					else					col = new Color((int)(64+((float)k/(float)s)*192f), 64+(int)(((float)k/(float)s)*192f), c, (int)(Math.pow(255, ((float)k/(float)(s*0.6)))));
 					
 					starGraph.setColor(col);
 					starGraph.fillOval(k, k, s-(2*k), s-(2*k));
