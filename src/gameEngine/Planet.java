@@ -19,7 +19,9 @@ public class Planet extends GameObject {
 		if( rand.nextBoolean() ) myImage.verticalFlip();
 		myImage.rotate( rand.nextInt(360) );
 		
-		super.init(pos, planetSize/2, image);
+		this.pos = pos;
+		this.radius = planetSize/2;
+		this.image = myImage;
 		
 		//Physics
 		this.anchored = true;
@@ -30,8 +32,8 @@ public class Planet extends GameObject {
 	}
 	
 	public void drawCollision(Graphics g){
-		int w = (int)super.getRadius()*2;
-		int h = (int)super.getRadius()*2;
+		int w = (int)radius*2;
+		int h = (int)radius*2;
 		g.setColor(Color.RED);
 		g.drawOval(pos.getX()-w/2, pos.getY()-h/2, w, h);
 		

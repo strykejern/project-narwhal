@@ -11,30 +11,13 @@ public abstract class GameObject extends Physics{
 		super();
 	}
 	
-	public GameObject(Vector pos, Shape shape, Vector size, Image2D image, Keyboard keys){
-		init(pos, shape, size, image, keys);
-	}
-	
-	public void init(Vector pos, Shape shape, Vector size, Image2D image, Keyboard keys){
-		super.init(pos, false, shape, size);
+	protected void init(Vector pos, Vector speed, Vector size, Image2D image, Shape shape, float direction){
+		this.pos = pos;
+		this.speed = speed;
+		this.size = size;
 		this.image = image;
-		this.keys = keys;
-	}
-	
-	public void init(Vector pos, Shape shape, Vector size, Image2D image){
-		super.init(pos, false, shape, size);
-		this.image = image;
-	}
-	
-	public void init(Vector pos, int radius, Image2D image){
-		super.init(pos, false, radius);
-		this.image = image;
-	}
-	
-	public void init(Vector pos, int radius, Image2D image, Keyboard keys) {
-		super.init(pos, false, radius);
-		this.image = image;
-		this.keys = keys;
+		this.shape = shape;
+		this.direction = direction;
 	}
 	
 	public void update() {
@@ -59,8 +42,8 @@ public abstract class GameObject extends Physics{
 		//Draw it as a circle
 		if( super.shape == null )
 		{
-			w = (int)super.getRadius()*2;
-			h = (int)super.getRadius()*2;
+			w = (int)super.radius*2;
+			h = (int)super.radius*2;
 			g.setColor(Color.RED);
 			g.drawOval(pos.getX()-w/2, pos.getY()-h/2, w, h);			
 		}
