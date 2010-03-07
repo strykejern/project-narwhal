@@ -35,7 +35,7 @@ public class Image2D
 	private BufferedImage img;			//The image itself
 	private BufferedImage rotated;		//The image with effects added (rotation, alpha, etc.)
 	private BufferedImage original;		//The image when it was first loaded
-	private int currentAngle;
+	private float currentAngle;
 		
 	/**
 	 * JJ> Constructor makes sure the image is correctly loaded
@@ -106,12 +106,12 @@ public class Image2D
 	 * @param angle: the new direction
 	 */
 	public void setDirection(float angle) {  
+	
+		//Limit the angles
+		//angle %= 4;
 		
 		//No change
 		if( angle == currentAngle ) return;
-		
-		//Limit the angles
-		angle %= 360;
 		
         int w = (int) (img.getWidth()*1.42);  
         int h = (int) (img.getHeight()*1.42);
@@ -122,11 +122,11 @@ public class Image2D
         //g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
     	//g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
 
-    	g.rotate(Math.toRadians(angle), w/2.0, h/2.0);
+    	g.rotate(angle, w/2.0, h/2.0);
         g.drawImage(img, null, (w-img.getWidth())/2, (h-img.getHeight())/2);
                 
         //Make it so
-        currentAngle = (int)angle;
+        currentAngle = angle;
         rotated = buffer; 
     }  
 	
@@ -275,7 +275,7 @@ public class Image2D
 	/**
 	 * JJ> Returns the current angle for this image
 	 */
-	public int getAngle(){
+	public float getAngle(){
 		return currentAngle;
 	}
 

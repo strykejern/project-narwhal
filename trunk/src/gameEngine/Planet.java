@@ -8,10 +8,10 @@ import java.util.Random;
 import narwhal.Game;
 
 public class Planet extends GameObject {
-	public Planet(Vector pos, ArrayList<Image2D> images, long seed){
+	public Planet(Vector pos, ArrayList<Image2D> imageList, long seed){
 		
 		Random rand = new Random(seed);	
-		Image2D myImage = images.get( rand.nextInt(images.size()) );
+		Image2D myImage = imageList.get( rand.nextInt(imageList.size()) );
 
 		//Make it unique
 		int planetSize = rand.nextInt(Game.getScreenWidth()/2) + Game.getScreenHeight()/2;
