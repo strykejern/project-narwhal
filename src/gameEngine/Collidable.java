@@ -73,7 +73,7 @@ public class Collidable {
 		this.direction = radians;
 	}
 	
-	private float getRadius(){
+	protected float getRadius(){
 		return radius;
 	}
 	

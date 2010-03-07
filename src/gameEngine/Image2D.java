@@ -262,14 +262,14 @@ public class Image2D
 	 * JJ> Get width for this buffered image
 	 */
 	public int getWidth() {
-		return img.getWidth();
+		return rotated.getWidth();
 	}
 	
 	/**
 	 * JJ> Get height for this buffered image
 	 */
 	public int getHeight() {
-		return img.getHeight();
+		return rotated.getHeight();
 	}
 
 	/**
