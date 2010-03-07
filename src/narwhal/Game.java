@@ -26,6 +26,7 @@ import gameEngine.Planet;
 import gameEngine.Profiler;
 import gameEngine.Sound;
 import gameEngine.Spaceship;
+import gameEngine.Vector;
 
 import java.awt.*;
 import javax.swing.*;
@@ -37,7 +38,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
-import java.util.Vector;
 
 
 /**
@@ -113,8 +113,6 @@ public class Game extends JPanel implements Runnable, KeyListener
 		
 		//Initialize the player ship		
 		ship = new Spaceship(new Vector(SCREEN_X/2, SCREEN_Y/2+100), new Image2D("data/spaceship.png"), keys);
-		ship.resizeObject(SCREEN_X/12, SCREEN_X/12);
-		ship.enableCollision();
 
 		//Play some music
     	Sound music = new Sound("data/space.ogg");
@@ -127,11 +125,11 @@ public class Game extends JPanel implements Runnable, KeyListener
     	while(running)
     	{
     		//Keep the player from moving outside the screen
-    		keepPlayerWithinBounds(ship);
+    		//keepPlayerWithinBounds(ship);
 
     		//Basic collision loop (put all detection here
     		if(planet != null)
-    		if( planet.isCollidable() && ship.isCollidable() ) 
+    		//if( planet.isCollidable() && ship.isCollidable() ) 
     			if( planet.collidesWith( ship ) )
     		    	crash.play();
     		
@@ -156,7 +154,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	}
 
 	
-	private void calculateShipMovement()
+	/*private void calculateShipMovement()
 	{
 		if (up && ship.speed.length() < 15f) ship.speed.setLength(ship.speed.length()+0.5f);
 		else if (down) ship.speed.setLength(ship.speed.length()/1.05f);
@@ -171,7 +169,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 			ship.rotate(5);
 			ship.speed.rotateToDegree(ship.getAngle());
 		}
-	}
+	}*/
 	
 	
 	/**
@@ -226,12 +224,20 @@ public class Game extends JPanel implements Runnable, KeyListener
 	private void generateNewScreen()
 	{
 		long seed = addBits(x, y);
-		Random rand = new Random(seed);
-		bg.generate(seed);
-		
-		planet = null;
-		if(rand.nextInt(100) <= 25)
-			planet = bg.generatePlanet(seed);
+		if (planets.keySet().contains(seed))
+			planet = planets.get(seed);
+		else
+		{
+			Random rand = new Random(seed);
+			bg.generate(seed);
+			
+			planet = null;
+			if(rand.nextInt(100) <= 25)
+			{
+				planets.put(seed, new Planet(new Vector(), planetList, seed));
+				planet = planets.get(seed);
+			}
+		}
 	}
 	
 	private void loadPlanets(){
@@ -257,10 +263,12 @@ public class Game extends JPanel implements Runnable, KeyListener
 
 		//Draw the planet
 		if(planet != null)
-		g.drawImage( planet.getImage(), planet.pos.getX()-planet.getWidth()/2, planet.pos.getY()-planet.getHeight()/2, this );		
-
+		//	g.drawImage( planet.getImage(), planet.pos.getX()-planet.getWidth()/2, planet.pos.getY()-planet.getHeight()/2, this );		
+			planet.drawCollision(g);
+			
 		//Draw the little ship
-		g.drawImage( ship.getImage(), ship.pos.getX()-ship.getWidth()/2, ship.pos.getY()-ship.getHeight()/2, this );				
+		//g.drawImage( ship.getImage(), ship.pos.getX()-ship.getWidth()/2, ship.pos.getY()-ship.getHeight()/2, this );
+		ship.drawCollision(g);
 		
 		ship.drawCollision(g);	
 		if(planet != null)	
