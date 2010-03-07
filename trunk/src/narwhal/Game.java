@@ -90,6 +90,8 @@ public class Game extends JPanel implements Runnable, KeyListener
 		frame.addKeyListener(this);
 		keys = new Keyboard();
 		planets = new HashMap<Long, Planet>();
+		//Initialize the player ship		
+		ship = new Spaceship(new Vector(SCREEN_X/2, SCREEN_Y/2+100), new Image2D("data/spaceship.png"), keys);
 	}
 	
 	static public int getScreenWidth()	{
@@ -111,8 +113,6 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//Generate the first background
 		generateNewScreen();
 		
-		//Initialize the player ship		
-		ship = new Spaceship(new Vector(SCREEN_X/2, SCREEN_Y/2+100), new Image2D("data/spaceship.png"), keys);
 
 		//Play some music
     	Sound music = new Sound("data/space.ogg");
@@ -134,7 +134,7 @@ public class Game extends JPanel implements Runnable, KeyListener
     		    	crash.play();
     		
     		//Calculate ship movement
-    		calculateShipMovement();
+    		//calculateShipMovement();
     		ship.update();
     		try 
     		{
