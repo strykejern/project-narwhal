@@ -91,6 +91,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		
 		//Initialize the player ship		
 		ship = new Spaceship(new Vector(SCREEN_X/2, SCREEN_Y/2+100), new Image2D("data/spaceship.png"), keys);
+		ship.resizeObject( SCREEN_X/200,  SCREEN_X/200);
 	}
 	
 	static public int getScreenWidth()	{
@@ -258,15 +259,15 @@ public class Game extends JPanel implements Runnable, KeyListener
 
 		//Draw the planet
 		if(currentPlanet != null)
-		//	g.drawImage( planet.getImage(), planet.pos.getX()-planet.getWidth()/2, planet.pos.getY()-planet.getHeight()/2, this );		
+		{
+			currentPlanet.draw(g);
 			currentPlanet.drawCollision(g);
-			
-		//Draw the little ship
-		//g.drawImage( ship.getImage(), ship.pos.getX()-ship.getWidth()/2, ship.pos.getY()-ship.getHeight()/2, this );
-		ship.drawCollision(g);
-		ship.draw(g);
+		}
 		
-		if(currentPlanet != null) currentPlanet.drawCollision(g);
+		//Draw the little ship
+		ship.draw(g);
+		ship.drawCollision(g);
+		
 	}
 	
 	public void keyPressed(KeyEvent key) {
