@@ -21,14 +21,11 @@ package narwhal;
 import gameEngine.Image2D;
 import gameEngine.Log;
 import gameEngine.Profiler;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
-//import java.util.LinkedHashMap;
-//import java.util.Hashtable;
 import java.util.HashMap;
 
 /**
@@ -37,9 +34,7 @@ import java.util.HashMap;
  *
  */
 public class Background {
-//	private LinkedHashMap<Long, BufferedImage> imageHashMap = new LinkedHashMap<Long, BufferedImage>();
-  private HashMap<Long, BufferedImage> imageHashMap = new HashMap<Long, BufferedImage>(20, 0.5f);
-//	private Hashtable<Long, BufferedImage> imageHashMap = new Hashtable<Long, BufferedImage>();
+	private HashMap<Long, Image> imageHashMap = new HashMap<Long, Image>(10, 0.75f);
 	private long currentSeed;
 	private ArrayList<BufferedImage> stars;
 	private ArrayList<Image2D> nebulaList;
@@ -83,16 +78,14 @@ public class Background {
 		//Remove the oldest element every 10 screens to free memory
 		if( imageHashMap.size() >= 10) 
 		{
-			if( imageHashMap.remove( imageHashMap.keySet().toArray()[0] ) == null)
-			Log.warning("Could not free memory");		
-			Profiler.memoryReport();
+			imageHashMap.remove( imageHashMap.keySet().toArray()[0] );
 		}
-		
+
 		//Draw everything to a buffer. First things that are drawn appear behind other things.
 		//Begin drawing the  actual background and save it in memory
-        try
+		try
         {
-        	BufferedImage buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_555_RGB);
+	    	BufferedImage buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_555_RGB);
     		Graphics2D g = buffer.createGraphics();
         	
             //I: Nebula (10% chance) or Black background (90%)
@@ -108,7 +101,7 @@ public class Background {
     		
     		//All done!
     		g.dispose();
-        	imageHashMap.put( currentSeed, buffer );
+    		imageHashMap.put( currentSeed, buffer );
         }
         catch (OutOfMemoryError e) 
         {
@@ -141,26 +134,24 @@ public class Background {
 		//Center the planet position on the screen
 		planet.pos.x = (WIDTH/2);
 		planet.pos.y = (HEIGHT/2);
+		planet.update();
 		return planet;
 	}
 	
 	//Draw a random nebula
 	private void drawNebula(Random rand, Graphics2D g) {
-		Image2D nebula = nebulaList.get( rand.nextInt(nebulaList.size()) ) ;
-//		nebula.reset();
+		
+		//Figure out what it looks like
+		int whichNebula = rand.nextInt(nebulaList.size());
+		nebulaList.get( whichNebula ).reset();
 		
 		//Make it unique
-//		nebula.resize(WIDTH, HEIGHT);
-//		nebula.setAlpha( rand.nextFloat() );
-		if( rand.nextBoolean() ) nebula.horizontalFlip();
-		if( rand.nextBoolean() ) nebula.verticalFlip();
-
-		//Center the planet position on the screen
-		int xPos = (WIDTH/2) - nebula.getWidth()/2;
-		int yPos = (HEIGHT/2) - nebula.getHeight()/2;
+		nebulaList.get( whichNebula ).setAlpha( rand.nextFloat() );
+		if( rand.nextBoolean() ) nebulaList.get( whichNebula ).horizontalFlip();
+		if( rand.nextBoolean() ) nebulaList.get( whichNebula ).verticalFlip();
 			
 		//Now draw it
-		g.drawImage(nebula.toImage(), xPos, yPos, null);
+		g.drawImage(nebulaList.get( whichNebula ).toImage(), 0, 0, null);
 	}
 	
 	/**
@@ -240,8 +231,7 @@ public class Background {
 	 * @param g
 	 */
 	public void draw(Graphics g){
-		BufferedImage buffer = imageHashMap.get(currentSeed);
-		if(buffer != null) g.drawImage(buffer, 0, 0, null);
+		g.drawImage(imageHashMap.get(currentSeed), 0, 0, null);
 	}
 	
 }
