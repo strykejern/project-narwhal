@@ -1,33 +1,11 @@
 package gameEngine;
 
-public class Physics extends Collidable{
+public abstract class Physics extends Collidable{
 	protected Vector speed;
 	public boolean anchored;
 	
 	public Physics(){
 		
-	}
-	
-	public Physics(Vector pos, Shape shape, Vector size){
-		init(pos, false, shape, size);
-	}
-	
-	public Physics(Vector pos, int radius){
-		init(pos, false, radius);
-	}
-	
-	protected void init(Vector pos, boolean anchored, Shape shape, Vector size){
-		super.init(shape, size);
-		this.pos = pos;
-		this.speed = new Vector();
-		this.anchored = anchored;
-	}
-	
-	protected void init(Vector pos, boolean anchored, int radius){
-		super.init(radius);
-		this.pos = pos;
-		this.speed = new Vector();
-		this.anchored = anchored;
 	}
 	
 	public void update(){
@@ -42,7 +20,7 @@ public class Physics extends Collidable{
 			if (object.shape == null)
 			{
 				Vector colVec = this.pos.minus(object.pos);
-				colVec.setLength((this.getRadius() + object.getRadius()) - colVec.length());
+				colVec.setLength((this.radius + object.radius) - colVec.length());
 				if (this.anchored && !object.anchored)
 				{
 					colVec.negate();

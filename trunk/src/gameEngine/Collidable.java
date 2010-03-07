@@ -19,7 +19,7 @@
 
 package gameEngine;
 
-public class Collidable {
+public abstract class Collidable {
 	protected Shape shape;
 	protected float direction;
 	protected Vector pos;
@@ -38,74 +38,8 @@ public class Collidable {
 		
 	}
 	
-	/**
-	 * Creates a circle object
-	 * @param size - Radius of the circle
-	 */
-	public Collidable(int size){
-		init(size);
-	}
-	
-	/**
-	 * Creates a Rectangle or a Triangle object
-	 * @param shape - Type of shape of the object
-	 * @param width - Width of the object
-	 * @param height - Height of the object
-	 */
-	public Collidable(Shape shape, Vector size){
-		init(shape, size);
-	}
-	
-	/**
-	 * Initializes a Collidable object with shape RECT or TRIANGLE
-	 * PS: only needed if default constructor was used
-	 * @param shape - Type of shape of the object
-	 * @param width - Width of the object
-	 * @param height - Height of the object
-	 */
-	protected void init(Shape shape, Vector size){
-		this.shape = shape;
-		this.size = size;
-		direction = 0;
-		pos = new Vector();
-	}
-	
-	/**
-	 * Initializes a Collidable object with shape CIRCLE
-	 * PS: only needed if default constructor was used
-	 * @param size - Radius of the circle
-	 */
-	protected void init(int size){
-		this.shape = null;
-		this.size = new Vector(size, size);
-		direction = 0;
-		pos = new Vector();
-	}
-	
-	/**
-	 * Sets the direction of the object
-	 */
-	protected void setDirection(int degrees){
-		setDirection((float)Math.toRadians(degrees));
-	}
-	
-	/**
-	 * Sets the direction of the object
-	 */
-	protected void setDirection(float radians){
-		this.direction = radians;
-	}
-	
-	protected float getRadius(){
-		return radius;
-	}
-	
-	protected void setRadius(int radius){
-		this.radius = (float)radius;
-	}
-	
 	private boolean pointInsideShape(Vector point){
-		if 		(this.shape == null && pos.minus(point).length() < getRadius()) return true;
+		if 		(this.shape == null && pos.minus(point).length() < radius) return true;
 		else if (this.shape == Shape.RECT)
 		{
 			// TODO: account for rotation
@@ -132,13 +66,13 @@ public class Collidable {
 		{
 			if (object.shape == null)
 			{
-				if (this.pos.minus(object.pos).length() < this.getRadius() + object.getRadius()) collision = true;
+				if (this.pos.minus(object.pos).length() < this.radius + object.radius) collision = true;
 			}
 			else if (object.shape == Shape.RECT)
 			{
 				// Sloppy collision detection between circle and rectangle
 				Vector testPoint = object.pos.plus(object.size.dividedBy(2)).minus(this.pos);
-				testPoint.setLength(this.getRadius());
+				testPoint.setLength(this.radius);
 				testPoint = this.pos.plus(testPoint);
 				collision = object.pointInsideShape(testPoint);
 			}
