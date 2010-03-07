@@ -110,6 +110,10 @@ public class Vector {
 		this.y = fy * length;
 	}
 	
+	public void grow(float length){
+		
+	}
+	
 	/**
 	 * JJ> Gets the X value in this vector as a integer
 	 * @return this.x as an integer

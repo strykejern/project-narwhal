@@ -20,13 +20,11 @@
 package gameEngine;
 
 public class Collidable {
-	private Shape shape;
+	protected Shape shape;
 	protected float direction;
 	protected Vector pos;
-	protected Vector speed;
-	private Vector size;
-	private float radius;
-	public boolean anchored;
+	protected Vector size;
+	protected float radius;
 	
 	public static enum Shape{
 		RECT,
@@ -34,15 +32,18 @@ public class Collidable {
 	}
 	
 	/**
+	 * Creates an uninitialized Collidable object
+	 */
+	public Collidable(){
+		
+	}
+	
+	/**
 	 * Creates a circle object
 	 * @param size - Radius of the circle
 	 */
 	public Collidable(int size){
-		this.shape = null;
-		this.size = new Vector(size, size);
-		direction = 0;
-		pos = new Vector();
-		anchored = false;
+		init(size);
 	}
 	
 	/**
@@ -51,12 +52,34 @@ public class Collidable {
 	 * @param width - Width of the object
 	 * @param height - Height of the object
 	 */
-	public Collidable(Shape shape, int width, int height){
+	public Collidable(Shape shape, Vector size){
+		init(shape, size);
+	}
+	
+	/**
+	 * Initializes a Collidable object with shape RECT or TRIANGLE
+	 * PS: only needed if default constructor was used
+	 * @param shape - Type of shape of the object
+	 * @param width - Width of the object
+	 * @param height - Height of the object
+	 */
+	protected void init(Shape shape, Vector size){
 		this.shape = shape;
-		size = new Vector(width, height);
+		this.size = size;
 		direction = 0;
 		pos = new Vector();
-		anchored = false;
+	}
+	
+	/**
+	 * Initializes a Collidable object with shape CIRCLE
+	 * PS: only needed if default constructor was used
+	 * @param size - Radius of the circle
+	 */
+	protected void init(int size){
+		this.shape = null;
+		this.size = new Vector(size, size);
+		direction = 0;
+		pos = new Vector();
 	}
 	
 	/**
@@ -98,7 +121,6 @@ public class Collidable {
 		return false;
 	}
 	
-	// TODO: Implement
 	public boolean collidesWith(Collidable object){
 		boolean collision = false;
 		
@@ -133,66 +155,6 @@ public class Collidable {
 				
 			}
 		}
-		if (this.anchored && object.anchored) return collision;
-		
-		//Was it a collision?
-		if (collision)
-		{
-			//We are circle
-			if (this.shape == null)
-			{
-				//They are circle
-				if (object.shape == null)
-				{
-					Vector colVec = this.pos.minus(object.pos);
-					colVec.setLength((this.getRadius() + object.getRadius()) - colVec.length());
-					if (this.anchored && !object.anchored)
-					{
-						colVec.negate();
-						object.speed.add(colVec);
-						object.pos.add(colVec);
-						object.speed.add(colVec);
-						object.speed.multiply(0.8f);		//Lose 20% speed
-						/*
-						float length = object.speed.length();
-						Vector tmp = object.speed.clone();
-						tmp.setLength(1);
-						colVec.setLength(1);
-						object.speed = tmp.plus(colVec).plus(colVec);
-						object.speed.setLength(length);
-						*/
-						object.direction = object.speed.getAngle();// + (float)(Math.PI / 2);
-					}
-					else if (!this.anchored && object.anchored)
-					{
-						// TODO: Implement					
-					}
-					else
-					{
-						// TODO: Implement			
-					}
-					
-				}
-				else if (object.shape == Shape.RECT)
-				{
-					// TODO: Implement
-				}
-				else if (object.shape == Shape.TRIANGLE)
-				{
-					// TODO: Implement
-				}
-			}
-			
-			//We are rectangle
-			else if (this.shape == Shape.RECT)
-			{
-				if (object.shape == Shape.TRIANGLE)
-				{
-					// TODO: Implement
-				}
-			}
-		}
-		
 		return collision;
 	}
 }
