@@ -38,7 +38,7 @@ import java.util.Random;
  */
 public class Game extends JPanel implements Runnable, KeyListener
 {
-	private static int SCREEN_X = 1024, SCREEN_Y = 768;
+	private static int SCREEN_X = 800, SCREEN_Y = 600;
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
 	private boolean running;
@@ -58,7 +58,10 @@ public class Game extends JPanel implements Runnable, KeyListener
 
 	
 	public static void main(String[] args) throws InterruptedException{	
-		JFrame parentWindow = new JFrame("Project Narwhal");		
+    	//Initialize the logging system, do this first so that error logging happens correctly.
+    	Log.initialize();
+
+    	JFrame parentWindow = new JFrame("Project Narwhal");		
     	parentWindow.getContentPane().add(new Game(parentWindow));
 
     	parentWindow.setSize(SCREEN_X , SCREEN_Y);
@@ -67,13 +70,13 @@ public class Game extends JPanel implements Runnable, KeyListener
    	}
 	
 	public Game(JFrame frame){
-		this.frame = frame;
+		bg = new Background(SCREEN_X, SCREEN_Y, addBits(x, y));
+    	this.frame = frame;
 		Image2D icon = new Image2D("data/icon.png");
 		frame.setIconImage( icon.toImage() );
 		new Thread(this).start();
 		running = true;
 		frame.addKeyListener(this);
-		bg = new Background(SCREEN_X, SCREEN_Y, addBits(x, y));
 	}
 	
 	//JJ> This is the main game loop
@@ -81,12 +84,12 @@ public class Game extends JPanel implements Runnable, KeyListener
 		
 		// Remember the starting time
     	long tm = System.currentTimeMillis();
-
-    	//Initialize the logging system, do this first so that error logging happens correctly.
-    	Log.initialize();
     	
 		// Set the blank cursor to the JFrame.
 		frame.getContentPane().setCursor(blankCursor);
+
+		//Generate the first background
+		generateNewScreen();
 		
 		//Initialize the player ship		
 		ship = new Object( new Image2D("data/spaceship.png"), SCREEN_X/2, SCREEN_Y/2+100 );
@@ -97,8 +100,10 @@ public class Game extends JPanel implements Runnable, KeyListener
     	Sound music = new Sound("data/space.ogg");
     	music.play();
 
-		// da loop
+    	//Load crash sound
     	Sound crash = new Sound("data/crash.au");
+
+		// da loop
     	while(running)
     	{
     		//Keep the player from moving outside the screen
@@ -111,19 +116,7 @@ public class Game extends JPanel implements Runnable, KeyListener
     		    	crash.play();
     		
     		//Calculate ship movement
-    		if (up && ship.speed.length() < 15f) ship.speed.setLength(ship.speed.length()+0.5f);
-    		else if (down) ship.speed.setLength(ship.speed.length()/1.05f);
-
-    		if (left)
-    		{
-    			ship.rotate(-5);
-    			ship.speed.rotateToDegree(ship.getAngle());
-    		}
-    		else if (right)
-    		{
-    			ship.rotate(5);
-    			ship.speed.rotateToDegree(ship.getAngle());
-    		}
+    		calculateShipMovement();
     		ship.update();
     		
     		try 
@@ -134,7 +127,7 @@ public class Game extends JPanel implements Runnable, KeyListener
             catch(InterruptedException e)
             {
             	Log.warning(e.toString());
-            }
+            }		
             
     		repaint();
     	}
@@ -142,6 +135,25 @@ public class Game extends JPanel implements Runnable, KeyListener
     	//TODO: This never happens!?!
        	Log.close();
 	}
+
+	
+	private void calculateShipMovement()
+	{
+		if (up && ship.speed.length() < 15f) ship.speed.setLength(ship.speed.length()+0.5f);
+		else if (down) ship.speed.setLength(ship.speed.length()/1.05f);
+
+		if (left)
+		{
+			ship.rotate(-5);
+			ship.speed.rotateToDegree(ship.getAngle());
+		}
+		else if (right)
+		{
+			ship.rotate(5);
+			ship.speed.rotateToDegree(ship.getAngle());
+		}
+	}
+	
 	
 	/**
 	 * JJ> This function puts together the bits of two integers and returns it as one long
@@ -162,7 +174,6 @@ public class Game extends JPanel implements Runnable, KeyListener
 	 */
 	void keepPlayerWithinBounds( Object player ) {
 		boolean nextScreen = false;
-		long seed = 0;
 				
 		if( player.pos.x > SCREEN_X ) 
 		{
@@ -190,16 +201,18 @@ public class Game extends JPanel implements Runnable, KeyListener
 		}
 		
 		//Did we cross into a new screen?
-		if( nextScreen ) 
-		{
-			seed = addBits(x, y);
-			Random rand = new Random(seed);
-			bg.generate(seed);
-			
-			planet = null;
-			if(rand.nextInt(100) <= 25)
+		if( nextScreen ) generateNewScreen();
+	}
+	
+	private void generateNewScreen()
+	{
+		long seed = addBits(x, y);
+		Random rand = new Random(seed);
+		bg.generate(seed);
+		
+		planet = null;
+		if(rand.nextInt(100) <= 25)
 			planet = bg.generatePlanet(seed);
-		}
 	}
 	
 	/*

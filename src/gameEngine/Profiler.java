@@ -32,6 +32,7 @@ import java.util.Map;
 public class Profiler {
 
 	static Map<String, Profiler> profileList = new HashMap<String, Profiler>();
+	private static long lastUsedMem;  
 	
 	/**
 	 * JJ> Begins monitoring the processing time something uses. Remember to call Profiler.end()
@@ -53,6 +54,26 @@ public class Profiler {
 	public static void beginNano( String profileName ) {
 		if( !profileList.containsKey( profileName ) ) profileList.put( profileName,  new Profiler( profileName ) );		
 		profileList.get(profileName).start(false);
+	}
+	
+	public static void memoryReport()
+	{	   
+		    // scrub well before measuring:  
+		    System.gc();  
+		    System.gc();  
+		    System.gc();
+		   
+		    // measure memory usage & change:  
+		    Runtime rt = Runtime.getRuntime();  
+		    long totalMem = rt.totalMemory();  
+		    long freeMem = rt.freeMemory();  
+		    long usedMem = totalMem - freeMem;  
+		    long diff = usedMem -lastUsedMem;  
+		    lastUsedMem = usedMem;  
+		   
+		    // report:  
+		    String add = (diff >= 0) ? "+" : "";
+		    Log.message("Memory used: " + usedMem + "\tincreased by: " + add + diff );
 	}
 
 	/**
