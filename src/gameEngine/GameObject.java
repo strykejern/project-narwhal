@@ -10,19 +10,30 @@ public abstract class GameObject extends Physics{
 		super();
 	}
 	
-	public GameObject(Vector pos, Shape shape, Vector size, Image2D image, Vector speed, Keyboard keys){
-		init(pos, shape, size, image, speed, keys);
+	public GameObject(Vector pos, Shape shape, Vector size, Image2D image, Keyboard keys){
+		init(pos, shape, size, image, keys);
 	}
 	
-	public void init(Vector pos, Shape shape, Vector size, Image2D image, Vector speed, Keyboard keys){
-		super.init(pos, speed, false, shape, size);
+	public void init(Vector pos, Shape shape, Vector size, Image2D image, Keyboard keys){
+		super.init(pos, false, shape, size);
 		this.image = image;
 		this.keys = keys;
 	}
 	
-	public void init(Vector pos, Shape shape, Vector size, Image2D image, Vector speed){
-		super.init(pos, speed, false, shape, size);
+	public void init(Vector pos, Shape shape, Vector size, Image2D image){
+		super.init(pos, false, shape, size);
 		this.image = image;
+	}
+	
+	public void init(Vector pos, int radius, Image2D image){
+		super.init(pos, false, radius);
+		this.image = image;
+	}
+	
+	public void init(Vector pos, int radius, Image2D image, Keyboard keys){
+		super.init(pos, false, radius);
+		this.image = image;
+		this.keys = keys;
 	}
 	
 	public void update(){

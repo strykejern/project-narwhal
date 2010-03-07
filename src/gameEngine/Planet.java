@@ -19,7 +19,7 @@ public class Planet extends GameObject {
 		if( rand.nextBoolean() ) myImage.verticalFlip();
 		myImage.rotate( rand.nextInt(360) );
 		
-		super.init(pos, null, new Vector(planetSize, planetSize), image, new Vector());
+		super.init(pos, planetSize/2, image);
 		
 		//Physics
 		this.anchored = true;
