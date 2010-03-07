@@ -51,7 +51,7 @@ public class Profiler {
 	 */
 	public static void beginNano( String profileName ) {
 		if( !profileList.containsKey( profileName ) ) profileList.put( profileName,  new Profiler( profileName ) );		
-		profileList.get(profileName).start(false);
+		profileList.get(profileName).start(true);
 	}
 	
 	/**
@@ -170,7 +170,8 @@ public class Profiler {
 		
 		//Spit out message to tell them the results
 		//We use system console directly to save time
-		System.out.println("PROFILER: " + profileName + " - Used " + endTime + " milliseconds. (Average: " + totalRuntime/numberOfRuns + ")" + "\tMemory usage: " + memoryUsage);
+	    String type = useNano ? " nanoseconds." : " milliseconds.";
+		System.out.println("PROFILER: " + profileName + " - Used " + endTime + type +" (Average: " + totalRuntime/numberOfRuns + ")" + "\tMemory usage: " + memoryUsage);
 	}
 
 }

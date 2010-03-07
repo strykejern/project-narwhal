@@ -99,7 +99,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 
 		//Play some music
     	Sound music = new Sound("data/space.ogg");
-    	music.play();
+    	//music.play();
 
     	//Load crash sound
     	Sound crash = new Sound("data/crash.au");
