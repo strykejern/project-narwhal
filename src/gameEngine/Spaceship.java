@@ -7,7 +7,10 @@ public class Spaceship extends GameObject{
 	}
 
 	public void update(){
-		
+		if 		(keys.up) 	speed.add(new Vector(1, direction, true));
+		else if (keys.down) speed.sub(new Vector(1, direction, true));
+		if		(keys.left) direction -= Math.PI/45;
+		else if (keys.right)direction += Math.PI/45;
 		super.update();
 	}
 }
