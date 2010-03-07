@@ -3,6 +3,7 @@ package gameEngine;
 import narwhal.Game;
 
 public class Spaceship extends GameObject{
+	private static float MAX_SPEED = 10f;
 	
 	public Spaceship(Vector pos, Image2D image, Keyboard keys){
 		this.pos 	= pos;
@@ -21,6 +22,8 @@ public class Spaceship extends GameObject{
 		if		(keys.left) direction -= Math.PI/45;
 		else if (keys.right)direction += Math.PI/45;
 		image.setDirection( direction );
+		
+		if (speed.length() > MAX_SPEED) speed.setLength(MAX_SPEED);
 		
 		super.update();
 	}

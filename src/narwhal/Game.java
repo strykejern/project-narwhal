@@ -90,7 +90,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		keys = new Keyboard();
 		
 		//Initialize the player ship		
-		ship = new Spaceship(new Vector(SCREEN_X/2, SCREEN_Y/2+100), new Image2D("data/spaceship.png"), keys);
+		ship = new Spaceship(new Vector(), new Image2D("data/spaceship.png"), keys);
 	}
 	
 	static public int getScreenWidth()	{
@@ -128,7 +128,10 @@ public class Game extends JPanel implements Runnable, KeyListener
     		if(currentPlanet != null)
     		//if( planet.isCollidable() && ship.isCollidable() ) 
     			if( currentPlanet.collidesWith( ship ) )
+    			{
     		    	crash.play();
+    				currentPlanet.collision(ship);
+    			}
     		
     		//Calculate ship movement
     		//calculateShipMovement();

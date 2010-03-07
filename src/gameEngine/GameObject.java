@@ -11,13 +11,14 @@ public abstract class GameObject extends Physics{
 		super();
 	}
 	
-	protected void init(Vector pos, Vector speed, Vector size, Image2D image, Shape shape, float direction){
+	protected void init(Vector pos, Vector speed, Vector size, Image2D image, Shape shape, float direction, int radius){
 		this.pos = pos;
 		this.speed = speed;
 		this.size = size;
 		this.image = image;
 		this.shape = shape;
 		this.direction = direction;
+		this.radius = radius;
 	}
 	
 	public void update() {
