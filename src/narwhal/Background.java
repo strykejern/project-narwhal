@@ -20,6 +20,7 @@ package narwhal;
 
 import gameEngine.Image2D;
 import gameEngine.Log;
+import gameEngine.Planet;
 import gameEngine.Profiler;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -38,7 +39,7 @@ public class Background {
 	private long currentSeed;
 	private ArrayList<BufferedImage> stars;
 	private ArrayList<Image2D> nebulaList;
-	private ArrayList<Object> planetList;
+	private ArrayList<Planet> planetList;
 	boolean initialized = false;
 	final private int WIDTH, HEIGHT;
 	
@@ -114,9 +115,9 @@ public class Background {
 		Profiler.end("Generating Background");
 	}
 
-	public Object generatePlanet( long seed ) {
+	public Planet generatePlanet( long seed ) {
 		Random rand = new Random(seed);	
-		Object planet = planetList.get( rand.nextInt(planetList.size()) );
+		Planet planet = planetList.get( rand.nextInt(planetList.size()) );
 		
 		planet.getSprite().reset();
 		

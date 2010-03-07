@@ -18,8 +18,11 @@
 //********************************************************************************************
 package narwhal;
 
+import gameEngine.GameObject;
 import gameEngine.Image2D;
+import gameEngine.Keyboard;
 import gameEngine.Log;
+import gameEngine.Planet;
 import gameEngine.Profiler;
 import gameEngine.Sound;
 
@@ -29,6 +32,7 @@ import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import java.util.Random;
 
 
@@ -44,10 +48,11 @@ public class Game extends JPanel implements Runnable, KeyListener
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
 	private boolean running;
 	private JFrame frame;
-	private String input = "";
-	Object ship, planet;
+	GameObject ship, planet;
 	Background bg;	
 	private boolean up, down, left, right;
+	private Keyboard keys;
+	private HashMap<Long, Planet> planets;
 	
 	//Player position in the universe
 	Random rand = new Random();
@@ -78,6 +83,8 @@ public class Game extends JPanel implements Runnable, KeyListener
 		new Thread(this).start();
 		running = true;
 		frame.addKeyListener(this);
+		keys = new Keyboard();
+		planets = new HashMap<Long, Planet>();
 	}
 	
 	//JJ> This is the main game loop
@@ -221,10 +228,6 @@ public class Game extends JPanel implements Runnable, KeyListener
 	 */
 	public void paint(Graphics g){		
 		bg.draw(g);
-		
-		//Draw input string
-		g.setColor(Color.white);
-		g.drawString("Test = " + input, 20, 20);
 
 		//Draw the planet
 		if(planet != null)
@@ -239,22 +242,14 @@ public class Game extends JPanel implements Runnable, KeyListener
 	}
 	
 	public void keyPressed(KeyEvent key) {
-		if( 	 key.getKeyCode() == KeyEvent.VK_UP ) 	up 	  = true;
-		else if( key.getKeyCode() == KeyEvent.VK_DOWN ) down  = true;
-		else if( key.getKeyCode() == KeyEvent.VK_LEFT)	left  = true;
-		else if( key.getKeyCode() == KeyEvent.VK_RIGHT) right = true;
-		
+		keys.update(key, true);
 	}
 
 	public void keyReleased(KeyEvent key) {
-		if(      key.getKeyCode() == KeyEvent.VK_UP ) 	up 	  = false;
-		else if( key.getKeyCode() == KeyEvent.VK_DOWN ) down  = false;
-		else if( key.getKeyCode() == KeyEvent.VK_LEFT)	left  = false;
-		else if( key.getKeyCode() == KeyEvent.VK_RIGHT) right = false;
+		keys.update(key, false);
 	}
 
 	public void keyTyped(KeyEvent arg0) {
-		input += arg0.getKeyChar();
 		
 	}
 

@@ -12,8 +12,35 @@
   <elementImport xmi:id="_jH3z4iifEd-fqe0K0tT8nQ">
     <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
   </elementImport>
-  <packagedElement xmi:type="uml:Class" xmi:id="_LFKMUCigEd-fqe0K0tT8nQ" name="Game">
-    <ownedAttribute xmi:id="_jmWDICigEd-fqe0K0tT8nQ" name="property" aggregation="composite"/>
-    <ownedOperation xmi:id="_j6594CigEd-fqe0K0tT8nQ" name="operation"/>
+  <packagedElement xmi:type="uml:Class" xmi:id="_LFKMUCigEd-fqe0K0tT8nQ" name="Collidable">
+    <ownedAttribute xmi:id="_jmWDICigEd-fqe0K0tT8nQ" name="pos" aggregation="composite"/>
+    <ownedAttribute xmi:id="_OZMRACkxEd-JZNBrDj87eQ" name="size" aggregation="composite"/>
+    <ownedAttribute xmi:id="_ZlS9ECkxEd-JZNBrDj87eQ" name="direction" aggregation="composite"/>
+    <ownedAttribute xmi:id="_aJYhkCkxEd-JZNBrDj87eQ" name="anchored" aggregation="composite"/>
+    <ownedOperation xmi:id="_oQsagCkxEd-JZNBrDj87eQ" name="setDirection">
+      <ownedParameter xmi:id="_sL0zUCkxEd-JZNBrDj87eQ" direction="return"/>
+      <ownedParameter xmi:id="_sL0zUSkxEd-JZNBrDj87eQ" name="float"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_Nqtk8CkyEd-JZNBrDj87eQ" name="Collidable">
+      <ownedParameter xmi:id="_QzWJ0CkyEd-JZNBrDj87eQ" direction="return"/>
+      <ownedParameter xmi:id="_QzWJ0SkyEd-JZNBrDj87eQ" name="int"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_R_U0wCkyEd-JZNBrDj87eQ" name="Collidable">
+      <ownedParameter xmi:id="_VaWxMCkyEd-JZNBrDj87eQ" direction="return"/>
+      <ownedParameter xmi:id="_VaWxMSkyEd-JZNBrDj87eQ" name="Shape"/>
+      <ownedParameter xmi:id="_VaWxMikyEd-JZNBrDj87eQ" name="int"/>
+      <ownedParameter xmi:id="_VaXYQCkyEd-JZNBrDj87eQ" name="int"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_ewNGQCkyEd-JZNBrDj87eQ" name="isColliding">
+      <ownedParameter xmi:id="_--cIUCkyEd-JZNBrDj87eQ" direction="return"/>
+      <ownedParameter xmi:id="_--cIUSkyEd-JZNBrDj87eQ" name="Collidable"/>
+      <ownedParameter xmi:id="_--cIUikyEd-JZNBrDj87eQ" name="Collidable"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_pRFrECkyEd-JZNBrDj87eQ" name="collision">
+      <ownedParameter xmi:id="_1Q320CkyEd-JZNBrDj87eQ" direction="return"/>
+      <ownedParameter xmi:id="_1Q4d4CkyEd-JZNBrDj87eQ" name="Collidable"/>
+      <ownedParameter xmi:id="_1Q4d4SkyEd-JZNBrDj87eQ" name="Collidable"/>
+    </ownedOperation>
   </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_Efk1oCkzEd-JZNBrDj87eQ" name="GameObject"/>
 </uml:Package>
