@@ -87,6 +87,13 @@ public class Game extends JPanel implements Runnable, KeyListener
 		planets = new HashMap<Long, Planet>();
 	}
 	
+	static public int getScreenWidth()	{
+		return SCREEN_X;
+	}
+	static public int getScreenHeight()	{
+		return SCREEN_Y;
+	}
+	
 	//JJ> This is the main game loop
 	public void run() {
 		

@@ -114,30 +114,6 @@ public class Background {
         
 		Profiler.end("Generating Background");
 	}
-
-	public Planet generatePlanet( long seed ) {
-		Random rand = new Random(seed);	
-		Planet planet = planetList.get( rand.nextInt(planetList.size()) );
-		
-		planet.getSprite().reset();
-		
-		//Physics
-		planet.enableCollision();
-		planet.anchored = true;
-		
-		//Make it unique
-		int planetSize = rand.nextInt(WIDTH/2) + WIDTH/8;
-		planet.resizeObject(planetSize, planetSize);
-		if( rand.nextBoolean() ) planet.getSprite().horizontalFlip();
-		if( rand.nextBoolean() ) planet.getSprite().verticalFlip();
-		planet.rotate( rand.nextInt(360) );
-
-		//Center the planet position on the screen
-		planet.pos.x = (WIDTH/2);
-		planet.pos.y = (HEIGHT/2);
-		planet.update();
-		return planet;
-	}
 	
 	//Draw a random nebula
 	private void drawNebula(Random rand, Graphics2D g) {
