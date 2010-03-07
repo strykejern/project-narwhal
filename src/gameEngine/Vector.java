@@ -1,4 +1,3 @@
-package gameEngine;
 //********************************************************************************************
 //*
 //*    This file is part of Project Narwhal.
@@ -17,7 +16,7 @@ package gameEngine;
 //*    along with Project Narwhal.  If not, see <http://www.gnu.org/licenses/>.
 //*
 //********************************************************************************************
-
+package gameEngine;
 
 public class Vector {
 	public float x, y;

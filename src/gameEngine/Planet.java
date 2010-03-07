@@ -12,7 +12,7 @@ public class Planet extends GameObject {
 		
 		Random rand = new Random(seed);	
 		Image2D myImage = images.get( rand.nextInt(images.size()) );
-				
+
 		//Make it unique
 		int planetSize = rand.nextInt(Game.getScreenWidth()/2) + Game.getScreenHeight()/2;
 		if( rand.nextBoolean() ) myImage.horizontalFlip();

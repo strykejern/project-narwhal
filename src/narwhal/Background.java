@@ -39,7 +39,6 @@ public class Background {
 	private long currentSeed;
 	private ArrayList<BufferedImage> stars;
 	private ArrayList<Image2D> nebulaList;
-	private ArrayList<Planet> planetList;
 	boolean initialized = false;
 	final private int WIDTH, HEIGHT;
 	
@@ -157,20 +156,6 @@ public class Background {
 			nebulaList.get(nebulaList.size()-1).resize(WIDTH, HEIGHT);
 		}
 	}
-	
-	private void loadPlanets(){
-		File[] fileList = new File("data/planets").listFiles();
-		
-		//Load planets into memory
-		planetList = new ArrayList<Object>();
-		for( File f : fileList )
-		{
-			if( !f.isFile() ) continue;
-			planetList.add( new Object( f.toString(), 0, 0 )) ;
-			
-		}
-	}
-
 	
 	/**
 	 * AE> Predrawing the stars and placing them in the static ArrayList stars
