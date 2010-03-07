@@ -2,7 +2,6 @@ package gameEngine;
 
 import java.util.ArrayList;
 import java.util.Random;
-
 import narwhal.Game;
 
 public class Planet extends GameObject {
@@ -12,10 +11,10 @@ public class Planet extends GameObject {
 		Image2D myImage = imageList.get( rand.nextInt(imageList.size()) );
 
 		//Make it unique
-		int planetSize = rand.nextInt(Game.getScreenWidth()/2) + Game.getScreenHeight()/2;
+		int planetSize = rand.nextInt(Game.getScreenWidth()/4) + Game.getScreenHeight()/4;
 		if( rand.nextBoolean() ) myImage.horizontalFlip();
 		if( rand.nextBoolean() ) myImage.verticalFlip();
-		myImage.rotate( rand.nextFloat() );
+		myImage.rotate( (float)Math.toRadians(rand.nextInt(360)) );
 		myImage.resize(planetSize, planetSize);
 		
 		pos = spawnPos;
