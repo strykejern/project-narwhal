@@ -148,7 +148,6 @@ public class Profiler {
 		numberOfRuns++;
 	    memoryUsage = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();  
 
-		
 		//Tell them we have started
 		//We use system console directly to save time
 		//System.out.println("PROFILER: " + profileName + " - Beginning profiling.");
