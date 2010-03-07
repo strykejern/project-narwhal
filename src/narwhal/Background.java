@@ -52,7 +52,7 @@ public class Background {
 		this.HEIGHT = height;
 		generate( seed );
 		loadNebulas();
-		loadPlanets();
+		//loadPlanets();
 		loadStars();
 		initialized = true;
 		Profiler.end("Initializing background");
