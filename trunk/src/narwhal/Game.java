@@ -53,11 +53,11 @@ public class Game extends JPanel implements Runnable, KeyListener
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
 	private boolean running;
 	private JFrame frame;
-	GameObject ship, planet;
+	GameObject ship, currentPlanet;
 	Background bg;
 	private Keyboard keys;
-	private HashMap<Long, Planet> planets;
-	private ArrayList<Image2D> planetList;
+	private HashMap<Long, Planet> planetList;
+	private ArrayList<Image2D> planetImages;
 	
 	//Player position in the universe
 	Random rand = new Random();
@@ -89,7 +89,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		running = true;
 		frame.addKeyListener(this);
 		keys = new Keyboard();
-		planets = new HashMap<Long, Planet>();
+		planetList = new HashMap<Long, Planet>();
 		//Initialize the player ship		
 		ship = new Spaceship(new Vector(SCREEN_X/2, SCREEN_Y/2+100), new Image2D("data/spaceship.png"), keys);
 	}
@@ -128,9 +128,9 @@ public class Game extends JPanel implements Runnable, KeyListener
     		//keepPlayerWithinBounds(ship);
 
     		//Basic collision loop (put all detection here
-    		if(planet != null)
+    		if(currentPlanet != null)
     		//if( planet.isCollidable() && ship.isCollidable() ) 
-    			if( planet.collidesWith( ship ) )
+    			if( currentPlanet.collidesWith( ship ) )
     		    	crash.play();
     		
     		//Calculate ship movement
@@ -221,37 +221,35 @@ public class Game extends JPanel implements Runnable, KeyListener
 		if( nextScreen ) generateNewScreen();
 	}*/
 	
-	private void generateNewScreen()
-	{
+	private void generateNewScreen() {
 		long seed = addBits(x, y);
-		if(planets == null ) Log.warning("ERROR");
-		if (planets.containsKey(seed))
+		if (planetList.containsKey(seed))
 		{
-			planet = planets.get(seed);
+			currentPlanet = planetList.get(seed);
 		}
 		else
 		{
 			Random rand = new Random(seed);
 			bg.generate(seed);
 			
-			planet = null;
+			currentPlanet = null;
 			if(rand.nextInt(100) <= 25)
 			{
-				planets.put(seed, new Planet(new Vector(), planetList, seed));
-				planet = planets.get(seed);
+				planetList.put(seed, new Planet(new Vector(), planetImages, seed));
+				currentPlanet = planetList.get(seed);
 			}
 		}
 	}
 	
-	private void loadPlanets(){
+	private void loadPlanets() {
 		File[] fileList = new File("data/planets").listFiles();
 		
 		//Load planets into memory
-		planetList = new ArrayList<Image2D>();
+		planetImages = new ArrayList<Image2D>();
 		for( File f : fileList )
 		{
 			if( !f.isFile() ) continue;
-			planetList.add( new Image2D( f.toString()) ) ;
+			planetImages.add( new Image2D( f.toString()) ) ;
 			
 		}
 	}
@@ -261,21 +259,21 @@ public class Game extends JPanel implements Runnable, KeyListener
 	 * JJ> Paints every object of interest (not background)
 	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 	 */
-	public void paint(Graphics g){		
+	public void paint(Graphics g) {		
 		bg.draw(g);
 
 		//Draw the planet
-		if(planet != null)
+		if(currentPlanet != null)
 		//	g.drawImage( planet.getImage(), planet.pos.getX()-planet.getWidth()/2, planet.pos.getY()-planet.getHeight()/2, this );		
-			planet.drawCollision(g);
+			currentPlanet.drawCollision(g);
 			
 		//Draw the little ship
 		//g.drawImage( ship.getImage(), ship.pos.getX()-ship.getWidth()/2, ship.pos.getY()-ship.getHeight()/2, this );
 		ship.drawCollision(g);
 		
 		ship.drawCollision(g);	
-		if(planet != null)	
-		planet.drawCollision(g);
+		if(currentPlanet != null)	
+		currentPlanet.drawCollision(g);
 	}
 	
 	public void keyPressed(KeyEvent key) {
