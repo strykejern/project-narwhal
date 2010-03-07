@@ -47,7 +47,7 @@ import java.util.Random;
  */
 public class Game extends JPanel implements Runnable, KeyListener
 {
-	private static int SCREEN_X = 800, SCREEN_Y = 600;
+	private static int SCREEN_X = 1024, SCREEN_Y = 768;
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
 	private boolean running;

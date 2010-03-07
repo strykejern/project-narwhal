@@ -12,7 +12,7 @@ public class Spaceship extends GameObject{
 		this.speed 	= new Vector();
 		this.direction = 0;
 		
-		image.resize(Game.getScreenWidth()/8, Game.getScreenWidth()/8);
+		image.resize(Game.getScreenWidth()/12, Game.getScreenWidth()/12);
 		radius = image.getWidth()/2;
 	}
 
