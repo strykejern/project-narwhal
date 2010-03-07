@@ -28,15 +28,6 @@ public abstract class Physics extends Collidable{
 					object.pos.add(colVec);
 					object.speed.add(colVec);
 					object.speed.multiply(0.8f);		//Lose 20% speed
-					/*
-					float length = object.speed.length();
-					Vector tmp = object.speed.clone();
-					tmp.setLength(1);
-					colVec.setLength(1);
-					object.speed = tmp.plus(colVec).plus(colVec);
-					object.speed.setLength(length);
-					*/
-					object.direction = object.speed.getAngle();// + (float)(Math.PI / 2);
 				}
 				else if (!this.anchored && object.anchored)
 				{
