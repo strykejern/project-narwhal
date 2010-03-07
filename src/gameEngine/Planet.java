@@ -27,10 +27,6 @@ public class Planet extends GameObject {
 		this.anchored = true;
 	}
 	
-	public void draw(Graphics g){
-		// TODO: implement
-	}
-	
 	public void drawCollision(Graphics g){
 		int w = (int)radius*2;
 		int h = (int)radius*2;
