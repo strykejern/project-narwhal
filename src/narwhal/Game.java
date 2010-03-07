@@ -108,21 +108,18 @@ public class Game extends JPanel implements Runnable, KeyListener
     	
 		// Set the blank cursor to the JFrame.
 		frame.getContentPane().setCursor(blankCursor);
-
-		//Generate the first background
+		    	
+    	//Load game resources
+		Sound music = new Sound("data/space.ogg");
+    	Sound crash = new Sound("data/crash.au");
 		planetList = new Hashtable<Long, Planet>(0, 0.75f);
-		generateNewScreen();
-		
-		//Play some music
-    	Sound music = new Sound("data/space.ogg");
+    	loadPlanets();
     	//music.play();
 
-    	//Load game resources
-    	Sound crash = new Sound("data/crash.au");
-		loadPlanets();
-		
-		// da loop
-    	while(running)
+		//Generate the first background
+    	generateNewScreen();
+    	
+		while(running)
     	{
     		//Keep the player from moving outside the screen
     		//keepPlayerWithinBounds(ship);
@@ -227,9 +224,9 @@ public class Game extends JPanel implements Runnable, KeyListener
 			bg.generate(seed);
 			
 			currentPlanet = null;
-			if(rand.nextInt(100) <= 25)
+			if(rand.nextInt(100) <= 125)
 			{
-				planetList.put(seed, new Planet(new Vector(), planetImages, seed));
+				planetList.put(seed, new Planet(new Vector(SCREEN_X/2, SCREEN_Y/2), planetImages, seed));
 				currentPlanet = planetList.get(seed);
 			}
 		}
