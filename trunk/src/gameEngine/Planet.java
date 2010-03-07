@@ -8,7 +8,7 @@ import java.util.Random;
 import narwhal.Game;
 
 public class Planet extends GameObject {
-	public Planet(Vector pos, ArrayList<Image2D> imageList, long seed){
+	public Planet(Vector spawnPos, ArrayList<Image2D> imageList, long seed){
 		
 		Random rand = new Random(seed);	
 		Image2D myImage = imageList.get( rand.nextInt(imageList.size()) );
@@ -17,14 +17,15 @@ public class Planet extends GameObject {
 		int planetSize = rand.nextInt(Game.getScreenWidth()/2) + Game.getScreenHeight()/2;
 		if( rand.nextBoolean() ) myImage.horizontalFlip();
 		if( rand.nextBoolean() ) myImage.verticalFlip();
-		myImage.rotate( rand.nextInt(360) );
+		myImage.rotate( rand.nextFloat() );
+		myImage.resize(planetSize, planetSize);
 		
-		this.pos = pos;
-		this.radius = planetSize/2;
-		this.image = myImage;
+		pos = spawnPos;
+		radius = planetSize/2;
+		image = myImage;
 		
 		//Physics
-		this.anchored = true;
+		anchored = true;
 	}
 	
 }
