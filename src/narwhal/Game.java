@@ -36,8 +36,6 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Random;
 
@@ -82,7 +80,7 @@ public class Game extends JPanel implements Runnable, KeyListener
    	}
 	
 	public Game(JFrame frame) {
-		bg = new Background(SCREEN_X, SCREEN_Y, addBits(x, y));
+		bg = new Background(SCREEN_X, SCREEN_Y, generateSeed(x, y));
     	this.frame = frame;
 		Image2D icon = new Image2D("data/icon.png");
 		frame.setIconImage( icon.toImage() );
@@ -175,15 +173,9 @@ public class Game extends JPanel implements Runnable, KeyListener
 	
 	
 	/**
-	 * JJ> This function puts together the bits of two integers and returns it as one long
-	 * @param a 110001
-	 * @param b 000111
-	 * @return 000111 + 11001 = 00011111001
+	 * JJ> This function generates a random unique number from two variables
 	 */
-	long addBits(int a, int b) {
-/*		long x = (long)a;
-		long y = (long)b;
-		return (x<<32) | (y);*/
+	long generateSeed(int a, int b) {
 		return a*a - b*(b-1);
 	}
 	
@@ -224,7 +216,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	}*/
 	
 	private void generateNewScreen() {
-		long seed = addBits(x, y);
+		long seed = generateSeed(x, y);
 		if (planetList.containsKey(seed))
 		{
 			currentPlanet = planetList.get(seed);
@@ -272,10 +264,9 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//Draw the little ship
 		//g.drawImage( ship.getImage(), ship.pos.getX()-ship.getWidth()/2, ship.pos.getY()-ship.getHeight()/2, this );
 		ship.drawCollision(g);
+		ship.draw(g);
 		
-		ship.drawCollision(g);	
-		if(currentPlanet != null)	
-		currentPlanet.drawCollision(g);
+		if(currentPlanet != null) currentPlanet.drawCollision(g);
 	}
 	
 	public void keyPressed(KeyEvent key) {
