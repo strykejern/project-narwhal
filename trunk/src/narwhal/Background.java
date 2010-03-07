@@ -20,7 +20,6 @@ package narwhal;
 
 import gameEngine.Image2D;
 import gameEngine.Log;
-import gameEngine.Planet;
 import gameEngine.Profiler;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -52,7 +51,6 @@ public class Background {
 		this.HEIGHT = height;
 		generate( seed );
 		loadNebulas();
-		//loadPlanets();
 		loadStars();
 		initialized = true;
 		Profiler.end("Initializing background");
