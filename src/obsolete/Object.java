@@ -16,7 +16,7 @@
 //*    along with Project Narwhal.  If not, see <http://www.gnu.org/licenses/>.
 //*
 //********************************************************************************************
-package narwhal;
+package obsolete;
 
 import java.awt.Color;
 import java.awt.Graphics;

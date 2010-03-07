@@ -31,6 +31,7 @@ import gameEngine.Vector;
 import java.awt.*;
 import javax.swing.*;
 
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
@@ -53,8 +54,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	private boolean running;
 	private JFrame frame;
 	GameObject ship, planet;
-	Background bg;	
-	private boolean up, down, left, right;
+	Background bg;
 	private Keyboard keys;
 	private HashMap<Long, Planet> planets;
 	private ArrayList<Image2D> planetList;
@@ -113,14 +113,14 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//Generate the first background
 		generateNewScreen();
 		
-
 		//Play some music
     	Sound music = new Sound("data/space.ogg");
     	//music.play();
 
-    	//Load crash sound
+    	//Load game resources
     	Sound crash = new Sound("data/crash.au");
-
+		loadPlanets();
+		
 		// da loop
     	while(running)
     	{
@@ -189,7 +189,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	 * JJ> Keeps the specified object within the game screen
 	 * @param player Who are we supposed to keep within bounds?
 	 */
-	void keepPlayerWithinBounds( Object player ) {
+/*	void keepPlayerWithinBounds( Object player ) {
 		boolean nextScreen = false;
 				
 		if( player.pos.x > SCREEN_X ) 
@@ -219,13 +219,16 @@ public class Game extends JPanel implements Runnable, KeyListener
 		
 		//Did we cross into a new screen?
 		if( nextScreen ) generateNewScreen();
-	}
+	}*/
 	
 	private void generateNewScreen()
 	{
 		long seed = addBits(x, y);
-		if (planets.keySet().contains(seed))
+		if(planets == null ) Log.warning("ERROR");
+		if (planets.containsKey(seed))
+		{
 			planet = planets.get(seed);
+		}
 		else
 		{
 			Random rand = new Random(seed);
