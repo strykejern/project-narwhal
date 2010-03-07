@@ -45,6 +45,10 @@ public abstract class GameObject extends Physics{
 		g.drawImage(image.toImage(), pos.getX()-image.getWidth()/2, pos.getY()-image.getHeight()/2, null);		
 	}
 	
+	public void resizeObject(int width, int height) {
+		image.resize(width, height);
+	}
+	
 	public void drawCollision(Graphics g) {
 		//Always draw the image bounds
 		int w = image.getWidth();
