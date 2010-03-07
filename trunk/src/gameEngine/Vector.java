@@ -30,6 +30,11 @@ public class Vector {
 		this.y = y;
 	}
 	
+	public Vector(float length, float angle, boolean dummy){
+        x = (float)Math.cos(angle) * length;
+        y = (float)Math.sin(angle) * length;
+	}
+	
     public Vector clone() {
     	return new Vector(x,y);
     }
@@ -110,7 +115,11 @@ public class Vector {
 	}
 	
 	public void grow(float length){
-		
+		setLength(length()+length);
+	}
+	
+	public void shrink(float length){
+		setLength(length()-length);
 	}
 	
 	/**
