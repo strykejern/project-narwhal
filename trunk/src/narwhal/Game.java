@@ -25,6 +25,7 @@ import gameEngine.Log;
 import gameEngine.Planet;
 import gameEngine.Profiler;
 import gameEngine.Sound;
+import gameEngine.Spaceship;
 
 import java.awt.*;
 import javax.swing.*;
@@ -34,6 +35,7 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Vector;
 
 
 /**
@@ -107,7 +109,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		generateNewScreen();
 		
 		//Initialize the player ship		
-		ship = new Object( new Image2D("data/spaceship.png"), SCREEN_X/2, SCREEN_Y/2+100 );
+		ship = new Spaceship(new Vector(SCREEN_X/2, SCREEN_Y/2+100), new Image2D("data/spaceship.png"), keys);
 		ship.resizeObject(SCREEN_X/12, SCREEN_X/12);
 		ship.enableCollision();
 

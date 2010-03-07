@@ -9,24 +9,24 @@ public class Physics extends Collidable{
 	}
 	
 	public Physics(Vector pos, Shape shape, Vector size){
-		init(pos, new Vector(), false, shape, size);
+		init(pos, false, shape, size);
 	}
 	
 	public Physics(Vector pos, int radius){
-		init(pos, new Vector(), false, radius);
+		init(pos, false, radius);
 	}
 	
-	protected void init(Vector pos, Vector speed, boolean anchored, Shape shape, Vector size){
+	protected void init(Vector pos, boolean anchored, Shape shape, Vector size){
 		super.init(shape, size);
 		this.pos = pos;
-		this.speed = speed;
+		this.speed = new Vector();
 		this.anchored = anchored;
 	}
 	
-	protected void init(Vector pos, Vector speed, boolean anchored, int radius){
+	protected void init(Vector pos, boolean anchored, int radius){
 		super.init(radius);
 		this.pos = pos;
-		this.speed = speed;
+		this.speed = new Vector();
 		this.anchored = anchored;
 	}
 	
