@@ -23,7 +23,6 @@ import gameEngine.Image2D;
 import gameEngine.Keyboard;
 import gameEngine.Log;
 import gameEngine.Planet;
-import gameEngine.Profiler;
 import gameEngine.Sound;
 import gameEngine.Spaceship;
 import gameEngine.Vector;
@@ -38,6 +37,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Random;
 
 
@@ -56,7 +57,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	GameObject ship, currentPlanet;
 	Background bg;
 	private Keyboard keys;
-	private HashMap<Long, Planet> planetList;
+	private Hashtable<Long, Planet> planetList;
 	private ArrayList<Image2D> planetImages;
 	
 	//Player position in the universe
@@ -80,7 +81,7 @@ public class Game extends JPanel implements Runnable, KeyListener
         parentWindow.setVisible(true);
    	}
 	
-	public Game(JFrame frame){
+	public Game(JFrame frame) {
 		bg = new Background(SCREEN_X, SCREEN_Y, addBits(x, y));
     	this.frame = frame;
 		Image2D icon = new Image2D("data/icon.png");
@@ -89,7 +90,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		running = true;
 		frame.addKeyListener(this);
 		keys = new Keyboard();
-		planetList = new HashMap<Long, Planet>();
+		
 		//Initialize the player ship		
 		ship = new Spaceship(new Vector(SCREEN_X/2, SCREEN_Y/2+100), new Image2D("data/spaceship.png"), keys);
 	}
@@ -111,6 +112,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		frame.getContentPane().setCursor(blankCursor);
 
 		//Generate the first background
+		planetList = new Hashtable<Long, Planet>(0, 0.75f);
 		generateNewScreen();
 		
 		//Play some music
