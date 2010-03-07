@@ -33,6 +33,8 @@ import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Vector;
@@ -55,6 +57,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	private boolean up, down, left, right;
 	private Keyboard keys;
 	private HashMap<Long, Planet> planets;
+	private ArrayList<Image2D> planetList;
 	
 	//Player position in the universe
 	Random rand = new Random();
@@ -230,6 +233,20 @@ public class Game extends JPanel implements Runnable, KeyListener
 		if(rand.nextInt(100) <= 25)
 			planet = bg.generatePlanet(seed);
 	}
+	
+	private void loadPlanets(){
+		File[] fileList = new File("data/planets").listFiles();
+		
+		//Load planets into memory
+		planetList = new ArrayList<Image2D>();
+		for( File f : fileList )
+		{
+			if( !f.isFile() ) continue;
+			planetList.add( new Image2D( f.toString()) ) ;
+			
+		}
+	}
+
 	
 	/*
 	 * JJ> Paints every object of interest (not background)
