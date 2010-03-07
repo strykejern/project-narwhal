@@ -91,7 +91,6 @@ public class Game extends JPanel implements Runnable, KeyListener
 		
 		//Initialize the player ship		
 		ship = new Spaceship(new Vector(SCREEN_X/2, SCREEN_Y/2+100), new Image2D("data/spaceship.png"), keys);
-		ship.resizeObject( SCREEN_X/200,  SCREEN_X/200);
 	}
 	
 	static public int getScreenWidth()	{
