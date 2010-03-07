@@ -117,7 +117,7 @@ public class Background {
         	Profiler.memoryReport();
         	Runtime.getRuntime().runFinalization();
         }
-		
+        
 		Profiler.end("Generating Background");
 	}
 

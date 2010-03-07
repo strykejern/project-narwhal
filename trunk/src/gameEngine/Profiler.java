@@ -19,20 +19,18 @@
 package gameEngine;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * JJ> This class allows us to closely and exactly profile how much time the computer uses on certain
  *     calculations and computations. Simply call Prorfiler.start(String name) when the function begins 
  *     and Profiler.end(String name) when it is done, where 'name' is a unique String to identify this
  *     specific profile.
- * @author Johan Jansen og Anders Eie
+ * @author Johan Jansen and Anders Eie
  *
  */
 public class Profiler {
 
-	static Map<String, Profiler> profileList = new HashMap<String, Profiler>();
-	private static long lastUsedMem;  
+	private static HashMap<String, Profiler> profileList = new HashMap<String, Profiler>();
 	
 	/**
 	 * JJ> Begins monitoring the processing time something uses. Remember to call Profiler.end()
@@ -56,24 +54,35 @@ public class Profiler {
 		profileList.get(profileName).start(false);
 	}
 	
+	/**
+	 * JJ> This function prints out current memory information, how much is used and how much
+	 *     the usage changed since the last call to this function. 
+	 *     @note  The function can slow down the flow of the program a bit since it also tries to 
+	 *     	      clean up as much memory as possible before profiling.
+	 */
+	private static long lastUsedMem;
+	private static long totalChange;
+	private static int numberOfChecks;
 	public static void memoryReport()
 	{	   
-		    // scrub well before measuring:  
-		    System.gc();  
-		    System.gc();  
-		    System.gc();
-		   
-		    // measure memory usage & change:  
-		    Runtime rt = Runtime.getRuntime();  
-		    long totalMem = rt.totalMemory();  
-		    long freeMem = rt.freeMemory();  
-		    long usedMem = totalMem - freeMem;  
-		    long diff = usedMem -lastUsedMem;  
-		    lastUsedMem = usedMem;  
-		   
-		    // report:  
-		    String add = (diff >= 0) ? "+" : "";
-		    Log.message("Memory used: " + usedMem + "\tincreased by: " + add + diff );
+		//Keep count on how many times we have done this
+		numberOfChecks++;
+		
+	    // scrub well before measuring:  
+	    System.gc();
+	    System.gc();
+	    System.gc();
+	   
+	    // measure memory usage & change:  
+	    Runtime rt = Runtime.getRuntime();
+	    long usedMem = rt.totalMemory() - rt.freeMemory();  
+	    long diff = usedMem -lastUsedMem;  
+	    lastUsedMem = usedMem;
+	    totalChange += diff;
+		
+	    // report:  
+	    String prefix = (diff >= 0) ? "+" : "";
+	    System.out.println("Memory used: " + usedMem + "\tincreased by: " + prefix + diff  + "\taverage increase: " + (totalChange/numberOfChecks) );
 	}
 
 	/**
@@ -96,7 +105,7 @@ public class Profiler {
 	/*
 	 * JJ> The instanced version of this class can only be accessed through the static functions above
 	 */
-	private long startTime, endTime;
+	private long startTime, endTime, memoryUsage;
 	private int numberOfRuns;
 	private float totalRuntime;
 	private boolean profilerActive, useNano;
@@ -115,6 +124,7 @@ public class Profiler {
 		endTime = 0;
 		numberOfRuns = 0;
 		totalRuntime = 0;
+		memoryUsage = 0;
 		profilerActive = false;
 		useNano = false;		
 	}
@@ -136,6 +146,8 @@ public class Profiler {
 		//Begin profiler
 		startTime = useNano ? System.nanoTime() : System.currentTimeMillis();
 		numberOfRuns++;
+	    memoryUsage = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();  
+
 		
 		//Tell them we have started
 		//We use system console directly to save time
@@ -154,10 +166,11 @@ public class Profiler {
 		
 		//Keep track of total runtime
 		totalRuntime += endTime;
+	    memoryUsage = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - memoryUsage;  
 		
 		//Spit out message to tell them the results
 		//We use system console directly to save time
-		System.out.println("PROFILER: " + profileName + " - Used " + endTime + " milliseconds. (Average: " + totalRuntime/numberOfRuns + ")");
+		System.out.println("PROFILER: " + profileName + " - Used " + endTime + " milliseconds. (Average: " + totalRuntime/numberOfRuns + ")" + "\tMemory usage: " + memoryUsage);
 	}
 
 }

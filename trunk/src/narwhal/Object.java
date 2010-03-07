@@ -18,6 +18,8 @@
 //********************************************************************************************
 package narwhal;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Image;
 
 import gameEngine.Collidable;
@@ -91,12 +93,28 @@ public class Object extends Collidable {
 	}
 	
 	/**
-	 * JJ> Rotates both collision box and sprite for this object
+	 * JJ> Rotates this object, handles both collision box and sprite
 	 * @param degrees How many degrees to rotate it by
 	 */
 	public void rotate( float degrees )
 	{
 		super.setDirection( (float)Math.toRadians(degrees) + super.direction );
+	}
+	
+	/**
+	 * JJ> Draws a collision circle for this object
+	 */
+	public void drawCollision(Graphics g)
+	{
+		int w = (int)super.getRadius()*2;
+		int h = (int)super.getRadius()*2;
+		g.setColor(Color.RED);
+		g.drawOval(pos.getX()-w/2, pos.getY()-h/2, w, h);
+		
+		w = sprite.getWidth();
+		h = sprite.getHeight();		
+		g.setColor(Color.BLUE);
+		g.drawRect(pos.getX()-w/2, pos.getY()-h/2, w, h);
 	}
 
 	//JJ> Helper functions to set and disable collisions for this object

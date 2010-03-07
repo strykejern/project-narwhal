@@ -20,6 +20,7 @@ package narwhal;
 
 import gameEngine.Image2D;
 import gameEngine.Log;
+import gameEngine.Profiler;
 import gameEngine.Sound;
 
 import java.awt.*;
@@ -118,7 +119,6 @@ public class Game extends JPanel implements Runnable, KeyListener
     		//Calculate ship movement
     		calculateShipMovement();
     		ship.update();
-    		
     		try 
     		{
                 tm += TARGET_FPS;
@@ -232,6 +232,10 @@ public class Game extends JPanel implements Runnable, KeyListener
 
 		//Draw the little ship
 		g.drawImage( ship.getImage(), ship.pos.getX()-ship.getWidth()/2, ship.pos.getY()-ship.getHeight()/2, this );				
+		
+		ship.drawCollision(g);	
+		if(planet != null)	
+		planet.drawCollision(g);
 	}
 	
 	public void keyPressed(KeyEvent key) {
