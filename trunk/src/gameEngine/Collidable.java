@@ -101,6 +101,11 @@ public class Collidable {
 	// TODO: Implement
 	public boolean collidesWith(Collidable object){
 		boolean collision = false;
+		
+		//Can't collide with ourself
+		if(this == object) return false;
+		
+		//Figure out collision type
 		if (this.shape == null)
 		{
 			if (object.shape == null)

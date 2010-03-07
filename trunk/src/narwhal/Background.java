@@ -19,14 +19,17 @@
 package narwhal;
 
 import gameEngine.Image2D;
+import gameEngine.Log;
 import gameEngine.Profiler;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.Random;
+//import java.util.LinkedHashMap;
+//import java.util.Hashtable;
+import java.util.HashMap;
 
 /**
  * JJ> This class generates a nice random background for us
@@ -34,59 +37,87 @@ import java.util.Random;
  *
  */
 public class Background {
-	private LinkedHashMap<Long, BufferedImage> imageHashMap = new LinkedHashMap<Long, BufferedImage>();
-//	private Map<Long, BufferedImage> imageHashMap = new HashMap<Long, BufferedImage>(20, 0.5f);
+//	private LinkedHashMap<Long, BufferedImage> imageHashMap = new LinkedHashMap<Long, BufferedImage>();
+  private HashMap<Long, BufferedImage> imageHashMap = new HashMap<Long, BufferedImage>(20, 0.5f);
+//	private Hashtable<Long, BufferedImage> imageHashMap = new Hashtable<Long, BufferedImage>();
 	private long currentSeed;
-	private boolean initialized = false;
 	private ArrayList<BufferedImage> stars;
 	private ArrayList<Image2D> nebulaList;
 	private ArrayList<Object> planetList;
-	
-	private int WIDTH, HEIGHT;
+	boolean initialized = false;
+	final private int WIDTH, HEIGHT;
 	
 	/**
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
 	 *     component every update. Instead we just draw the BufferedImage.
 	 */
 	public Background(int width, int height, long seed){
+		Profiler.begin("Initializing background");
 		this.WIDTH = width;
 		this.HEIGHT = height;
 		generate( seed );
+		loadNebulas();
+		loadPlanets();
+		loadStars();
+		initialized = true;
+		Profiler.end("Initializing background");
 	}
 	
 	public void generate(long seed) {
+		if(!initialized) return;
+		
 		Profiler.begin("Generating Background");
 		
 		//Important, do first: generate the random seed
 		Random rand = new Random (seed);
 		currentSeed = seed;
-		
-		//Predraw stars
-		if (!initialized) init();
-
+				
 		//Have we visited this place before? No need to continue then!
 		if( imageHashMap.containsKey( currentSeed ) )
 		{
 			Profiler.end("Generating Background");
 			return;
 		}
-		//Draw everything to a buffer. First things that are drawn appear behind other things.
-		
-        if( imageHashMap.size() >= 10) imageHashMap.clear();	//Clear the entire hash map every 10 screens so we do not clutter memory        
-        imageHashMap.put( currentSeed,  new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB) ); 	//No need for alpha on the background			
-        Graphics2D g = imageHashMap.get(currentSeed).createGraphics();
-		
-        //I: Nebula (10% chance) or Black background (90%)
-		if( rand.nextInt(100) <= 10 ) drawNebula(rand, g);
-		else 
-		{
-			g.setColor(Color.black);
-			g.fillRect(0, 0, WIDTH, HEIGHT);
-		}
 
-		//II: Stars
-		drawRandomStarfield(rand, g);
-				        		
+		
+		//Remove the oldest element every 10 screens to free memory
+		if( imageHashMap.size() >= 10) 
+		{
+			if( imageHashMap.remove( imageHashMap.keySet().toArray()[0] ) == null)
+			Log.warning("Could not free memory");		
+			Profiler.memoryReport();
+		}
+		
+		//Draw everything to a buffer. First things that are drawn appear behind other things.
+		//Begin drawing the  actual background and save it in memory
+        try
+        {
+        	BufferedImage buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_555_RGB);
+    		Graphics2D g = buffer.createGraphics();
+        	
+            //I: Nebula (10% chance) or Black background (90%)
+    		if( rand.nextInt(100) <= 10 ) drawNebula(rand, g);
+    		else 
+    		{
+    			g.setColor(Color.black);
+    			g.fillRect(0, 0, WIDTH, HEIGHT);
+    		}
+
+    		//II: Stars
+    		drawRandomStarfield(rand, g);
+    		
+    		//All done!
+    		g.dispose();
+        	imageHashMap.put( currentSeed, buffer );
+        }
+        catch (OutOfMemoryError e) 
+        {
+        	//Ouch, we ran out of memory, the least we can do now is prevent it from crashing
+        	Log.warning( e.toString() );
+        	Profiler.memoryReport();
+        	Runtime.getRuntime().runFinalization();
+        }
+		
 		Profiler.end("Generating Background");
 	}
 
@@ -116,11 +147,11 @@ public class Background {
 	//Draw a random nebula
 	private void drawNebula(Random rand, Graphics2D g) {
 		Image2D nebula = nebulaList.get( rand.nextInt(nebulaList.size()) ) ;
-		nebula.reset();
+//		nebula.reset();
 		
 		//Make it unique
-		nebula.resize(WIDTH, HEIGHT);
-		nebula.setAlpha( rand.nextFloat() );
+//		nebula.resize(WIDTH, HEIGHT);
+//		nebula.setAlpha( rand.nextFloat() );
 		if( rand.nextBoolean() ) nebula.horizontalFlip();
 		if( rand.nextBoolean() ) nebula.verticalFlip();
 
@@ -144,14 +175,7 @@ public class Background {
 			g.drawImage(stars.get(rand.nextInt(stars.size())), rand.nextInt(WIDTH), rand.nextInt(HEIGHT), null);
 		}		
 	}
-	
-	private void init(){
-		initialized = true;
-		loadNebulas();
-		loadPlanets();
-		loadStars();
-	}
-	
+		
 	//TODO: This function creates a 700 ms bottle neck
 	private void loadNebulas(){
 		File[] fileList = new File("data/nebula").listFiles();
@@ -161,7 +185,8 @@ public class Background {
 		for( File f : fileList )
 		{
 			if( !f.isFile() ) continue;
-			nebulaList.add( new Image2D( f.toString() )) ;
+			nebulaList.add( new Image2D( f.toString() )) ;	
+			nebulaList.get(nebulaList.size()-1).resize(WIDTH, HEIGHT);
 		}
 	}
 	
@@ -215,7 +240,8 @@ public class Background {
 	 * @param g
 	 */
 	public void draw(Graphics g){
-		g.drawImage(imageHashMap.get(currentSeed), 0, 0, null);
+		BufferedImage buffer = imageHashMap.get(currentSeed);
+		if(buffer != null) g.drawImage(buffer, 0, 0, null);
 	}
 	
 }
