@@ -244,7 +244,6 @@ public class Game extends JPanel implements Runnable, KeyListener
 		{
 			if( !f.isFile() ) continue;
 			planetImages.add( new Image2D( f.toString()) ) ;
-			
 		}
 	}
 
