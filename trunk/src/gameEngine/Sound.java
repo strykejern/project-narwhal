@@ -50,6 +50,7 @@ public class Sound
 			if( fileName.endsWith(".ogg") ) try 
 			{
 				ogg = new OggClip(new FileInputStream(fileName));
+   			    ogg.setGain( 0.65f );
 			} 
 			catch (Exception e) { Log.error( "Loading audio file failed - " + e.toString() ); }
 			

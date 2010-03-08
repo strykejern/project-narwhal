@@ -26,7 +26,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.HashMap;
 
 /**
  * JJ> This class generates a nice random background for us
@@ -34,82 +33,22 @@ import java.util.HashMap;
  *
  */
 public class Background {
-	private HashMap<Long, Image> imageHashMap = new HashMap<Long, Image>(10, 0.75f);
-	private long currentSeed;
 	private ArrayList<BufferedImage> stars;
 	private ArrayList<Image2D> nebulaList;
-	boolean initialized = false;
 	final private int WIDTH, HEIGHT;
-	
+	Image[][] universe;
+
 	/**
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
 	 *     component every update. Instead we just draw the BufferedImage.
 	 */
-	public Background(int width, int height, long seed){
+	public Background(int width, int height){
 		Profiler.begin("Initializing background");
 		this.WIDTH = width;
 		this.HEIGHT = height;
-		generate( seed );
 		loadNebulas();
 		loadStars();
-		initialized = true;
 		Profiler.end("Initializing background");
-	}
-	
-	public void generate(long seed) {
-		if(!initialized) return;
-		
-		Profiler.begin("Generating Background");
-		
-		//Important, do first: generate the random seed
-		Random rand = new Random (seed);
-		currentSeed = seed;
-				
-		//Have we visited this place before? No need to continue then!
-		if( imageHashMap.containsKey( currentSeed ) )
-		{
-			Profiler.end("Generating Background");
-			return;
-		}
-
-		
-		//Remove the oldest element every 10 screens to free memory
-		if( imageHashMap.size() >= 10) 
-		{
-			imageHashMap.remove( imageHashMap.keySet().toArray()[0] );
-		}
-
-		//Draw everything to a buffer. First things that are drawn appear behind other things.
-		//Begin drawing the  actual background and save it in memory
-		try
-        {
-	    	BufferedImage buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_555_RGB);
-    		Graphics2D g = buffer.createGraphics();
-        	
-            //I: Nebula (10% chance) or Black background (90%)
-    		if( rand.nextInt(100) <= 10 ) drawNebula(rand, g);
-    		else 
-    		{
-    			g.setColor(Color.black);
-    			g.fillRect(0, 0, WIDTH, HEIGHT);
-    		}
-
-    		//II: Stars
-    		drawRandomStarfield(rand, g);
-    		
-    		//All done!
-    		g.dispose();
-    		imageHashMap.put( currentSeed, buffer );
-        }
-        catch (OutOfMemoryError e) 
-        {
-        	//Ouch, we ran out of memory, the least we can do now is prevent it from crashing
-        	Log.warning( e.toString() );
-        	Profiler.memoryReport();
-        	Runtime.getRuntime().runFinalization();
-        }
-        
-		Profiler.end("Generating Background");
 	}
 	
 	//Draw a random nebula
@@ -191,7 +130,54 @@ public class Background {
 	 * @param g
 	 */
 	public void draw(Graphics g){
-		g.drawImage(imageHashMap.get(currentSeed), 0, 0, null);
+		g.drawImage(universe[0][0], 0, 0, null);
+	}
+	
+	
+	/**
+	 * Generates a new universe with bounds equal to 'size' X 'size'
+	 * @param size how big?
+	 * @param seed randomizer
+	 */
+	public void generateWorld(int size, long seed) {
+		Profiler.begin("Generating World");
+		
+		Random rand = new Random(seed);
+		universe = new Image[size][size];
+		
+		for(int i = 0; i < size; i++)
+			for(int j = 0; j < size; j++)
+			{
+				try
+				{
+			    	BufferedImage buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_555_RGB);
+		    		Graphics2D g = buffer.createGraphics();
+		        	
+		            //I: Nebula (10% chance) or Black background (90%)
+		    		if( rand.nextInt(100) <= 10 ) drawNebula(rand, g);
+		    		else 
+		    		{
+		    			g.setColor(Color.black);
+		    			g.fillRect(0, 0, WIDTH, HEIGHT);
+		    		}
+	
+		    		//II: Stars
+		    		drawRandomStarfield(rand, g);
+		    		
+		    		//All done!
+		    		g.dispose();
+		    		universe[i][j] = buffer;
+				}
+	    	    catch (OutOfMemoryError e) 
+	    	    {
+    	        	//Ouch, we ran out of memory, the least we can do now is prevent it from crashing
+    	        	Log.warning( e.toString() );
+    	        	Profiler.memoryReport();
+    	        	Runtime.getRuntime().runFinalization();
+	    	    }
+	    	   
+			}
+		Profiler.end("Generating World");
 	}
 	
 }
