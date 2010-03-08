@@ -155,14 +155,14 @@ public class Background {
 			{
 				try
 				{
-			    	BufferedImage buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_555_RGB);
+			    	BufferedImage buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		    		Graphics2D g = buffer.createGraphics();
 		        	
 		            //I: Nebula (10% chance) or Black background (90%)
 		    		if( rand.nextInt(100) <= 10 ) drawNebula(rand, g);
 		    		else 
 		    		{
-		    			g.setColor(Color.black);
+		    			g.setColor(new Color(0, 0, 0, 64));
 		    			g.fillRect(0, 0, WIDTH, HEIGHT);
 		    		}
 	
