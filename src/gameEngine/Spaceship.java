@@ -24,7 +24,7 @@ public class Spaceship extends GameObject{
 		//if		(keys.left) direction -= Math.PI/45;
 		//else if (keys.right)direction += Math.PI/45;
 		direction %= 2 * Math.PI;
-		float heading = keys.mousePos.minus(pos).getAngle() - direction;
+		float heading = keys.mousePos.minus(new Vector(Game.getScreenWidth()/2, Game.getScreenHeight()/2)).getAngle() - direction;
 		if 		(heading > Math.PI)  heading = -((2f * (float)Math.PI) - heading);
 		else if (heading < -Math.PI) heading =  ((2f * (float)Math.PI) + heading);
 		direction += heading * 0.1f;
