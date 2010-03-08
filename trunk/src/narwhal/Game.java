@@ -47,8 +47,7 @@ import java.util.Random;
  * @author Johan Jansen and Anders Eie
  *
  */
-public class Game extends JPanel implements Runnable, KeyListener
-{
+public class Game extends JPanel implements Runnable, KeyListener {
 	static Dimension resolution = new Dimension(800, 600);
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
@@ -60,10 +59,9 @@ public class Game extends JPanel implements Runnable, KeyListener
 	private Hashtable<Long, Planet> planetList;
 	private ArrayList<Image2D> planetImages;
 
-
 	//Player position in the universe
 	Random rand = new Random();
-	int x = rand.nextInt(100), y = rand.nextInt(100);
+	Vector playerPosition = new Vector();
 	
 	// Create a new blank cursor.
 	final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
@@ -89,19 +87,22 @@ public class Game extends JPanel implements Runnable, KeyListener
 		this.frame = frame;
 		Image2D icon = new Image2D("data/icon.png");
 		frame.setIconImage( icon.toImage() );
-				
+
 		//Input controls
 		frame.addKeyListener(this);
 		keys = new Input();
 		
+		//Object lists
+		planetList = new Hashtable<Long, Planet>(0, 0.75f);
+
 		//Background
 		bg = new Background(resolution.width, resolution.height);
-		bg.generateWorld( 4, generateSeed(x, y) );
+		bg.generateWorld( 4, generateSeed(playerPosition.getX(), playerPosition.getY()) );
 
 		//Initialize the player ship		
-		ship = new Spaceship(new Vector(), new Image2D("data/spaceship.png"), keys);
+		ship = new Spaceship(new Vector(resolution.width/2, resolution.height/2), new Image2D("data/spaceship.png"), keys);
 		
-		//Thread
+		//Thread (do last so that everything above is properly loaded before the main loop begins)
 		new Thread(this).start();
 		running = true;
 	}
@@ -125,7 +126,6 @@ public class Game extends JPanel implements Runnable, KeyListener
     	//Load game resources
 		Sound music = new Sound("data/space.ogg");
     	Sound crash = new Sound("data/crash.au");
-		planetList = new Hashtable<Long, Planet>(0, 0.75f);
     	loadPlanets();
     	music.play();
 
@@ -176,7 +176,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	}
 	
 	private void generateNewScreen() {
-		long seed = generateSeed(x, y);
+		long seed = generateSeed(playerPosition.getX(), playerPosition.getY());
 		if (planetList.containsKey(seed))
 		{
 			currentPlanet = planetList.get(seed);
@@ -185,7 +185,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		{
 			Random rand = new Random(seed);
 			currentPlanet = null;
-			if(rand.nextInt(100) <= 125)
+			if(rand.nextInt(100) <= 0)
 			{
 				planetList.put(seed, new Planet(new Vector(resolution.width/2, resolution.height/2), planetImages, seed));
 				currentPlanet = planetList.get(seed);
@@ -211,7 +211,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 	 */
 	public void paint(Graphics g) {		
-		bg.draw(g);
+		bg.draw(g, ship.getPosition());
 		Particle.drawAllParticles(g);
 
 		//Draw the planet

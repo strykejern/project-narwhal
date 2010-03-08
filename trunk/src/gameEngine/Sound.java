@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileInputStream;
 
 import javax.sound.sampled.*;
-import javax.sound.sampled.FloatControl.Type;
 
 import org.newdawn.easyogg.OggClip;
 
