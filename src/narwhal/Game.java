@@ -20,7 +20,7 @@ package narwhal;
 
 import gameEngine.GameObject;
 import gameEngine.Image2D;
-import gameEngine.Keyboard;
+import gameEngine.Input;
 import gameEngine.Log;
 import gameEngine.Particle;
 import gameEngine.Planet;
@@ -56,7 +56,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	private JFrame frame;
 	GameObject ship, currentPlanet;
 	Background bg;
-	private Keyboard keys;
+	private Input keys;
 	private Hashtable<Long, Planet> planetList;
 	private ArrayList<Image2D> planetImages;
 
@@ -92,7 +92,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 				
 		//Input controls
 		frame.addKeyListener(this);
-		keys = new Keyboard();
+		keys = new Input();
 		
 		//Background
 		bg = new Background(resolution.width, resolution.height);
@@ -134,6 +134,10 @@ public class Game extends JPanel implements Runnable, KeyListener
     	
 		while(running)
     	{
+			int x = MouseInfo.getPointerInfo().getLocation().x - frame.getX();
+            int y = MouseInfo.getPointerInfo().getLocation().y - frame.getY();
+            keys.update(x, y);
+			
     		//Basic collision loop (put all detection here
     		if(currentPlanet != null)
     			if( currentPlanet.collidesWith( ship ) )
@@ -220,6 +224,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//Draw the little ship
 		ship.draw(g);
 		ship.drawCollision(g);
+		keys.drawCrosshair(g);
 	}
 	
 	public void keyPressed(KeyEvent key) {

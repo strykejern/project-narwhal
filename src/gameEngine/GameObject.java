@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 public abstract class GameObject extends Physics{
-	protected Keyboard keys;
+	protected Input keys;
 	protected Image2D image;
 	
 	public GameObject(){
