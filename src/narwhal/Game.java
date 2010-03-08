@@ -49,7 +49,7 @@ import java.util.Random;
  */
 public class Game extends JPanel implements Runnable, KeyListener
 {
-	static Dimension resolution = new Dimension();
+	static Dimension resolution = new Dimension(800, 600);
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
 	private boolean running;
