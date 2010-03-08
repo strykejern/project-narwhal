@@ -48,7 +48,7 @@ import java.util.Random;
  */
 public class Game extends JPanel implements Runnable, KeyListener
 {
-	private static int SCREEN_X = 800, SCREEN_Y = 600;
+	static Dimension resolution;
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
 	private boolean running;
@@ -76,31 +76,40 @@ public class Game extends JPanel implements Runnable, KeyListener
     	JFrame parentWindow = new JFrame("Project Narwhal");		
     	parentWindow.getContentPane().add(new Game(parentWindow));
 
-    	parentWindow.setSize(SCREEN_X , SCREEN_Y);
+		resolution.setSize(800, 600);
+		parentWindow.setSize(resolution);
         parentWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         parentWindow.setVisible(true);
    	}
 	
 	public Game(JFrame frame) {
-		bg = new Background(SCREEN_X, SCREEN_Y);
-		bg.generateWorld( 4, generateSeed(x, y) );
-    	this.frame = frame;
+    	
+		//The actual frame
+		this.frame = frame;
 		Image2D icon = new Image2D("data/icon.png");
 		frame.setIconImage( icon.toImage() );
-		new Thread(this).start();
-		running = true;
+				
+		//Input controls
 		frame.addKeyListener(this);
 		keys = new Keyboard();
 		
+		//Background
+		bg = new Background(resolution.width, resolution.height);
+		bg.generateWorld( 4, generateSeed(x, y) );
+
 		//Initialize the player ship		
 		ship = new Spaceship(new Vector(), new Image2D("data/spaceship.png"), keys);
+		
+		//Thread
+		new Thread(this).start();
+		running = true;
 	}
 	
 	static public int getScreenWidth()	{
-		return SCREEN_X;
+		return resolution.width;
 	}
 	static public int getScreenHeight()	{
-		return SCREEN_Y;
+		return resolution.height;
 	}
 	
 	//JJ> This is the main game loop
@@ -126,7 +135,6 @@ public class Game extends JPanel implements Runnable, KeyListener
     	{
     		//Basic collision loop (put all detection here
     		if(currentPlanet != null)
-    		//if( planet.isCollidable() && ship.isCollidable() ) 
     			if( currentPlanet.collidesWith( ship ) )
     			{
     		    	crash.play();
@@ -174,7 +182,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 			currentPlanet = null;
 			if(rand.nextInt(100) <= 125)
 			{
-				planetList.put(seed, new Planet(new Vector(SCREEN_X/2, SCREEN_Y/2), planetImages, seed));
+				planetList.put(seed, new Planet(new Vector(resolution.width/2, resolution.height/2), planetImages, seed));
 				currentPlanet = planetList.get(seed);
 			}
 		}

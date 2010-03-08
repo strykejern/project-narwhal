@@ -36,7 +36,7 @@ public class Background {
 	private ArrayList<BufferedImage> stars;
 	private ArrayList<Image2D> nebulaList;
 	final private int WIDTH, HEIGHT;
-	Image[][] universe;
+	private Image[][] universe;
 
 	/**
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
@@ -109,7 +109,7 @@ public class Background {
 				Graphics2D starGraph = star.createGraphics();
 				
 				Color col;
-				int rareStar = rand.nextInt(20);				
+				int rareStar = rand.nextInt(20);	
 				for (int k = 0; k < s*0.6; ++k)
 				{
 					if(rareStar == 1)		col = new Color(c, 0, 0, (int)(Math.pow(255, ((float)k/(float)(s*0.6)))));
@@ -132,8 +132,8 @@ public class Background {
 	public void draw(Graphics g){
 		g.drawImage(universe[0][0], 0, 0, null);
 	}
-	
-	
+
+
 	/**
 	 * Generates a new universe with bounds equal to 'size' X 'size'
 	 * @param size how big?
@@ -141,7 +141,7 @@ public class Background {
 	 */
 	public void generateWorld(int size, long seed) {
 		Profiler.begin("Generating World");
-		
+
 		Random rand = new Random(seed);
 		universe = new Image[size][size];
 		
