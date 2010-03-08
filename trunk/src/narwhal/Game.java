@@ -122,7 +122,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 		while(running)
     	{
     		//Keep the player from moving outside the screen
-    		//keepPlayerWithinBounds(ship);
+  //  		keepPlayerWithinBounds(ship);
 
     		//Basic collision loop (put all detection here
     		if(currentPlanet != null)
@@ -183,7 +183,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	 * JJ> Keeps the specified object within the game screen
 	 * @param player Who are we supposed to keep within bounds?
 	 */
-/*	void keepPlayerWithinBounds( Object player ) {
+/*	void keepPlayerWithinBounds( Spaceship player ) {
 		boolean nextScreen = false;
 				
 		if( player.pos.x > SCREEN_X ) 

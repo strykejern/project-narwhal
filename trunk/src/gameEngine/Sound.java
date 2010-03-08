@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 
 import javax.sound.sampled.*;
+import javax.sound.sampled.FloatControl.Type;
 
 import org.newdawn.easyogg.OggClip;
 
@@ -37,6 +38,7 @@ public class Sound
 	/** The sound itself as a audio stream */
 	private OggClip ogg;
 	private Clip    raw;
+	Mixer mix = AudioSystem.getMixer(null);
 	
 	/** JJ> Constructor that opens an input stream  to the audio file.
 	 * 
@@ -78,8 +80,16 @@ public class Sound
 
    			    // This method does not return until the audio file is completely loaded
    			    raw.open(stream);
+   			    
+   			    //Reduce volume by 75%
+   			    FloatControl gainControl = (FloatControl)raw.getControl(FloatControl.Type.MASTER_GAIN);
+   			 	double gain = 0.25f;    // number between 0 and 1 (loudest)
+   				float dB = (float)(Math.log(gain)/Math.log(10.0)*20.0);
+   				gainControl.setValue(dB);
+
 	   		}
 		    catch (Exception e) { Log.warning( "Loading audio file failed - " + e.toString() ); }
+		    
 	}
 		
 	/**
