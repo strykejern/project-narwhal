@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import javax.media.jai.ImagePyramid;
 
 /**
  * JJ> Helper class to make image handling easier to do
@@ -256,6 +257,7 @@ public class Image2D
 	 * @return the image ready to be drawn with proper rotation and all
 	 */
 	public Image toImage(){
+		//return Toolkit.getDefaultToolkit().createImage(rotated.getSource());
 		return rotated;
 	}
 	
