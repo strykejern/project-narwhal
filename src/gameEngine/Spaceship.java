@@ -18,7 +18,7 @@ public class Spaceship extends GameObject{
 
 	public void update(){
 		if 		(keys.up) 	speed.add(new Vector(0.5f, direction, true));
-		else if (keys.down) speed.divide(2);
+		else if (keys.down) speed.divide(1.01f);
 		if		(keys.left) direction -= Math.PI/45;
 		else if (keys.right)direction += Math.PI/45;
 		image.setDirection( direction );
@@ -26,5 +26,10 @@ public class Spaceship extends GameObject{
 		if (speed.length() > MAX_SPEED) speed.setLength(MAX_SPEED);
 		
 		super.update();
+		
+		if (pos.x < 0) pos.x = Game.getScreenWidth();
+		else if (pos.x > Game.getScreenWidth()) pos.x = 0;
+		if (pos.y < 0) pos.y = Game.getScreenHeight();
+		else if (pos.y > Game.getScreenHeight()) pos.y = 0;
 	}
 }
