@@ -24,7 +24,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import javax.media.jai.ImagePyramid;
 
 /**
  * JJ> Helper class to make image handling easier to do

@@ -29,6 +29,7 @@ import gameEngine.Spaceship;
 import gameEngine.Vector;
 
 import java.awt.*;
+
 import javax.swing.*;
 
 
@@ -48,7 +49,7 @@ import java.util.Random;
  */
 public class Game extends JPanel implements Runnable, KeyListener
 {
-	static Dimension resolution;
+	static Dimension resolution = new Dimension();
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
 	private boolean running;
