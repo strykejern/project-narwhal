@@ -21,6 +21,8 @@ package narwhal;
 import gameEngine.Image2D;
 import gameEngine.Log;
 import gameEngine.Profiler;
+import gameEngine.Vector;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -129,8 +131,11 @@ public class Background {
 	 * JJ> Draw the finished background to the Graphics specified in the parameter
 	 * @param g
 	 */
-	public void draw(Graphics g){
-		g.drawImage(universe[0][0], 0, 0, null);
+	public void draw(Graphics g, Vector pos){
+		g.drawImage(universe[0][0], pos.getX(), pos.getY(), null);
+		g.drawImage(universe[1][1], pos.getX()-Game.getScreenWidth(), pos.getY(), null);
+		g.drawImage(universe[2][2], pos.getX(), pos.getY()-Game.getScreenHeight(), null);
+		g.drawImage(universe[3][3], pos.getX()-Game.getScreenWidth(), pos.getY()-Game.getScreenHeight(), null);
 	}
 
 
