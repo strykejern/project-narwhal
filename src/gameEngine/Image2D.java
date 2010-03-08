@@ -243,11 +243,12 @@ public class Image2D
         // Draw the original img into the prepared receiver image  
         g.drawImage(img, null, 0, 0);  
         
-        // let go of all system resources in this Graphics  
-        g.dispose();  
         
         //Now set this as the new image
-        img = aimg;  
+        rotated = aimg;  
+        
+        // let go of all system resources in this Graphics  
+        g.dispose();  
     }  
 		
 	/**

@@ -49,4 +49,5 @@ public abstract class GameObject extends Physics{
 			g.drawOval(pos.getX()-w/2, pos.getY()-h/2, w, h);			
 		}
 	}
+
 }

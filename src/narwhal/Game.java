@@ -22,6 +22,7 @@ import gameEngine.GameObject;
 import gameEngine.Image2D;
 import gameEngine.Keyboard;
 import gameEngine.Log;
+import gameEngine.Particle;
 import gameEngine.Planet;
 import gameEngine.Sound;
 import gameEngine.Spaceship;
@@ -47,7 +48,7 @@ import java.util.Random;
  */
 public class Game extends JPanel implements Runnable, KeyListener
 {
-	private static int SCREEN_X = 1024, SCREEN_Y = 768;
+	private static int SCREEN_X = 800, SCREEN_Y = 600;
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
 	private boolean running;
@@ -57,7 +58,8 @@ public class Game extends JPanel implements Runnable, KeyListener
 	private Keyboard keys;
 	private Hashtable<Long, Planet> planetList;
 	private ArrayList<Image2D> planetImages;
-	
+
+
 	//Player position in the universe
 	Random rand = new Random();
 	int x = rand.nextInt(100), y = rand.nextInt(100);
@@ -80,7 +82,8 @@ public class Game extends JPanel implements Runnable, KeyListener
    	}
 	
 	public Game(JFrame frame) {
-		bg = new Background(SCREEN_X, SCREEN_Y, generateSeed(x, y));
+		bg = new Background(SCREEN_X, SCREEN_Y);
+		bg.generateWorld( 4, generateSeed(x, y) );
     	this.frame = frame;
 		Image2D icon = new Image2D("data/icon.png");
 		frame.setIconImage( icon.toImage() );
@@ -114,16 +117,13 @@ public class Game extends JPanel implements Runnable, KeyListener
     	Sound crash = new Sound("data/crash.au");
 		planetList = new Hashtable<Long, Planet>(0, 0.75f);
     	loadPlanets();
-    	//music.play();
+    	music.play();
 
 		//Generate the first background
     	generateNewScreen();
     	
 		while(running)
     	{
-    		//Keep the player from moving outside the screen
-  //  		keepPlayerWithinBounds(ship);
-
     		//Basic collision loop (put all detection here
     		if(currentPlanet != null)
     		//if( planet.isCollidable() && ship.isCollidable() ) 
@@ -134,8 +134,9 @@ public class Game extends JPanel implements Runnable, KeyListener
     			}
     		
     		//Calculate ship movement
-    		//calculateShipMovement();
     		ship.update();
+    		
+    		
     		try 
     		{
                 tm += TARGET_FPS;
@@ -153,67 +154,13 @@ public class Game extends JPanel implements Runnable, KeyListener
        	Log.close();
 	}
 
-	
-	/*private void calculateShipMovement()
-	{
-		if (up && ship.speed.length() < 15f) ship.speed.setLength(ship.speed.length()+0.5f);
-		else if (down) ship.speed.setLength(ship.speed.length()/1.05f);
-
-		if (left)
-		{
-			ship.rotate(-5);
-			ship.speed.rotateToDegree(ship.getAngle());
-		}
-		else if (right)
-		{
-			ship.rotate(5);
-			ship.speed.rotateToDegree(ship.getAngle());
-		}
-	}*/
-	
-	
+		
 	/**
 	 * JJ> This function generates a random unique number from two variables
 	 */
 	long generateSeed(int a, int b) {
 		return a*a - b*(b-1);
 	}
-	
-	/**
-	 * JJ> Keeps the specified object within the game screen
-	 * @param player Who are we supposed to keep within bounds?
-	 */
-/*	void keepPlayerWithinBounds( Spaceship player ) {
-		boolean nextScreen = false;
-				
-		if( player.pos.x > SCREEN_X ) 
-		{
-			x++;
-			player.pos.x = 0;
-			nextScreen = true;
-		}
-		else if( player.pos.x < 0 ) 
-		{
-			x--;
-			player.pos.x = SCREEN_X;
-			nextScreen = true;
-		}
-		else if( player.pos.y > SCREEN_Y ) 
-		{
-			y++;
-			player.pos.y = 0;
-			nextScreen = true;
-		}
-		else if( player.pos.y < 0 ) 
-		{
-			y--;
-			player.pos.y = SCREEN_Y;
-			nextScreen = true;
-		}
-		
-		//Did we cross into a new screen?
-		if( nextScreen ) generateNewScreen();
-	}*/
 	
 	private void generateNewScreen() {
 		long seed = generateSeed(x, y);
@@ -224,8 +171,6 @@ public class Game extends JPanel implements Runnable, KeyListener
 		else
 		{
 			Random rand = new Random(seed);
-			bg.generate(seed);
-			
 			currentPlanet = null;
 			if(rand.nextInt(100) <= 125)
 			{
@@ -254,6 +199,7 @@ public class Game extends JPanel implements Runnable, KeyListener
 	 */
 	public void paint(Graphics g) {		
 		bg.draw(g);
+		Particle.drawAllParticles(g);
 
 		//Draw the planet
 		if(currentPlanet != null)
@@ -265,7 +211,6 @@ public class Game extends JPanel implements Runnable, KeyListener
 		//Draw the little ship
 		ship.draw(g);
 		ship.drawCollision(g);
-		
 	}
 	
 	public void keyPressed(KeyEvent key) {
