@@ -30,7 +30,7 @@ public class Vector {
 		this.y = y;
 	}
 	
-	public Vector(float length, float angle, boolean dummy){
+	public Vector(float length, float angle, @SuppressWarnings("unused") boolean dummy){
         x = (float)Math.cos(angle) * length;
         y = (float)Math.sin(angle) * length;
 	}

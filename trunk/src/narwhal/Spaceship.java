@@ -1,8 +1,12 @@
-package gameEngine;
+package narwhal;
+
+import gameEngine.GameObject;
+import gameEngine.Image2D;
+import gameEngine.Input;
+import gameEngine.Vector;
 
 import java.awt.Graphics;
 
-import narwhal.Game;
 
 public class Spaceship extends GameObject{
 	private static float MAX_SPEED = 10f;

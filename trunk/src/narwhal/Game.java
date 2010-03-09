@@ -23,22 +23,17 @@ import gameEngine.Image2D;
 import gameEngine.Input;
 import gameEngine.Log;
 import gameEngine.Particle;
-import gameEngine.Planet;
 import gameEngine.Sound;
-import gameEngine.Spaceship;
 import gameEngine.Vector;
 
 import java.awt.*;
-
 import javax.swing.*;
-
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Random;
 
 
@@ -53,10 +48,10 @@ public class Game extends JPanel implements Runnable, KeyListener {
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
 	private boolean running;
 	private JFrame frame;
-	GameObject ship, currentPlanet;
+	GameObject ship;
 	Background bg;
 	private Input keys;
-	private Hashtable<Long, Planet> planetList;
+	private ArrayList<Planet> planetList;
 	private ArrayList<Image2D> planetImages;
 
 	//Player position in the universe
@@ -92,12 +87,9 @@ public class Game extends JPanel implements Runnable, KeyListener {
 		frame.addKeyListener(this);
 		keys = new Input();
 		
-		//Object lists
-		planetList = new Hashtable<Long, Planet>(0, 0.75f);
-
 		//Background
 		bg = new Background(resolution.width, resolution.height);
-		bg.generateWorld( 4, generateSeed(playerPosition.getX(), playerPosition.getY()) );
+		bg.generateWorld( 4, System.currentTimeMillis() );
 
 		//Initialize the player ship		
 		ship = new Spaceship(new Vector(resolution.width/2, resolution.height/2), new Image2D("data/spaceship.png"), keys);
@@ -126,11 +118,10 @@ public class Game extends JPanel implements Runnable, KeyListener {
     	//Load game resources
 		Sound music = new Sound("data/space.ogg");
     	Sound crash = new Sound("data/crash.au");
-    	loadPlanets();
     	music.play();
 
-		//Generate the first background
-    	generateNewScreen();
+		//Generate the planets
+    	planetList = generateRandomPlanets( System.currentTimeMillis() );
     	
 		while(running)
     	{
@@ -138,8 +129,8 @@ public class Game extends JPanel implements Runnable, KeyListener {
             int y = MouseInfo.getPointerInfo().getLocation().y - frame.getY();
             keys.update(x, y);
 			
-    		//Basic collision loop (put all detection here
-    		if(currentPlanet != null)
+    		//Basic collision loop (put all detection here)
+            for( Planet currentPlanet : planetList )
     			if( currentPlanet.collidesWith( ship ) )
     			{
     		    	crash.play();
@@ -175,22 +166,23 @@ public class Game extends JPanel implements Runnable, KeyListener {
 		return a*a - b*(b-1);
 	}
 	
-	private void generateNewScreen() {
-		long seed = generateSeed(playerPosition.getX(), playerPosition.getY());
-		if (planetList.containsKey(seed))
-		{
-			currentPlanet = planetList.get(seed);
-		}
-		else
-		{
-			Random rand = new Random(seed);
-			currentPlanet = null;
-			if(rand.nextInt(100) <= 0)
+	private ArrayList<Planet> generateRandomPlanets(long seed) {
+		Random rand = new Random(seed);
+		ArrayList<Planet> planetList = new ArrayList<Planet>();
+
+		loadPlanets();
+    	
+		//Randomly generate for every screen
+		for(int i = 0; i < 4; i++)
+			for(int j = 0; j < 4; j++)
+			if(rand.nextInt(100) <= 25)
 			{
-				planetList.put(seed, new Planet(new Vector(resolution.width/2, resolution.height/2), planetImages, seed));
-				currentPlanet = planetList.get(seed);
+				planetList.add(new Planet(new Vector(resolution.width/2*i, resolution.height/2*j), planetImages, seed));
 			}
-		}
+		
+		//All done!
+		planetImages.clear();
+    	return planetList;
 	}
 	
 	private void loadPlanets() {
@@ -215,12 +207,13 @@ public class Game extends JPanel implements Runnable, KeyListener {
 		bg.drawBounds(g, ship.getPosition() );
 		Particle.drawAllParticles(g);
 
-		//Draw the planet
-		if(currentPlanet != null)
-		{
-			currentPlanet.draw(g);
-			currentPlanet.drawCollision(g);
-		}
+		//Draw every planet
+		if(planetList != null)
+			for( Planet currentPlanet : planetList )
+			{
+				currentPlanet.draw(g);
+				currentPlanet.drawCollision(g);
+			}
 		
 		//Draw the little ship
 		ship.draw(g);
