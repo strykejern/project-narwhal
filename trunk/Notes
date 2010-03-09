@@ -1,0 +1,57 @@
+	public boolean collidesWith(Collidable object){
+		boolean collision = false;
+		
+		//Can't collide with ourself
+		if(this == object) return false;
+		
+		//Figure out collision type
+		switch( this.shape )
+		{
+		
+			case CIRCLE:
+			{
+				switch( object.shape )
+				{
+					case CIRCLE:
+					{
+						if (this.pos.minus(object.pos).length() < this.radius + object.radius) collision = true;
+						break;
+					}
+					
+					case RECT:
+					{
+						// Sloppy collision detection between circle and rectangle
+						Vector testPoint = object.pos.plus(object.size.dividedBy(2)).minus(this.pos);
+						testPoint.setLength(this.radius);
+						testPoint = this.pos.plus(testPoint);
+						collision = object.pointInsideShape(testPoint);
+						break;
+					}
+					
+					case TRIANGLE:
+					{
+						// TODO: Implement
+						break;
+					}
+				}
+				break;
+			}
+			
+			case RECT:
+			{
+				if (object.shape == null) collision = object.collidesWith(this);
+				else if (object.shape == Shape.TRIANGLE)
+				{
+					//TODO: implement
+				}
+				break;
+			}
+			
+			case TRIANGLE:
+			{
+				//TODO: implement
+				break;
+			}
+		}
+		return collision;
+	}

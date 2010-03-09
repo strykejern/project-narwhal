@@ -19,6 +19,7 @@ public abstract class GameObject extends Physics{
 		this.shape = shape;
 		this.direction = direction;
 		this.radius = radius;
+		this.canCollide = true;
 	}
 	
 	public void update() {

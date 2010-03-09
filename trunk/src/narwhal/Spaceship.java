@@ -11,15 +11,21 @@ import java.awt.Graphics;
 public class Spaceship extends GameObject{
 	private static float MAX_SPEED = 10f;
 	
-	public Spaceship(Vector pos, Image2D image, Input keys){
-		this.pos 	= pos;
-		this.image 	= image;
-		this.keys 	= keys;
-		this.speed 	= new Vector();
-		this.direction = 0;
-		
+	public Spaceship(Vector spawnPos, Image2D newImg, Input newInput){
+		pos 	= spawnPos;
+		image 	= newImg;
+		keys 	= newInput;
+		direction = 0;
+
+		//Calculate size
 		image.resize(Game.getScreenWidth()/12, Game.getScreenWidth()/12);
 		radius = image.getWidth()/2;
+
+		//Physics
+		speed = new Vector();
+		shape = Shape.CIRCLE;
+		canCollide = true;
+		anchored = false;
 	}
 
 	public void update() {
@@ -36,12 +42,6 @@ public class Spaceship extends GameObject{
 		if (speed.length() > MAX_SPEED) speed.setLength(MAX_SPEED);
 		
 		super.update();
-		/*
-		if 		(pos.x < 0) 					 pos.x = Game.getScreenWidth();
-		else if (pos.x > Game.getScreenWidth())  pos.x = 0;
-		if 		(pos.y < 0) 					 pos.y = Game.getScreenHeight();
-		else if (pos.y > Game.getScreenHeight()) pos.y = 0;
-		*/
 	}
 	
 	protected int drawX(){

@@ -25,21 +25,22 @@ public abstract class Collidable {
 	protected Vector pos;
 	protected Vector size;
 	protected float radius;
+	protected boolean canCollide;
 	
 	public static enum Shape{
 		RECT,
-		TRIANGLE
+		TRIANGLE,
+		CIRCLE
 	}
 	
 	/**
 	 * Creates an uninitialized Collidable object
 	 */
 	public Collidable(){
-		
 	}
 	
 	private boolean pointInsideShape(Vector point){
-		if 		(this.shape == null && pos.minus(point).length() < radius) return true;
+		if 		(this.shape == Shape.CIRCLE && pos.minus(point).length() < radius) return true;
 		else if (this.shape == Shape.RECT)
 		{
 			// TODO: account for rotation
@@ -91,4 +92,105 @@ public abstract class Collidable {
 		}
 		return collision;
 	}
+	
+	
+	
+	
+	//-----------------------------------------------------------------------------------------------
+	//JJ> My code from here
+	public boolean caseCollidesWith(Collidable object){
+		
+		//Can't collide with ourself
+		if(this == object) return false;
+
+		//Only collide if both can collide
+		if( !this.canCollide || !object.canCollide ) return false;
+		
+		//Figure out collision type
+		switch( this.shape )
+		{
+			case RECT: return doRectangleCollision(object);			
+			case TRIANGLE: return doTriangleCollision(object);
+			default: case CIRCLE: return doCircleCollision(object);
+		}		
+	}
+	
+	private boolean doTriangleCollision(Collidable object) {
+		
+		switch( object.shape )
+		{
+			//Triangle and rectangle
+			case RECT:
+			{						
+				// TODO: Implement
+				return false;
+			}
+			
+			//Triangle and triangle
+			case TRIANGLE:
+			{
+				// TODO: Implement
+				return false;
+			}
+			
+			//Triangle and circle
+			default: case CIRCLE:
+			{
+				//TODO: implement
+				return false;
+			}
+		}		
+	}
+
+	
+	private boolean doRectangleCollision(Collidable object) {
+		
+		switch( object.shape )
+		{
+			//Rectangle and rectangle
+			case RECT:
+			{						
+				// TODO: Implement
+				return false;
+			}
+			
+			//Rectangle and triangle
+			case TRIANGLE:
+			{
+				// TODO: Implement
+				return false;
+			}
+			
+			//Collision between rectangle and circle
+			default: case CIRCLE:	return object.doCircleCollision(this);
+		}		
+	}
+
+	
+	private boolean doCircleCollision(Collidable object)
+	{
+		switch( object.shape )
+		{
+			
+			// Sloppy collision detection between circle and rectangle
+			case RECT:
+			{
+				Vector testPoint = object.pos.plus(object.size.dividedBy(2)).minus(this.pos);
+				testPoint.setLength(this.radius);
+				testPoint = this.pos.plus(testPoint);
+				return object.pointInsideShape(testPoint);
+			}
+			
+			//Circle with triangle
+			case TRIANGLE:
+			{
+				// TODO: Implement
+				return false;
+			}
+			
+			//Circle with circle (perfect)
+			default: case CIRCLE: return (this.pos.minus(object.pos).length() < this.radius + object.radius);
+		}
+	}
+	
 }

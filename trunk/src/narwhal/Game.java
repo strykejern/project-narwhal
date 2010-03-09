@@ -177,7 +177,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
 			for(int j = 0; j < 4; j++)
 			if(rand.nextInt(100) <= 25)
 			{
-				planetList.add(new Planet(new Vector(resolution.width/2*i, resolution.height/2*j), planetImages, seed));
+				planetList.add(new Planet(new Vector(resolution.width/2*i, resolution.height/2*j), planetImages, rand));
 			}
 		
 		//All done!
@@ -207,6 +207,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
 		bg.drawBounds(g, ship.getPosition() );
 		Particle.drawAllParticles(g);
 
+		/*
 		//Draw every planet
 		if(planetList != null)
 			for( Planet currentPlanet : planetList )
@@ -214,6 +215,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
 				currentPlanet.draw(g);
 				currentPlanet.drawCollision(g);
 			}
+		*/
 		
 		//Draw the little ship
 		ship.draw(g);
