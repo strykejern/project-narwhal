@@ -42,8 +42,16 @@ public class Spaceship extends GameObject{
 		*/
 	}
 	
+	protected int drawX(){
+		return Game.getScreenWidth()/2+speed.getX()-image.getWidth()/2;
+	}
+	
+	protected int drawY(){
+		return Game.getScreenHeight()/2+speed.getY()-image.getHeight()/2;
+	}
+	
 	public void draw(Graphics g) {
-		g.drawImage(image.toImage(), Game.getScreenWidth()/2+speed.getX()-image.getWidth()/2, Game.getScreenHeight()/2+speed.getY()-image.getHeight()/2, null);
+		g.drawImage(image.toImage(), drawX(), drawY(), null);
 	}
 
 }

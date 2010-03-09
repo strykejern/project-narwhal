@@ -35,7 +35,7 @@ public abstract class GameObject extends Physics{
 		int w = image.getWidth();
 		int h = image.getHeight();		
 		g.setColor(Color.BLUE);
-		g.drawRect(pos.getX()-w/2, pos.getY()-h/2, w, h);
+		g.drawRect(drawX(), drawY(), w, h);
 
 		//Draw it as a circle
 		if( super.shape == null )
@@ -43,8 +43,16 @@ public abstract class GameObject extends Physics{
 			w = (int)super.radius*2;
 			h = (int)super.radius*2;
 			g.setColor(Color.RED);
-			g.drawOval(pos.getX()-w/2, pos.getY()-h/2, w, h);			
+			g.drawOval(drawX()+(int)(w*0.21), drawY()+(int)(h*0.21), w, h);			
 		}
+	}
+	
+	protected int drawX(){
+		return pos.getX();
+	}
+	
+	protected int drawY(){
+		return pos.getY();
 	}
 
 	public Vector getPosition() {
