@@ -8,9 +8,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Planet extends GameObject {
-	public Planet(Vector spawnPos, ArrayList<Image2D> imageList, long seed){
+	public Planet(Vector spawnPos, ArrayList<Image2D> imageList, Random rand){
 		
-		Random rand = new Random(seed);	
 		Image2D myImage = imageList.get( rand.nextInt(imageList.size()) );
 
 		//Make it unique
@@ -25,7 +24,9 @@ public class Planet extends GameObject {
 		image = myImage;
 		
 		//Physics
+		shape = Shape.CIRCLE;
 		anchored = true;
+		canCollide = true;
 	}
 	
 }

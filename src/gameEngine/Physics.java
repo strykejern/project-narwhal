@@ -4,8 +4,7 @@ public abstract class Physics extends Collidable{
 	protected Vector speed;
 	public boolean anchored;
 	
-	public Physics(){
-		
+	public Physics() {		
 	}
 	
 	public void update(){
@@ -13,6 +12,7 @@ public abstract class Physics extends Collidable{
 	}
 	
 	public void collision(Physics object){
+		
 		//We are circle
 		if (this.shape == null)
 		{
