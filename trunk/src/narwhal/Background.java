@@ -39,6 +39,7 @@ public class Background {
 	private ArrayList<Image2D> nebulaList;
 	final private int WIDTH, HEIGHT;
 	private Image[][] universe;
+	private Vector[][] bgPos;
 
 	/**
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
@@ -60,8 +61,9 @@ public class Background {
 		int whichNebula = rand.nextInt(nebulaList.size());
 		nebulaList.get( whichNebula ).reset();
 		
-		//Make it unique
 		nebulaList.get( whichNebula ).setAlpha( rand.nextFloat() );
+		
+		//Make it unique
 		if( rand.nextBoolean() ) nebulaList.get( whichNebula ).horizontalFlip();
 		if( rand.nextBoolean() ) nebulaList.get( whichNebula ).verticalFlip();
 			
@@ -132,12 +134,33 @@ public class Background {
 	 * @param g
 	 */
 	public void draw(Graphics g, Vector pos){
-		g.drawImage(universe[0][0], pos.getX(), pos.getY(), null);
-		g.drawImage(universe[1][1], pos.getX()-Game.getScreenWidth(), pos.getY(), null);
-		g.drawImage(universe[2][2], pos.getX(), pos.getY()-Game.getScreenHeight(), null);
-		g.drawImage(universe[3][3], pos.getX()-Game.getScreenWidth(), pos.getY()-Game.getScreenHeight(), null);
+		int x, y;
+				
+		//Bottom Right
+		for(int i = 0; i < 4; i++)
+			for(int j = 0; j < 4; j++)
+			{
+				x = bgPos[i][j].getX()+pos.getX();
+				y = bgPos[i][j].getY()+pos.getY();		
+				g.drawImage( universe[i][j], x, y, null );
+			}		
 	}
 
+	public void drawBounds(Graphics g, Vector pos){
+		final int SCREEN_X = Game.getScreenWidth();			//Screen width
+		final int SCREEN_Y = Game.getScreenHeight();		//Screen height
+		
+		//Make rectangles yellow
+		g.setColor(Color.YELLOW);
+		
+		//Bottom Right
+		for(int i = 0; i < 4; i++)
+			for(int j = 0; j < 4; j++)
+			{
+				g.drawRect(i*SCREEN_X+pos.getX(), j*SCREEN_Y+pos.getY(), SCREEN_X, SCREEN_Y);
+			}
+		
+	}
 
 	/**
 	 * Generates a new universe with bounds equal to 'size' X 'size'
@@ -149,6 +172,7 @@ public class Background {
 
 		Random rand = new Random(seed);
 		universe = new Image[size][size];
+		bgPos = new Vector[size][size];
 		
 		for(int i = 0; i < size; i++)
 			for(int j = 0; j < size; j++)
@@ -172,6 +196,7 @@ public class Background {
 		    		//All done!
 		    		g.dispose();
 		    		universe[i][j] = buffer;
+		    		bgPos[i][j] = new Vector(i*Game.getScreenWidth(), j*Game.getScreenHeight());
 				}
 	    	    catch (OutOfMemoryError e) 
 	    	    {

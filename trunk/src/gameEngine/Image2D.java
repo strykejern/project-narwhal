@@ -162,7 +162,7 @@ public class Image2D
         g.dispose();
 
         //Now set this as the new image
-        img = rotated = buffer;  
+        original = img = rotated = buffer;  
     }
 	
 	/**
