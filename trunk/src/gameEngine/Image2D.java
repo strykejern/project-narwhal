@@ -32,11 +32,21 @@ import javax.imageio.ImageIO;
  */
 public class Image2D
 {
-	private BufferedImage img;			//The image itself
-	private BufferedImage rotated;		//The image with effects added (rotation, alpha, etc.)
-	private BufferedImage original;		//The image when it was first loaded
+	private BufferedImage original;					//The image itself
+	private BufferedImage processed;				//The image with effects added (rotation, alpha, etc.)
 	private float currentAngle;
-		
+	private static boolean highQuality = true;		//Draw everything in HQ gfx?
+	
+	/**
+	 * JJ> Static functions to disable or enable HQ graphics mode
+	 */
+	public static void enableHighQualityGraphics() {
+		highQuality = true;
+	}
+	public static void disableHighQualityGraphics() {
+		highQuality = false;
+	}
+
 	/**
 	 * JJ> Constructor makes sure the image is correctly loaded
 	 * @param fileName: the path and name of the file to load
@@ -53,9 +63,9 @@ public class Image2D
 		//Now try reading it
 		try 
 		{
-			img = ImageIO.read(f);
+			original = ImageIO.read(f);
 			this.makeValid();
-			rotated = original = img;
+			processed = original;
 			currentAngle = 0;
 			
 		} 		
@@ -70,9 +80,9 @@ public class Image2D
 	 * @param copyImg: which BufferedImage to use as the sprite
 	 */
 	public Image2D( BufferedImage copyImg ) {
-		img = copyImg;
+		original = copyImg;
 		this.makeValid();
-		rotated = original = img;
+		processed = original;
 		currentAngle = 0;
 	}
 	
@@ -80,17 +90,42 @@ public class Image2D
 	 * JJ> This makes sure that the type of the image is valid so that it is safe to use
 	 */
 	private void makeValid() {
-		if( img.getType() == BufferedImage.TYPE_CUSTOM ) 
+		if( original.getType() == BufferedImage.TYPE_CUSTOM ) 
 		{
 			//Log.message("Unknown image format. Converting to TYPE_INT_ARGB to prevent errors.");
-	        BufferedImage buffer = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_4BYTE_ABGR); //TYPE_INT_ARGB  
+	        BufferedImage buffer = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_4BYTE_ABGR); //TYPE_INT_ARGB  
 	        
-	        Graphics2D g = buffer.createGraphics();  
-	        g.drawImage(img, null, 0, 0 ); 
+	        Graphics2D g = getGraphics(buffer);  
+	        g.drawImage(original, null, 0, 0 ); 
 	        g.dispose();
 	        
-	        img = buffer;
+	        original = buffer;
 		}	
+	}
+	
+	/**
+	 * JJ> This gets the Graphics2D unit for the specified BufferedImage and also sets all the
+	 *     graphics quality render parameters automatically.
+	 * @param gfx The BufferedImage to build the Graphics2D from
+	 * @return Graphics2D for gfx
+	 */
+	private Graphics2D getGraphics(BufferedImage gfx) {
+		Graphics2D g = gfx.createGraphics();  
+    	
+		if( highQuality )
+		{
+			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+	    	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
+			g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		   	g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+		}
+		else
+		{
+			g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
+			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+		}
+		
+    	return g;
 	}
 
 	/**
@@ -106,50 +141,43 @@ public class Image2D
 	 * @param angle: the new direction
 	 */
 	public void setDirection(float angle) {  
-	
-		//Limit the angles
-		//angle %= 4;
 		
 		//No change
 		if( angle == currentAngle ) return;
 		
-        int w = (int) (img.getWidth()*1.42);  
-        int h = (int) (img.getHeight()*1.42);
+        int w = (int) (original.getWidth()*1.42);  
+        int h = (int) (original.getHeight()*1.42);
         
         BufferedImage buffer = new BufferedImage( w, h, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = buffer.createGraphics();  
-    	
-        //g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-    	//g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
-
+        Graphics2D g = getGraphics(buffer);  
+    	        
     	g.rotate(angle, w/2.0, h/2.0);
-        g.drawImage(img, null, (w-img.getWidth())/2, (h-img.getHeight())/2);
+        g.drawImage(original, null, (w-original.getWidth())/2, (h-original.getHeight())/2);
                 
         //Make it so
         currentAngle = angle;
-        rotated = buffer; 
+        processed = buffer; 
     }  
 	
 	/**
 	 * JJ> direct scaling of a image using the resize method
 	 */
 	public void scale(float multiplier) {   
-        resize( (int)(img.getWidth() * multiplier), (int)(img.getHeight() * multiplier) );	
+        resize( (int)(original.getWidth() * multiplier), (int)(original.getHeight() * multiplier) );	
 	}
 	
 	/**
 	 * JJ> resizing a image using bilinear filtering
 	 */
-	public void resize(int newW, int newH) {  
+	public void resize(int newW, int newH) {
         int w = original.getWidth();  
-        int h = original.getHeight();  
-        boolean highQuality = false;
+        int h = original.getHeight();
         
         //Valid resize?
         if( newW <= 0 || newH <= 0 ) return;
         
-        BufferedImage buffer = new BufferedImage(newW, newH, img.getType());  
-        Graphics2D g = buffer.createGraphics();
+        BufferedImage buffer = new BufferedImage(newW, newH, original.getType());  
+        Graphics2D g = getGraphics(buffer);  
         
         if( highQuality )
         {
@@ -162,37 +190,39 @@ public class Image2D
         g.dispose();
 
         //Now set this as the new image
-        original = img = rotated = buffer;  
+        original = processed = buffer;  
     }
 	
 	/**
 	 * JJ> Flips the image horizontally
 	 */
 	public void horizontalFlip() {  
-        int w = img.getWidth();  
-        int h = img.getHeight();  
-        BufferedImage dimg = new BufferedImage(w, h, img.getType());  
-        Graphics2D g = dimg.createGraphics();  
-        g.drawImage(img, 0, 0, w, h, w, 0, 0, h, null);  
-        g.dispose();  
+        int w = original.getWidth();  
+        int h = original.getHeight();  
+        BufferedImage buffer = new BufferedImage(w, h, original.getType());  
+        
+        Graphics2D g = getGraphics(buffer);  
+        g.drawImage(original, 0, 0, w, h, w, 0, 0, h, null);  
         
         //Now set this as the new image
-        img = dimg;
+        g.dispose();  
+        original = buffer;
 	}
 	
 	/**
 	 * JJ> Flips the image vertically
 	 */
 	public void verticalFlip() {  
-        int w = img.getWidth();  
-        int h = img.getHeight();  
-        BufferedImage dimg = new BufferedImage(w, h, img.getColorModel().getTransparency());  
-        Graphics2D g = dimg.createGraphics();  
-        g.drawImage(img, 0, 0, w, h, 0, h, w, 0, null);  
-        g.dispose();  
+        int w = original.getWidth();  
+        int h = original.getHeight();  
+        BufferedImage buffer = new BufferedImage(w, h, original.getColorModel().getTransparency());  
+        
+        Graphics2D g = getGraphics(buffer);
+        g.drawImage(original, 0, 0, w, h, 0, h, w, 0, null);  
         
         //Now set this as the new image
-        img = dimg;  
+        g.dispose();  
+        original = buffer;  
     } 
 	
 	/**
@@ -200,28 +230,28 @@ public class Image2D
 	 * @param color: Which color to make transparent
 	 */
 	public void makeColorTransparent(Color color) {  
-        BufferedImage dimg = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);  
+        BufferedImage buffer = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_INT_ARGB);  
         
         //Create a buffer copy of the original
-        Graphics2D g = dimg.createGraphics();  
+        Graphics2D g = getGraphics(buffer);
         g.setComposite(AlphaComposite.Src);  
-        g.drawImage(img, null, 0, 0);  
+        g.drawImage(original, null, 0, 0);  
         g.dispose();
         
         //This does all the work and makes the correct pixels transparent
-        for(int i = 0; i < dimg.getHeight(); i++) 
+        for(int i = 0; i < buffer.getHeight(); i++) 
         {  
-            for(int j = 0; j < dimg.getWidth(); j++) 
+            for(int j = 0; j < buffer.getWidth(); j++) 
             {  
-                if( dimg.getRGB(j, i) == color.getRGB() ) 
+                if( buffer.getRGB(j, i) == color.getRGB() ) 
                 {  
-                	dimg.setRGB(j, i, 0x8F1C1C);  
+                	buffer.setRGB(j, i, 0x8F1C1C);  
                 }  
             }  
         }
         
         //Now set this as the new image
-        img = dimg; 
+        original = buffer; 
     }
 	
 	/**
@@ -234,18 +264,17 @@ public class Image2D
 		transperancy = Math.min( 1.00f, Math.max(0.00f, transperancy) );
         
         // Get the images graphics  
-		BufferedImage aimg = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TRANSLUCENT);  
-        Graphics2D g = aimg.createGraphics();  
+		BufferedImage buffer = new BufferedImage( original.getWidth(), original.getHeight(), BufferedImage.TRANSLUCENT );  
+        Graphics2D g = getGraphics(buffer);  
         
         // Set the Graphics composite to Alpha  
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transperancy));  
         
         // Draw the original img into the prepared receiver image  
-        g.drawImage(img, null, 0, 0);  
-        
+        g.drawImage(original, null, 0, 0);  
         
         //Now set this as the new image
-        rotated = aimg;  
+        processed = buffer;  
         
         // let go of all system resources in this Graphics  
         g.dispose();  
@@ -257,27 +286,27 @@ public class Image2D
 	 */
 	public Image toImage(){
 		//return Toolkit.getDefaultToolkit().createImage(rotated.getSource());
-		return rotated;
+		return processed;
 	}
 	
 	/**
 	 * JJ> Get width for this buffered image
 	 */
 	public int getWidth() {
-		return rotated.getWidth();
+		return processed.getWidth();
 	}
 	
 	/**
 	 * JJ> Get height for this buffered image
 	 */
 	public int getHeight() {
-		return rotated.getHeight();
+		return processed.getHeight();
 	}
 
 	/**
 	 * JJ> Returns the current angle for this image
 	 */
-	public float getAngle(){
+	public float getAngle() {
 		return currentAngle;
 	}
 
@@ -286,6 +315,6 @@ public class Image2D
 	 * @warning: All changes are permanently lost!
 	 */
 	public void reset() {  
-		img = original;
+		processed = original;
 	}
 }
