@@ -212,6 +212,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
 	 */
 	public void paint(Graphics g) {		
 		bg.draw(g, ship.getPosition());
+		bg.drawBounds(g, ship.getPosition() );
 		Particle.drawAllParticles(g);
 
 		//Draw the planet

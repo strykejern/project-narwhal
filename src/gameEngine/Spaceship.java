@@ -18,11 +18,9 @@ public class Spaceship extends GameObject{
 		radius = image.getWidth()/2;
 	}
 
-	public void update(){
+	public void update() {
 		if 		(keys.up) 	speed.sub(new Vector(0.5f, direction, true));
 		else if (keys.down) speed.divide(1.01f);
-		//if		(keys.left) direction -= Math.PI/45;
-		//else if (keys.right)direction += Math.PI/45;
 		direction %= 2 * Math.PI;
 		float heading = keys.mousePos.minus(new Vector(Game.getScreenWidth()/2, Game.getScreenHeight()/2)).getAngle() - direction;
 		if 		(heading > Math.PI)  heading = -((2f * (float)Math.PI) - heading);
