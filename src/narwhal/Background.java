@@ -60,10 +60,9 @@ public class Background {
 		//Figure out what it looks like
 		int whichNebula = rand.nextInt(nebulaList.size());
 		nebulaList.get( whichNebula ).reset();
-		
-		nebulaList.get( whichNebula ).setAlpha( rand.nextFloat() );
-		
+				
 		//Make it unique
+		nebulaList.get( whichNebula ).setAlpha( rand.nextFloat() );
 		if( rand.nextBoolean() ) nebulaList.get( whichNebula ).horizontalFlip();
 		if( rand.nextBoolean() ) nebulaList.get( whichNebula ).verticalFlip();
 			
@@ -131,12 +130,13 @@ public class Background {
 				
 	/**
 	 * JJ> Draw the finished background to the Graphics specified in the parameter
-	 * @param g
+	 * @param g What do we draw it on?
+	 * @param pos Center position of the screen in space
 	 */
 	public void draw(Graphics g, Vector pos){
 		int x, y;
 				
-		//Bottom Right
+		//TODO: optimize this
 		for(int i = 0; i < 4; i++)
 			for(int j = 0; j < 4; j++)
 			{
@@ -153,7 +153,7 @@ public class Background {
 		//Make rectangles yellow
 		g.setColor(Color.YELLOW);
 		
-		//Bottom Right
+		//TODO: Draw entire grid... this can be optimized
 		for(int i = 0; i < 4; i++)
 			for(int j = 0; j < 4; j++)
 			{
@@ -207,6 +207,8 @@ public class Background {
 	    	    }
 	    	   
 			}
+		stars.clear();
+		nebulaList.clear();
 		Profiler.end("Generating World");
 	}
 	

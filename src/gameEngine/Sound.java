@@ -37,7 +37,6 @@ public class Sound
 	/** The sound itself as a audio stream */
 	private OggClip ogg;
 	private Clip    raw;
-	Mixer mix = AudioSystem.getMixer(null);
 	
 	/** JJ> Constructor that opens an input stream  to the audio file.
 	 * 
@@ -80,18 +79,32 @@ public class Sound
 
    			    // This method does not return until the audio file is completely loaded
    			    raw.open(stream);
-   			    
-   			    //Reduce volume by 75%
-   			    FloatControl gainControl = (FloatControl)raw.getControl(FloatControl.Type.MASTER_GAIN);
-   			 	double gain = 0.25f;    // number between 0 and 1 (loudest)
-   				float dB = (float)(Math.log(gain)/Math.log(10.0)*20.0);
-   				gainControl.setValue(dB);
-
 	   		}
 		    catch (Exception e) { Log.warning( "Loading audio file failed - " + e.toString() ); }
-		    
+		    setVolume(0.5f);
 	}
-		
+
+	/**
+	 * JJ> Sets the sound volume where 0.00 is no sound and 1.00 is 100% volume
+	 */
+	public void setVolume(float gain) {
+		if( raw != null )
+		{
+		    FloatControl gainControl = (FloatControl)raw.getControl(FloatControl.Type.MASTER_GAIN);
+			gainControl.setValue((float)(Math.log(gain)/Math.log(10.0)*20.0));
+		}
+		else ogg.setGain( gain );
+	}
+
+	/**
+	 *  JJ> Figures out if the sound is currently playing
+	 */
+	public boolean isPlaying() {
+		if( raw != null ) 	   return raw.isRunning();
+		else if( ogg != null ) return !ogg.stopped();
+		return false;
+	}
+	
 	/**
 	 * JJ> Play the clip once, but only if it has finished playing
 	 */
@@ -108,7 +121,7 @@ public class Sound
 	 * JJ> play the clip repeatedly forever until Sound.stop() is called
 	 */
 	public void playLooped() {		
-		if( raw != null ) raw.loop(Clip.LOOP_CONTINUOUSLY);
+		if( raw != null ) 	   raw.loop(Clip.LOOP_CONTINUOUSLY);
 		else if( ogg != null ) ogg.loop();
 	}
 	
@@ -116,7 +129,7 @@ public class Sound
 	 * JJ> to stop the audio.
 	 */
 	public void stop() {
-		if( raw != null ) raw.stop();
+		if( raw != null ) 	   raw.stop();
 		else if( ogg == null ) ogg.stop();
 	}
 

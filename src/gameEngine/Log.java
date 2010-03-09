@@ -70,8 +70,9 @@ public class Log
 	public static void error(String rawText) {
 		String text = "FATAL ERROR: " + rawText + "\n"; 
 		System.err.print(text);
+		close();
 		print(text);
-		System.exit(0);
+		System.exit(-1);
 	}
 	
 	//JJ> Writes the specified text to the log file

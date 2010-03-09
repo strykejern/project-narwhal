@@ -1,8 +1,11 @@
-package gameEngine;
+package narwhal;
+
+import gameEngine.GameObject;
+import gameEngine.Image2D;
+import gameEngine.Vector;
 
 import java.util.ArrayList;
 import java.util.Random;
-import narwhal.Game;
 
 public class Planet extends GameObject {
 	public Planet(Vector spawnPos, ArrayList<Image2D> imageList, long seed){
