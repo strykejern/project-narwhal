@@ -23,26 +23,19 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
-
 import javax.imageio.ImageIO;
 
 /**
  * JJ> Helper class to make image handling easier to do
  * @author Johan Jansen and Anders Eie
- *
  */
-public class Image2D implements Serializable
-{
-	private static final long serialVersionUID = 1L;
-	private BufferedImage original;					//The image itself
-	private BufferedImage processed;				//The image with effects added (rotation, alpha, etc.)
-	private float currentAngle;
+public class Image2D {
+	
+	/*************************************************************************
+	 * JJ> Static version of this class to handle HQ graphics mode
+	 ************************************************************************/
 	private static boolean highQuality = true;		//Draw everything in HQ gfx?
 	
-	/**
-	 * JJ> Static functions to disable or enable HQ graphics mode
-	 */
 	public static void enableHighQualityGraphics() {
 		highQuality = true;
 	}
@@ -50,6 +43,14 @@ public class Image2D implements Serializable
 		highQuality = false;
 	}
 
+
+	/*************************************************************************
+	 * JJ> The Private instanced version
+	 ************************************************************************/
+	private BufferedImage original;					//The image itself
+	private BufferedImage processed;				//The image with effects added (rotation, alpha, etc.)
+	private float currentAngle;
+	
 	/**
 	 * JJ> Constructor makes sure the image is correctly loaded
 	 * @param fileName: the path and name of the file to load
