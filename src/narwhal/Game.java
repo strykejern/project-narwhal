@@ -92,7 +92,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
 		bg.generateWorld( 4, System.currentTimeMillis() );
 
 		//Initialize the player ship		
-		ship = new Spaceship(new Vector(resolution.width/2, resolution.height/2), new Image2D("data/spaceship.png"), keys);
+		ship = new Spaceship(new Vector(1, 1), new Image2D("data/spaceship.png"), keys);
 		
 		//Thread (do last so that everything above is properly loaded before the main loop begins)
 		new Thread(this).start();
@@ -131,7 +131,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
 			
     		//Basic collision loop (put all detection here)
             for( Planet currentPlanet : planetList )
-    			if( currentPlanet.collidesWith( ship ) )
+    			if( currentPlanet.collidesWith( ship ) && false ) /////////////////////////////// WARNING
     			{
     		    	crash.play();
     				currentPlanet.collision(ship);
@@ -201,8 +201,40 @@ public class Game extends JPanel implements Runnable, KeyListener {
 	 * JJ> Paints every object of interest (not background)
 	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 	 */
-	public void paint(Graphics g) {		
-		bg.draw(g, ship.getPosition());
+	public void paint(Graphics g) {
+		// Quick implement of stacking backgrounds
+		float uniX = 800*4;
+		float uniY = 600*4;
+		Vector pos = ship.getPosition().clone();
+		pos.negate();
+		
+		boolean u = false;
+		boolean d = false;
+		boolean l = false;
+		boolean r = false;
+		
+		if 		(pos.x < 0) 		  	l = true;
+		else if (pos.x > uniX - getWidth()) 	r = true;
+		
+		if		(pos.y < 0)			u = true;
+		else if (pos.y > uniY - getHeight())	d = true;
+		
+		pos.negate();
+		
+		bg.draw(g, pos);
+		
+		if 		(l) bg.draw(g, pos.plus(new Vector(-uniX,0)));
+		else if (r) bg.draw(g, pos.plus(new Vector( uniX,0)));
+
+		if 		(u) bg.draw(g, pos.plus(new Vector(0,-uniY)));
+		else if (d) bg.draw(g, pos.plus(new Vector(0, uniY)));
+		
+		if 		(u && l) bg.draw(g, pos.plus(new Vector(-uniX,-uniY)));
+		else if (u && r) bg.draw(g, pos.plus(new Vector( uniX,-uniY)));
+		else if (d && l) bg.draw(g, pos.plus(new Vector(-uniX, uniY)));
+		else if (d && r) bg.draw(g, pos.plus(new Vector( uniX, uniY)));
+		// End of quick implement
+		
 		bg.drawBounds(g, ship.getPosition() );
 		Particle.drawAllParticles(g);
 

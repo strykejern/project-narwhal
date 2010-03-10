@@ -3,6 +3,7 @@ package narwhal;
 import gameEngine.GameObject;
 import gameEngine.Image2D;
 import gameEngine.Input;
+import gameEngine.Log;
 import gameEngine.Vector;
 
 import java.awt.Graphics;
@@ -41,15 +42,25 @@ public class Spaceship extends GameObject{
 		
 		if (speed.length() > MAX_SPEED) speed.setLength(MAX_SPEED);
 		
+		// Quick implement of universe bounds
+		float uniX = 800*4;
+		float uniY = 600*4;
+		
+		if 		(pos.x < 0) 	pos.x = uniX + pos.x;
+		else if (pos.x > uniX)  pos.x %= uniX;
+		
+		if 		(pos.y < 0) 	pos.y = uniY + pos.y;
+		else if (pos.y > uniY)  pos.y %= uniY;
+		
 		super.update();
 	}
 	
 	protected int drawX(){
-		return Game.getScreenWidth()/2+speed.getX()-image.getWidth()/2;
+		return Game.getScreenWidth()/2-image.getWidth()/2;
 	}
 	
 	protected int drawY(){
-		return Game.getScreenHeight()/2+speed.getY()-image.getHeight()/2;
+		return Game.getScreenHeight()/2-image.getHeight()/2;
 	}
 	
 	public void draw(Graphics g) {
