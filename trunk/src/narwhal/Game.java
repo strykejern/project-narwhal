@@ -43,13 +43,13 @@ import java.util.Random;
  *
  */
 public class Game extends JPanel implements Runnable, KeyListener {
-	static Dimension resolution = new Dimension(800, 600);
+	private static Dimension resolution = new Dimension();
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
 	private boolean running;
 	private JFrame frame;
 	GameObject ship;
-	Background bg;
+	Universe bg;
 	private Input keys;
 	private ArrayList<Planet> planetList;
 	private ArrayList<Image2D> planetImages;
@@ -66,11 +66,11 @@ public class Game extends JPanel implements Runnable, KeyListener {
 	public static void main(String[] args) throws InterruptedException{	
     	//Initialize the logging system, do this first so that error logging happens correctly.
     	Log.initialize();
+		resolution.setSize(800, 600);
 
     	JFrame parentWindow = new JFrame("Project Narwhal");		
     	parentWindow.getContentPane().add(new Game(parentWindow));
 
-		resolution.setSize(800, 600);
 		parentWindow.setSize(resolution);
         parentWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         parentWindow.setVisible(true);
@@ -88,7 +88,7 @@ public class Game extends JPanel implements Runnable, KeyListener {
 		keys = new Input();
 		
 		//Background
-		bg = new Background(resolution.width, resolution.height);
+		bg = new Universe(resolution);
 		bg.generateWorld( 4, System.currentTimeMillis() );
 
 		//Initialize the player ship		
@@ -172,9 +172,9 @@ public class Game extends JPanel implements Runnable, KeyListener {
 		loadPlanets();
     	
 		//Randomly generate for every screen
-		for(int i = 0; i < 4; i++)
-			for(int j = 0; j < 4; j++)
-			if(rand.nextInt(100) <= 25)
+		for(int i = 0; i < bg.getUniverseSize(); i++)
+			for(int j = 0; j < bg.getUniverseSize(); j++)
+			if( rand.nextInt(100) <= 25 )
 			{
 				planetList.add(new Planet(new Vector(resolution.width/2*i, resolution.height/2*j), planetImages, rand));
 			}
@@ -198,13 +198,15 @@ public class Game extends JPanel implements Runnable, KeyListener {
 
 	
 	/*
-	 * JJ> Paints every object of interest (not background)
+	 * JJ> Paints every object of interest
 	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 	 */
 	public void paint(Graphics g) {
+		
+		
 		// Quick implement of stacking backgrounds
-		float uniX = 800*4;
-		float uniY = 600*4;
+		float uniX = resolution.width*bg.getUniverseSize();
+		float uniY = resolution.height*bg.getUniverseSize();
 		Vector pos = ship.getPosition().clone();
 		pos.negate();
 		
@@ -213,10 +215,10 @@ public class Game extends JPanel implements Runnable, KeyListener {
 		boolean l = false;
 		boolean r = false;
 		
-		if 		(pos.x < 0) 		  	l = true;
+		if 		(pos.x < 0) 		  			l = true;
 		else if (pos.x > uniX - getWidth()) 	r = true;
 		
-		if		(pos.y < 0)			u = true;
+		if		(pos.y < 0)						u = true;
 		else if (pos.y > uniY - getHeight())	d = true;
 		
 		pos.negate();
@@ -238,9 +240,8 @@ public class Game extends JPanel implements Runnable, KeyListener {
 		bg.drawBounds(g, ship.getPosition() );
 		Particle.drawAllParticles(g);
 
-		/*
 		//Draw every planet
-		if(planetList != null)
+		/*if(planetList != null)
 			for( Planet currentPlanet : planetList )
 			{
 				currentPlanet.draw(g);

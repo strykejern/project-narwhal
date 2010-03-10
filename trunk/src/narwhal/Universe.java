@@ -34,7 +34,8 @@ import java.util.Random;
  * @author Johan Jansen and Anders Eie
  *
  */
-public class Background {
+public class Universe {
+	private static int universeSize;
 	private ArrayList<BufferedImage> stars;
 	private ArrayList<Image2D> nebulaList;
 	final private int WIDTH, HEIGHT;
@@ -45,10 +46,10 @@ public class Background {
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
 	 *     component every update. Instead we just draw the BufferedImage.
 	 */
-	public Background(int width, int height){
+	public Universe(Dimension size){
 		Profiler.begin("Initializing background");
-		this.WIDTH = width;
-		this.HEIGHT = height;
+		this.WIDTH = size.width;
+		this.HEIGHT = size.height;
 		loadNebulas();
 		loadStars();
 		Profiler.end("Initializing background");
@@ -127,6 +128,11 @@ public class Background {
 			}
 		}
 	}
+	
+	public static int getUniverseSize()
+	{
+		return universeSize;
+	}
 				
 	/**
 	 * JJ> Draw the finished background to the Graphics specified in the parameter
@@ -173,6 +179,7 @@ public class Background {
 		Random rand = new Random(seed);
 		universe = new Image[size][size];
 		bgPos = new Vector[size][size];
+		universeSize = size;
 		
 		for(int i = 0; i < size; i++)
 			for(int j = 0; j < size; j++)
