@@ -27,7 +27,7 @@ import java.awt.Graphics;
 
 
 public class Spaceship extends GameObject{
-	private static float MAX_SPEED = 10f;
+	private static float MAX_SPEED = 30f;
 	
 	public Spaceship(Vector spawnPos, Image2D newImg, Input newInput){
 		pos 	= spawnPos;
