@@ -23,6 +23,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
+
 import javax.imageio.ImageIO;
 
 /**
@@ -30,8 +32,9 @@ import javax.imageio.ImageIO;
  * @author Johan Jansen and Anders Eie
  *
  */
-public class Image2D
+public class Image2D implements Serializable
 {
+	private static final long serialVersionUID = 1L;
 	private BufferedImage original;					//The image itself
 	private BufferedImage processed;				//The image with effects added (rotation, alpha, etc.)
 	private float currentAngle;
