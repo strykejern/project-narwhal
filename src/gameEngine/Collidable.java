@@ -40,7 +40,11 @@ public abstract class Collidable {
 	}
 	
 	private boolean pointInsideShape(Vector point){
+		
+		//Circle
 		if 		(this.shape == Shape.CIRCLE && pos.minus(point).length() < radius) return true;
+		
+		//Rectangle
 		else if (this.shape == Shape.RECT)
 		{
 			// TODO: account for rotation
@@ -48,11 +52,15 @@ public abstract class Collidable {
 			if (point.x > pos.x + size.x) return false;
 			if (point.y < pos.y)		  return false;
 			if (point.y > pos.y + size.y) return false;
+			return true;
 		}
+		
+		//Triangle
 		else if (this.shape == Shape.TRIANGLE)
 		{
 			// TODO: Implement
 		}
+		
 		return false;
 	}
 	
@@ -61,11 +69,14 @@ public abstract class Collidable {
 		
 		//Can't collide with ourself
 		if(this == object) return false;
-		
+
+		//Only collide if both can collide
+		if( !this.canCollide || !object.canCollide ) return false;
+
 		//Figure out collision type
-		if (this.shape == null)
+		if (this.shape == Shape.CIRCLE)
 		{
-			if (object.shape == null)
+			if (object.shape == Shape.CIRCLE)
 			{
 				if (this.pos.minus(object.pos).length() < this.radius + object.radius) collision = true;
 			}
@@ -84,7 +95,7 @@ public abstract class Collidable {
 		}
 		else if (this.shape == Shape.RECT)
 		{
-			if (object.shape == null) collision = object.collidesWith(this);
+			if (object.shape == Shape.CIRCLE) collision = object.collidesWith(this);
 			else if (object.shape == Shape.TRIANGLE)
 			{
 				

@@ -140,7 +140,6 @@ public class Game extends JPanel implements Runnable, KeyListener {
     		//Calculate ship movement
     		ship.update();
     		
-    		
     		try 
     		{
                 tm += TARGET_FPS;
