@@ -205,8 +205,8 @@ public class Game extends JPanel implements Runnable, KeyListener {
 		
 		
 		// Quick implement of stacking backgrounds
-		float uniX = resolution.width*bg.getUniverseSize();
-		float uniY = resolution.height*bg.getUniverseSize();
+		float uniX = resolution.width*Universe.getUniverseSize();
+		float uniY = resolution.height*Universe.getUniverseSize();
 		Vector pos = ship.getPosition().clone();
 		pos.negate();
 		

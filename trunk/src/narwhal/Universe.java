@@ -28,6 +28,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
+import java.io.*;
+
+import javax.swing.ImageIcon;
 
 /**
  * JJ> This class generates a nice random background for us
@@ -36,7 +39,7 @@ import java.util.Random;
  */
 public class Universe {
 	private static int universeSize;
-	private ArrayList<BufferedImage> stars;
+	private ImageIcon[] stars;
 	private ArrayList<Image2D> nebulaList;
 	final private int WIDTH, HEIGHT;
 	private Image[][] universe;
@@ -80,7 +83,7 @@ public class Universe {
 		int numberOfStars = 125 + rand.nextInt(250);
 		for (int i = 0; i < numberOfStars; ++i)
 		{
-			g.drawImage(stars.get(rand.nextInt(stars.size())), rand.nextInt(WIDTH), rand.nextInt(HEIGHT), null);
+			g.drawImage(stars[rand.nextInt(stars.length)].getImage(), rand.nextInt(WIDTH), rand.nextInt(HEIGHT), null);
 		}		
 	}
 		
@@ -102,12 +105,33 @@ public class Universe {
 	 * AE> Predrawing the stars and placing them in the static ArrayList stars
 	 */
 	private void loadStars() {
+		// Loading stars from resource file if possible
+		File starFile = new File("stars.resource");
+		if (starFile.exists())
+		{
+			try
+			{
+				FileInputStream starFileStream = new FileInputStream(starFile);
+				ObjectInputStream starStream = new ObjectInputStream(starFileStream);
+				stars = (ImageIcon[])starStream.readObject();
+				starStream.close();
+				Log.message("Sucessfully loaded stars from file");
+				return;
+			}
+			catch (Exception e) 
+			{
+				Log.message("Error reading star resource file, creating a new one.");
+				if (!starFile.delete()) Log.warning("Could not delete old, corrupted star resource file.");
+			}
+		}
+		else Log.message("Star resource file not found, creating it.");
+		
 		//Load Stars into memory
 		Random rand = new Random();
-		stars = new ArrayList<BufferedImage>();
+		ArrayList<ImageIcon> tmpStars = new ArrayList<ImageIcon>();
 		for (int s = 1; s < 40; ++s)
 		{
-			for (int c = 0; c < 255; c += 16)
+			for (int c = 0; c < 256; c += 16)
 			{
 				BufferedImage star = new BufferedImage(s, s, BufferedImage.TYPE_INT_ARGB);
 				Graphics2D starGraph = star.createGraphics();
@@ -123,8 +147,29 @@ public class Universe {
 					starGraph.fillOval(k, k, s-(2*k), s-(2*k));
 				}
 				
-				stars.add(star);
+				tmpStars.add(new ImageIcon(star));
 				starGraph.dispose();
+			}
+		}
+		
+		stars = new ImageIcon[0];
+		stars = tmpStars.toArray(stars);
+		
+		// Writing stars to file
+		if (!starFile.exists())
+		{
+			try
+			{
+				if (!starFile.createNewFile()) throw new Exception("Cannot create new star resource file");
+				FileOutputStream starFileStream = new FileOutputStream(starFile);
+				ObjectOutputStream starStream = new ObjectOutputStream(starFileStream);
+				starStream.writeObject(stars);
+				starStream.close();
+			}
+			catch (Exception e) 
+			{
+				Log.warning("Error writing star resource file:");
+				Log.warning(e);
 			}
 		}
 	}
@@ -214,7 +259,7 @@ public class Universe {
 	    	    }
 	    	   
 			}
-		stars.clear();
+		//stars.clear(); TODO: free resources for the new array
 		nebulaList.clear();
 		Profiler.end("Generating World");
 	}
