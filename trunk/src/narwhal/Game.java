@@ -27,6 +27,7 @@ import gameEngine.Sound;
 import gameEngine.Vector;
 
 import java.awt.*;
+
 import javax.swing.*;
 
 import java.awt.event.KeyEvent;
@@ -69,7 +70,8 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 	public static void main(String[] args) throws InterruptedException{	
     	//Initialize the logging system, do this first so that error logging happens correctly.
     	Log.initialize();
-		resolution.setSize(800, 600);
+		resolution.setSize(800, 640);
+		//resolution = Toolkit.getDefaultToolkit().getScreenSize();			//Fullscreen
 
 		//Acquiring the current Graphics Device and Graphics Configuration
 		//This ensures us proper hardware acceleration
@@ -81,6 +83,8 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
     	JFrame parentWindow = new JFrame("Project Narwhal", graphicConf);		
     	parentWindow.getContentPane().add(new Game(parentWindow));
     	parentWindow.setSize(resolution);
+		parentWindow.setResizable(false);
+		//parentWindow.setUndecorated(true);								//Remove borders
         parentWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         parentWindow.setVisible( true );
         
@@ -101,9 +105,8 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 		keys = new Input();
 		
 		//Background
-		currentWorld = new Universe(resolution);
-		currentWorld.generateWorld( 4, System.currentTimeMillis() );
-
+		currentWorld = new Universe( resolution, 4, System.currentTimeMillis() );
+		
 		//Initialize the player ship		
 		ship = new Spaceship(new Vector(1, 1), new Image2D("data/spaceship.png"), keys);
 		
@@ -182,7 +185,27 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 	 * JJ> Paints every object of interest
 	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 	 */
-	public void paint(Graphics g) {
+	public void paint(Graphics rawGraphics) {
+		//Convert to the Graphics2D object which allows us more functions
+		Graphics2D g = (Graphics2D) rawGraphics;
+		
+		//Set quality mode
+		boolean highQuality = true;
+		if( highQuality )
+		{
+			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+	    	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
+			g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		   	g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+		}
+		else
+		{
+			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+			g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
+			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+		   	g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
+		}
+		
 		currentWorld.drawBackground( g, ship.getPosition() );
 		Particle.drawAllParticles(g);
 

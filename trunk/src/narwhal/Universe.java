@@ -25,10 +25,9 @@ import gameEngine.Vector;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
-import java.io.*;
 
 import javax.swing.ImageIcon;
 
@@ -51,16 +50,19 @@ public class Universe {
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
 	 *     component every update. Instead we just draw the BufferedImage.
 	 */
-	public Universe(Dimension size){
+	public Universe(Dimension resolution, int size, long seed){
 		Profiler.begin("Initializing background");
-		this.WIDTH = size.width;
-		this.HEIGHT = size.height;
+		this.WIDTH = resolution.width;
+		this.HEIGHT = resolution.height;
 		loadNebulas();
 		loadStars();
 		
+		//Generate the backgrounds
+		generateWorld(size, seed);
+    	
 		//Generate the planets
     	planetList = generateRandomPlanets( System.currentTimeMillis() );
-   
+    	
 		Profiler.end("Initializing background");
 	}
 	
@@ -127,14 +129,17 @@ public class Universe {
 	//TODO: This function creates a 700 ms bottle neck
 	private void loadNebulas(){
 		File[] fileList = new File("data/nebula").listFiles();
-				
+		
 		//Load nebulas into memory
 		nebulaList = new ArrayList<Image2D>();
 		for( File f : fileList )
 		{
-			if( !f.isFile() ) continue;
-			nebulaList.add( new Image2D( f.toString() )) ;	
-			nebulaList.get(nebulaList.size()-1).resize(WIDTH, HEIGHT);
+			if( f.isFile() )
+			{
+				Image2D load = new Image2D( f.toString() );
+				load.resize(WIDTH, HEIGHT);
+				nebulaList.add( load );	
+			}
 		}
 	}
 	
@@ -221,12 +226,12 @@ public class Universe {
 	 * @param g What do we draw it on?
 	 * @param pos Center position of the screen in space
 	 */
-	public void draw(Graphics g, Vector pos){
+	private void drawSingleBackground(Graphics2D g, Vector pos){
 		int x, y;
 				
 		//TODO: optimize this
-		for(int i = 0; i < 4; i++)
-			for(int j = 0; j < 4; j++)
+		for(int i = 0; i < universeSize; i++)
+			for(int j = 0; j < universeSize; j++)
 			{
 				x = bgPos[i][j].getX()+pos.getX();
 				y = bgPos[i][j].getY()+pos.getY();		
@@ -235,7 +240,7 @@ public class Universe {
 		drawBounds(g, pos);
 	}
 
-	public void drawBounds(Graphics g, Vector pos){
+	public void drawBounds(Graphics2D g, Vector pos){
 		final int SCREEN_X = Game.getScreenWidth();			//Screen width
 		final int SCREEN_Y = Game.getScreenHeight();		//Screen height
 		
@@ -243,8 +248,8 @@ public class Universe {
 		g.setColor(Color.YELLOW);
 		
 		//TODO: Draw entire grid... this can be optimized
-		for(int i = 0; i < 4; i++)
-			for(int j = 0; j < 4; j++)
+		for(int i = 0; i < universeSize; i++)
+			for(int j = 0; j < universeSize; j++)
 			{
 				g.drawRect(i*SCREEN_X+pos.getX(), j*SCREEN_Y+pos.getY(), SCREEN_X, SCREEN_Y);
 			}
@@ -256,9 +261,7 @@ public class Universe {
 	 * @param size how big?
 	 * @param seed randomizer
 	 */
-	public void generateWorld(int size, long seed) {
-		Profiler.begin("Generating World");
-
+	private void generateWorld(int size, long seed) {
 		Random rand = new Random(seed);
 		universe = new Image[size][size];
 		bgPos = new Vector[size][size];
@@ -288,7 +291,7 @@ public class Universe {
 		    		//All done!
 		    		g.dispose();
 		    		universe[i][j] = buffer;
-		    		bgPos[i][j] = new Vector(i*Game.getScreenWidth(), j*Game.getScreenHeight());
+		    		bgPos[i][j] = new Vector(i*WIDTH, j*HEIGHT);
 				}
 	    	    catch (OutOfMemoryError e) 
 	    	    {
@@ -301,12 +304,11 @@ public class Universe {
 			}
 		//stars.clear(); TODO: free resources for the new array
 		nebulaList.clear();
-		Profiler.end("Generating World");
 	}
 
-	public void drawBackground(Graphics g, Vector position) {
-		float uniX = Game.getScreenWidth()*universeSize;
-		float uniY = Game.getScreenHeight()*universeSize;
+	public void drawBackground(Graphics2D g, Vector position) {
+		float uniX = WIDTH*universeSize;
+		float uniY = HEIGHT*universeSize;
 		Vector pos = position.clone();
 		pos.negate();
 		
@@ -315,26 +317,26 @@ public class Universe {
 		boolean l = false;
 		boolean r = false;
 		
-		if 		(pos.x < 0) 		  					l = true;
-		else if (pos.x > uniX - Game.getScreenWidth()) 	r = true;
+		if 		(pos.x < 0) 		  	l = true;
+		else if (pos.x > uniX - WIDTH) 	r = true;
 		
-		if		(pos.y < 0)							    u = true;
-		else if (pos.y > uniY - Game.getScreenHeight())	d = true;
+		if		(pos.y < 0)				u = true;
+		else if (pos.y > uniY - HEIGHT)	d = true;
 
 		pos.negate();
 		
-		draw(g, pos);
+		drawSingleBackground(g, pos);
 		
-		if 		(l) draw(g, pos.plus(new Vector(-uniX,0)));
-		else if (r) draw(g, pos.plus(new Vector( uniX,0)));
+		if 		(l) drawSingleBackground(g, pos.plus(new Vector(-uniX,0)));
+		else if (r) drawSingleBackground(g, pos.plus(new Vector( uniX,0)));
 
-		if 		(u) draw(g, pos.plus(new Vector(0,-uniY)));
-		else if (d) draw(g, pos.plus(new Vector(0, uniY)));
+		if 		(u) drawSingleBackground(g, pos.plus(new Vector(0,-uniY)));
+		else if (d) drawSingleBackground(g, pos.plus(new Vector(0, uniY)));
 		
-		if 		(u && l) draw(g, pos.plus(new Vector(-uniX,-uniY)));
-		else if (u && r) draw(g, pos.plus(new Vector( uniX,-uniY)));
-		else if (d && l) draw(g, pos.plus(new Vector(-uniX, uniY)));
-		else if (d && r) draw(g, pos.plus(new Vector( uniX, uniY)));
+		if 		(u && l) drawSingleBackground(g, pos.plus(new Vector(-uniX,-uniY)));
+		else if (u && r) drawSingleBackground(g, pos.plus(new Vector( uniX,-uniY)));
+		else if (d && l) drawSingleBackground(g, pos.plus(new Vector(-uniX, uniY)));
+		else if (d && r) drawSingleBackground(g, pos.plus(new Vector( uniX, uniY)));
 
 	}
 	

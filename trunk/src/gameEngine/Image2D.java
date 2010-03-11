@@ -23,7 +23,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 /**
  * JJ> Helper class to make image handling easier to do
@@ -36,7 +39,7 @@ public class Image2D {
 	/*************************************************************************
 	 * JJ> Static version of this class to handle HQ graphics mode
 	 ************************************************************************/
-	private static boolean highQuality = true;		//Draw everything in HQ gfx?
+	private static boolean highQuality = false;		//Draw everything in HQ gfx?
 	
 	public static void enableHighQualityGraphics() {
 		highQuality = true;
@@ -62,26 +65,22 @@ public class Image2D {
 	 */
 	public Image2D( String fileName ) {
 		
-		//First make sure the file actually exists
-		File f = new File( fileName );
-		if( !f.exists() ) 
+		ImageIcon load = new ImageIcon(fileName);
+		
+		//TODO: First make sure the file actually exists
+		if( load == null )
 		{
-			Log.warning( "Failed loading image, does not exist: " + f.getAbsolutePath() );
+			Log.warning( "Failed loading image: " + fileName );
 		}
 
-		//Now try reading it
-		try 
-		{
-			original = ImageIO.read(f);
-			this.makeValid();
-			processed = original;
-			currentAngle = 0;
-			
-		} 		
-		catch (IOException e) 
-		{
-			Log.warning(e.toString());
-		}
+		//Load the image into a BufferedImage
+		BufferedImage buffer = new BufferedImage( load.getIconWidth(), load.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = getGraphics(buffer);  
+        g.drawImage(load.getImage(), 0, 0, null ); 
+        g.dispose();
+        
+        processed = original = buffer;
+		currentAngle = 0;
 	}
 	
 	/**
@@ -89,26 +88,16 @@ public class Image2D {
 	 * @param copyImg: which BufferedImage to use as the sprite
 	 */
 	public Image2D( BufferedImage copyImg ) {
-		original = copyImg;
-		this.makeValid();
-		processed = original;
+		//Load the image into a BufferedImage
+		BufferedImage buffer = new BufferedImage( copyImg.getWidth(), copyImg.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = getGraphics(buffer);  
+        g.drawImage(copyImg, 0, 0, null ); 
+        g.dispose();
+        
+        processed = original = buffer;
 		currentAngle = 0;
 	}
 	
-	/**
-	 * JJ> This makes sure that the type of the image is valid so that it is safe to use
-	 */
-	private void makeValid() {
-		if( original.getType() == BufferedImage.TYPE_CUSTOM ) 
-		{
-			BufferedImage buffer = new BufferedImage( original.getWidth(), original.getHeight(), BufferedImage.TYPE_INT_ARGB);
-	        Graphics2D g = getGraphics(buffer);  
-	        g.drawImage(original, null, 0, 0 ); 
-	        g.dispose();
-	        
-	        original = buffer;
-		}	
-	}
 	
 	/**
 	 * JJ> This gets the Graphics2D unit for the specified BufferedImage and also sets all the
@@ -186,15 +175,7 @@ public class Image2D {
         if( newW <= 0 || newH <= 0 ) return;
         
         BufferedImage buffer = new BufferedImage(newW, newH, original.getType());  
-        Graphics2D g = getGraphics(buffer);  
-        
-        if( highQuality )
-        {
-        	g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-        	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
-        }
-        else g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR );  
-        
+        Graphics2D g = getGraphics(buffer);          
         g.drawImage(original, 0, 0, newW, newH, 0, 0, w, h, null);  
         g.dispose();
 
