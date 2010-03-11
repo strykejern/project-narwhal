@@ -38,13 +38,13 @@ import javax.swing.ImageIcon;
  */
 public class Universe {
 	private static int universeSize;
-	private ImageIcon[] stars;
-	private ArrayList<Image2D> nebulaList;
 	final private int WIDTH, HEIGHT;
-	private Image[][] universe;
 	private Vector[][] bgPos;
 	private ArrayList<Planet> planetList;
 	private ArrayList<Image2D> planetImages;
+	private ArrayList<Image2D> nebulaList;
+	private ImageIcon[] stars;
+	private Image[][] universe;
 	
 	/**
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
@@ -52,8 +52,8 @@ public class Universe {
 	 */
 	public Universe(Dimension resolution, int size, long seed){
 		Profiler.begin("Initializing background");
-		this.WIDTH = resolution.width;
-		this.HEIGHT = resolution.height;
+		WIDTH = resolution.width;
+		HEIGHT = resolution.height;
 		loadNebulas();
 		loadStars();
 		
@@ -73,10 +73,9 @@ public class Universe {
 	private ArrayList<Planet> generateRandomPlanets(long seed) {
 		Random rand = new Random(seed);
 		ArrayList<Planet> planetList = new ArrayList<Planet>();
-
-		File[] fileList = new File("data/planets").listFiles();
 		
-		//Load planets into memory
+		//Load planet images into memory
+		File[] fileList = new File("data/planets").listFiles();
 		planetImages = new ArrayList<Image2D>();
 		for( File f : fileList )
 		{
@@ -126,10 +125,9 @@ public class Universe {
 		}		
 	}
 		
-	//TODO: This function creates a 700 ms bottle neck
 	private void loadNebulas(){
 		File[] fileList = new File("data/nebula").listFiles();
-		
+
 		//Load nebulas into memory
 		nebulaList = new ArrayList<Image2D>();
 		for( File f : fileList )
