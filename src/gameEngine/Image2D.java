@@ -21,11 +21,6 @@ package gameEngine;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 /**
@@ -68,9 +63,9 @@ public class Image2D {
 		ImageIcon load = new ImageIcon(fileName);
 		
 		//TODO: First make sure the file actually exists
-		if( load == null )
+		if( load.getIconWidth() < 0 )
 		{
-			Log.warning( "Failed loading image: " + fileName );
+			Log.error( "Failed loading image: " + fileName );
 		}
 
 		//Load the image into a BufferedImage
@@ -82,13 +77,14 @@ public class Image2D {
         processed = original = buffer;
 		currentAngle = 0;
 	}
-	
+
 	/**
 	 * JJ> Constructor makes sure the image is correctly loaded
 	 * @param copyImg: which BufferedImage to use as the sprite
 	 */
 	public Image2D( BufferedImage copyImg ) {
-		//Load the image into a BufferedImage
+		
+		//Ensure it is the correct format before loading it
 		BufferedImage buffer = new BufferedImage( copyImg.getWidth(), copyImg.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = getGraphics(buffer);  
         g.drawImage(copyImg, 0, 0, null ); 
@@ -97,7 +93,7 @@ public class Image2D {
         processed = original = buffer;
 		currentAngle = 0;
 	}
-	
+
 	
 	/**
 	 * JJ> This gets the Graphics2D unit for the specified BufferedImage and also sets all the
