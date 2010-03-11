@@ -21,6 +21,7 @@ package gameEngine;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 public class Input {
 	public boolean up, down, left, right, shoot;
@@ -40,7 +41,11 @@ public class Input {
 		else if (key.getKeyCode() == KeyEvent.VK_LEFT) left = pressed;
 		else if (key.getKeyCode() == KeyEvent.VK_RIGHT) right = pressed;
 	}
-	
+
+	public void update(MouseEvent key, boolean pressed){
+		if(key.getButton() == 0) shoot = pressed;
+	}
+
 	public void update(int x, int y){
 		mousePos.x = x-5;
 		mousePos.y = y-25;

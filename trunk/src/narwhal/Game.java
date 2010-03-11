@@ -35,7 +35,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.util.Random;
+import java.util.ArrayList;
 
 
 /**
@@ -52,15 +52,16 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 	private GameObject ship;
 	private Universe currentWorld;
 	private Input keys;
+	private ArrayList<Particle> particleList;
 	
-	//Hardware graphic stuff
+	static //Hardware graphic stuff
 	GraphicsEnvironment graphEnv;
-	GraphicsDevice graphDevice;
-	GraphicsConfiguration graphicConf;
-
-	//Player position in the universe
-	Random rand = new Random();
-	Vector playerPosition = new Vector();
+	static GraphicsDevice graphDevice;
+	static private GraphicsConfiguration graphicConf;
+	
+	public static GraphicsConfiguration getGraphicsConf() {
+		return graphicConf;		
+	}
 	
 	// Create a new blank cursor.
 	final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
@@ -75,9 +76,9 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 
 		//Acquiring the current Graphics Device and Graphics Configuration
 		//This ensures us proper hardware acceleration
-		GraphicsEnvironment graphEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice graphDevice = graphEnv.getDefaultScreenDevice();
-		GraphicsConfiguration graphicConf = graphDevice.getDefaultConfiguration();
+		graphEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		graphDevice = graphEnv.getDefaultScreenDevice();
+		graphicConf = graphDevice.getDefaultConfiguration();
 
 		//Initialize the frame window where we draw stuff
     	JFrame parentWindow = new JFrame("Project Narwhal", graphicConf);		
@@ -104,9 +105,13 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 		frame.addMouseListener(this);
 		keys = new Input();
 		
-		//Background
+		//Prepare graphics
 		currentWorld = new Universe( resolution, 4, System.currentTimeMillis() );
-		
+		particleList = new ArrayList<Particle>();
+       	
+		//Load resources
+       	Particle.loadParticles();
+       	
 		//Initialize the player ship		
 		ship = new Spaceship(new Vector(1, 1), new Image2D("data/spaceship.png"), keys);
 		
@@ -154,7 +159,14 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
     		
     		//Calculate ship movement
     		ship.update();
-    		
+
+    		//Update particle effects
+    		for( int i = 0; i < particleList.size(); i++ )
+    		{
+    			particleList.get(i).update();
+    			if( particleList.get(i).requestsDelete() ) particleList.remove(i--);
+    		}
+
     		try 
     		{
                 tm += TARGET_FPS;
@@ -180,6 +192,11 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 		return a*a - b*(b-1);
 	}
 	
+	public void spawnParticle( Particle prt ) {
+		if( particleList.size() >= Particle.MAX_PARTICLES ) return;
+		particleList.add( prt );
+	}
+		
 	
 	/*
 	 * JJ> Paints every object of interest
@@ -190,24 +207,30 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 		Graphics2D g = (Graphics2D) rawGraphics;
 		
 		//Set quality mode
-		boolean highQuality = true;
-		if( highQuality )
+		if( Image2D.isHighQualityMode() )
 		{
 			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
 	    	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
-			g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		   	g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
+		   	g.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE );
 		}
 		else
 		{
-			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
 			g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
-			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-		   	g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
+			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED );
+		   	g.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE );
 		}
 		
+		//Draw background
 		currentWorld.drawBackground( g, ship.getPosition() );
-		Particle.drawAllParticles(g);
+		
+		//Draw all particles
+		for( int i = 0; i < particleList.size(); i++ ) 
+		{
+			if( particleList.get(i).isOnScreen() )
+				particleList.get(i).draw( g, ship.getPosition() );
+		}
 
 		//Draw every planet
 		/*if(planetList != null)
@@ -222,6 +245,17 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 		ship.draw(g);
 		ship.drawCollision(g);
 		keys.drawCrosshair(g);
+		
+		g.setColor(Color.white);
+		g.drawString("Ship position: X: " + ship.getPosition().x + ", Y: " + ship.getPosition().y, 5, 20);
+		g.drawString("Number of particles: " + particleList.size(), 5, 40);
+	}
+	
+	static public boolean isInScreen(Rectangle rect)
+	{
+		if( rect.x < -rect.width || rect.x > Game.getScreenWidth() ) return false;
+		if( rect.y < -rect.height || rect.y > Game.getScreenHeight() ) return false;
+		return true;
 	}
 	
 	public void keyPressed(KeyEvent key) {
@@ -232,29 +266,23 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 		keys.update(key, false);
 	}
 
-	public void keyTyped(KeyEvent arg0) {
-		
+	public void keyTyped(KeyEvent arg0) {	
+	}
+
+	public void mouseReleased(MouseEvent mouse) {
+		keys.update(mouse, false);
+	}
+	
+	public void mousePressed(MouseEvent mouse) {
+		keys.update(mouse, true);
+		spawnParticle( new Particle(ship.getPosition().clone(), "fire", 500, 1.0f, -0.005f, 1, (float)Math.toRadians(5)));
 	}
 
 	public void mouseClicked(MouseEvent e) {
 	}
-	
-	public void mouseReleased(MouseEvent e) {
-		keys.shoot = false;
-	}
-	
-	
-	
-	public void mousePressed(MouseEvent e) {
-		keys.shoot = true;	
-	}
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void mouseExited(MouseEvent e) {	
 	}
 
 
