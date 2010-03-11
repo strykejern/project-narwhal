@@ -21,7 +21,11 @@ package gameEngine;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.VolatileImage;
+
 import javax.swing.ImageIcon;
+
+import narwhal.Game;
 
 /**
  * JJ> Helper class to make image handling easier to do
@@ -34,7 +38,7 @@ public class Image2D {
 	/*************************************************************************
 	 * JJ> Static version of this class to handle HQ graphics mode
 	 ************************************************************************/
-	private static boolean highQuality = true;		//Draw everything in HQ gfx?
+	private static boolean highQuality = false;		//Draw everything in HQ gfx?
 	
 	public static void enableHighQualityGraphics() {
 		highQuality = true;
@@ -68,9 +72,15 @@ public class Image2D {
 	 * JJ> The Private instanced version
 	 ************************************************************************/
 	private BufferedImage original;					//The image itself
-	private BufferedImage processed;				//The image with effects added (rotation, alpha, etc.)
-	private float currentAngle;
+	private VolatileImage processed;				//The image with effects added (rotation, alpha, etc.)
+	private int width, height;
+	private int baseWidth, baseHeight;
 
+	private boolean flipHorizontal = false;
+	private boolean flipVertical = false;
+	private float currentAlpha = 1;
+	private float currentAngle = 0;
+	
 	/**
 	 * JJ> Constructor makes sure the image is correctly loaded
 	 * @param fileName: the path and name of the file to load
@@ -79,20 +89,21 @@ public class Image2D {
 		
 		ImageIcon load = new ImageIcon(fileName);
 		
-		//TODO: First make sure the file actually exists
+		//First make sure the file actually exists
 		if( load.getIconWidth() < 0 )
 		{
 			Log.error( "Failed loading image: " + fileName );
 		}
 
 		//Load the image into a BufferedImage
-		BufferedImage buffer = new BufferedImage( load.getIconWidth(), load.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = getGraphics(buffer);  
+		original = new BufferedImage( load.getIconWidth(), load.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = original.createGraphics();
+        getGraphicsSettings(g);
         g.drawImage(load.getImage(), 0, 0, null ); 
         g.dispose();
         
-        processed = original = buffer;
-		currentAngle = 0;
+		width = load.getIconWidth();
+		height = load.getIconHeight();
 	}
 
 	/**
@@ -103,169 +114,95 @@ public class Image2D {
 		
 		//Ensure it is the correct format before loading it
 		BufferedImage buffer = new BufferedImage( copyImg.getWidth(), copyImg.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = getGraphics(buffer);  
+        Graphics2D g = buffer.createGraphics();
+        getGraphicsSettings(g);
         g.drawImage(copyImg, 0, 0, null ); 
         g.dispose();
         
-        processed = original = buffer;
-		currentAngle = 0;
+        original = buffer;
+		width = buffer.getWidth();
+		height = buffer.getHeight();
 	}
 
-	
+		
 	/**
-	 * JJ> This gets the Graphics2D unit for the specified BufferedImage and also sets all the
-	 *     graphics quality render parameters automatically.
-	 * @param gfx The BufferedImage to build the Graphics2D from
-	 * @return Graphics2D for gfx
+	 * JJ> Makes sure we have a VolatileImage object to draw on
+	 *     If it got lost, it creates a new one.
 	 */
-	private Graphics2D getGraphics(BufferedImage gfx) {
-		Graphics2D g = gfx.createGraphics();   	
-		getGraphicsSettings(g);
-    	return g;
-	}
+	private Graphics2D getVolatileMemory() {
+		if( processed == null || processed.contentsLost() || processed.getWidth() != width || processed.getHeight() != height )
+		{
+			processed = Game.getGraphicsConf().createCompatibleVolatileImage(width, height, VolatileImage.TRANSLUCENT);
+		}
 
+        Graphics2D g = processed.createGraphics();
+        getGraphicsSettings(g);
+
+		//Clear the background
+		g.setBackground(new Color(0,0,0,0));
+		g.clearRect(0, 0, width, height);
+		
+		return g;
+	}
+	
 	/**
 	 * JJ> Rotates an image with the specified degrees
 	 * @param angle: how much to rotate by
 	 */
 	public void rotate(float angle) {  
-		setDirection(currentAngle + angle);
+		currentAngle += angle;
 	}
-	
+
 	/**
 	 * JJ> Sets the image rotation to the specified degrees
 	 * @param angle: the new direction
 	 */
 	public void setDirection(float angle) {  
-		
-		//No change
-		if( angle == currentAngle ) return;
-		
-        int w = (int) (original.getWidth()*1.42);  
-        int h = (int) (original.getHeight()*1.42);
-        
-        BufferedImage buffer = new BufferedImage( w, h, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = getGraphics(buffer);  
-    	        
-    	g.rotate(angle, w/2.0, h/2.0);
-        g.drawImage(original, null, (w-original.getWidth())/2, (h-original.getHeight())/2);
-                
-        //Make it so
-        currentAngle = angle;
-        processed = buffer; 
+		currentAngle = angle;
     }  
 	
 	/**
 	 * JJ> direct scaling of a image using the resize method
 	 */
 	public void scale(float multiplier) {   
-        resize( (int)(original.getWidth() * multiplier), (int)(original.getHeight() * multiplier) );	
+        resize( (int)(width * multiplier), (int)(height * multiplier) );	
 	}
 	
 	/**
-	 * JJ> resizing a image using bilinear filtering
+	 * JJ> resizing an image
 	 */
 	public void resize(int newW, int newH) {
-        int w = original.getWidth();  
-        int h = original.getHeight();
-        
+	    
         //Valid resize?
         if( newW <= 0 || newH <= 0 ) return;
         
-        BufferedImage buffer = new BufferedImage(newW, newH, original.getType());  
-        Graphics2D g = getGraphics(buffer);          
-        g.drawImage(original, 0, 0, newW, newH, 0, 0, w, h, null);  
-        g.dispose();
-
-        //Now set this as the new image
-        original = processed = buffer;  
+        baseWidth = newW;
+        baseHeight = newH;
+        width = (int)(baseWidth*1.20f);
+        height = (int)(baseHeight*1.20f);         
     }
 	
 	/**
 	 * JJ> Flips the image horizontally
 	 */
-	public void horizontalFlip() {  
-        int w = original.getWidth();  
-        int h = original.getHeight();  
-        BufferedImage buffer = new BufferedImage(w, h, original.getType());  
-        
-        Graphics2D g = getGraphics(buffer);  
-        g.drawImage(original, 0, 0, w, h, w, 0, 0, h, null);  
-        
-        //Now set this as the new image
-        g.dispose();  
-        original = buffer;
+	public void horizontalFlip() {
+		flipHorizontal = !flipHorizontal;
 	}
 	
 	/**
 	 * JJ> Flips the image vertically
 	 */
 	public void verticalFlip() {  
-        int w = original.getWidth();  
-        int h = original.getHeight();  
-        BufferedImage buffer = new BufferedImage(w, h, original.getColorModel().getTransparency());  
-        
-        Graphics2D g = getGraphics(buffer);
-        g.drawImage(original, 0, 0, w, h, 0, h, w, 0, null);  
-        
-        //Now set this as the new image
-        g.dispose();  
-        original = buffer;  
+		flipVertical = !flipVertical;
     } 
-	
-	/**
-	 * JJ> Makes a certain color transparent
-	 * @param color: Which color to make transparent
-	 */
-	public void makeColorTransparent(Color color) {  
-        BufferedImage buffer = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_INT_ARGB);  
-        
-        //Create a buffer copy of the original
-        Graphics2D g = getGraphics(buffer);
-        g.setComposite(AlphaComposite.Src);  
-        g.drawImage(original, null, 0, 0);  
-        g.dispose();
-        
-        //This does all the work and makes the correct pixels transparent
-        for(int i = 0; i < buffer.getHeight(); i++) 
-        {  
-            for(int j = 0; j < buffer.getWidth(); j++) 
-            {  
-                if( buffer.getRGB(j, i) == color.getRGB() ) 
-                {  
-                	buffer.setRGB(j, i, 0x8F1C1C);  
-                }  
-            }  
-        }
-        
-        //Now set this as the new image
-        original = buffer; 
-    }
-	
+		
 	/**
 	 * JJ> Makes the image partially or fully transparent 
 	 * @param transperancy: value should be between 0.00 (completely transparent) and 1.00 (normal)
      */
 	public void setAlpha(float transperancy) { 
-		
 		//Clip the parameter to a valid value so that we do not get an error message
-		transperancy = Math.min( 1.00f, Math.max(0.00f, transperancy) );
-        
-        // Get the images graphics  
-		BufferedImage buffer = new BufferedImage( original.getWidth(), original.getHeight(), BufferedImage.TRANSLUCENT );  
-        Graphics2D g = getGraphics(buffer);  
-        
-        // Set the Graphics composite to Alpha  
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transperancy));  
-        
-        // Draw the original img into the prepared receiver image  
-        g.drawImage(original, null, 0, 0);  
-        
-        //Now set this as the new image
-        processed = buffer;  
-        
-        // let go of all system resources in this Graphics  
-        g.dispose();  
+		currentAlpha = Math.min( 1.00f, Math.max(0.00f, transperancy) );        
     }  
 		
 	/**
@@ -273,7 +210,29 @@ public class Image2D {
 	 * @return the image ready to be drawn with proper rotation and all
 	 */
 	public Image toImage(){
-		//return Toolkit.getDefaultToolkit().createImage(rotated.getSource());
+		Graphics2D g = getVolatileMemory();
+		
+		//To make life easier
+		final int w = baseWidth;
+		final int h = baseHeight;
+		
+        // Set the Graphics composite to Alpha
+		if(currentAlpha < 1) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, currentAlpha));  
+        
+		//Do rotation
+		if(currentAngle != 0) g.rotate(currentAngle, width/2.0, height/2.0);
+		
+		//TODO: Do vertical and horizontal flips
+		g.drawImage(
+				original,						//Draw the base image 
+				(width-w)/2, 					//X offset
+				(height-h)/2, 					//Y offset
+				w, 								//How much to draw
+				h,
+				null);
+
+		//All done!
+        g.dispose();
 		return processed;
 	}
 	
@@ -281,14 +240,14 @@ public class Image2D {
 	 * JJ> Get width for this buffered image
 	 */
 	public int getWidth() {
-		return processed.getWidth();
+		return width;
 	}
 	
 	/**
 	 * JJ> Get height for this buffered image
 	 */
 	public int getHeight() {
-		return processed.getHeight();
+		return height;
 	}
 
 	/**
@@ -302,7 +261,10 @@ public class Image2D {
 	 * JJ> Returns the image to its original state when it was first loaded
 	 * @warning: All changes are permanently lost!
 	 */
-	public void reset() {  
-		processed = original;
+	public void reset() {
+		currentAlpha = 1;
+		currentAngle = 0;
+		flipHorizontal = flipVertical = false;
+		resize( original.getWidth(), original.getHeight() );
 	}
 }

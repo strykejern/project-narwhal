@@ -62,7 +62,7 @@ public abstract class GameObject extends Physics{
 			w = (int)super.radius*2;
 			h = (int)super.radius*2;
 			g.setColor(Color.RED);
-			g.drawOval(drawX()+(int)(w*0.21), drawY()+(int)(h*0.21), w, h);			
+			g.drawOval(drawX(), drawY(), w, h);			
 		}
 	}
 	
