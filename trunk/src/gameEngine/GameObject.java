@@ -57,7 +57,7 @@ public abstract class GameObject extends Physics{
 		g.drawRect(drawX(), drawY(), w, h);
 
 		//Draw it as a circle
-		if( super.shape == null )
+		if( super.shape == Shape.CIRCLE )
 		{
 			w = (int)super.radius*2;
 			h = (int)super.radius*2;

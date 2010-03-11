@@ -27,6 +27,8 @@ import javax.imageio.ImageIO;
 
 /**
  * JJ> Helper class to make image handling easier to do
+ * @todo Performance for this class can be vastly improved by implementing VolatileImage
+ *       rather than BufferedImage.
  * @author Johan Jansen and Anders Eie
  */
 public class Image2D {
@@ -42,6 +44,9 @@ public class Image2D {
 	public static void disableHighQualityGraphics() {
 		highQuality = false;
 	}
+	public static boolean isHighQualityMode() {
+		return highQuality;
+	}
 
 
 	/*************************************************************************
@@ -50,7 +55,7 @@ public class Image2D {
 	private BufferedImage original;					//The image itself
 	private BufferedImage processed;				//The image with effects added (rotation, alpha, etc.)
 	private float currentAngle;
-	
+
 	/**
 	 * JJ> Constructor makes sure the image is correctly loaded
 	 * @param fileName: the path and name of the file to load
@@ -96,9 +101,7 @@ public class Image2D {
 	private void makeValid() {
 		if( original.getType() == BufferedImage.TYPE_CUSTOM ) 
 		{
-			//Log.message("Unknown image format. Converting to TYPE_INT_ARGB to prevent errors.");
-	        BufferedImage buffer = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_4BYTE_ABGR); //TYPE_INT_ARGB  
-	        
+			BufferedImage buffer = new BufferedImage( original.getWidth(), original.getHeight(), BufferedImage.TYPE_INT_ARGB);
 	        Graphics2D g = getGraphics(buffer);  
 	        g.drawImage(original, null, 0, 0 ); 
 	        g.dispose();
@@ -125,8 +128,10 @@ public class Image2D {
 		}
 		else
 		{
+			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 			g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
 			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+		   	g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
 		}
 		
     	return g;
