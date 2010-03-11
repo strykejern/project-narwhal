@@ -20,7 +20,12 @@ package gameEngine;
 
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
 import java.awt.image.VolatileImage;
 
 import javax.swing.ImageIcon;
@@ -71,6 +76,12 @@ public class Image2D {
 	/*************************************************************************
 	 * JJ> The Private instanced version
 	 ************************************************************************/
+	final private static Kernel blur = new Kernel(3, 3,
+		    new float[] {
+	        1f/9f, 1f/9f, 1f/9f,
+	        1f/9f, 1f/9f, 1f/9f,
+	        1f/9f, 1f/9f, 1f/9f});
+	
 	private BufferedImage original;					//The image itself
 	private VolatileImage processed;				//The image with effects added (rotation, alpha, etc.)
 	private int width, height;
@@ -78,6 +89,7 @@ public class Image2D {
 
 	private boolean flipHorizontal = false;
 	private boolean flipVertical = false;
+	private boolean blurEffect = false;
 	private float currentAlpha = 1;
 	private float currentAngle = 0;
 	
@@ -203,7 +215,14 @@ public class Image2D {
 	public void setAlpha(float transperancy) { 
 		//Clip the parameter to a valid value so that we do not get an error message
 		currentAlpha = Math.min( 1.00f, Math.max(0.00f, transperancy) );        
-    }  
+    }
+	
+	/**
+	 * JJ> Enables or disables blur effect when rendering this image 
+     */
+	public void blurImage() {
+		blurEffect = !blurEffect;
+	}
 		
 	/**
 	 * JJ> Returns this Image2D as a Image instance
@@ -215,6 +234,7 @@ public class Image2D {
 		//To make life easier
 		final int w = baseWidth;
 		final int h = baseHeight;
+		BufferedImage draw = original.getSubimage(0, 0, original.getWidth(), original.getHeight());
 		
         // Set the Graphics composite to Alpha
 		if(currentAlpha < 1) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, currentAlpha));  
@@ -222,9 +242,25 @@ public class Image2D {
 		//Do rotation
 		if(currentAngle != 0) g.rotate(currentAngle, width/2.0, height/2.0);
 		
+		//Blur effect
+		if(blurEffect)
+		{
+			BufferedImageOp op = new ConvolveOp(blur);
+			draw = op.filter(draw, null);
+		}
+		
+		// Flip the image vertically or horizontally
+		if( flipHorizontal || flipVertical )
+		{
+			AffineTransform tx = AffineTransform.getScaleInstance( flipHorizontal ? -1 : 1, flipVertical ? -1 : 1);
+			tx.translate(flipHorizontal ? -width : 0, flipVertical ? -height : 0);
+			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+			draw = op.filter(draw, null);
+		}
+		
 		//TODO: Do vertical and horizontal flips
 		g.drawImage(
-				original,						//Draw the base image 
+				draw,							//Draw the base image (possibly with blur)
 				(width-w)/2, 					//X offset
 				(height-h)/2, 					//Y offset
 				w, 								//How much to draw
