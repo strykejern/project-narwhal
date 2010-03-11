@@ -34,7 +34,7 @@ public class Image2D {
 	/*************************************************************************
 	 * JJ> Static version of this class to handle HQ graphics mode
 	 ************************************************************************/
-	private static boolean highQuality = false;		//Draw everything in HQ gfx?
+	private static boolean highQuality = true;		//Draw everything in HQ gfx?
 	
 	public static void enableHighQualityGraphics() {
 		highQuality = true;
@@ -44,6 +44,23 @@ public class Image2D {
 	}
 	public static boolean isHighQualityMode() {
 		return highQuality;
+	}
+	
+	public static void getGraphicsSettings(Graphics2D g){
+		if( highQuality )
+		{
+			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+	    	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
+			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
+		   	g.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE );
+		}
+		else
+		{
+			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
+			g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
+			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED );
+		   	g.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE );
+		}
 	}
 
 
@@ -102,23 +119,8 @@ public class Image2D {
 	 * @return Graphics2D for gfx
 	 */
 	private Graphics2D getGraphics(BufferedImage gfx) {
-		Graphics2D g = gfx.createGraphics();  
-    	
-		if( highQuality )
-		{
-			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-	    	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
-			g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		   	g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
-		}
-		else
-		{
-			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-			g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
-			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-		   	g.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
-		}
-		
+		Graphics2D g = gfx.createGraphics();   	
+		getGraphicsSettings(g);
     	return g;
 	}
 

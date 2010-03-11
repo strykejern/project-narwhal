@@ -36,6 +36,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Random;
 
 
 /**
@@ -207,20 +208,7 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 		Graphics2D g = (Graphics2D) rawGraphics;
 		
 		//Set quality mode
-		if( Image2D.isHighQualityMode() )
-		{
-			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-	    	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
-			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-		   	g.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE );
-		}
-		else
-		{
-			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
-			g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
-			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED );
-		   	g.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE );
-		}
+		Image2D.getGraphicsSettings(g);
 		
 		//Draw background
 		currentWorld.drawBackground( g, ship.getPosition() );
@@ -275,10 +263,17 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 	
 	public void mousePressed(MouseEvent mouse) {
 		keys.update(mouse, true);
-		spawnParticle( new Particle(ship.getPosition().clone(), "fire", 500, 1.0f, -0.005f, 1, (float)Math.toRadians(5)));
+		
+		//TODO: Testing particle spawn
+		Random rand = new Random();
+		float angle = (float)Math.toRadians(rand.nextInt(360));
+		float angleAdd = (float)Math.toRadians(rand.nextInt(5)+1);
+		Vector pos = new Vector(ship.getPosition().x - mouse.getPoint().x, ship.getPosition().y - mouse.getPoint().y);
+		spawnParticle( new Particle( pos, "fire", 500, 1.0f, -0.005f, angle, angleAdd ));
+		//TODO: end
 	}
 
-	public void mouseClicked(MouseEvent e) {
+	public void mouseClicked(MouseEvent mouse) {
 	}
 	public void mouseEntered(MouseEvent e) {
 	}
