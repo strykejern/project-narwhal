@@ -44,7 +44,9 @@ public class Universe {
 	final private int WIDTH, HEIGHT;
 	private Image[][] universe;
 	private Vector[][] bgPos;
-
+	private ArrayList<Planet> planetList;
+	private ArrayList<Image2D> planetImages;
+	
 	/**
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
 	 *     component every update. Instead we just draw the BufferedImage.
@@ -55,7 +57,42 @@ public class Universe {
 		this.HEIGHT = size.height;
 		loadNebulas();
 		loadStars();
+		
+		//Generate the planets
+    	planetList = generateRandomPlanets( System.currentTimeMillis() );
+   
 		Profiler.end("Initializing background");
+	}
+	
+	public ArrayList<Planet> getPlanetList() {
+		return planetList;
+	}
+	
+	private ArrayList<Planet> generateRandomPlanets(long seed) {
+		Random rand = new Random(seed);
+		ArrayList<Planet> planetList = new ArrayList<Planet>();
+
+		File[] fileList = new File("data/planets").listFiles();
+		
+		//Load planets into memory
+		planetImages = new ArrayList<Image2D>();
+		for( File f : fileList )
+		{
+			if( !f.isFile() ) continue;
+			planetImages.add( new Image2D( f.toString()) ) ;
+		}
+		
+		//Randomly generate for every screen
+		for(int i = 0; i < Universe.getUniverseSize(); i++)
+			for(int j = 0; j < Universe.getUniverseSize(); j++)
+			if( rand.nextInt(100) <= 25 )
+			{
+				planetList.add(new Planet(new Vector(Game.getScreenWidth()/2*i, Game.getScreenHeight()/2*j), planetImages, rand));
+			}
+		
+		//All done!
+		planetImages.clear();
+    	return planetList;
 	}
 	
 	//Draw a random nebula
@@ -105,6 +142,7 @@ public class Universe {
 	 * AE> Predrawing the stars and placing them in the static ArrayList stars
 	 */
 	private void loadStars() {
+		
 		// Loading stars from resource file if possible
 		File starFile = new File("stars.resource");
 		if (starFile.exists())
@@ -120,7 +158,7 @@ public class Universe {
 			}
 			catch (Exception e) 
 			{
-				Log.message("Error reading star resource file, creating a new one.");
+				Log.message("Error reading star resource file, creating a new one. (" + e.toString() + ")");
 				if (!starFile.delete()) Log.warning("Could not delete old, corrupted star resource file.");
 			}
 		}
@@ -168,8 +206,7 @@ public class Universe {
 			}
 			catch (Exception e) 
 			{
-				Log.warning("Error writing star resource file:");
-				Log.warning(e);
+				Log.warning("Error writing star resource file: " + e.toString());
 			}
 		}
 	}
@@ -194,7 +231,8 @@ public class Universe {
 				x = bgPos[i][j].getX()+pos.getX();
 				y = bgPos[i][j].getY()+pos.getY();		
 				g.drawImage( universe[i][j], x, y, null );
-			}		
+			}	
+		drawBounds(g, pos);
 	}
 
 	public void drawBounds(Graphics g, Vector pos){
@@ -231,7 +269,9 @@ public class Universe {
 			{
 				try
 				{
-			    	BufferedImage buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_555_RGB);
+			    	BufferedImage buffer;
+					if( Image2D.isHighQualityMode() )  buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);		
+					else 							   buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_555_RGB);
 		    		Graphics2D g = buffer.createGraphics();
 		        	
 		            //I: Nebula (10% chance) or Black background (90%)
@@ -262,6 +302,40 @@ public class Universe {
 		//stars.clear(); TODO: free resources for the new array
 		nebulaList.clear();
 		Profiler.end("Generating World");
+	}
+
+	public void drawBackground(Graphics g, Vector position) {
+		float uniX = Game.getScreenWidth()*universeSize;
+		float uniY = Game.getScreenHeight()*universeSize;
+		Vector pos = position.clone();
+		pos.negate();
+		
+		boolean u = false;
+		boolean d = false;
+		boolean l = false;
+		boolean r = false;
+		
+		if 		(pos.x < 0) 		  					l = true;
+		else if (pos.x > uniX - Game.getScreenWidth()) 	r = true;
+		
+		if		(pos.y < 0)							    u = true;
+		else if (pos.y > uniY - Game.getScreenHeight())	d = true;
+
+		pos.negate();
+		
+		draw(g, pos);
+		
+		if 		(l) draw(g, pos.plus(new Vector(-uniX,0)));
+		else if (r) draw(g, pos.plus(new Vector( uniX,0)));
+
+		if 		(u) draw(g, pos.plus(new Vector(0,-uniY)));
+		else if (d) draw(g, pos.plus(new Vector(0, uniY)));
+		
+		if 		(u && l) draw(g, pos.plus(new Vector(-uniX,-uniY)));
+		else if (u && r) draw(g, pos.plus(new Vector( uniX,-uniY)));
+		else if (d && l) draw(g, pos.plus(new Vector(-uniX, uniY)));
+		else if (d && r) draw(g, pos.plus(new Vector( uniX, uniY)));
+
 	}
 	
 }

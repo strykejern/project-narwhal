@@ -23,11 +23,12 @@ import gameEngine.Image2D;
 import gameEngine.Input;
 import gameEngine.Vector;
 
+import java.awt.Color;
 import java.awt.Graphics;
 
 
 public class Spaceship extends GameObject{
-	private static float MAX_SPEED = 30f;
+	private static float MAX_SPEED = 15f;
 	
 	public Spaceship(Vector spawnPos, Image2D newImg, Input newInput){
 		pos 	= spawnPos;
@@ -47,7 +48,7 @@ public class Spaceship extends GameObject{
 	}
 
 	public void update() {
-		if 		(keys.up) 	speed.sub(new Vector(0.5f, direction, true));
+		if 		(keys.up) 	speed.sub(new Vector(0.25f, direction, true));
 		else if (keys.down) speed.divide(1.01f);
 		direction %= 2 * Math.PI;
 		float heading = keys.mousePos.minus(new Vector(Game.getScreenWidth()/2, Game.getScreenHeight()/2)).getAngle() - direction;
@@ -81,6 +82,11 @@ public class Spaceship extends GameObject{
 	}
 	
 	public void draw(Graphics g) {
+		if( keys.shoot )
+		{
+			g.setColor(Color.RED);
+			g.drawLine(drawX()+image.getWidth()/2, drawY()+image.getHeight()/2, drawX()+200, drawY());
+		}
 		g.drawImage(image.toImage(), drawX(), drawY(), null);
 	}
 

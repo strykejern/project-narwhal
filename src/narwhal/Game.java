@@ -31,9 +31,9 @@ import javax.swing.*;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Random;
 
 
@@ -42,17 +42,20 @@ import java.util.Random;
  * @author Johan Jansen and Anders Eie
  *
  */
-public class Game extends JPanel implements Runnable, KeyListener {
+public class Game extends JPanel implements Runnable, KeyListener, MouseListener {
 	private static Dimension resolution = new Dimension();
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
 	private boolean running;
 	private JFrame frame;
-	GameObject ship;
-	Universe bg;
+	private GameObject ship;
+	private Universe currentWorld;
 	private Input keys;
-	private ArrayList<Planet> planetList;
-	private ArrayList<Image2D> planetImages;
+	
+	//Hardware graphic stuff
+	GraphicsEnvironment graphEnv;
+	GraphicsDevice graphDevice;
+	GraphicsConfiguration graphicConf;
 
 	//Player position in the universe
 	Random rand = new Random();
@@ -68,13 +71,22 @@ public class Game extends JPanel implements Runnable, KeyListener {
     	Log.initialize();
 		resolution.setSize(800, 600);
 
-    	JFrame parentWindow = new JFrame("Project Narwhal");		
-    	parentWindow.getContentPane().add(new Game(parentWindow));
+		//Acquiring the current Graphics Device and Graphics Configuration
+		//This ensures us proper hardware acceleration
+		GraphicsEnvironment graphEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice graphDevice = graphEnv.getDefaultScreenDevice();
+		GraphicsConfiguration graphicConf = graphDevice.getDefaultConfiguration();
 
-		parentWindow.setSize(resolution);
+		//Initialize the frame window where we draw stuff
+    	JFrame parentWindow = new JFrame("Project Narwhal", graphicConf);		
+    	parentWindow.getContentPane().add(new Game(parentWindow));
+    	parentWindow.setSize(resolution);
         parentWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        parentWindow.setVisible(true);
-   	}
+        parentWindow.setVisible( true );
+        
+        //This ensures there is no flickering
+       	parentWindow.setIgnoreRepaint( true );
+  	}
 	
 	public Game(JFrame frame) {
     	
@@ -85,18 +97,19 @@ public class Game extends JPanel implements Runnable, KeyListener {
 
 		//Input controls
 		frame.addKeyListener(this);
+		frame.addMouseListener(this);
 		keys = new Input();
 		
 		//Background
-		bg = new Universe(resolution);
-		bg.generateWorld( 4, System.currentTimeMillis() );
+		currentWorld = new Universe(resolution);
+		currentWorld.generateWorld( 4, System.currentTimeMillis() );
 
 		//Initialize the player ship		
 		ship = new Spaceship(new Vector(1, 1), new Image2D("data/spaceship.png"), keys);
 		
 		//Thread (do last so that everything above is properly loaded before the main loop begins)
-		new Thread(this).start();
 		running = true;
+		new Thread(this).start();
 	}
 	
 	static public int getScreenWidth()	{
@@ -120,17 +133,16 @@ public class Game extends JPanel implements Runnable, KeyListener {
     	Sound crash = new Sound("data/crash.au");
     	music.play();
 
-		//Generate the planets
-    	planetList = generateRandomPlanets( System.currentTimeMillis() );
-    	
+ 	
 		while(running)
     	{
 			int x = MouseInfo.getPointerInfo().getLocation().x - frame.getX();
             int y = MouseInfo.getPointerInfo().getLocation().y - frame.getY();
+          
             keys.update(x, y);
 			
     		//Basic collision loop (put all detection here)
-            for( Planet currentPlanet : planetList )
+            for( Planet currentPlanet : currentWorld.getPlanetList() )
     			if( currentPlanet.collidesWith( ship ) && false ) /////////////////////////////// WARNING
     			{
     		    	crash.play();
@@ -165,79 +177,13 @@ public class Game extends JPanel implements Runnable, KeyListener {
 		return a*a - b*(b-1);
 	}
 	
-	private ArrayList<Planet> generateRandomPlanets(long seed) {
-		Random rand = new Random(seed);
-		ArrayList<Planet> planetList = new ArrayList<Planet>();
-
-		loadPlanets();
-    	
-		//Randomly generate for every screen
-		for(int i = 0; i < bg.getUniverseSize(); i++)
-			for(int j = 0; j < bg.getUniverseSize(); j++)
-			if( rand.nextInt(100) <= 25 )
-			{
-				planetList.add(new Planet(new Vector(resolution.width/2*i, resolution.height/2*j), planetImages, rand));
-			}
-		
-		//All done!
-		planetImages.clear();
-    	return planetList;
-	}
-	
-	private void loadPlanets() {
-		File[] fileList = new File("data/planets").listFiles();
-		
-		//Load planets into memory
-		planetImages = new ArrayList<Image2D>();
-		for( File f : fileList )
-		{
-			if( !f.isFile() ) continue;
-			planetImages.add( new Image2D( f.toString()) ) ;
-		}
-	}
-
 	
 	/*
 	 * JJ> Paints every object of interest
 	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 	 */
 	public void paint(Graphics g) {
-		
-		
-		// Quick implement of stacking backgrounds
-		float uniX = resolution.width*Universe.getUniverseSize();
-		float uniY = resolution.height*Universe.getUniverseSize();
-		Vector pos = ship.getPosition().clone();
-		pos.negate();
-		
-		boolean u = false;
-		boolean d = false;
-		boolean l = false;
-		boolean r = false;
-		
-		if 		(pos.x < 0) 		  			l = true;
-		else if (pos.x > uniX - getWidth()) 	r = true;
-		
-		if		(pos.y < 0)						u = true;
-		else if (pos.y > uniY - getHeight())	d = true;
-		
-		pos.negate();
-		
-		bg.draw(g, pos);
-		
-		if 		(l) bg.draw(g, pos.plus(new Vector(-uniX,0)));
-		else if (r) bg.draw(g, pos.plus(new Vector( uniX,0)));
-
-		if 		(u) bg.draw(g, pos.plus(new Vector(0,-uniY)));
-		else if (d) bg.draw(g, pos.plus(new Vector(0, uniY)));
-		
-		if 		(u && l) bg.draw(g, pos.plus(new Vector(-uniX,-uniY)));
-		else if (u && r) bg.draw(g, pos.plus(new Vector( uniX,-uniY)));
-		else if (d && l) bg.draw(g, pos.plus(new Vector(-uniX, uniY)));
-		else if (d && r) bg.draw(g, pos.plus(new Vector( uniX, uniY)));
-		// End of quick implement
-		
-		bg.drawBounds(g, ship.getPosition() );
+		currentWorld.drawBackground( g, ship.getPosition() );
 		Particle.drawAllParticles(g);
 
 		//Draw every planet
@@ -266,5 +212,27 @@ public class Game extends JPanel implements Runnable, KeyListener {
 	public void keyTyped(KeyEvent arg0) {
 		
 	}
+
+	public void mouseClicked(MouseEvent e) {
+	}
+	
+	public void mouseReleased(MouseEvent e) {
+		keys.shoot = false;
+	}
+	
+	
+	
+	public void mousePressed(MouseEvent e) {
+		keys.shoot = true;	
+	}
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

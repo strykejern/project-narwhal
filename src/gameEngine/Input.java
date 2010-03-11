@@ -23,7 +23,7 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 
 public class Input {
-	public boolean up, down, left, right;
+	public boolean up, down, left, right, shoot;
 	public Vector mousePos;
 	
 	public Input(){
