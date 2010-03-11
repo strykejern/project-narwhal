@@ -101,8 +101,7 @@ public class Universe {
 		
 		//Figure out what it looks like
 		int whichNebula = rand.nextInt(nebulaList.size());
-		nebulaList.get( whichNebula ).reset();
-				
+
 		//Make it unique
 		nebulaList.get( whichNebula ).setAlpha( rand.nextFloat() );
 		if( rand.nextBoolean() ) nebulaList.get( whichNebula ).horizontalFlip();

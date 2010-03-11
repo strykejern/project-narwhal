@@ -237,6 +237,7 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 		g.setColor(Color.white);
 		g.drawString("Ship position: X: " + ship.getPosition().x + ", Y: " + ship.getPosition().y, 5, 20);
 		g.drawString("Number of particles: " + particleList.size(), 5, 40);
+		g.dispose();
 	}
 	
 	static public boolean isInScreen(Rectangle rect)
