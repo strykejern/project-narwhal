@@ -113,7 +113,7 @@ public class Particle {
 		if( memoryImg == null || memoryImg.contentsLost() || width != memoryImg.getWidth()
 				|| height != memoryImg.getHeight() )
 		{
-			memoryImg = Video.createVolatileImage(width, height, VolatileImage.TRANSLUCENT);
+			memoryImg = Video.createVolatileImage(width, height);
 		}
 	}
 	
