@@ -21,7 +21,6 @@ package narwhal;
 import gameEngine.GameObject;
 import gameEngine.Image2D;
 import gameEngine.Vector;
-import gameEngine.Collidable.Shape;
 
 import java.awt.Color;
 import java.awt.Graphics;

@@ -22,6 +22,7 @@ import gameEngine.Image2D;
 import gameEngine.Log;
 import gameEngine.Profiler;
 import gameEngine.Vector;
+import gameEngine.Video;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -270,7 +271,7 @@ public class Universe {
 				try
 				{
 			    	BufferedImage buffer;
-					if( Image2D.isHighQualityMode() )  buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);		
+					if( Video.isHighQualityMode() )  buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);		
 					else 							   buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_555_RGB);
 		    		Graphics2D g = buffer.createGraphics();
 		        	
