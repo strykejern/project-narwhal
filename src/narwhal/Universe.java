@@ -336,5 +336,18 @@ public class Universe {
 		else if (d && r) drawSingleBackground(g, pos.plus(new Vector( uniX, uniY)));
 
 	}
+
+	public void drawPlanets(Graphics2D g) {
+		if(planetList == null) return;
+		
+		for( Planet currentPlanet : planetList )
+		{
+			if( !currentPlanet.isOnScreen() ) continue;
+			currentPlanet.draw(g);
+			currentPlanet.drawCollision(g);
+		}
+
+		
+	}
 	
 }
