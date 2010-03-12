@@ -41,11 +41,7 @@ public class Video {
 	private static GraphicsEnvironment graphEnv;
 	private static GraphicsDevice graphDevice;
 	private static GraphicsConfiguration graphicConf;
-	
-	public static VolatileImage createVolatileImage( int width, int height, int transparency ) {
-		return graphicConf.createCompatibleVolatileImage(width, height, transparency);
-	}
-	
+		
 	/**
 	 * JJ> Acquiring the current Graphics Device and Graphics Configuration
 	 * 	   This ensures us proper hardware acceleration
@@ -57,6 +53,13 @@ public class Video {
 		graphicConf = graphDevice.getDefaultConfiguration();
 	}
 	
+	/**
+	 * JJ> Used for constructing a VolatileImage
+	 */
+	public static VolatileImage createVolatileImage( int width, int height ) {
+		return graphicConf.createCompatibleVolatileImage(width, height, VolatileImage.TRANSLUCENT );
+	}
+
 	/**
 	 * JJ> Sets all graphics settings to nice
 	 */
@@ -125,10 +128,11 @@ public class Video {
 		resolution.setSize(Toolkit.getDefaultToolkit().getScreenSize());
 	}
 	
-	static public int getScreenWidth()	{
+	public static int getScreenWidth()	{
 		return resolution.width;
 	}
-	static public int getScreenHeight()	{
+	
+	public static int getScreenHeight()	{
 		return resolution.height;
 	}
 }

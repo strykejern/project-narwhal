@@ -104,7 +104,7 @@ public class Image2D {
 	private Graphics2D getVolatileMemory() {
 		if( processed == null || processed.contentsLost() || processed.getWidth() != width || processed.getHeight() != height )
 		{
-			processed = Video.createVolatileImage(width, height, VolatileImage.TRANSLUCENT);
+			processed = Video.createVolatileImage(width, height);
 		}
 
         Graphics2D g = processed.createGraphics();

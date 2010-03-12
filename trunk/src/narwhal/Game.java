@@ -66,9 +66,9 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
     	
     	//Now initialize Video settings
     	Video.initialize();
-    	Video.disableHighQualityGraphics();
+    	Video.enableHighQualityGraphics();
 		Video.setResolution(800, 640);
-		Video.setFullscreen();
+		//Video.setFullscreen();
 
 		//Initialize the frame window where we draw stuff
     	JFrame parentWindow = new JFrame("Project Narwhal", Video.getGraphicsConf());
