@@ -22,6 +22,7 @@ import gameEngine.GameObject;
 import gameEngine.Image2D;
 import gameEngine.Input;
 import gameEngine.Vector;
+import gameEngine.Video;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -37,7 +38,7 @@ public class Spaceship extends GameObject{
 		direction = 0;
 
 		//Calculate size
-		image.resize(Game.getScreenWidth()/12, Game.getScreenWidth()/12);
+		image.resize(Video.getScreenWidth()/12, Video.getScreenWidth()/12);
 		radius = image.getWidth()/2;
 
 		//Physics
@@ -51,7 +52,7 @@ public class Spaceship extends GameObject{
 		if 		(keys.up) 	speed.sub(new Vector(0.25f, direction, true));
 		else if (keys.down) speed.divide(1.01f);
 		direction %= 2 * Math.PI;
-		float heading = keys.mousePos.minus(new Vector(Game.getScreenWidth()/2, Game.getScreenHeight()/2)).getAngle() - direction;
+		float heading = keys.mousePos.minus(new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2)).getAngle() - direction;
 		if 		(heading > Math.PI)  heading = -((2f * (float)Math.PI) - heading);
 		else if (heading < -Math.PI) heading =  ((2f * (float)Math.PI) + heading);
 		direction += heading * 0.1f;
@@ -61,8 +62,8 @@ public class Spaceship extends GameObject{
 		if (speed.length() > MAX_SPEED) speed.setLength(MAX_SPEED);
 		
 		// Quick implement of universe bounds
-		float uniX = Game.getScreenWidth()*Universe.getUniverseSize();
-		float uniY = Game.getScreenHeight()*Universe.getUniverseSize();
+		float uniX = Video.getScreenWidth()*Universe.getUniverseSize();
+		float uniY = Video.getScreenHeight()*Universe.getUniverseSize();
 		
 		if 		(pos.x < 0) 	pos.x = uniX + pos.x;
 		else if (pos.x > uniX)  pos.x %= uniX;
@@ -74,11 +75,11 @@ public class Spaceship extends GameObject{
 	}
 	
 	protected int drawX(){
-		return Game.getScreenWidth()/2-image.getWidth()/2;
+		return Video.getScreenWidth()/2-image.getWidth()/2;
 	}
 	
 	protected int drawY(){
-		return Game.getScreenHeight()/2-image.getHeight()/2;
+		return Video.getScreenHeight()/2-image.getHeight()/2;
 	}
 	
 	public void draw(Graphics g) {

@@ -89,7 +89,7 @@ public class Universe {
 			for(int j = 0; j < Universe.getUniverseSize(); j++)
 			if( rand.nextInt(100) <= 25 )
 			{
-				planetList.add(new Planet(new Vector(Game.getScreenWidth()/2*i, Game.getScreenHeight()/2*j), planetImages, rand));
+				planetList.add(new Planet(new Vector(Video.getScreenWidth()/2*i, Video.getScreenHeight()/2*j), planetImages, rand));
 			}
 		
 		//All done!
@@ -239,8 +239,8 @@ public class Universe {
 	}
 
 	public void drawBounds(Graphics2D g, Vector pos){
-		final int SCREEN_X = Game.getScreenWidth();			//Screen width
-		final int SCREEN_Y = Game.getScreenHeight();		//Screen height
+		final int SCREEN_X = Video.getScreenWidth();			//Screen width
+		final int SCREEN_Y = Video.getScreenHeight();		//Screen height
 		
 		//Make rectangles yellow
 		g.setColor(Color.YELLOW);
