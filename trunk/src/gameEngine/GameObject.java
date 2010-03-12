@@ -20,6 +20,9 @@ package gameEngine;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
+
+import narwhal.Game;
 
 public abstract class GameObject extends Physics{
 	protected Input keys;
@@ -45,7 +48,14 @@ public abstract class GameObject extends Physics{
 	}
 	
 	public void draw(Graphics g) {
-		g.drawImage(image.toImage(), pos.getX()-image.getWidth()/2, pos.getY()-image.getHeight()/2, null);		
+		int xPos = pos.getX() - image.getWidth()/2;
+		int yPos = pos.getY() - image.getHeight()/2;
+		g.drawImage(image.toImage(), xPos, yPos, null);		
+	}
+	
+	
+	public boolean isOnScreen() {
+		return Game.isInScreen( new Rectangle(drawX(), drawY(), image.getWidth(), image.getHeight()) );
 	}
 	
 	public void drawCollision(Graphics g) {
@@ -67,11 +77,11 @@ public abstract class GameObject extends Physics{
 	}
 	
 	protected int drawX(){
-		return pos.getX();
+		return Game.getPlayerPos().getX() - pos.getX() - image.getWidth()/2;
 	}
 	
 	protected int drawY(){
-		return pos.getY();
+		return Game.getPlayerPos().getY() - pos.getY() - image.getHeight()/2;
 	}
 
 	public Vector getPosition() {

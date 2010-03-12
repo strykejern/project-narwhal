@@ -50,7 +50,7 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
 	private boolean running;
 	private JFrame frame;
-	private GameObject ship;
+	private static GameObject ship;
 	private Universe currentWorld;
 	private Input keys;
 	private ArrayList<Particle> particleList;
@@ -151,8 +151,9 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
             keys.update(x, y);
 			
     		//Basic collision loop (put all detection here)
+            if(false)
             for( Planet currentPlanet : currentWorld.getPlanetList() )
-    			if( currentPlanet.collidesWith( ship ) && false ) /////////////////////////////// WARNING
+    			if( currentPlanet.collidesWith( ship ) )
     			{
     		    	crash.play();
     				currentPlanet.collision(ship);
@@ -221,13 +222,7 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 		}
 
 		//Draw every planet
-		/*if(planetList != null)
-			for( Planet currentPlanet : planetList )
-			{
-				currentPlanet.draw(g);
-				currentPlanet.drawCollision(g);
-			}
-		*/
+		currentWorld.drawPlanets( g );
 		
 		//Draw the little ship
 		ship.draw(g);
@@ -238,6 +233,10 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 		g.drawString("Ship position: X: " + ship.getPosition().x + ", Y: " + ship.getPosition().y, 5, 20);
 		g.drawString("Number of particles: " + particleList.size(), 5, 40);
 		g.dispose();
+	}
+	
+	static public Vector getPlayerPos() {
+		return ship.getPosition().clone();
 	}
 	
 	static public boolean isInScreen(Rectangle rect)

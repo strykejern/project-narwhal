@@ -210,7 +210,7 @@ public class Image2D {
 		
 	/**
 	 * JJ> Makes the image partially or fully transparent 
-	 * @param transperancy: value should be between 0.00 (completely transparent) and 1.00 (normal)
+	 * @param transperancy value should be between 0.00 (completely transparent) and 1.00 (normal)
      */
 	public void setAlpha(float transperancy) { 
 		//Clip the parameter to a valid value so that we do not get an error message
@@ -249,22 +249,23 @@ public class Image2D {
 			draw = op.filter(draw, null);
 		}
 		
+		//TODO: this is bugged!
 		// Flip the image vertically or horizontally
 		if( flipHorizontal || flipVertical )
 		{
 			AffineTransform tx = AffineTransform.getScaleInstance( flipHorizontal ? -1 : 1, flipVertical ? -1 : 1);
 			tx.translate(flipHorizontal ? -width : 0, flipVertical ? -height : 0);
 			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-			draw = op.filter(draw, null);
+			//draw = op.filter(draw, null);
 		}
-		
-		//TODO: Do vertical and horizontal flips
+
+		//Now actually draw the image
 		g.drawImage(
 				draw,							//Draw the base image (possibly with blur)
 				(width-w)/2, 					//X offset
 				(height-h)/2, 					//Y offset
 				w, 								//How much to draw
-				h,
+				h,								
 				null);
 
 		//All done!
@@ -298,6 +299,7 @@ public class Image2D {
 	 * @warning: All changes are permanently lost!
 	 */
 	public void reset() {
+		
 		currentAlpha = 1;
 		currentAngle = 0;
 		flipHorizontal = flipVertical = false;
