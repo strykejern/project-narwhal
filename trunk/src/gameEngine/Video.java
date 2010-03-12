@@ -33,6 +33,7 @@ import java.awt.image.VolatileImage;
  *
  */
 public class Video {
+	private static Dimension resolution = new Dimension();
 	private static boolean highQuality = false;		//Draw everything in HQ gfx?
 	private static RenderingHints quality = new RenderingHints(null);
 	
@@ -106,5 +107,28 @@ public class Video {
 	
 	public static boolean isHighQualityMode() {
 		return highQuality;
+	}
+	
+	public static void setResolution(int width, int height) {
+		resolution.setSize(width, height);
+	}
+	
+	public static Dimension getResolution() {
+		return  resolution;
+	}
+	
+	public static void setResolution(Dimension res) {
+		resolution.setSize(res);
+	}
+	
+	public static void setFullscreen() {
+		resolution.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+	}
+	
+	static public int getScreenWidth()	{
+		return resolution.width;
+	}
+	static public int getScreenHeight()	{
+		return resolution.height;
 	}
 }

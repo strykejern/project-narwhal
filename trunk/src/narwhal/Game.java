@@ -46,7 +46,6 @@ import java.util.Random;
  *
  */
 public class Game extends JPanel implements Runnable, KeyListener, MouseListener {
-	private static Dimension resolution = new Dimension();
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
 	private boolean running;
@@ -68,13 +67,13 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
     	//Now initialize Video settings
     	Video.initialize();
     	Video.disableHighQualityGraphics();
-		resolution.setSize(800, 640);
-		//resolution = Video.getDesktopResolution();			//Fullscreen
+		Video.setResolution(800, 640);
+		Video.setFullscreen();
 
 		//Initialize the frame window where we draw stuff
     	JFrame parentWindow = new JFrame("Project Narwhal", Video.getGraphicsConf());
     	parentWindow.getContentPane().add(new Game(parentWindow));
-    	parentWindow.setSize(resolution);
+    	parentWindow.setSize( Video.getResolution() );
 		parentWindow.setResizable(false);
 		//parentWindow.setUndecorated(true);								//Remove borders
         parentWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -97,7 +96,7 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 		keys = new Input();
 		
 		//Prepare graphics
-		currentWorld = new Universe( resolution, 4, System.currentTimeMillis() );
+		currentWorld = new Universe( Video.getResolution(), 4, System.currentTimeMillis() );
 		particleList = new ArrayList<Particle>();
        	
 		//Load resources
@@ -109,13 +108,6 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 		//Thread (do last so that everything above is properly loaded before the main loop begins)
 		running = true;
 		new Thread(this).start();
-	}
-	
-	static public int getScreenWidth()	{
-		return resolution.width;
-	}
-	static public int getScreenHeight()	{
-		return resolution.height;
 	}
 	
 	//JJ> This is the main game loop
@@ -231,8 +223,8 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 	
 	static public boolean isInScreen(Rectangle rect)
 	{
-		if( rect.x < -rect.width || rect.x > Game.getScreenWidth() ) return false;
-		if( rect.y < -rect.height || rect.y > Game.getScreenHeight() ) return false;
+		if( rect.x < -rect.width || rect.x > Video.getScreenWidth() ) return false;
+		if( rect.y < -rect.height || rect.y > Video.getScreenHeight() ) return false;
 		return true;
 	}
 	

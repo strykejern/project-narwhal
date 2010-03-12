@@ -21,6 +21,7 @@ package narwhal;
 import gameEngine.GameObject;
 import gameEngine.Image2D;
 import gameEngine.Vector;
+import gameEngine.Video;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -36,7 +37,7 @@ public class Planet extends GameObject {
 		Image2D myImage = imageList.get( rand.nextInt(imageList.size()) );
 
 		//Make it unique
-		int planetSize = rand.nextInt(Game.getScreenWidth()/4) + Game.getScreenHeight()/4;
+		int planetSize = rand.nextInt(Video.getScreenWidth()/4) + Video.getScreenHeight()/4;
 		if( rand.nextBoolean() ) myImage.horizontalFlip();
 		if( rand.nextBoolean() ) myImage.verticalFlip();
 		myImage.rotate( (float)Math.toRadians(rand.nextInt(360)) );
