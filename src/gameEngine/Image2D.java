@@ -20,8 +20,6 @@ package gameEngine;
 
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ConvolveOp;
@@ -30,7 +28,6 @@ import java.awt.image.VolatileImage;
 
 import javax.swing.ImageIcon;
 
-import narwhal.Game;
 
 /**
  * JJ> Helper class to make image handling easier to do
@@ -39,43 +36,6 @@ import narwhal.Game;
  * @author Johan Jansen and Anders Eie
  */
 public class Image2D {
-	
-	/*************************************************************************
-	 * JJ> Static version of this class to handle HQ graphics mode
-	 ************************************************************************/
-	private static boolean highQuality = false;		//Draw everything in HQ gfx?
-	
-	public static void enableHighQualityGraphics() {
-		highQuality = true;
-	}
-	public static void disableHighQualityGraphics() {
-		highQuality = false;
-	}
-	public static boolean isHighQualityMode() {
-		return highQuality;
-	}
-	
-	public static void getGraphicsSettings(Graphics2D g){
-		if( highQuality )
-		{
-			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-	    	g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
-			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-		   	g.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE );
-		}
-		else
-		{
-			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
-			g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
-			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED );
-		   	g.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE );
-		}
-	}
-
-
-	/*************************************************************************
-	 * JJ> The Private instanced version
-	 ************************************************************************/
 	final private static Kernel blur = new Kernel(3, 3,
 		    new float[] {
 	        1f/9f, 1f/9f, 1f/9f,
@@ -110,7 +70,7 @@ public class Image2D {
 		//Load the image into a BufferedImage
 		original = new BufferedImage( load.getIconWidth(), load.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = original.createGraphics();
-        getGraphicsSettings(g);
+        Video.getGraphicsSettings(g);
         g.drawImage(load.getImage(), 0, 0, null ); 
         g.dispose();
         
@@ -127,7 +87,7 @@ public class Image2D {
 		//Ensure it is the correct format before loading it
 		BufferedImage buffer = new BufferedImage( copyImg.getWidth(), copyImg.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = buffer.createGraphics();
-        getGraphicsSettings(g);
+        Video.getGraphicsSettings(g);
         g.drawImage(copyImg, 0, 0, null ); 
         g.dispose();
         
@@ -144,11 +104,11 @@ public class Image2D {
 	private Graphics2D getVolatileMemory() {
 		if( processed == null || processed.contentsLost() || processed.getWidth() != width || processed.getHeight() != height )
 		{
-			processed = Game.getGraphicsConf().createCompatibleVolatileImage(width, height, VolatileImage.TRANSLUCENT);
+			processed = Video.createVolatileImage(width, height, VolatileImage.TRANSLUCENT);
 		}
 
         Graphics2D g = processed.createGraphics();
-        getGraphicsSettings(g);
+        Video.getGraphicsSettings(g);
 
 		//Clear the background
 		g.setBackground(new Color(0,0,0,0));
@@ -228,7 +188,7 @@ public class Image2D {
 	 * JJ> Returns this Image2D as a Image instance
 	 * @return the image ready to be drawn with proper rotation and all
 	 */
-	public Image toImage(){
+	public Image toImage() {
 		Graphics2D g = getVolatileMemory();
 		
 		//To make life easier
@@ -243,6 +203,7 @@ public class Image2D {
 		if(currentAngle != 0) g.rotate(currentAngle, width/2.0, height/2.0);
 		
 		//Blur effect
+		//TODO: does this actually work?
 		if(blurEffect)
 		{
 			BufferedImageOp op = new ConvolveOp(blur);

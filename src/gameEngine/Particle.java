@@ -61,7 +61,7 @@ public class Particle {
 		}
 	}
 	
-	//Object functions
+	//Particle variables
 	private int hashCode;				//Unique hash code to identify which image to draw
 	private int time;					//How many frames it has to live
 	private Vector pos;					//Position
@@ -113,7 +113,7 @@ public class Particle {
 		if( memoryImg == null || memoryImg.contentsLost() || width != memoryImg.getWidth()
 				|| height != memoryImg.getHeight() )
 		{
-			memoryImg = Game.getGraphicsConf().createCompatibleVolatileImage(width, height, VolatileImage.TRANSLUCENT);
+			memoryImg = Video.createVolatileImage(width, height, VolatileImage.TRANSLUCENT);
 		}
 	}
 	
@@ -141,7 +141,7 @@ public class Particle {
 	public void update() {
 
 		//Don't update if we do not exist
-		if(requestDelete || Game.getGraphicsConf() == null) return;
+		if(requestDelete) return;
 		
 		//Uh oh, we have an invalid hash code
 		if( particleMap.get(hashCode) == null )

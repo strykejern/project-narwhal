@@ -25,6 +25,7 @@ import gameEngine.Log;
 import gameEngine.Particle;
 import gameEngine.Sound;
 import gameEngine.Vector;
+import gameEngine.Video;
 
 import java.awt.*;
 
@@ -55,15 +56,6 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 	private Input keys;
 	private ArrayList<Particle> particleList;
 	
-	static //Hardware graphic stuff
-	GraphicsEnvironment graphEnv;
-	static GraphicsDevice graphDevice;
-	static private GraphicsConfiguration graphicConf;
-	
-	public static GraphicsConfiguration getGraphicsConf() {
-		return graphicConf;		
-	}
-	
 	// Create a new blank cursor.
 	final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
 			new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "blank cursor");
@@ -72,17 +64,15 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 	public static void main(String[] args) throws InterruptedException{	
     	//Initialize the logging system, do this first so that error logging happens correctly.
     	Log.initialize();
+    	
+    	//Now initialize Video settings
+    	Video.initialize();
+    	Video.disableHighQualityGraphics();
 		resolution.setSize(800, 640);
-		//resolution = Toolkit.getDefaultToolkit().getScreenSize();			//Fullscreen
-
-		//Acquiring the current Graphics Device and Graphics Configuration
-		//This ensures us proper hardware acceleration
-		graphEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		graphDevice = graphEnv.getDefaultScreenDevice();
-		graphicConf = graphDevice.getDefaultConfiguration();
+		//resolution = Video.getDesktopResolution();			//Fullscreen
 
 		//Initialize the frame window where we draw stuff
-    	JFrame parentWindow = new JFrame("Project Narwhal", graphicConf);		
+    	JFrame parentWindow = new JFrame("Project Narwhal", Video.getGraphicsConf());
     	parentWindow.getContentPane().add(new Game(parentWindow));
     	parentWindow.setSize(resolution);
 		parentWindow.setResizable(false);
@@ -209,7 +199,7 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 		Graphics2D g = (Graphics2D) rawGraphics;
 		
 		//Set quality mode
-		Image2D.getGraphicsSettings(g);
+		Video.getGraphicsSettings(g);
 		
 		//Draw background
 		currentWorld.drawBackground( g, ship.getPosition() );
