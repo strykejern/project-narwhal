@@ -249,16 +249,35 @@ public class Image2D {
 			draw = op.filter(draw, null);
 		}
 		
-		//TODO: this is bugged!
 		// Flip the image vertically or horizontally
-		if( flipHorizontal || flipVertical )
+		if( flipHorizontal && flipVertical )
 		{
-			AffineTransform tx = AffineTransform.getScaleInstance( flipHorizontal ? -1 : 1, flipVertical ? -1 : 1);
-			tx.translate(flipHorizontal ? -width : 0, flipVertical ? -height : 0);
-			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-			//draw = op.filter(draw, null);
+			Graphics2D flip = draw.createGraphics();
+			flip.drawImage (draw, 
+		             0, draw.getHeight(), draw.getWidth(), 0,
+		             0, 0, draw.getWidth(), draw.getHeight(),
+		             null);
+			flip.dispose();
 		}
-
+		else if( flipHorizontal )
+		{
+			Graphics2D flip = draw.createGraphics();
+			flip.drawImage (draw, 
+		             0, draw.getHeight(), draw.getWidth(), 0,
+		             0, 0, draw.getWidth(), draw.getHeight(),
+		             null );
+			flip.dispose();
+		}
+		else if( flipVertical )
+		{
+			Graphics2D flip = draw.createGraphics();
+			flip.drawImage (draw, 
+		             draw.getWidth(), 0, 0, draw.getHeight(),
+		             0, 0, draw.getWidth(), draw.getHeight(),
+		             null);
+			flip.dispose();
+		}
+		
 		//Now actually draw the image
 		g.drawImage(
 				draw,							//Draw the base image (possibly with blur)
@@ -299,7 +318,6 @@ public class Image2D {
 	 * @warning: All changes are permanently lost!
 	 */
 	public void reset() {
-		
 		currentAlpha = 1;
 		currentAngle = 0;
 		flipHorizontal = flipVertical = false;

@@ -30,7 +30,7 @@ import java.util.HashMap;
  */
 public class Profiler {
 
-	private static HashMap<String, Profiler> profileList = new HashMap<String, Profiler>();
+	private static HashMap<Integer, Profiler> profileList = new HashMap<Integer, Profiler>();
 	
 	/**
 	 * JJ> Begins monitoring the processing time something uses. Remember to call Profiler.end()
@@ -39,8 +39,8 @@ public class Profiler {
 	 *            all previous profile data will be lost!
 	 */
 	public static void begin( String profileName ) {
-		if( !profileList.containsKey( profileName ) ) profileList.put( profileName,  new Profiler( profileName ) );		
-		profileList.get(profileName).start(false);
+		if( !profileList.containsKey( profileName.hashCode() ) ) profileList.put( profileName.hashCode(),  new Profiler( profileName ) );		
+		profileList.get(profileName.hashCode()).start(false);
 	}
 
 	/**
@@ -50,8 +50,8 @@ public class Profiler {
 	 *            all previous profile data will be lost!
 	 */
 	public static void beginNano( String profileName ) {
-		if( !profileList.containsKey( profileName ) ) profileList.put( profileName,  new Profiler( profileName ) );		
-		profileList.get(profileName).start(true);
+		if( !profileList.containsKey( profileName.hashCode() ) ) profileList.put( profileName.hashCode(),  new Profiler( profileName ) );		
+		profileList.get(profileName.hashCode()).start(true);
 	}
 	
 	/**
@@ -60,9 +60,6 @@ public class Profiler {
 	 *     @note  The function can slow down the flow of the program a bit since it also tries to 
 	 *     	      clean up as much memory as possible before profiling.
 	 */
-	private static long lastUsedMem;
-	private static long totalChange;
-	private static int numberOfChecks;
 	public static void memoryReport()
 	{	   
 		//Keep count on how many times we have done this
@@ -72,25 +69,28 @@ public class Profiler {
 	    System.gc();
 	    System.gc();
 	    System.gc();
-	   
+
 	    // measure memory usage & change:  
 	    Runtime rt = Runtime.getRuntime();
 	    long usedMem = rt.totalMemory() - rt.freeMemory();  
 	    long diff = usedMem -lastUsedMem;  
 	    lastUsedMem = usedMem;
 	    totalChange += diff;
-		
+
 	    // report:  
 	    String prefix = (diff >= 0) ? "+" : "";
 	    System.out.println("Memory used: " + usedMem + "\tincreased by: " + prefix + diff  + "\taverage increase: " + (totalChange/numberOfChecks) );
 	}
-
+	private static long lastUsedMem;
+	private static long totalChange;
+	private static int numberOfChecks;
+	
 	/**
 	 * JJ> Ends the profiling and writes out the results.
 	 */
 	public static void end( String profileName ) {
-		if( !profileList.containsKey( profileName ) ) return;		
-		profileList.get(profileName).stop();
+		if( !profileList.containsKey( profileName.hashCode() ) ) return;		
+		profileList.get( profileName.hashCode() ).stop();
 		
 	}
 
@@ -98,8 +98,8 @@ public class Profiler {
 	 * JJ> Resets a specific profile
 	 */
 	public static void reset( String profileName ) {
-		if( !profileList.containsKey( profileName ) ) return;		
-		profileList.get(profileName).reset();
+		if( !profileList.containsKey( profileName.hashCode() ) ) return;		
+		profileList.get( profileName.hashCode() ).reset();
 	}
 	
 	/*
@@ -111,22 +111,20 @@ public class Profiler {
 	private boolean profilerActive, useNano;
 	private String profileName;
 	
-	private Profiler(String newName)
-	{
+	private Profiler(String newName) {
 		reset();
 		profileName = newName;
 	}
 	
 	//Reset all profiling data
-	private void reset()
-	{
+	private void reset() {
 		startTime = 0;
 		endTime = 0;
 		numberOfRuns = 0;
 		totalRuntime = 0;
 		memoryUsage = 0;
 		profilerActive = false;
-		useNano = false;		
+		useNano = false;
 	}
 	
 	//Start profiling
