@@ -31,8 +31,6 @@ import javax.swing.ImageIcon;
 
 /**
  * JJ> Helper class to make image handling easier to do
- * @todo Performance for this class can be vastly improved by implementing VolatileImage
- *       rather than BufferedImage.
  * @author Johan Jansen and Anders Eie
  */
 public class Image2D {
@@ -74,8 +72,8 @@ public class Image2D {
         g.drawImage(load.getImage(), 0, 0, null ); 
         g.dispose();
         
-		width = load.getIconWidth();
-		height = load.getIconHeight();
+		baseWidth = width = load.getIconWidth();
+		baseHeight = height = load.getIconHeight();
 	}
 
 	/**
@@ -197,8 +195,9 @@ public class Image2D {
 		BufferedImage draw = original.getSubimage(0, 0, original.getWidth(), original.getHeight());
 		
         // Set the Graphics composite to Alpha
-		if(currentAlpha < 1) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, currentAlpha));  
-        
+		if( currentAlpha < 1 ) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, currentAlpha));  
+        if( currentAlpha == 0 ) return processed;
+		
 		//Do rotation
 		if(currentAngle != 0) g.rotate(currentAngle, width/2.0, height/2.0);
 		
@@ -247,7 +246,7 @@ public class Image2D {
 				w, 								//How much to draw
 				h,								
 				null);
-
+		
 		//All done!
         g.dispose();
 		return processed;
