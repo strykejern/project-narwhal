@@ -22,20 +22,19 @@ import gameEngine.GameObject;
 import gameEngine.Image2D;
 import gameEngine.Input;
 import gameEngine.Log;
+import gameEngine.MainMenu;
 import gameEngine.Particle;
 import gameEngine.Sound;
 import gameEngine.Vector;
 import gameEngine.Video;
 
 import java.awt.*;
-
 import javax.swing.*;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -55,18 +54,13 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 	private Input keys;
 	private ArrayList<Particle> particleList;
 	
-	// Create a new blank cursor.
-	final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-			new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "blank cursor");
-
-	
-	public static void main(String[] args) throws InterruptedException{	
+	public static void main(String[] args) {	
     	//Initialize the logging system, do this first so that error logging happens correctly.
     	Log.initialize();
     	
     	//Now initialize Video settings
     	Video.initialize();
-    	Video.enableHighQualityGraphics();
+    	Video.disableHighQualityGraphics();
 		Video.setResolution(800, 640);
 		//Video.setFullscreen();
 
@@ -117,7 +111,7 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
     	long tm = System.currentTimeMillis();
     	
 		// Set the blank cursor to the JFrame.
-		frame.getContentPane().setCursor(blankCursor);
+		frame.getContentPane().setCursor(Video.blankCursor);
 		    	
     	//Load game resources
 		Sound music = new Sound("data/space.ogg");

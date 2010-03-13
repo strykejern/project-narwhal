@@ -99,17 +99,18 @@ public class Universe {
 	
 	//Draw a random nebula
 	private void drawNebula(Random rand, Graphics2D g) {
-		
+	
 		//Figure out what it looks like
-		int whichNebula = rand.nextInt(nebulaList.size());
+		Image2D nebula = nebulaList.get( rand.nextInt(nebulaList.size()) );
+		nebula.reset();
 
 		//Make it unique
-		nebulaList.get( whichNebula ).setAlpha( rand.nextFloat() );
-		if( rand.nextBoolean() ) nebulaList.get( whichNebula ).horizontalFlip();
-		if( rand.nextBoolean() ) nebulaList.get( whichNebula ).verticalFlip();
+		nebula.setAlpha( rand.nextFloat() );
+		nebula.horizontalFlip();
+		nebula.verticalFlip();
 			
 		//Now draw it
-		g.drawImage(nebulaList.get( whichNebula ).toImage(), 0, 0, null);
+		g.drawImage( nebula.toImage(), 0, 0, null);
 	}
 	
 	/**

@@ -18,13 +18,16 @@
 //********************************************************************************************
 package gameEngine;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
 
 /**
@@ -37,6 +40,10 @@ public class Video {
 	private static boolean highQuality = false;		//Draw everything in HQ gfx?
 	private static RenderingHints quality = new RenderingHints(null);
 	
+	// Create a new blank cursor.
+	public static final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+			new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "blank cursor");
+
 	//Hardware graphic stuff
 	private static GraphicsEnvironment graphEnv;
 	private static GraphicsDevice graphDevice;
