@@ -18,10 +18,7 @@
 //********************************************************************************************
 package narwhal;
 
-import gameEngine.GameObject;
-import gameEngine.Image2D;
-import gameEngine.Vector;
-import gameEngine.Video;
+import gameEngine.*;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -62,10 +59,10 @@ public class Planet extends GameObject {
 		g.drawImage(surfaceImg, xPos, yPos, null);		
 	}
 	protected int drawX(){
-		return Game.getPlayerPos().getX() - pos.getX() - surfaceImg.getWidth(null)/2;
+		return pos.getX(); // - surfaceImg.getWidth(null)/2;
 	}
 	protected int drawY(){
-		return Game.getPlayerPos().getY() - pos.getY() - surfaceImg.getHeight(null)/2;
+		return pos.getY(); // - surfaceImg.getHeight(null)/2;
 	}	
 	public void drawCollision(Graphics g) {
 		

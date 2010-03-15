@@ -18,11 +18,7 @@
 //********************************************************************************************
 package narwhal;
 
-import gameEngine.Image2D;
-import gameEngine.Log;
-import gameEngine.Profiler;
-import gameEngine.Vector;
-import gameEngine.Video;
+import gameEngine.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -53,8 +49,8 @@ public class Universe {
 	 */
 	public Universe(Dimension resolution, int size, long seed){
 		Profiler.begin("Initializing background");
-		WIDTH = resolution.width;
-		HEIGHT = resolution.height;
+		WIDTH = 800; //WIDTH = resolution.width; TODO: fix
+		HEIGHT = 600; //HEIGHT = resolution.height; TODO: fix
 		loadNebulas();
 		loadStars();
 		
