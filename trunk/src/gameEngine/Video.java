@@ -37,7 +37,7 @@ import java.awt.image.VolatileImage;
  */
 public class Video {
 	private static Dimension resolution = new Dimension();
-	private static boolean highQuality = false;		//Draw everything in HQ gfx?
+	private static boolean highQuality = false;							//Draw everything in HQ gfx?
 	private static RenderingHints quality = new RenderingHints(null);
 	
 	// Create a new blank cursor.

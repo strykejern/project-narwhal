@@ -29,6 +29,7 @@ import java.awt.image.VolatileImage;
 import javax.swing.ImageIcon;
 
 
+
 /**
  * JJ> Helper class to make image handling easier to do
  * @author Johan Jansen and Anders Eie
@@ -48,8 +49,10 @@ public class Image2D {
 	private boolean flipHorizontal = false;
 	private boolean flipVertical = false;
 	private boolean blurEffect = false;
+	private boolean noChange = false;
 	private float currentAlpha = 1;
 	private float currentAngle = 0;
+	private int   colorTint = 0xFFFFFFFF;
 	
 	/**
 	 * JJ> Constructor makes sure the image is correctly loaded
@@ -72,8 +75,10 @@ public class Image2D {
         g.drawImage(load.getImage(), 0, 0, null ); 
         g.dispose();
         
-		baseWidth = width = load.getIconWidth();
+		baseWidth = load.getIconWidth();
+		width = (int)(baseWidth*1.20f);
 		baseHeight = height = load.getIconHeight();
+		height = (int)(baseHeight*1.20f);
 	}
 
 	/**
@@ -119,8 +124,10 @@ public class Image2D {
 	 * JJ> Rotates an image with the specified degrees
 	 * @param angle: how much to rotate by
 	 */
-	public void rotate(float angle) {  
+	public void rotate(float angle) {
+		if(angle == 0) return;
 		currentAngle += angle;
+		noChange = false;
 	}
 
 	/**
@@ -128,7 +135,9 @@ public class Image2D {
 	 * @param angle: the new direction
 	 */
 	public void setDirection(float angle) {  
+		if(angle == 0) return;
 		currentAngle = angle;
+		noChange = false;
     }  
 	
 	/**
@@ -136,6 +145,7 @@ public class Image2D {
 	 */
 	public void scale(float multiplier) {   
         resize( (int)(width * multiplier), (int)(height * multiplier) );	
+		noChange = false;
 	}
 	
 	/**
@@ -150,6 +160,7 @@ public class Image2D {
         baseHeight = newH;
         width = (int)(baseWidth*1.20f);
         height = (int)(baseHeight*1.20f);         
+		noChange = false;
     }
 	
 	/**
@@ -157,6 +168,7 @@ public class Image2D {
 	 */
 	public void horizontalFlip() {
 		flipHorizontal = !flipHorizontal;
+		noChange = false;
 	}
 	
 	/**
@@ -164,6 +176,7 @@ public class Image2D {
 	 */
 	public void verticalFlip() {  
 		flipVertical = !flipVertical;
+		noChange = false;
     } 
 		
 	/**
@@ -173,6 +186,7 @@ public class Image2D {
 	public void setAlpha(float transperancy) { 
 		//Clip the parameter to a valid value so that we do not get an error message
 		currentAlpha = Math.min( 1.00f, Math.max(0.00f, transperancy) );        
+		noChange = false;
     }
 	
 	/**
@@ -180,6 +194,22 @@ public class Image2D {
      */
 	public void blurImage() {
 		blurEffect = !blurEffect;
+		noChange = false;
+	}
+
+	/**
+	 * JJ> Adjusts the RGB channels for this image, allowing to tint it a specific color
+	 */
+	public void setColorTint(int r, int g, int b) {
+		
+		//Clip the RGB to valid values
+		r = Math.min(255, Math.max(0, r));
+		g = Math.min(255, Math.max(0, g));
+		b = Math.min(255, Math.max(0, b));
+		
+		//Set the RGB channels, but leave the alpha alone
+		colorTint = 0xFF000000 | r << 16 | g << 8 | b << 0;
+		noChange = false;
 	}
 		
 	/**
@@ -187,11 +217,17 @@ public class Image2D {
 	 * @return the image ready to be drawn with proper rotation and all
 	 */
 	public Image toImage() {
+		
+		//If there are no changes, try to get the old image from memory first
+		if( noChange && processed != null && !processed.contentsLost() )
+		{
+			return processed;
+		}
+		
+		//Draw the image with all filters
 		Graphics2D g = getVolatileMemory();
 		
 		//To make life easier
-		final int w = baseWidth;
-		final int h = baseHeight;
 		BufferedImage draw = original.getSubimage(0, 0, original.getWidth(), original.getHeight());
 		
         // Set the Graphics composite to Alpha
@@ -203,7 +239,7 @@ public class Image2D {
 		
 		//Blur effect
 		//TODO: does this actually work?
-		if(blurEffect)
+		if(blurEffect||true)
 		{
 			BufferedImageOp op = new ConvolveOp(blur);
 			draw = op.filter(draw, null);
@@ -238,17 +274,25 @@ public class Image2D {
 			flip.dispose();
 		}
 		
+		//Color tint
+		if( colorTint != 0xFFFFFFFF )
+			for(int x = 0; x < draw.getWidth(); x++)
+				for(int y = 0; y < draw.getHeight(); y++)
+					draw.setRGB( x, y, draw.getRGB(x, y) & colorTint );
+		
 		//Now actually draw the image
 		g.drawImage(
 				draw,							//Draw the base image (possibly with blur)
-				(width-w)/2, 					//X offset
-				(height-h)/2, 					//Y offset
-				w, 								//How much to draw
-				h,								
+				(width-baseWidth)/2, 			//X offset
+				(height-baseHeight)/2, 			//Y offset
+				baseWidth, 						//How much to draw
+				baseHeight,								
 				null);
 		
 		//All done!
         g.dispose();
+        draw.flush();
+        noChange = true;
 		return processed;
 	}
 	
@@ -278,6 +322,8 @@ public class Image2D {
 	 * @warning: All changes are permanently lost!
 	 */
 	public void reset() {
+		if(processed != null) processed.flush();
+		noChange = false;
 		currentAlpha = 1;
 		currentAngle = 0;
 		flipHorizontal = flipVertical = false;

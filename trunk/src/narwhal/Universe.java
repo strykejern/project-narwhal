@@ -35,7 +35,6 @@ import javax.swing.ImageIcon;
  */
 public class Universe {
 	private static int universeSize;
-	final private int WIDTH, HEIGHT;
 	private Vector[][] bgPos;
 	private ArrayList<Planet> planetList;
 	private ArrayList<Image2D> planetImages;
@@ -47,31 +46,23 @@ public class Universe {
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
 	 *     component every update. Instead we just draw the BufferedImage.
 	 */
-	public Universe(Dimension resolution, int size, long seed){
+	public Universe(int size, long seed){
 		Profiler.begin("Initializing background");
-		WIDTH = 800; //WIDTH = resolution.width; TODO: fix
-		HEIGHT = 600; //HEIGHT = resolution.height; TODO: fix
 		loadNebulas();
 		loadStars();
 		
 		//Generate the backgrounds
 		generateWorld(size, seed);
     	
-		//Generate the planets
-    	planetList = generateRandomPlanets( System.currentTimeMillis() );
-    	
 		Profiler.end("Initializing background");
 	}
 	
-	public ArrayList<Planet> getPlanetList() {
-		return planetList;
-	}
-	
-	private ArrayList<Planet> generateRandomPlanets(long seed) {
+	public ArrayList<Planet> generateRandomPlanets(long seed) {
 		Random rand = new Random(seed);
 		ArrayList<Planet> planetList = new ArrayList<Planet>();
 		
-		//Load planet images into memory
+		//TODO: move this into a resource loader!
+		// Load planet images into memory
 		File[] fileList = new File("data/planets").listFiles();
 		planetImages = new ArrayList<Image2D>();
 		for( File f : fileList )
@@ -118,7 +109,7 @@ public class Universe {
 		int numberOfStars = 125 + rand.nextInt(250);
 		for (int i = 0; i < numberOfStars; ++i)
 		{
-			g.drawImage(stars[rand.nextInt(stars.length)].getImage(), rand.nextInt(WIDTH), rand.nextInt(HEIGHT), null);
+			g.drawImage(stars[rand.nextInt(stars.length)].getImage(), rand.nextInt(Video.getScreenWidth()), rand.nextInt(Video.getScreenHeight()), null);
 		}		
 	}
 		
@@ -132,7 +123,7 @@ public class Universe {
 			if( f.isFile() )
 			{
 				Image2D load = new Image2D( f.toString() );
-				load.resize(WIDTH, HEIGHT);
+				load.resize(Video.getScreenWidth(), Video.getScreenHeight());
 				nebulaList.add( load );	
 			}
 		}
@@ -268,8 +259,8 @@ public class Universe {
 				try
 				{
 			    	BufferedImage buffer;
-					if( Video.isHighQualityMode() )  buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);		
-					else 							   buffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_USHORT_555_RGB);
+					if( Video.isHighQualityMode() )  buffer = new BufferedImage(Video.getScreenWidth(), Video.getScreenHeight(), BufferedImage.TYPE_INT_ARGB);		
+					else 							   buffer = new BufferedImage(Video.getScreenWidth(), Video.getScreenHeight(), BufferedImage.TYPE_USHORT_555_RGB);
 		    		Graphics2D g = buffer.createGraphics();
 		        	
 		            //I: Nebula (10% chance) or Black background (90%)
@@ -277,7 +268,7 @@ public class Universe {
 		    		else 
 		    		{
 		    			g.setColor(Color.black);
-		    			g.fillRect(0, 0, WIDTH, HEIGHT);
+		    			g.fillRect(0, 0, Video.getScreenWidth(), Video.getScreenHeight());
 		    		}
 	
 		    		//II: Stars
@@ -286,7 +277,7 @@ public class Universe {
 		    		//All done!
 		    		g.dispose();
 		    		universe[i][j] = buffer;
-		    		bgPos[i][j] = new Vector(i*WIDTH, j*HEIGHT);
+		    		bgPos[i][j] = new Vector(i*Video.getScreenWidth(), j*Video.getScreenHeight());
 				}
 	    	    catch (OutOfMemoryError e) 
 	    	    {
@@ -302,8 +293,8 @@ public class Universe {
 	}
 
 	public void drawBackground(Graphics2D g, Vector position) {
-		float uniX = WIDTH*universeSize;
-		float uniY = HEIGHT*universeSize;
+		float uniX = Video.getScreenWidth()*universeSize;
+		float uniY = Video.getScreenHeight()*universeSize;
 		Vector pos = position.clone();
 		pos.negate();
 		
@@ -313,10 +304,10 @@ public class Universe {
 		boolean r = false;
 		
 		if 		(pos.x < 0) 		  	l = true;
-		else if (pos.x > uniX - WIDTH) 	r = true;
+		else if (pos.x > uniX - Video.getScreenWidth()) 	r = true;
 		
 		if		(pos.y < 0)				u = true;
-		else if (pos.y > uniY - HEIGHT)	d = true;
+		else if (pos.y > uniY - Video.getScreenHeight())	d = true;
 
 		pos.negate();
 		
