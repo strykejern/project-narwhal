@@ -21,10 +21,14 @@ package narwhal;
 import gameEngine.*;
 
 public class Spaceship extends GameObject{
-	private static float MAX_SPEED = 15f;
-	private int life;
-	private int shield;
-	private int energy;
+	private float MAX_SPEED = 15f;
+	
+	public int lifeMax = 100;
+	public int life = 50;
+	public int shieldMax = 200;
+	public int shield = 200;
+	public int energyMax = 500;
+	public int energy = 350;
 	
 	public Spaceship(Vector spawnPos, Image2D newImg, Input newInput){
 		pos 	= spawnPos;

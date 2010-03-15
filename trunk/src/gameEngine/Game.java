@@ -24,7 +24,8 @@ public class Game {
        	entities = new ArrayList<GameObject>();
        	
 		//Initialize the player ship
-		entities.add(new Spaceship(new Vector(200, 200), new Image2D("data/spaceship.png"), keys));
+       	Spaceship player = new Spaceship(new Vector(200, 200), new Image2D("data/spaceship.png"), keys);
+		entities.add(player);
 		
 		// Initialize the camera
 		viewPort = new Camera(
@@ -37,7 +38,7 @@ public class Game {
 		entities.add( new Planet(new Vector(1, 1), System.currentTimeMillis()) );
 		
 		// Initialize the hud and bind it to the player's ship
-		hud = new UI();
+		hud = new UI(player);
 		
 		this.keys = keys;
 	}

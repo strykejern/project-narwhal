@@ -22,12 +22,13 @@ import gameEngine.*;
 
 import java.awt.*;
 
-import javax.swing.*;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 
 /**
@@ -102,38 +103,24 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
  	
 		while(running)
     	{
-			int x = MouseInfo.getPointerInfo().getLocation().x - frame.getX();
-            int y = MouseInfo.getPointerInfo().getLocation().y - frame.getY();
-          
-            keys.update(x, y);
+			Point mouse = frame.getMousePosition();
+			if(mouse != null) keys.update(mouse.x, mouse.y);
 			
-    		//Basic collision loop (put all detection here)
-			/*if(false)
-			for( Planet currentPlanet : currentWorld.getPlanetList() )
-				if( currentPlanet.collidesWith( ship ) )
-				{
-					crash.play();
-					currentPlanet.collision(ship);
-				}*/
 			try
 			{
 				while (painting) Thread.sleep(1);
 			}
-			catch (Exception e) 
-			{
-				
-			}
+			catch (Exception e) { Log.warning(e); }
+			
 			theGame.update();
 			repaint();
+			
 			try 
 			{
 				tm += TARGET_FPS;
 				Thread.sleep(Math.max(0, tm - System.currentTimeMillis()));
 			}
-			catch(InterruptedException e)
-			{
-				Log.warning(e.toString());
-			}
+			catch (Exception e) { Log.warning(e); }
 		}
 		
 		//TODO: This never happens!?!
@@ -187,6 +174,6 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 	}
 
 	public void mouseClicked(MouseEvent mouse) 	{}
-	public void mouseEntered(MouseEvent e) 		{}
+	public void mouseEntered(MouseEvent mouse) 	{}
 	public void mouseExited	(MouseEvent e) 		{}
 }

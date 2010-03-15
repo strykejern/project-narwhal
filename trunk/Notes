@@ -1,3 +1,13 @@
+    		//Basic collision loop (put all detection here)
+			/*if(false)
+			for( Planet currentPlanet : currentWorld.getPlanetList() )
+				if( currentPlanet.collidesWith( ship ) )
+				{
+					crash.play();
+					currentPlanet.collision(ship);
+				}*/
+
+
 	public boolean collidesWith(Collidable object){
 		boolean collision = false;
 		

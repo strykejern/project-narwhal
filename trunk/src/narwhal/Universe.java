@@ -249,6 +249,7 @@ public class Universe {
 		    		g.dispose();
 		    		universe[i][j] = buffer;
 		    		bgPos[i][j] = new Vector(i*Video.getScreenWidth(), j*Video.getScreenHeight());
+		    		buffer = null;
 				}
 	    	    catch (OutOfMemoryError e) 
 	    	    {
@@ -259,8 +260,16 @@ public class Universe {
 	    	    }
 	    	   
 			}
-		//stars.clear(); TODO: free resources for the new array
+
+		//Make sure everything is freed from memory
+		stars = null;
+		for( Image2D img : nebulaList )
+		{
+			img.dispose();
+			img = null;
+		}
 		nebulaList.clear();
+		nebulaList = null;		
 	}
 
 	public void drawBackground(Graphics2D g, Vector position) {
