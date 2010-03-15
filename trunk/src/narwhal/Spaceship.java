@@ -18,11 +18,7 @@
 //********************************************************************************************
 package narwhal;
 
-import gameEngine.GameObject;
-import gameEngine.Image2D;
-import gameEngine.Input;
-import gameEngine.Vector;
-import gameEngine.Video;
+import gameEngine.*;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -50,7 +46,11 @@ public class Spaceship extends GameObject{
 
 	public void update() {
 		if 		(keys.up) 	speed.sub(new Vector(0.25f, direction, true));
-		else if (keys.down) speed.divide(1.01f);
+		else if (keys.down)
+		{
+			if (speed.length() < 0.2f) speed.setLength(0);
+			else speed.divide(1.01f);
+		}
 		direction %= 2 * Math.PI;
 		float heading = keys.mousePos.minus(new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2)).getAngle() - direction;
 		if 		(heading > Math.PI)  heading = -((2f * (float)Math.PI) - heading);

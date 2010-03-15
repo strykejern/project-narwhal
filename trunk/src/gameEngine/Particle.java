@@ -30,7 +30,7 @@ import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 
-import narwhal.Game;
+import narwhal.GameWindow;
 
 public class Particle {	
 	public static final int MAX_PARTICLES = 256;	
@@ -61,7 +61,7 @@ public class Particle {
 		}
 	}
 	
-	//Particle variables
+	//Object functions
 	private int hashCode;				//Unique hash code to identify which image to draw
 	private int time;					//How many frames it has to live
 	private Vector pos;					//Position
@@ -141,7 +141,7 @@ public class Particle {
 	public void update() {
 
 		//Don't update if we do not exist
-		if(requestDelete) return;
+		if(requestDelete || GameWindow.getGraphicsConf() == null) return;
 		
 		//Uh oh, we have an invalid hash code
 		if( particleMap.get(hashCode) == null )
@@ -163,7 +163,7 @@ public class Particle {
 		int h = (int) (particleMap.get(hashCode).getIconHeight() * size);
 		int xPos = pos.getX() - this.pos.getX() - w/2;
 		int yPos = pos.getY() - this.pos.getY() - h/2;
-		onScreen = Game.isInScreen(new Rectangle( xPos, yPos, w, h ));
+		onScreen = GameWindow.isInScreen(new Rectangle( xPos, yPos, w, h ));
 		
 		//Only do image operations if the image is actually on the screen
 		if( onScreen )

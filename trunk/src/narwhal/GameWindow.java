@@ -18,25 +18,17 @@
 //********************************************************************************************
 package narwhal;
 
-import gameEngine.GameObject;
-import gameEngine.Image2D;
-import gameEngine.Input;
-import gameEngine.Log;
-import gameEngine.MainMenu;
-import gameEngine.Particle;
-import gameEngine.Sound;
-import gameEngine.Vector;
-import gameEngine.Video;
+import gameEngine.*;
 
 import java.awt.*;
+
 import javax.swing.*;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.Random;
+import java.awt.image.BufferedImage;
 
 
 /**
@@ -44,30 +36,46 @@ import java.util.Random;
  * @author Johan Jansen and Anders Eie
  *
  */
-public class Game extends JPanel implements Runnable, KeyListener, MouseListener {
+public class GameWindow extends JPanel implements Runnable, KeyListener, MouseListener {
+	private static Dimension resolution = new Dimension();
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
 	private boolean running;
 	private JFrame frame;
-	private static GameObject ship;
-	private Universe currentWorld;
 	private Input keys;
-	private ArrayList<Particle> particleList;
 	
-	public static void main(String[] args) {	
+	static //Hardware graphic stuff
+	GraphicsEnvironment graphEnv;
+	static GraphicsDevice graphDevice;
+	static private GraphicsConfiguration graphicConf;
+	
+	private Game theGame;
+	
+	public static GraphicsConfiguration getGraphicsConf() {
+		return graphicConf;		
+	}
+	
+	// Create a new blank cursor.
+	final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+			new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "blank cursor");
+
+	
+	public static void main(String[] args) throws InterruptedException{	
     	//Initialize the logging system, do this first so that error logging happens correctly.
     	Log.initialize();
-    	
-    	//Now initialize Video settings
-    	Video.initialize();
-    	Video.disableHighQualityGraphics();
-		Video.setResolution(800, 640);
-		//Video.setFullscreen();
+		resolution.setSize(800, 640);
+		//resolution = Toolkit.getDefaultToolkit().getScreenSize();			//Fullscreen
+
+		//Now initialize Video settings
+        Video.initialize();
+        Video.enableHighQualityGraphics();
+        Video.setResolution(800, 640);
+        //Video.setFullscreen();
 
 		//Initialize the frame window where we draw stuff
-    	JFrame parentWindow = new JFrame("Project Narwhal", Video.getGraphicsConf());
-    	parentWindow.getContentPane().add(new Game(parentWindow));
-    	parentWindow.setSize( Video.getResolution() );
+    	JFrame parentWindow = new JFrame("Project Narwhal", graphicConf);		
+    	parentWindow.getContentPane().add(new GameWindow(parentWindow));
+    	parentWindow.setSize(resolution);
 		parentWindow.setResizable(false);
 		//parentWindow.setUndecorated(true);								//Remove borders
         parentWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -77,7 +85,7 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
        	parentWindow.setIgnoreRepaint( true );
   	}
 	
-	public Game(JFrame frame) {
+	public GameWindow(JFrame frame) {
     	
 		//The actual frame
 		this.frame = frame;
@@ -87,21 +95,23 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 		//Input controls
 		frame.addKeyListener(this);
 		frame.addMouseListener(this);
-		keys = new Input();
-		
-		//Prepare graphics
-		currentWorld = new Universe( Video.getResolution(), 4, System.currentTimeMillis() );
-		particleList = new ArrayList<Particle>();
+		keys = new Input();	
        	
 		//Load resources
        	Particle.loadParticles();
-       	
-		//Initialize the player ship		
-		ship = new Spaceship(new Vector(1, 1), new Image2D("data/spaceship.png"), keys);
+		
+		theGame = new Game(keys);
 		
 		//Thread (do last so that everything above is properly loaded before the main loop begins)
 		running = true;
 		new Thread(this).start();
+	}
+	
+	static public int getScreenWidth()	{
+		return resolution.width;
+	}
+	static public int getScreenHeight()	{
+		return resolution.height;
 	}
 	
 	//JJ> This is the main game loop
@@ -111,11 +121,11 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
     	long tm = System.currentTimeMillis();
     	
 		// Set the blank cursor to the JFrame.
-		frame.getContentPane().setCursor(Video.blankCursor);
+		frame.getContentPane().setCursor(blankCursor);
 		    	
     	//Load game resources
 		Sound music = new Sound("data/space.ogg");
-    	Sound crash = new Sound("data/crash.au");
+    	//Sound crash = new Sound("data/crash.au");
     	music.play();
 
  	
@@ -127,39 +137,31 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
             keys.update(x, y);
 			
     		//Basic collision loop (put all detection here)
-            if(false)
-            for( Planet currentPlanet : currentWorld.getPlanetList() )
-    			if( currentPlanet.collidesWith( ship ) )
-    			{
-    		    	crash.play();
-    				currentPlanet.collision(ship);
-    			}
-    		
-    		//Calculate ship movement
-    		ship.update();
+			/*if(false)
+			for( Planet currentPlanet : currentWorld.getPlanetList() )
+				if( currentPlanet.collidesWith( ship ) )
+				{
+					crash.play();
+					currentPlanet.collision(ship);
+				}*/
+			
+			theGame.update();
 
-    		//Update particle effects
-    		for( int i = 0; i < particleList.size(); i++ )
-    		{
-    			particleList.get(i).update();
-    			if( particleList.get(i).requestsDelete() ) particleList.remove(i--);
-    		}
-
-    		try 
-    		{
-                tm += TARGET_FPS;
-                Thread.sleep(Math.max(0, tm - System.currentTimeMillis()));
-            }
-            catch(InterruptedException e)
-            {
-            	Log.warning(e.toString());
-            }		
-            
-    		repaint();
-    	}
-    	
-    	//TODO: This never happens!?!
-       	Log.close();
+			try 
+			{
+				tm += TARGET_FPS;
+				Thread.sleep(Math.max(0, tm - System.currentTimeMillis()));
+			}
+			catch(InterruptedException e)
+			{
+				Log.warning(e.toString());
+			}		
+			
+			repaint();
+		}
+		
+		//TODO: This never happens!?!
+	   	Log.close();
 	}
 
 		
@@ -168,11 +170,6 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 	 */
 	long generateSeed(int a, int b) {
 		return a*a - b*(b-1);
-	}
-	
-	public void spawnParticle( Particle prt ) {
-		if( particleList.size() >= Particle.MAX_PARTICLES ) return;
-		particleList.add( prt );
 	}
 		
 	
@@ -187,38 +184,19 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 		//Set quality mode
 		Video.getGraphicsSettings(g);
 		
-		//Draw background
-		currentWorld.drawBackground( g, ship.getPosition() );
+		theGame.draw(g);
 		
-		//Draw all particles
-		for( int i = 0; i < particleList.size(); i++ ) 
-		{
-			if( particleList.get(i).isOnScreen() )
-				particleList.get(i).draw( g, ship.getPosition() );
-		}
-
-		//Draw every planet
-		currentWorld.drawPlanets( g );
-		
-		//Draw the little ship
-		ship.draw(g);
-		ship.drawCollision(g);
-		keys.drawCrosshair(g);
-		
+		/*
 		g.setColor(Color.white);
 		g.drawString("Ship position: X: " + ship.getPosition().x + ", Y: " + ship.getPosition().y, 5, 20);
 		g.drawString("Number of particles: " + particleList.size(), 5, 40);
-		g.dispose();
-	}
-	
-	static public Vector getPlayerPos() {
-		return ship.getPosition().clone();
+		g.dispose();*/
 	}
 	
 	static public boolean isInScreen(Rectangle rect)
 	{
-		if( rect.x < -rect.width || rect.x > Video.getScreenWidth() ) return false;
-		if( rect.y < -rect.height || rect.y > Video.getScreenHeight() ) return false;
+		if( rect.x < -rect.width || rect.x > GameWindow.getScreenWidth() ) return false;
+		if( rect.y < -rect.height || rect.y > GameWindow.getScreenHeight() ) return false;
 		return true;
 	}
 	
@@ -239,14 +217,6 @@ public class Game extends JPanel implements Runnable, KeyListener, MouseListener
 	
 	public void mousePressed(MouseEvent mouse) {
 		keys.update(mouse, true);
-		
-		//TODO: Testing particle spawn
-		Random rand = new Random();
-		float angle = (float)Math.toRadians(rand.nextInt(360));
-		float angleAdd = (float)Math.toRadians(rand.nextInt(5)+1);
-		Vector pos = new Vector(ship.getPosition().x - mouse.getPoint().x, ship.getPosition().y - mouse.getPoint().y);
-		spawnParticle( new Particle( pos, "fire", 500, 1.0f, -0.005f, angle, angleAdd ));
-		//TODO: end
 	}
 
 	public void mouseClicked(MouseEvent mouse) {
