@@ -40,6 +40,8 @@ public class Game {
 	}
 	
 	public void update(){
+		handleInputs();
+		
 		// Update all entities
 		for (GameObject entity : entities)
 			entity.update();
@@ -50,12 +52,13 @@ public class Game {
 				particleList.get(i).update();
 			else 
 				particleList.remove(i--);
+		
 	}
 	
 	private static int shootDelay = 0;
 	private void handleInputs(){
-		if( shootDelay > 0 ) shootDelay--;
-		if ( keys.shoot && shootDelay == 0 )
+		if ( shootDelay > 0 ) shootDelay--;
+		else if ( keys.shoot && shootDelay == 0 )
 		{
 			shootDelay = 200;
 			// Testing particle spawn
