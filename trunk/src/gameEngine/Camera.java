@@ -44,6 +44,8 @@ public class Camera {
 		
 		g.setColor(Color.WHITE);
 		g.drawString("cameraPos X: " + cameraPos.getX() + " Y: " + cameraPos.getY(), 5, 20);
+		g.drawString("shipPos   X: " + entities.get(0).pos.getX() + " Y: " + entities.get(0).pos.getY(), 5, 30);
+		g.drawString("PlanetPos X: " + entities.get(1).pos.getX() + " Y: " + entities.get(1).pos.getY(), 5, 40);
 	}
 
 	private boolean isInFrame(GameObject entity){
@@ -53,10 +55,8 @@ public class Camera {
 		points[2] = entity.pos.plus(new Vector(0, 			  entity.size.y));
 		points[3] = entity.pos.plus(new Vector(entity.size.x, entity.size.y));
 		
-		// TODO: figure this out
-		
-		// størrelse på univers - posisjon
-		// invertere 
+		for (Vector point : points)
+			if (point.x > cameraPos.x && point.x < cameraPos.x + Video.getScreenWidth()) return true; // TODO: finish
 		return false;
 	}
 }

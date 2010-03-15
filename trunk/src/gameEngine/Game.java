@@ -24,7 +24,7 @@ public class Game {
        	entities = new ArrayList<GameObject>();
        	
 		//Initialize the player ship
-		entities.add(new Spaceship(new Vector(1, 1), new Image2D("data/spaceship.png"), keys));
+		entities.add(new Spaceship(new Vector(200, 200), new Image2D("data/spaceship.png"), keys));
 		
 		// Initialize the camera
 		viewPort = new Camera(
@@ -82,7 +82,7 @@ public class Game {
 		//Debug info
 		g.setColor(Color.white);
 		//g.drawString("Ship position: X: " + ship.getPosition().x + ", Y: " + ship.getPosition().y, 5, 20);
-		g.drawString("Number of particles: " + particleList.size(), 5, 40);
+		//g.drawString("Number of particles: " + particleList.size(), 5, 40);
 	}
 	
 	private void spawnParticle( Particle prt ) {
