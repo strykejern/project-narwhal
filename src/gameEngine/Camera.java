@@ -32,8 +32,11 @@ public class Camera {
 		// Draw all entities
 		for (GameObject entity : entities)
 		{
-			entity.draw(g, cameraPos);
-			entity.drawCollision(g, cameraPos);
+			if (isInFrame(entity))
+			{
+				entity.draw(g, cameraPos);
+				entity.drawCollision(g, cameraPos);
+			}
 		}
 		
 		//Draw all particles
@@ -56,7 +59,11 @@ public class Camera {
 		points[3] = entity.pos.plus(new Vector(entity.size.x, entity.size.y));
 		
 		for (Vector point : points)
-			if (point.x > cameraPos.x && point.x < cameraPos.x + Video.getScreenWidth()) return true; // TODO: finish
+			if (point.x > cameraPos.x && 
+				point.x < cameraPos.x + Video.getScreenWidth() &&
+				point.y > cameraPos.y &&
+				point.y < cameraPos.y + Video.getScreenHeight()) 
+					return true;
 		return false;
 	}
 }

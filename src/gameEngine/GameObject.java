@@ -39,7 +39,7 @@ public abstract class GameObject extends Physics{
 		this.image = image;
 		this.shape = shape;
 		this.direction = direction;
-		this.radius = radius;
+		this.setRadius(radius);
 		this.canCollide = true;
 	}
 	
@@ -64,8 +64,8 @@ public abstract class GameObject extends Physics{
 		//Draw it as a circle
 		if( super.shape == Shape.CIRCLE )
 		{
-			w = (int)super.radius*2;
-			h = (int)super.radius*2;
+			w = size.getX();
+			h = size.getY();
 			g.setColor(Color.RED);
 			g.drawOval(drawX(offset), drawY(offset), w, h);			
 		}
