@@ -48,7 +48,7 @@ public class Spaceship extends GameObject{
 	}
 
 	public void update() {
-		if 		(keys.up) 	speed.sub(new Vector(0.25f, direction, true));
+		if 		(keys.up) 	speed.add(new Vector(0.25f, direction, true));
 		else if (keys.down)
 		{
 			if (speed.length() < 0.2f) speed.setLength(0);
@@ -76,22 +76,4 @@ public class Spaceship extends GameObject{
 		
 		super.update();
 	}
-	
-	protected int drawX(){
-		return (int)pos.x-image.getWidth()/2;
-	}
-	
-	protected int drawY(){
-		return (int)pos.y-image.getHeight()/2;
-	}
-	
-	public void draw(Graphics g) {
-		if( keys.shoot )
-		{
-			g.setColor(Color.RED);
-			g.drawLine(drawX()+image.getWidth()/2, drawY()+image.getHeight()/2, drawX()+200, drawY());
-		}
-		g.drawImage(image.toImage(), drawX(), drawY(), null);
-	}
-
 }

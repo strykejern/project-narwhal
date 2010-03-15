@@ -190,8 +190,8 @@ public class Universe {
 		for(int i = 0; i < universeSize; i++)
 			for(int j = 0; j < universeSize; j++)
 			{
-				x = bgPos[i][j].getX()+pos.getX();
-				y = bgPos[i][j].getY()+pos.getY();		
+				x = bgPos[i][j].getX()-pos.getX();
+				y = bgPos[i][j].getY()-pos.getY();		
 				g.drawImage( universe[i][j], x, y, null );
 			}	
 		drawBounds(g, pos);
@@ -208,7 +208,7 @@ public class Universe {
 		for(int i = 0; i < universeSize; i++)
 			for(int j = 0; j < universeSize; j++)
 			{
-				g.drawRect(i*SCREEN_X+pos.getX(), j*SCREEN_Y+pos.getY(), SCREEN_X, SCREEN_Y);
+				g.drawRect(i*SCREEN_X - pos.getX(), j*SCREEN_Y - pos.getY(), SCREEN_X, SCREEN_Y);
 			}
 		
 	}
