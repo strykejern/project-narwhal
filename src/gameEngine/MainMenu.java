@@ -39,7 +39,7 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
 		frame.setIconImage( icon.getImage() );
 		
 		//Initialize the background
-    	background = new Universe(Video.getResolution(), 2, System.currentTimeMillis());
+    	background = new Universe(2, System.currentTimeMillis());
     	bgSpeed = new Vector(rand.nextInt(4)-2, rand.nextInt(4)-2);
 
     	//Load font
@@ -52,22 +52,24 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
     	buttonList = new HashMap<ButtonType, Button>();
     	Vector pos = new Vector( Video.getScreenWidth()/2, Video.getScreenHeight()/3 );
     	Vector size = new Vector( 200, 50 );
-
+    	Vector startPos = new Vector( rand.nextInt(Video.getScreenWidth()), rand.nextInt(Video.getScreenHeight()) );
+    	
     	//Main Menu
-    	buttonList.put( ButtonType.BUTTON_START_GAME, new Button(pos, size, "START GAME", ButtonType.BUTTON_START_GAME ) );
+    	buttonList.put( ButtonType.BUTTON_START_GAME, new Button(pos, size, "START GAME", ButtonType.BUTTON_START_GAME, startPos ) );
     	pos.y += size.y*1.1f;
-    	buttonList.put( ButtonType.BUTTON_OPTIONS, new Button(pos, size, "OPTIONS", ButtonType.BUTTON_OPTIONS) );
+    	buttonList.put( ButtonType.BUTTON_OPTIONS, new Button(pos, size, "OPTIONS", ButtonType.BUTTON_OPTIONS, startPos ) );
     	pos.y += size.y*1.1f;
-    	buttonList.put( ButtonType.BUTTON_EXIT, new Button(pos, size, "EXIT GAME", ButtonType.BUTTON_EXIT) );
+    	buttonList.put( ButtonType.BUTTON_EXIT, new Button(pos, size, "EXIT GAME", ButtonType.BUTTON_EXIT, startPos ) );
 
     	//Options Menu
     	pos = new Vector( Video.getScreenWidth()/2, Video.getScreenHeight()/3 );
-    	buttonList.put( ButtonType.BUTTON_GRAPHICS, new Button(pos, size, "GRAPHICS: LOW", ButtonType.BUTTON_GRAPHICS ) );
+    	startPos = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2 );
+    	buttonList.put( ButtonType.BUTTON_GRAPHICS, new Button(pos, size, "GRAPHICS: LOW", ButtonType.BUTTON_GRAPHICS, startPos ) );
     	pos.y += size.y*1.1f;
-    	buttonList.put( ButtonType.BUTTON_MAIN_MENU, new Button(pos, size, "BACK", ButtonType.BUTTON_MAIN_MENU ) );
+    	buttonList.put( ButtonType.BUTTON_MAIN_MENU, new Button(pos, size, "BACK", ButtonType.BUTTON_MAIN_MENU, startPos ) );
     	
-    	buttonList.get(ButtonType.BUTTON_GRAPHICS).hidden = true;
-    	buttonList.get(ButtonType.BUTTON_MAIN_MENU).hidden = true;
+    	buttonList.get(ButtonType.BUTTON_GRAPHICS).hide();
+    	buttonList.get(ButtonType.BUTTON_MAIN_MENU).hide();
     	
 		//Thread (do last so that everything above is properly loaded before the main loop begins)
 		menu = true;
@@ -273,16 +275,14 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
 		private String text;
 		private boolean hidden;
 		private boolean mouseOver;
-		private float alphaAdd;
 		private float alpha;
 		private ButtonType type;		
 		
-		public Button(Vector pos, Vector size, String text, ButtonType type) {
+		public Button(Vector pos, Vector size, String text, ButtonType type, Vector startPos) {
 			alpha = 0;
 			hidden = false;
 			mouseOver = false;
-			movePos = new Vector(0, 0);
-			alphaAdd = 0;
+			movePos = startPos.clone();
 			this.pos = pos.minus( size.dividedBy(2) );
 			this.size = size;
 			this.text = text.toUpperCase();
@@ -290,7 +290,7 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
 		}
 		
 		public boolean mouseOver() {
-			if( hidden || alpha != 0 )
+			if( hidden )
 			{
 				mouseOver = false;
 				return false;
@@ -311,34 +311,18 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
 		
 		public void hide(){
 			if( hidden ) return;
+			hidden = true;
 			movePos.x =  Video.getScreenWidth()/2-size.x/2;
 			movePos.y = Video.getScreenHeight()/2-size.y/2;
-			alphaAdd = 0.5f;
 		}
 		
 		public void show(){
-			if( !hidden ) return;
 			hidden = false;
-			alphaAdd = -0.5f;
 		}
 		
 		public void update() {
 			
-			if(hidden) return;
-			
-			//Is this button fading?
-			if( alphaAdd != 0 )
-			{
-				alpha += alphaAdd;
-				
-				//Finished fade?
-				if( Math.abs(alpha) >= 1 )
-				{
-					if( alpha >= 1 ) hidden = true;
-					alphaAdd = 0;
-					alpha = 0;
-				}
-			}
+			if( hidden ) return;
 			
 			//Make it move if needed
 			if( movePos.x < pos.x ) movePos.x += 4;
@@ -350,7 +334,7 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
 		public void draw(Graphics2D g){
 			if( hidden ) return;
 				
-			//Calculate fade away
+			//Calculate fade away (not implemented)
 			float trans = Math.min(1, Math.max(0, 0.5f-alpha));
 			float solid = Math.min(1, Math.max(0, 1.0f-alpha));
 			
@@ -365,15 +349,13 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
 			g.fillRoundRect(movePos.getX()+size.minus(v).getX()/2, movePos.getY()+size.minus(v).getY()/2, v.getX(), v.getY(), 25, 25);
 			
 			//Text
+			g.setFont( menuFont );
 			if( mouseOver ) g.setColor(new Color(1, 1, 1, solid) );
 			else		    g.setColor(new Color(0, 0, 0, solid) );
-			
-			g.setFont( menuFont );
 			g.drawString(text, movePos.getX()+ (size.getX()/2) - (getFontWidth(text, g)/2), movePos.getY()+ size.getY()/1.75f);
 		}
 		
 	}
-
 
 
 	public void mouseReleased(MouseEvent arg0) {

@@ -2,16 +2,14 @@ package gameEngine;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 import narwhal.*;
 
 public class Game {
-	private static Dimension 		resolution;		// ?
-	
 	private ArrayList<GameObject>	entities;		// Contains all gameObjects in the universe...
 	private ArrayList<Particle> 	particleList;	// Contains Particles in the universe
 	private Input 					keys;			// Class to read inputs from
+	private UI						hud;			// User interface
 	
 	private Camera					viewPort;		// Handles viewpoints and drawing
 	
@@ -19,7 +17,7 @@ public class Game {
 		//Prepare graphics
 		particleList = new ArrayList<Particle>();
        	
-		//Load resources
+		//TODO: move this to a resource loader
        	Particle.loadParticles();
        	
        	// Initialize the entity container
@@ -31,9 +29,12 @@ public class Game {
 		// Initialize the camera
 		viewPort = new Camera(
 				entities, 
-				new Universe(resolution, 4, System.currentTimeMillis()), 
+				new Universe(4, System.currentTimeMillis()), 
 				particleList,
 				entities.get(0));
+		
+		// Initialize the hud and bind it to the player's ship
+		hud = new UI();
 		
 		this.keys = keys;
 	}
@@ -53,10 +54,10 @@ public class Game {
 	
 	private static int shootDelay = 0;
 	private void handleInputs(){
-		shootDelay++;
-		if (keys.shoot && shootDelay > 20)
+		if( shootDelay > 0 ) shootDelay--;
+		if ( keys.shoot && shootDelay == 0 )
 		{
-			shootDelay = 0;
+			shootDelay = 200;
 			// Testing particle spawn
 			/*Random rand = new Random();
 			float angle = (float)Math.toRadians(rand.nextInt(360));
@@ -70,7 +71,11 @@ public class Game {
 	public void draw(Graphics2D g){
 		viewPort.drawView(g);
 		keys.drawCrosshair(g);
-		// TODO: draw HUD
+		hud.draw(g);
+		
+		g.setColor(Color.white);
+		//g.drawString("Ship position: X: " + ship.getPosition().x + ", Y: " + ship.getPosition().y, 5, 20);
+		g.drawString("Number of particles: " + particleList.size(), 5, 40);
 	}
 	
 	private void spawnParticle( Particle prt ) {

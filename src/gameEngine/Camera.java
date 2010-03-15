@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import narwhal.*;
 
 public class Camera {
-	private static final int SCREEN_WIDTH = 800;	// Temporary until a resolution reading system is made
-	private static final int SCREEN_HEIGHT = 600;
-
 	private Vector 					cameraPos;
 	
 	private ArrayList<GameObject> 	entities;
@@ -25,8 +22,8 @@ public class Camera {
 	}
 	
 	public void drawView(Graphics2D g){
-		cameraPos.x = follow.pos.x - (SCREEN_WIDTH / 2);
-		cameraPos.y = follow.pos.y - (SCREEN_HEIGHT / 2);
+		cameraPos.x = follow.pos.x - (Video.getScreenWidth() / 2);
+		cameraPos.y = follow.pos.y - (Video.getScreenHeight() / 2);
 		
 		// Draw background
 		background.drawBackground(g, follow.pos);
