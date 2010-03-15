@@ -1,5 +1,6 @@
 package gameEngine;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
@@ -41,9 +42,10 @@ public class Camera {
 			particleList.get(i).draw(g, follow.pos);
 		}
 		
-		g.drawString("cameraPos X: " + cameraPos.getX() + " Y: " + cameraPos.getY(), 20, 20);
+		g.setColor(Color.WHITE);
+		g.drawString("cameraPos X: " + cameraPos.getX() + " Y: " + cameraPos.getY(), 5, 20);
 	}
-	
+
 	private boolean isInFrame(GameObject entity){
 		Vector[] points = new Vector[4];
 		points[0] = entity.pos;

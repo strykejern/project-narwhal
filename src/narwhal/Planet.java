@@ -19,21 +19,31 @@
 package narwhal;
 
 import gameEngine.*;
-
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Image;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Planet extends GameObject {
-	Image surfaceImg;
+	private static ArrayList<Image2D> planetImages;
 	
-	public Planet(Vector spawnPos, ArrayList<Image2D> imageList, Random rand){
+	private static void loadPlanets() {
+		File[] fileList = new File("data/planets").listFiles();
+		planetImages = new ArrayList<Image2D>();
+		for( File f : fileList )
+		{
+			if( !f.isFile() ) continue;
+			planetImages.add( new Image2D( f.toString()) ) ;
+		}
+	}
+	
+	public Planet(Vector spawnPos, long seed) {
+		Random rand = new Random(seed);
 		
-		Image2D myImage = imageList.get( rand.nextInt(imageList.size()) );
-
+		//Initialize the planet images if needed
+		if( planetImages == null ) loadPlanets();
+		
 		//Make it unique
+		Image2D myImage = planetImages.get( rand.nextInt(planetImages.size()) );
 		int planetSize = rand.nextInt(Video.getScreenWidth()/4) + Video.getScreenHeight()/4;
 		if( rand.nextBoolean() ) myImage.horizontalFlip();
 		if( rand.nextBoolean() ) myImage.verticalFlip();
@@ -43,45 +53,12 @@ public class Planet extends GameObject {
 		pos = spawnPos;
 		radius = planetSize/2;
 		image = myImage;
-		surfaceImg = myImage.toImage();
+		speed = new Vector();
 		
 		//Physics
 		shape = Shape.CIRCLE;
 		anchored = true;
 		canCollide = true;
 	}
-	
-
-	//TODO: SILLY Overrides because we use Image (surfaceImage) instead of Image2D (image)
-	public void draw(Graphics g) {
-		int xPos = drawX();
-		int yPos = drawY();
-		g.drawImage(surfaceImg, xPos, yPos, null);		
-	}
-	protected int drawX(){
-		return pos.getX(); // - surfaceImg.getWidth(null)/2;
-	}
-	protected int drawY(){
-		return pos.getY(); // - surfaceImg.getHeight(null)/2;
-	}	
-	public void drawCollision(Graphics g) {
-		
-		//Always draw the image bounds
-		int w = surfaceImg.getWidth(null);
-		int h = surfaceImg.getHeight(null);		
-		g.setColor(Color.BLUE);
-		g.drawRect(drawX(), drawY(), w, h);
-
-		//Draw it as a circle
-		if( super.shape == Shape.CIRCLE )
-		{
-			w = (int)super.radius*2;
-			h = (int)super.radius*2;
-			g.setColor(Color.RED);
-			g.drawOval(drawX()+w/10, drawY()+h/10, w, h);			
-		}
-	}
-	//TODO: END SILLY OVERRIDE
-
 	
 }
