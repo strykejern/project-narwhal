@@ -1,3 +1,21 @@
+//********************************************************************************************
+//*
+//*    This file is part of Project Narwhal.
+//*
+//*    Project Narwhal is free software: you can redistribute it and/or modify it
+//*    under the terms of the GNU General Public License as published by
+//*    the Free Software Foundation, either version 3 of the License, or
+//*    (at your option) any later version.
+//*
+//*    Project Narwhal is distributed in the hope that it will be useful, but
+//*    WITHOUT ANY WARRANTY; without even the implied warranty of
+//*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//*    General Public License for more details.
+//*
+//*    You should have received a copy of the GNU General Public License
+//*    along with Project Narwhal.  If not, see <http://www.gnu.org/licenses/>.
+//*
+//********************************************************************************************
 package gameEngine;
 
 import java.awt.*;
@@ -24,7 +42,7 @@ public class Game {
        	entities = new ArrayList<GameObject>();
        	
 		//Initialize the player ship
-       	Spaceship player = new Spaceship(new Vector(200, 200), new Image2D("data/spaceship.png"), keys);
+       	Spaceship player = new Spaceship(new Vector(200, 200), new Image2D("data/spaceship.png"), keys, particleList);
 		entities.add(player);
 		
 		// Initialize the camera
@@ -44,7 +62,6 @@ public class Game {
 	}
 	
 	public void update(){
-		handleInputs();
 		
 		// Update all entities
 		for (GameObject entity : entities)
@@ -52,41 +69,20 @@ public class Game {
 		
 		//Update particle effects
 		for( int i = 0; i < particleList.size(); i++ )
-			if (!particleList.get(i).requestsDelete()) 
+			if ( !particleList.get(i).requestsDelete() ) 
 				particleList.get(i).update();
 			else 
 				particleList.remove(i--);
 		
 	}
 	
-	private static int shootDelay = 0;
-	private void handleInputs(){
-		if ( shootDelay > 0 ) shootDelay--;
-		else if ( keys.shoot && shootDelay == 0 )
-		{
-			shootDelay = 200;
-			// Testing particle spawn
-			/*Random rand = new Random();
-			float angle = (float)Math.toRadians(rand.nextInt(360));
-			float angleAdd = (float)Math.toRadians(rand.nextInt(5)+1);
-			Vector pos = new Vector(ship.getPosition().x - mouse.getPoint().x, ship.getPosition().y - mouse.getPoint().y);
-			spawnParticle( new Particle( pos, "fire", 500, 1.0f, -0.005f, angle, angleAdd ));*/
-			// end
-		}
-	}
-	
 	public void draw(Graphics2D g){
 		viewPort.drawView(g);
 		keys.drawCrosshair(g);
 		hud.draw(g);
-		
-		//Debug info
-		g.setColor(Color.white);
-		//g.drawString("Ship position: X: " + ship.getPosition().x + ", Y: " + ship.getPosition().y, 5, 20);
-		//g.drawString("Number of particles: " + particleList.size(), 5, 40);
 	}
 	
-	private void spawnParticle( Particle prt ) {
+	public void spawnParticle( Particle prt ) {
 		if( particleList.size() >= Particle.MAX_PARTICLES ) return;
 		particleList.add( prt );
 	}

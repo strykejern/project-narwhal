@@ -78,24 +78,26 @@ public class Particle {
 	private float size;
 	private float sizeAdd;
 	
+	private Vector speed;
+	
 	//JJ> Most simple form
 	public Particle( Vector spawnPos, String hash, int lifeTime ) {
-		init(spawnPos, hash.hashCode(), lifeTime, 1, 0, 0, 0, 1, 0);
+		init(spawnPos, hash.hashCode(), lifeTime, 1, 0, 0, 0, 1, 0, new Vector());
 	}
 	
 	//JJ> With alpha
 	public Particle( Vector spawnPos, String hash, int lifeTime, float trans, float transAdd ) {
-		init(spawnPos, hash.hashCode(), lifeTime, trans, transAdd, 0, 0, 1, 0);
+		init(spawnPos, hash.hashCode(), lifeTime, trans, transAdd, 0, 0, 1, 0, new Vector());
 	}
 
 	//JJ> With alpha and rotation
 	public Particle( Vector pos, String hash, int time, float alpha, float alphaAdd, 
-			float angle, float angleAdd ) {
-		init(pos, hash.hashCode(), time, alpha, alphaAdd, angle, angleAdd, 1, 0);
+			float angle, float angleAdd, Vector speed ) {
+		init(pos, hash.hashCode(), time, alpha, alphaAdd, angle, angleAdd, 1, 0, speed);
 	}
 	
 	private void init( Vector setPos, int setHash, int setTime, float setAlpha, float setAlphaAdd, 
-			float setAngle, float setAngleAdd, float setSize, float setSizeAdd ) {
+			float setAngle, float setAngleAdd, float setSize, float setSizeAdd, Vector setSpeed ) {
 		requestDelete = false;
 		onScreen = true;
 		pos = setPos;
@@ -106,15 +108,29 @@ public class Particle {
 		angle = setAngle;
 		angleAdd = setAngleAdd;
 		size = setSize;
-		sizeAdd = setSizeAdd;		
+		sizeAdd = setSizeAdd;
+		speed = setSpeed;
+		
+		//Check for invalid spawns
+		if( particleMap.get(hashCode) == null )
+		{
+			requestDelete = true;
+			onScreen = false;
+			Log.warning("Invalid particle spawn: " + setHash);
+			return;
+		}
 	}
 	
-	private void createMemoryImage(int width, int height){
+	private Graphics2D createMemoryImage(int width, int height){
 		if( memoryImg == null || memoryImg.contentsLost() || width != memoryImg.getWidth()
 				|| height != memoryImg.getHeight() )
 		{
 			memoryImg = Video.createVolatileImage(width, height);
 		}
+		Graphics2D g = memoryImg.createGraphics();
+		g.setBackground(new Color(0,0,0,0));
+		g.clearRect(0, 0, memoryImg.getWidth(), memoryImg.getHeight());
+		return g;
 	}
 	
 	/**
@@ -140,19 +156,13 @@ public class Particle {
 
 	public void update() {
 		
-		//Uh oh, we have an invalid hash code
-		if( particleMap.get(hashCode) == null )
-		{
-			requestDelete = true;
-			onScreen = false;
-			Log.warning("Invalid particle spawn: " + hashCode);
-			return;
-		}
-
 		//Update effects for next frame
 		alpha += alphaAdd;
 		angle += angleAdd;
 		size  += sizeAdd;
+		
+		//Movement
+		pos.add(speed);
 		
 		//Figure out if we are inside the screen or not
 		onScreen = false;
@@ -166,20 +176,15 @@ public class Particle {
 		if( onScreen )
 		{
 			//Make sure the VolatileImage exists
-			createMemoryImage(w, h);
-			Graphics2D g = memoryImg.createGraphics();
-
+			Graphics2D g = createMemoryImage(w, h);
+			
 			//Make it fast!
 			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
 			g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
 			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED );
 		   	g.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE );
 		   	g.setRenderingHint( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED );
-		   	
-			//Clear the background
-			g.setBackground(new Color(0,0,0,0));
-			g.clearRect(0, 0, w, h);
- 
+		   	 
 	        //Do any alpha
 			alpha = Math.min( 1.00f, Math.max(0.00f, alpha) );
 			if(alpha < 1) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));  
@@ -199,17 +204,17 @@ public class Particle {
 		}
 		
 		//Mark particles for removal when their time is up or when alpha has made it invisible
-		if(time > 0 && alpha != 0 && size > 0 ) time--;
-		else requestDelete = true;		
+		time--;
+		if(time <= 0 || alpha <= 0 && size <= 0 ) requestDelete = true;		
 	}
 	
-	public void draw(Graphics g, Vector pos) {
-				
+	public void draw(Graphics g, Vector offset) {
+
 		//Only draw if inside the screen bounds
 		if( !onScreen || memoryImg == null ) return;		
 				
-		int xPos = pos.getX() - this.pos.getX() - memoryImg.getWidth()/2;
-		int yPos = pos.getY() - this.pos.getY() - memoryImg.getHeight()/2;
+		int xPos = pos.getX() - memoryImg.getWidth()/2 - offset.getX();
+		int yPos = pos.getY() - memoryImg.getHeight()/2 - offset.getY();
 		g.drawImage( memoryImg, xPos, yPos, null );
 	}
 }

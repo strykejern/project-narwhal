@@ -18,23 +18,36 @@
 //********************************************************************************************
 package narwhal;
 
+import java.util.ArrayList;
+
 import gameEngine.*;
 
 public class Spaceship extends GameObject{
+
+	private ArrayList<Particle> 	particleList;	// Contains Particles in the universe
+
 	private float MAX_SPEED = 15f;
+	private Weapon weapon;
+	private int cooldown;
 	
 	public int lifeMax = 100;
-	public int life = 50;
+	public float life = 50;
 	public int shieldMax = 200;
-	public int shield = 200;
+	public float shield = 200;
 	public int energyMax = 500;
-	public int energy = 350;
+	public float energy = 350;
 	
-	public Spaceship(Vector spawnPos, Image2D newImg, Input newInput){
+	public Spaceship(Vector spawnPos, Image2D newImg, Input newInput, ArrayList<Particle> particleList){
 		pos 	= spawnPos;
 		image 	= newImg;
 		keys 	= newInput;
 		direction = 0;
+		
+		//Where do we spawn particles?
+		this.particleList = particleList;
+		
+		//Ship weapons
+		weapon = new Weapon(5.0f, 50, 15, "fire");
 
 		//Calculate size
 		image.resize(Video.getScreenWidth()/12, Video.getScreenWidth()/12);
@@ -48,6 +61,15 @@ public class Spaceship extends GameObject{
 	}
 
 	public void update() {
+		
+		//Do ship regeneration
+		if(shield < shieldMax) shield += 0.25f;
+		if(energy < energyMax) energy += 0.5f;
+		if(cooldown > 0) 	   cooldown--;
+		
+		if( keys.shoot ) activateWeapon(weapon);
+		
+		//Key move
 		if 		(keys.up) 	speed.add(new Vector(0.25f, direction, true));
 		else if (keys.down)
 		{
@@ -55,16 +77,17 @@ public class Spaceship extends GameObject{
 			else speed.divide(1.01f);
 		}
 		direction %= 2 * Math.PI;
+		
+		//mouse move
 		float heading = keys.mousePos.minus(new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2)).getAngle() - direction;
 		if 		(heading > Math.PI)  heading = -((2f * (float)Math.PI) - heading);
 		else if (heading < -Math.PI) heading =  ((2f * (float)Math.PI) + heading);
 		direction += heading * 0.1f;
-		
 		image.setDirection( direction );
 		
-		if (speed.length() > MAX_SPEED) speed.setLength(MAX_SPEED);
 		
 		// Quick implement of universe bounds
+		if (speed.length() > MAX_SPEED) speed.setLength(MAX_SPEED);
 		float uniX = Video.getScreenWidth()*Universe.getUniverseSize();
 		float uniY = Video.getScreenHeight()*Universe.getUniverseSize();
 		
@@ -75,5 +98,24 @@ public class Spaceship extends GameObject{
 		else if (pos.y > uniY)  pos.y %= uniY;
 		
 		super.update();
+	}
+	
+	public void activateWeapon(Weapon wpn){
+		
+		//Enough energy to activate weapon?
+		if( wpn.cost > energy ) return;
+		
+		//Ship is on cooldown
+		if( cooldown > 0 ) return;
+		Sound snd = new Sound("data/fire.au");
+		snd.play();
+		
+		//It'll cost ya
+		cooldown += wpn.cooldown;
+		energy -= wpn.cost;
+		
+		//SPawn particle effect
+		Vector speed = this.speed.clone().times(2);
+		particleList.add( new Particle(pos.clone(), wpn.particle, 200, 1.0f, -0.01f, direction, 0, speed ) );
 	}
 }

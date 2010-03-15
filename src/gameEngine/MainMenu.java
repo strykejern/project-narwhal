@@ -67,7 +67,6 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
     	buttonList.put( ButtonType.BUTTON_GRAPHICS, new Button(pos, size, "GRAPHICS: LOW", ButtonType.BUTTON_GRAPHICS, startPos ) );
     	pos.y += size.y*1.1f;
     	buttonList.put( ButtonType.BUTTON_MAIN_MENU, new Button(pos, size, "BACK", ButtonType.BUTTON_MAIN_MENU, startPos ) );
-    	
     	buttonList.get(ButtonType.BUTTON_GRAPHICS).hide();
     	buttonList.get(ButtonType.BUTTON_MAIN_MENU).hide();
     	
@@ -258,7 +257,7 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
 		//Done with this frame
 		g.dispose();
 		
-		}
+	}
 	
 	
 	enum ButtonType {
