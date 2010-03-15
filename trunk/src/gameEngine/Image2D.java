@@ -77,28 +77,36 @@ public class Image2D {
         
 		baseWidth = load.getIconWidth();
 		width = (int)(baseWidth*1.20f);
-		baseHeight = height = load.getIconHeight();
+		baseHeight = load.getIconHeight();
 		height = (int)(baseHeight*1.20f);
 	}
-
+	
 	/**
 	 * JJ> Constructor makes sure the image is correctly loaded
 	 * @param copyImg: which BufferedImage to use as the sprite
 	 */
-	public Image2D( BufferedImage copyImg ) {
+	public Image2D( String fileName, int imgWidth, int imgHeight ) {
 		
-		//Ensure it is the correct format before loading it
-		BufferedImage buffer = new BufferedImage( copyImg.getWidth(), copyImg.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = buffer.createGraphics();
+		ImageIcon load = new ImageIcon(fileName);
+		
+		//First make sure the file actually exists
+		if( load.getIconWidth() < 0 )
+		{
+			Log.error( "Failed loading image: " + fileName );
+		}
+
+		//Load the image into a BufferedImage
+		original = new BufferedImage( imgWidth, imgHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = original.createGraphics();
         Video.getGraphicsSettings(g);
-        g.drawImage(copyImg, 0, 0, null ); 
+        g.drawImage(load.getImage(), 0, 0, imgWidth, imgHeight, null ); 
         g.dispose();
         
-        original = buffer;
-		width = buffer.getWidth();
-		height = buffer.getHeight();
+		baseWidth = imgWidth;
+		width = (int)(baseWidth*1.20f);
+		baseHeight = imgHeight;
+		height = (int)(baseHeight*1.20f);
 	}
-
 		
 	/**
 	 * JJ> Makes sure we have a VolatileImage object to draw on
@@ -280,11 +288,18 @@ public class Image2D {
 				for(int y = 0; y < draw.getHeight(); y++)
 					draw.setRGB( x, y, draw.getRGB(x, y) & colorTint );
 		
+		int offsetX = 0;
+		int offsetY = 0;
+		if(currentAngle != 0) 
+		{
+			offsetX = (width-baseWidth)/2;
+			offsetY = (height-baseHeight)/2;
+		}
 		//Now actually draw the image
 		g.drawImage(
 				draw,							//Draw the base image (possibly with blur)
-				(width-baseWidth)/2, 			//X offset
-				(height-baseHeight)/2, 			//Y offset
+				offsetX, 						//X offset
+				offsetY, 						//Y offset
 				baseWidth, 						//How much to draw
 				baseHeight,								
 				null);
