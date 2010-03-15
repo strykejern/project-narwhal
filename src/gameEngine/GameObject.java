@@ -20,9 +20,6 @@ package gameEngine;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Rectangle;
-
-import narwhal.GameWindow;
 
 public abstract class GameObject extends Physics{
 	protected Input keys;

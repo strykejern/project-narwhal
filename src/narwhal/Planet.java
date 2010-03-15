@@ -60,5 +60,4 @@ public class Planet extends GameObject {
 		anchored = true;
 		canCollide = true;
 	}
-	
 }

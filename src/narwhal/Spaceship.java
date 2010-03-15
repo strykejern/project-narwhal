@@ -20,10 +20,6 @@ package narwhal;
 
 import gameEngine.*;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
-
 public class Spaceship extends GameObject{
 	private static float MAX_SPEED = 15f;
 	private int life;

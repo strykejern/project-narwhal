@@ -60,13 +60,12 @@ public class Universe {
 	
 		//Figure out what it looks like
 		Image2D nebula = nebulaList.get( rand.nextInt(nebulaList.size()) );
-		nebula.reset();
 
 		//Make it unique
-		nebula.setAlpha( rand.nextFloat() );
-		nebula.horizontalFlip();
-		nebula.verticalFlip();
-			
+		nebula.setAlpha( Math.max(0.15f, rand.nextFloat()) );
+		if( rand.nextBoolean() ) nebula.horizontalFlip();
+		if( rand.nextBoolean() ) nebula.verticalFlip();
+
 		//Now draw it
 		g.drawImage( nebula.toImage(), 0, 0, null);
 	}
@@ -92,10 +91,9 @@ public class Universe {
 		for( File f : fileList )
 		{
 			if( f.isFile() )
-			{
-				Image2D load = new Image2D( f.toString() );
-				load.resize(Video.getScreenWidth(), Video.getScreenHeight());
-				nebulaList.add( load );	
+			{				
+				Image2D load = new Image2D(f.toString(), Video.getScreenWidth(), Video.getScreenHeight());
+				nebulaList.add( load );
 			}
 		}
 	}
@@ -194,10 +192,12 @@ public class Universe {
 				y = bgPos[i][j].getY()-pos.getY();		
 				g.drawImage( universe[i][j], x, y, null );
 			}	
+		
 		drawBounds(g, pos);
 	}
 
 	public void drawBounds(Graphics2D g, Vector pos){
+		if(true) return;
 		final int SCREEN_X = Video.getScreenWidth();			//Screen width
 		final int SCREEN_Y = Video.getScreenHeight();		//Screen height
 		
@@ -235,7 +235,7 @@ public class Universe {
 		    		Graphics2D g = buffer.createGraphics();
 		        	
 		            //I: Nebula (10% chance) or Black background (90%)
-		    		if( rand.nextInt(100) <= 10 ) drawNebula(rand, g);
+	    			if( rand.nextInt(100) <= 10 ) drawNebula(rand, g);
 		    		else 
 		    		{
 		    			g.setColor(Color.black);
