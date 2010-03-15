@@ -28,7 +28,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 
 
 /**
@@ -95,12 +94,11 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
     	
 		// Set the blank cursor to the JFrame.
 		frame.getContentPane().setCursor(Video.blankCursor);
-		    	
+		
     	//Load game resources TODO: Move this somewhere else
 		Sound music = new Sound("data/space.ogg");
     	//Sound crash = new Sound("data/crash.au");
     	music.play();
-
  	
 		while(running)
     	{
@@ -136,17 +134,9 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		//TODO: This never happens!?!
 	   	Log.close();
 	}
-
-		
-	/**
-	 * JJ> This function generates a random unique number from two variables
-	 */
-	long generateSeed(int a, int b) {
-		return a*a - b*(b-1);
-	}
 		
 	
-	/*
+	/**
 	 * JJ> Paints every object of interest
 	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 	 */
@@ -177,7 +167,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		keys.update(key, false);
 	}
 
-	public void keyTyped(KeyEvent arg0) {	
+	public void keyTyped(KeyEvent key) {	
 	}
 
 	public void mouseReleased(MouseEvent mouse) {
@@ -190,9 +180,9 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 
 	public void mouseClicked(MouseEvent mouse) {
 	}
-	public void mouseEntered(MouseEvent e) {
+	public void mouseEntered(MouseEvent mouse) {
 	}
-	public void mouseExited(MouseEvent e) {	
+	public void mouseExited(MouseEvent mouse) {	
 	}
 
 

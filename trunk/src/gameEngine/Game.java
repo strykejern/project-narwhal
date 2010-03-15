@@ -73,6 +73,7 @@ public class Game {
 		keys.drawCrosshair(g);
 		hud.draw(g);
 		
+		//Debug info
 		g.setColor(Color.white);
 		//g.drawString("Ship position: X: " + ship.getPosition().x + ", Y: " + ship.getPosition().y, 5, 20);
 		g.drawString("Number of particles: " + particleList.size(), 5, 40);
@@ -82,4 +83,5 @@ public class Game {
 		if( particleList.size() >= Particle.MAX_PARTICLES ) return;
 		particleList.add( prt );
 	}
+	
 }

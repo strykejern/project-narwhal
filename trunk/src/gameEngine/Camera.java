@@ -1,6 +1,7 @@
 package gameEngine;
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import narwhal.*;
@@ -38,15 +39,24 @@ public class Camera {
 		//Draw all particles
 		for( int i = 0; i < particleList.size(); i++ ) 
 		{
-			if( particleList.get(i).isOnScreen() )
-				particleList.get(i).draw(g, follow.pos);
+			particleList.get(i).draw(g, follow.pos);
 		}
 
-		//Draw every planet
-		background.drawPlanets(g);
 	}
 	
 	private boolean isInFrame(GameObject entity){
+		Rectangle rect = new Rectangle(
+				entity.pos.getX()-entity.image.getWidth()/2, 
+				entity.pos.getY()-entity.image.getHeight()/2, 
+				entity.image.getWidth(), 
+				entity.image.getHeight() );
+		
+		if( rect.x < -rect.width || rect.x > Video.getScreenWidth() ) return false;
+		if( rect.y < -rect.height || rect.y > Video.getScreenHeight() ) return false;
+		return true;
+	}
+	
+/*	private boolean isInFrame(GameObject entity){
 		Vector[] points = new Vector[4];
 		points[0] = entity.pos;
 		points[1] = entity.pos.plus(new Vector(entity.size.x, 0));
@@ -58,5 +68,5 @@ public class Camera {
 		// størrelse på univers - posisjon
 		// invertere 
 		return false;
-	}
+	}*/
 }
