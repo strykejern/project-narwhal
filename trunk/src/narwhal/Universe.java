@@ -235,12 +235,9 @@ public class Universe {
 		    		Graphics2D g = buffer.createGraphics();
 		        	
 		            //I: Nebula (10% chance) or Black background (90%)
+	    			g.setColor(Color.BLACK);
+	    			g.fillRect(0, 0, Video.getScreenWidth(), Video.getScreenHeight());
 	    			if( rand.nextInt(100) <= 10 ) drawNebula(rand, g);
-		    		else 
-		    		{
-		    			g.setColor(Color.black);
-		    			g.fillRect(0, 0, Video.getScreenWidth(), Video.getScreenHeight());
-		    		}
 	
 		    		//II: Stars
 		    		drawRandomStarfield(rand, g);

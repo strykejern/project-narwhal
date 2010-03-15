@@ -51,7 +51,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 
 		//Now initialize Video settings
         Video.initialize();
-        Video.disableHighQualityGraphics();
+        Video.enableHighQualityGraphics();
         Video.setResolution(800, 640);
         //Video.setFullscreen();
 

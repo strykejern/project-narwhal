@@ -43,7 +43,7 @@ public class Input {
 	}
 
 	public void update(MouseEvent key, boolean pressed){
-		if(key.getButton() == 0) shoot = pressed;
+		if(key.getButton() == MouseEvent.BUTTON1) shoot = pressed;
 	}
 
 	public void update(int x, int y){
