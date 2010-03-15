@@ -28,6 +28,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 
 
 /**
@@ -178,12 +179,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		keys.update(mouse, true);
 	}
 
-	public void mouseClicked(MouseEvent mouse) {
-	}
-	public void mouseEntered(MouseEvent mouse) {
-	}
-	public void mouseExited(MouseEvent mouse) {	
-	}
-
-
+	public void mouseClicked(MouseEvent mouse) 	{}
+	public void mouseEntered(MouseEvent e) 		{}
+	public void mouseExited	(MouseEvent e) 		{}
 }

@@ -1,7 +1,6 @@
 package gameEngine;
 
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import narwhal.*;
@@ -23,8 +22,8 @@ public class Camera {
 	}
 	
 	public void drawView(Graphics2D g){
-		cameraPos.x = follow.pos.x - (Video.getScreenWidth() / 2);
-		cameraPos.y = follow.pos.y - (Video.getScreenHeight() / 2);
+		cameraPos.x = follow.pos.x - ((float)Video.getScreenWidth() / 2f);
+		cameraPos.y = follow.pos.y - ((float)Video.getScreenHeight() / 2f);
 		
 		// Draw background
 		background.drawBackground(g, follow.pos);
@@ -32,8 +31,8 @@ public class Camera {
 		// Draw all entities
 		for (GameObject entity : entities)
 		{
-			entity.draw(g, cameraPos.minus(entity.pos));
-			//entity.drawCollision(g);
+			entity.draw(g, cameraPos);
+			entity.drawCollision(g, cameraPos);
 		}
 		
 		//Draw all particles
@@ -41,22 +40,11 @@ public class Camera {
 		{
 			particleList.get(i).draw(g, follow.pos);
 		}
-
+		
+		g.drawString("cameraPos X: " + cameraPos.getX() + " Y: " + cameraPos.getY(), 20, 20);
 	}
 	
 	private boolean isInFrame(GameObject entity){
-		Rectangle rect = new Rectangle(
-				entity.pos.getX()-entity.image.getWidth()/2, 
-				entity.pos.getY()-entity.image.getHeight()/2, 
-				entity.image.getWidth(), 
-				entity.image.getHeight() );
-		
-		if( rect.x < -rect.width || rect.x > Video.getScreenWidth() ) return false;
-		if( rect.y < -rect.height || rect.y > Video.getScreenHeight() ) return false;
-		return true;
-	}
-	
-/*	private boolean isInFrame(GameObject entity){
 		Vector[] points = new Vector[4];
 		points[0] = entity.pos;
 		points[1] = entity.pos.plus(new Vector(entity.size.x, 0));
@@ -68,5 +56,5 @@ public class Camera {
 		// størrelse på univers - posisjon
 		// invertere 
 		return false;
-	}*/
+	}
 }

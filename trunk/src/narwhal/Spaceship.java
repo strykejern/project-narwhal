@@ -78,11 +78,11 @@ public class Spaceship extends GameObject{
 	}
 	
 	protected int drawX(){
-		return Video.getScreenWidth()/2-image.getWidth()/2;
+		return (int)pos.x-image.getWidth()/2;
 	}
 	
 	protected int drawY(){
-		return Video.getScreenHeight()/2-image.getHeight()/2;
+		return (int)pos.y-image.getHeight()/2;
 	}
 	
 	public void draw(Graphics g) {

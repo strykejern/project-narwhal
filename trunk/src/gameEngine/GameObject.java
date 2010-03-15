@@ -47,28 +47,19 @@ public abstract class GameObject extends Physics{
 		super.update();
 	}
 	
-	public void draw(Graphics g) {
-		int xPos = pos.getX() - image.getWidth()/2;
-		int yPos = pos.getY() - image.getHeight()/2;
-		g.drawImage(image.toImage(), xPos, yPos, null);		
+	public void draw(Graphics g, Vector offset) {
+		int xPos = pos.getX() - image.getWidth()/2 - offset.getX();
+		int yPos = pos.getY() - image.getHeight()/2 - offset.getY();
+		g.drawImage(image.toImage(), xPos, yPos, null);
 	}
 	
-	public void draw(Graphics g, Vector pos) {
-		g.drawImage(image.toImage(), pos.getX(), pos.getY(), null);
-	}
-	
-	
-	public boolean isOnScreen() {
-		return GameWindow.isInScreen( new Rectangle(drawX(), drawY(), image.getWidth(), image.getHeight()) );
-	}
-	
-	public void drawCollision(Graphics g) {
+	public void drawCollision(Graphics g, Vector offset) {
 		
 		//Always draw the image bounds
 		int w = image.getWidth();
 		int h = image.getHeight();		
 		g.setColor(Color.BLUE);
-		g.drawRect(drawX(), drawY(), w, h);
+		g.drawRect(drawX(offset), drawY(offset), w, h);
 
 		//Draw it as a circle
 		if( super.shape == Shape.CIRCLE )
@@ -76,16 +67,16 @@ public abstract class GameObject extends Physics{
 			w = (int)super.radius*2;
 			h = (int)super.radius*2;
 			g.setColor(Color.RED);
-			g.drawOval(drawX(), drawY(), w, h);			
+			g.drawOval(drawX(offset), drawY(offset), w, h);			
 		}
 	}
 	
-	protected int drawX(){
-		return pos.getX();
+	protected int drawX(Vector offset){
+		return pos.getX() - image.getWidth()/2 - offset.getX();
 	}
 	
-	protected int drawY(){
-		return pos.getY();
+	protected int drawY(Vector offset){
+		return pos.getY() - image.getHeight()/2 - offset.getY();
 	}
 
 	public Vector getPosition() {
