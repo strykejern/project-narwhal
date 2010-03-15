@@ -38,7 +38,7 @@ public class Spaceship extends GameObject{
 
 		//Calculate size
 		image.resize(Video.getScreenWidth()/12, Video.getScreenWidth()/12);
-		radius = image.getWidth()/2;
+		setRadius(image.getWidth()/2);
 
 		//Physics
 		speed = new Vector();

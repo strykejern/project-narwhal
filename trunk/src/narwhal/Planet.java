@@ -51,7 +51,7 @@ public class Planet extends GameObject {
 		myImage.resize(planetSize, planetSize);
 		
 		pos = spawnPos;
-		radius = planetSize/2;
+		setRadius(planetSize/2);
 		image = myImage;
 		speed = new Vector();
 		

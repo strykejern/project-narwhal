@@ -204,4 +204,8 @@ public abstract class Collidable {
 		}
 	}
 	
+	protected void setRadius(int radius){
+		this.radius = radius;
+		this.size = new Vector(radius*2, radius*2);
+	}
 }

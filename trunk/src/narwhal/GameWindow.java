@@ -50,7 +50,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 
 		//Now initialize Video settings
         Video.initialize();
-        Video.enableHighQualityGraphics();
+        Video.disableHighQualityGraphics();
         Video.setResolution(800, 640);
         //Video.setFullscreen();
 
@@ -115,9 +115,16 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 					crash.play();
 					currentPlanet.collision(ship);
 				}*/
-			
+			try
+			{
+				while (painting) Thread.sleep(1);
+			}
+			catch (Exception e) 
+			{
+				
+			}
 			theGame.update();
-
+			repaint();
 			try 
 			{
 				tm += TARGET_FPS;
@@ -126,9 +133,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			catch(InterruptedException e)
 			{
 				Log.warning(e.toString());
-			}		
-			
-			repaint();
+			}
 		}
 		
 		//TODO: This never happens!?!
@@ -141,6 +146,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 	 */
 	public void paint(Graphics rawGraphics) {
+		painting = true;
 		//Convert to the Graphics2D object which allows us more functions
 		Graphics2D g = (Graphics2D) rawGraphics;
 		
@@ -150,7 +156,9 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		theGame.draw(g);
 		
 		g.dispose();
+		painting = false;
 	}
+	private boolean painting = false;
 	
 	static public boolean isInScreen(Rectangle rect)
 	{
