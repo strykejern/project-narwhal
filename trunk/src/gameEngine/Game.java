@@ -33,6 +33,9 @@ public class Game {
 				particleList,
 				entities.get(0));
 		
+		//Generate random planets
+		entities.add( new Planet(new Vector(1, 1), System.currentTimeMillis()) );
+		
 		// Initialize the hud and bind it to the player's ship
 		hud = new UI();
 		

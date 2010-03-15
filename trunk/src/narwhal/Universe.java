@@ -296,32 +296,4 @@ public class Universe {
 		else if (d && r) drawSingleBackground(g, pos.plus(new Vector( uniX, uniY)));
 
 	}
-	
-	public ArrayList<Planet> generateRandomPlanets(long seed) {
-		Random rand = new Random(seed);
-		ArrayList<Planet> planetList = new ArrayList<Planet>();
-		
-		//TODO: move this into a resource loader!
-		// Load planet images into memory
-		ArrayList<Image2D> planetImages = new ArrayList<Image2D>();
-		File[] fileList = new File("data/planets").listFiles();
-		planetImages = new ArrayList<Image2D>();
-		for( File f : fileList )
-		{
-			if( !f.isFile() ) continue;
-			planetImages.add( new Image2D( f.toString()) ) ;
-		}
-		
-		//Randomly generate for every screen
-		for(int i = 0; i < Universe.getUniverseSize(); i++)
-			for(int j = 0; j < Universe.getUniverseSize(); j++)
-			if( rand.nextInt(100) <= 25 )
-			{
-				planetList.add(new Planet(new Vector(Video.getScreenWidth()/2*i, Video.getScreenHeight()/2*j), planetImages, rand));
-			}
-		
-		//All done!
-		planetImages.clear();
-    	return planetList;
-	}
 }
