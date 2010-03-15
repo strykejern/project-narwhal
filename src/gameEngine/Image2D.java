@@ -344,4 +344,9 @@ public class Image2D {
 		flipHorizontal = flipVertical = false;
 		resize( original.getWidth(), original.getHeight() );
 	}
+	
+	public void dispose() {
+		if(processed != null) processed.flush();
+		original.flush();
+	}
 }
