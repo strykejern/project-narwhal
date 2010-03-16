@@ -30,7 +30,6 @@ import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 
-import narwhal.GameWindow;
 
 public class Particle {	
 	public static final int MAX_PARTICLES = 256;	

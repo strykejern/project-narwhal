@@ -16,9 +16,9 @@
 //*    along with Project Narwhal.  If not, see <http://www.gnu.org/licenses/>.
 //*
 //********************************************************************************************
-package narwhal;
+package gameEngine;
 
-import gameEngine.*;
+import gameEngine.Video.VideoQuality;
 
 import java.awt.*;
 
@@ -29,6 +29,9 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import narwhal.Game;
+import narwhal.MainMenu;
 
 
 /**
@@ -58,7 +61,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 
 		//Now initialize Video settings
         Video.initialize();
-        Video.disableHighQualityGraphics();
+        Video.setVideoQuality( VideoQuality.VIDEO_NORMAL );
         Video.setResolution(800, 600);
         //Video.setFullscreen();
 

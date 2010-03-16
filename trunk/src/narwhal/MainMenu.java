@@ -1,4 +1,7 @@
-package gameEngine;
+package narwhal;
+
+import gameEngine.*;
+import gameEngine.Video.VideoQuality;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -8,9 +11,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
-
-import narwhal.GameWindow;
-import narwhal.Universe;
 
 public class MainMenu {
 	private static final long serialVersionUID = 1L;
@@ -58,9 +58,13 @@ public class MainMenu {
     	buttonList.put( ButtonType.BUTTON_EXIT, new Button(pos, size, "EXIT GAME", ButtonType.BUTTON_EXIT, startPos ) );
 
     	//Options Menu
+    	String gfxText = "Graphics: Normal";
+		if( Video.getQualityMode() == VideoQuality.VIDEO_LOW ) gfxText = "Graphics: Low";
+		else if( Video.getQualityMode() == VideoQuality.VIDEO_HIGH ) gfxText = "Graphics: High";
+		
     	pos = new Vector( Video.getScreenWidth()/2, Video.getScreenHeight()/3 );
     	startPos = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2 );
-    	buttonList.put( ButtonType.BUTTON_GRAPHICS, new Button(pos, size, "GRAPHICS: LOW", ButtonType.BUTTON_GRAPHICS, startPos ) );
+    	buttonList.put( ButtonType.BUTTON_GRAPHICS, new Button(pos, size, gfxText, ButtonType.BUTTON_GRAPHICS, startPos ) );
     	pos.y += size.y*1.1f;
     	buttonList.put( ButtonType.BUTTON_MAIN_MENU, new Button(pos, size, "BACK", ButtonType.BUTTON_MAIN_MENU, startPos ) );
     	buttonList.get(ButtonType.BUTTON_GRAPHICS).hide();
@@ -146,15 +150,20 @@ public class MainMenu {
 					
 					case BUTTON_GRAPHICS:
 					{
-						if(Video.isHighQualityMode()) 
+						if( Video.getQualityMode() == VideoQuality.VIDEO_LOW )
 						{
-							button.text = "Graphics: Low";
-							Video.disableHighQualityGraphics();
+							button.text = "Graphics: Normal";
+							Video.setVideoQuality( VideoQuality.VIDEO_NORMAL );
 						}
-						else 
+						else if( Video.getQualityMode() == VideoQuality.VIDEO_NORMAL )
 						{
 							button.text = "Graphics: High";
-							Video.enableHighQualityGraphics();
+							Video.setVideoQuality( VideoQuality.VIDEO_HIGH );
+						}
+						else if( Video.getQualityMode() == VideoQuality.VIDEO_HIGH )
+						{
+							button.text = "Graphics: Low";
+							Video.setVideoQuality( VideoQuality.VIDEO_LOW );
 						}
 					}
 				}
@@ -198,7 +207,7 @@ public class MainMenu {
 		
 		//Draw header, but only if it is loaded
 		if( header != null )
-			g.drawImage( header.toImage(), Video.getScreenWidth()/2-header.getWidth()/2, header.getHeight(), null );
+			g.drawImage( header.toImage(), (Video.getScreenWidth()/2) - (int)(header.getWidth()*0.43), header.getHeight(), null );
 
 		//Do last, draw buttons
         Iterator<Button> iterator = buttonList.values().iterator();

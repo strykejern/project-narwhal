@@ -19,6 +19,7 @@
 package narwhal;
 
 import gameEngine.*;
+import gameEngine.Video.VideoQuality;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -229,8 +230,10 @@ public class Universe {
 				try
 				{
 			    	BufferedImage buffer;
-					if( Video.isHighQualityMode() )  buffer = new BufferedImage(Video.getScreenWidth(), Video.getScreenHeight(), BufferedImage.TYPE_INT_ARGB);		
-					else 							   buffer = new BufferedImage(Video.getScreenWidth(), Video.getScreenHeight(), BufferedImage.TYPE_USHORT_555_RGB);
+					if( Video.getQualityMode() == VideoQuality.VIDEO_HIGH )  
+						buffer = new BufferedImage(Video.getScreenWidth(), Video.getScreenHeight(), BufferedImage.TYPE_INT_ARGB);		
+					else 							   
+						buffer = new BufferedImage(Video.getScreenWidth(), Video.getScreenHeight(), BufferedImage.TYPE_USHORT_555_RGB);
 		    		Graphics2D g = buffer.createGraphics();
 		        	
 		            //I: Nebula (10% chance) or Black background (90%)

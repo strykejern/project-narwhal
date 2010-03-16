@@ -16,12 +16,12 @@
 //*    along with Project Narwhal.  If not, see <http://www.gnu.org/licenses/>.
 //*
 //********************************************************************************************
-package gameEngine;
+package narwhal;
 
+import gameEngine.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-import narwhal.*;
 
 public class Game {
 	private ArrayList<GameObject>	entities;		// Contains all gameObjects in the universe...
