@@ -96,8 +96,11 @@ public class MainMenu {
 	}
 	
 	//JJ> Main menu loop
-	public GameWindow.gameState update() {
+	public GameWindow.gameState update(boolean newGame) {
 		
+		if( newGame ) buttonList.get(ButtonType.BUTTON_START_GAME).text = "Start New Game";
+		else		  buttonList.get(ButtonType.BUTTON_START_GAME).text = "Resume Game";
+			
         //Check if the player is holding over any mouse buttons
         Iterator<Button> iterator = buttonList.values().iterator();
         while( iterator.hasNext() )
