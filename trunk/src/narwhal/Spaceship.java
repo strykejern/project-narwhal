@@ -74,7 +74,7 @@ public class Spaceship extends GameObject{
 		}
 		
 		//Fire!
-		if( keys.shoot ) activateWeapon(weapon);
+		if( keys.mosButton1 ) activateWeapon(weapon);
 		
 		//Key move
 		if 		(keys.up) 	speed.add(new Vector(0.25f, direction, true));
