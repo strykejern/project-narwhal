@@ -20,11 +20,13 @@ package gameEngine;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class Input {
-	public boolean up, down, left, right, shoot;
+	public boolean up, down, left, right;
+	public boolean mosButton1, mosButton2, mosButton3;
 	public Vector mousePos;
 	
 	public Input(){
@@ -43,12 +45,15 @@ public class Input {
 	}
 
 	public void update(MouseEvent key, boolean pressed){
-		if(key.getButton() == MouseEvent.BUTTON1) shoot = pressed;
+		if(key.getButton() == MouseEvent.BUTTON1) mosButton1 = pressed;
+		if(key.getButton() == MouseEvent.BUTTON2) mosButton2 = pressed;
+		if(key.getButton() == MouseEvent.BUTTON3) mosButton3 = pressed;
 	}
 
-	public void update(int x, int y){
-		mousePos.x = x-5;
-		mousePos.y = y-25;
+	public void update(Point mouse){
+		if( mouse == null ) return;
+		mousePos.x = mouse.x;
+		mousePos.y = mouse.y;
 	}
 	
 	public void drawCrosshair(Graphics g){

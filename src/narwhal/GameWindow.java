@@ -109,8 +109,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		while( state != gameState.GAME_EXIT )
     	{
 			//Update mouse position within the frame
-			Point mouse = frame.getMousePosition();
-			if(mouse != null) keys.update(mouse.x, mouse.y);
+			keys.update(frame.getMousePosition());
 			
 			try
 			{
@@ -130,10 +129,17 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			catch (Exception e) { Log.warning(e); }
 		}
 		
-		//TODO: This never happens!?!
-	   	Log.close();
+		exit(0);
 	}
-		
+	
+	/**
+	 * JJ> Free resources, save data and exit properly
+	 * @param code The exit code used for terminating this process (0 for normal exit)
+	 */
+	private void exit(int code) {
+	   	Log.close();		
+	   	System.exit(code);
+	}
 	
 	/**
 	 * JJ> Paints every object of interest
@@ -156,6 +162,8 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 	}
 	private boolean painting = false;
 	
+	
+	//TODO: remove this function
 	static public boolean isInScreen(Rectangle rect)
 	{
 		if( rect.x < -rect.width || rect.x > Video.getScreenWidth() ) return false;
@@ -163,6 +171,8 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		return true;
 	}
 	
+	
+	//Functions handling input update
 	public void keyPressed(KeyEvent key) {
 		keys.update(key, true);
 	}

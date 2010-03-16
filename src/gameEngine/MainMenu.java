@@ -100,9 +100,9 @@ public class MainMenu {
         {
         	Button button = iterator.next();
 			button.update();
-			if(button.mouseOver() && key.shoot)
+			if(button.mouseOver() && key.mosButton1)
 			{	
-				key.shoot = false;
+				key.mosButton1 = false;
 				buttonClick.play();
 				
 				//Determine button effect
