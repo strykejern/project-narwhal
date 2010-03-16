@@ -47,10 +47,10 @@ public class Game {
        	final int universeSize = 4;
        	
        	//Game music
-       	Sound.playMusic( new Sound("data/space.ogg") );
+       	Sound.playMusic( new Sound("/data/space.ogg") );
        	
 		//Initialize the player ship
-		Spaceship player = new Spaceship(new Vector(200, 200), new Image2D("data/spaceship.png"), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleList);
+		Spaceship player = new Spaceship(new Vector(200, 200), new Image2D("/data/spaceship.png"), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleList);
 		entities.add(player);
 		
 		// Initialize the camera

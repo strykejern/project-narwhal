@@ -85,17 +85,15 @@ public class Universe {
 	}
 		
 	private void loadNebulas(){
-		File[] fileList = new File("data/nebula").listFiles();
+		File[] fileList = ResourceMananger.getFileList("/data/nebula");
 
 		//Load nebulas into memory
 		nebulaList = new ArrayList<Image2D>();
 		for( File f : fileList )
 		{
-			if( f.isFile() )
-			{				
-				Image2D load = new Image2D(f.toString(), Video.getScreenWidth(), Video.getScreenHeight());
-				nebulaList.add( load );
-			}
+			if( !f.isFile() ) continue;
+			Image2D load = new Image2D("/data/nebula/" + f.getName(), Video.getScreenWidth(), Video.getScreenHeight());
+			nebulaList.add( load );
 		}
 	}
 	

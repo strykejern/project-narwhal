@@ -150,7 +150,7 @@ public class Spaceship extends GameObject{
 		
 	}
 	
-	public void activateWeapon(Weapon wpn){
+	public void activateWeapon(Weapon wpn) {
 		
 		//Enough energy to activate weapon?
 		if( wpn.cost > energy ) return;

@@ -25,10 +25,9 @@ import java.awt.image.BufferedImageOp;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 import java.awt.image.VolatileImage;
+import java.net.URL;
 
 import javax.swing.ImageIcon;
-
-
 
 /**
  * JJ> Helper class to make image handling easier to do
@@ -60,13 +59,12 @@ public class Image2D {
 	 */
 	public Image2D( String fileName ) {
 		
-		ImageIcon load = new ImageIcon(fileName);
-		
 		//First make sure the file actually exists
-		if( load.getIconWidth() < 0 )
+		if( !ResourceMananger.fileExists(fileName) )
 		{
 			Log.error( "Failed loading image: " + fileName );
 		}
+		ImageIcon load = new ImageIcon(ResourceMananger.getFilePath(fileName));
 
 		//Load the image into a BufferedImage
 		original = new BufferedImage( load.getIconWidth(), load.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -87,7 +85,13 @@ public class Image2D {
 	 */
 	public Image2D( String fileName, int imgWidth, int imgHeight ) {
 		
-		ImageIcon load = new ImageIcon(fileName);
+		//First make sure the file actually exists
+		if( !ResourceMananger.fileExists(fileName) )
+		{
+			Log.error( "Failed loading image: " + fileName );
+		}
+		ImageIcon load = new ImageIcon(ResourceMananger.getFilePath(fileName));
+		
 		
 		//First make sure the file actually exists
 		if( load.getIconWidth() < 0 )

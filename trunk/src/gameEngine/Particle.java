@@ -39,7 +39,7 @@ public class Particle {
 	 * JJ> Loads all particle images into a hash map for later use
 	 */
 	static public void loadParticles() {
-		File[] fileList = new File("data/particles").listFiles();
+		File[] fileList = ResourceMananger.getFileList("/data/particles");
 		
 		//Make sure it is removed from memory
 		if( particleMap != null ) particleMap.clear();
@@ -52,7 +52,7 @@ public class Particle {
 			ImageIcon loadGraphic = new ImageIcon( f.toString() );
 			
 			//Trim away the file extension (.jpg, .png, etc.) and the file path
-			String fileName = f.toString();
+			String fileName = f.getName();
 			fileName = fileName.substring(fileName.lastIndexOf('\\')+1, fileName.length()-4 );
 
 			//Put the image into a hash map

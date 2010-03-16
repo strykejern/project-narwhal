@@ -55,6 +55,10 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		GAME_EXIT
 	}
 	
+	/**
+	 * JJ> The main game function, here is where everything starts
+	 * @param args
+	 */
 	public static void main(String[] args) {
     	//Initialize the logging system, do this first so that error logging happens correctly.
     	Log.initialize();
@@ -63,14 +67,14 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
         Video.initialize();
         Video.setVideoQuality( VideoQuality.VIDEO_NORMAL );
         Video.setResolution(800, 600);
-        //Video.setFullscreen();
+//        Video.setFullscreen();
 
 		//Initialize the frame window where we draw stuff
     	JFrame parentWindow = new JFrame("Project Narwhal", Video.getGraphicsConf());		
     	parentWindow.getContentPane().add(new GameWindow(parentWindow));
     	parentWindow.setSize(Video.getResolution());
 		parentWindow.setResizable(false);
-		//parentWindow.setUndecorated(true);								//Remove borders
+//		parentWindow.setUndecorated(true);								//Remove borders
         parentWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         parentWindow.setVisible( true );
        	parentWindow.setIgnoreRepaint( true );								//This ensures there is no flickering       	
@@ -80,7 +84,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
     	
 		//The actual frame
 		this.frame = frame;
-		Image2D icon = new Image2D("data/icon.png");
+		Image2D icon = new Image2D("/data/icon.png");
 		frame.setIconImage( icon.toImage() );
 
 		//Input controls
