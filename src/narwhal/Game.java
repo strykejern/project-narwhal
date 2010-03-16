@@ -19,6 +19,8 @@
 package narwhal;
 
 import gameEngine.*;
+import gameEngine.GameWindow.gameState;
+
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -68,8 +70,9 @@ public class Game {
 	}
 	
 	public GameWindow.gameState update(){
-		handleInputs();
 		
+		if(keys.escape) return gameState.GAME_MENU;
+				
 		// Update all entities
 		for (GameObject entity : entities)
 			entity.update();
@@ -81,12 +84,9 @@ public class Game {
 			else 
 				particleList.remove(i--);
 		
-		return GameWindow.gameState.GAME_PLAYING;
+		return gameState.GAME_PLAYING;
 	}
-	
-	private void handleInputs(){
-	}
-	
+		
 	public void draw(Graphics2D g){
 		viewPort.drawView(g);
 		keys.drawCrosshair(g);

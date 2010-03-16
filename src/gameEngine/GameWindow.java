@@ -91,7 +91,6 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
        	//Start in the main menu
        	state = gameState.GAME_MENU;
        	theMenu = new MainMenu(keys);
-       	theGame = new Game(keys);
 		
 		//Thread (do last so that everything above is properly loaded before the main loop begins)
 		new Thread(this).start();
@@ -114,6 +113,12 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			//Update mouse position within the frame
 			keys.update(frame.getMousePosition());
 			
+			//Start a new game if needed
+			if( theGame == null && state == gameState.GAME_PLAYING)
+			{
+		       	theGame = new Game(keys);
+			}
+
 			try
 			{
 				while (painting) Thread.sleep(1);
@@ -121,7 +126,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			catch (Exception e) { Log.warning(e); }
 			
 			if(state == gameState.GAME_PLAYING) state = theGame.update();
-			else if(state == gameState.GAME_MENU) state = theMenu.update();
+			else if(state == gameState.GAME_MENU) state = theMenu.update(theGame == null);
 			repaint();
 			
 			try 
@@ -140,6 +145,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 	 * @param code The exit code used for terminating this process (0 for normal exit)
 	 */
 	private void exit(int code) {
+		Log.message("Exiting the game the good way. Exit code: " + code);
 	   	Log.close();		
 	   	System.exit(code);
 	}
@@ -156,7 +162,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		//Set quality mode
 		Video.getGraphicsSettings(g);
 		
-		if(state == gameState.GAME_PLAYING) theGame.draw(g);
+		if(state == gameState.GAME_PLAYING && theGame != null) theGame.draw(g);
 		else if(state == gameState.GAME_MENU) theMenu.draw(g);
 
 		//Done drawing this frame

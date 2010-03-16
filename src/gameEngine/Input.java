@@ -25,7 +25,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class Input {
-	public boolean up, down, left, right;
+	public boolean up, down, left, right, escape;
 	public boolean mosButton1, mosButton2, mosButton3;
 	public Vector mousePos;
 	
@@ -42,6 +42,7 @@ public class Input {
 		else if (key.getKeyCode() == KeyEvent.VK_DOWN) down = pressed;
 		else if (key.getKeyCode() == KeyEvent.VK_LEFT) left = pressed;
 		else if (key.getKeyCode() == KeyEvent.VK_RIGHT) right = pressed;
+		else if (key.getKeyCode() == KeyEvent.VK_ESCAPE) escape = pressed;
 	}
 
 	public void update(MouseEvent key, boolean pressed){
@@ -53,7 +54,7 @@ public class Input {
 	public void update(Point mouse){
 		if( mouse == null ) return;
 		mousePos.x = mouse.x;
-		mousePos.y = mouse.y;
+		mousePos.y = mouse.y-15;
 	}
 	
 	public void drawCrosshair(Graphics g){
