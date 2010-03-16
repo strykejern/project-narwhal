@@ -160,6 +160,7 @@ public class Particle {
 		alpha += alphaAdd;
 		angle += angleAdd;
 		size  += sizeAdd;
+		angle %= 2 * Math.PI;
 		
 		//Movement
 		pos.add(speed);

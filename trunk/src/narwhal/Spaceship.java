@@ -48,7 +48,7 @@ public class Spaceship extends GameObject{
 		this.particleList = particleList;
 		
 		//Ship weapons
-		weapon = new Weapon(5.0f, 50, 15, "fire");
+		weapon = new Weapon(45.0f, 50, 15, "fire");
 
 		//Calculate size
 		image.resize(Video.getScreenWidth()/12, Video.getScreenWidth()/12);
@@ -66,10 +66,14 @@ public class Spaceship extends GameObject{
 	public void update() {
 		
 		//Do ship regeneration
-		if(shield < shieldMax) shield += 0.25f;
-		if(energy < energyMax) energy += 0.5f;
 		if(cooldown > 0) 	   cooldown--;
+		else
+		{
+			if(shield < shieldMax) shield += 0.25f;
+			if(energy < energyMax) energy += 0.5f;
+		}
 		
+		//Fire!
 		if( keys.shoot ) activateWeapon(weapon);
 		
 		//Key move
@@ -103,6 +107,49 @@ public class Spaceship extends GameObject{
 		super.update();
 	}
 	
+	public void damage(Spaceship attacker) {
+		Weapon weapon = attacker.weapon;
+		float damage = weapon.damage;
+		
+		//Apply energy damage first
+		energy -= weapon.energyDamage;
+		if(energy < 0) energy = 0;
+		
+		//Next damage the shields
+		if(shield > 0)
+		{
+			float shieldDmg = damage*weapon.shieldMul;
+
+			//Shields down?
+			if(shield-shieldDmg < 0)
+			{
+				damage -= shield;
+				shield = 0;
+			}
+			else
+			{
+				//Nope, damage absorbed by the shield
+				shield -= shieldDmg;
+				
+				//Spawn a shield effect
+				particleList.add( new Particle(pos, "shield", 100, 0.75f, -0.025f, direction, 0 , new Vector() ) );
+
+				return;
+			}
+		}
+		
+		//Next, lose some life
+		life -= damage*weapon.lifeMul;	
+		if(life <= 0)
+		{
+			//TODO: die
+		}
+		
+		//We lose 15% speed as well
+		speed.multiply(0.85f);
+		
+	}
+	
 	public void activateWeapon(Weapon wpn){
 		
 		//Enough energy to activate weapon?
@@ -116,8 +163,8 @@ public class Spaceship extends GameObject{
 		//It'll cost ya
 		cooldown += wpn.cooldown;
 		energy -= wpn.cost;
-		
-		//SPawn particle effect
+
+		//Spawn particle effect
 		Vector speed = this.speed.clone().times(2);
 		particleList.add( new Particle(pos.clone(), wpn.particle, 200, 1.0f, -0.01f, direction, 0, speed ) );
 	}

@@ -3,40 +3,39 @@ package gameEngine;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.MouseInfo;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
+import narwhal.GameWindow;
 import narwhal.Universe;
 
-public class MainMenu extends JPanel implements Runnable, MouseListener {
+public class MainMenu {
 	private static final long serialVersionUID = 1L;
-	private boolean menu, mouseClicked;
 	private Universe background;
 	private HashMap<ButtonType, Button> buttonList;
-	private JFrame frame;
 	private Font menuFont;
-	private Vector mousePos = new Vector(), bgScroll = new Vector(), bgSpeed;
+	private Vector bgScroll = new Vector(), bgSpeed;
 	private Sound buttonHover, buttonClick;
-	private Image2D header;
+	private Input key;
 	
-	public MainMenu(JFrame frame) {
+	private Image2D header;
+	private float headerFade;
+	
+	public MainMenu(Input key) {
 		Random rand = new Random();
-		this.frame = frame;
 		
-		//Tiny corner icon
-		ImageIcon icon = new ImageIcon("data/icon.png");
-		frame.setIconImage( icon.getImage() );
+		this.key = key;
+			
+		//Menu music
+		Sound.playMusic( new Sound("data/menu.ogg") );
+    	
+    	//Load button sounds
+    	buttonHover = new Sound("data/hover.au");
+    	buttonHover.setVolume(0.10f);
+    	buttonClick = new Sound("data/click.au");
 		
 		//Initialize the background
     	background = new Universe(2, System.currentTimeMillis());
@@ -44,10 +43,7 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
 
     	//Load font
     	if( menuFont == null ) intializeFont();
-    	
-    	//Mouse control
-		frame.addMouseListener(this);
-    	
+    	    	
     	//Load buttons
     	buttonList = new HashMap<ButtonType, Button>();
     	Vector pos = new Vector( Video.getScreenWidth()/2, Video.getScreenHeight()/3 );
@@ -68,12 +64,7 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
     	pos.y += size.y*1.1f;
     	buttonList.put( ButtonType.BUTTON_MAIN_MENU, new Button(pos, size, "BACK", ButtonType.BUTTON_MAIN_MENU, startPos ) );
     	buttonList.get(ButtonType.BUTTON_GRAPHICS).hide();
-    	buttonList.get(ButtonType.BUTTON_MAIN_MENU).hide();
-    	
-		//Thread (do last so that everything above is properly loaded before the main loop begins)
-		menu = true;
-		mouseClicked = false;
-		new Thread(this).start();
+    	buttonList.get(ButtonType.BUTTON_MAIN_MENU).hide();    	
 	}
 
 	//JJ> Prepares our awesome font
@@ -101,150 +92,109 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
 	}
 	
 	//JJ> Main menu loop
-	public void run() {
-    	long tm = System.currentTimeMillis();
-		float headerFade = 0;
+	public GameWindow.gameState update() {
 		
-		//Menu music
-		Sound music = new Sound("data/menu.ogg");
-    	music.playLooped();
-    	music.setVolume( 0.75f );
-    	
-    	//Load button sounds
-    	buttonHover = new Sound("data/hover.au");
-    	buttonHover.setVolume(0.10f);
-    	buttonClick = new Sound("data/click.au");
-    	
-		while( menu ) {
-			mousePos.x = MouseInfo.getPointerInfo().getLocation().x - frame.getX()-5;
-	        mousePos.y = MouseInfo.getPointerInfo().getLocation().y - frame.getY()-20;
-	        
-	        //Check if the player is holding over any mouse buttons
-	        Iterator<Button> iterator = buttonList.values().iterator();
-	        while( iterator.hasNext() )
-	        {
-	        	Button button = iterator.next();
-				button.update();
-				if(button.mouseOver() && mouseClicked)
-				{	
-					mouseClicked = false;
-					buttonClick.play();
-					
-					//Determine button effect
-					switch( button.type )
+        //Check if the player is holding over any mouse buttons
+        Iterator<Button> iterator = buttonList.values().iterator();
+        while( iterator.hasNext() )
+        {
+        	Button button = iterator.next();
+			button.update();
+			if(button.mouseOver() && key.shoot)
+			{	
+				key.shoot = false;
+				buttonClick.play();
+				
+				//Determine button effect
+				switch( button.type )
+				{
+					case BUTTON_START_GAME:
 					{
-						case BUTTON_START_GAME:
+						return GameWindow.gameState.GAME_PLAYING;
+					}
+					
+					case BUTTON_OPTIONS:
+					{
+						//Fade in the next buttons
+				    	buttonList.get(ButtonType.BUTTON_GRAPHICS).show();
+				    	buttonList.get(ButtonType.BUTTON_MAIN_MENU).show();
+				    	
+				    	//Fade out the existing buttons
+				    	buttonList.get(ButtonType.BUTTON_START_GAME).hide();
+				    	buttonList.get(ButtonType.BUTTON_OPTIONS).hide();
+				    	buttonList.get(ButtonType.BUTTON_EXIT).hide();
+						break;
+					}
+					
+					case BUTTON_EXIT:
+					{
+						return GameWindow.gameState.GAME_EXIT;
+					}
+					
+					case BUTTON_MAIN_MENU:
+					{
+						//Fade in the next buttons
+				    	buttonList.get(ButtonType.BUTTON_START_GAME).show();
+				    	buttonList.get(ButtonType.BUTTON_OPTIONS).show();
+				    	buttonList.get(ButtonType.BUTTON_EXIT).show();
+				    	
+				    	//Fade out the current buttons
+				    	buttonList.get(ButtonType.BUTTON_GRAPHICS).hide();
+				    	buttonList.get(ButtonType.BUTTON_MAIN_MENU).hide();
+						break;
+					}
+					
+					case BUTTON_GRAPHICS:
+					{
+						if(Video.isHighQualityMode()) 
 						{
-							//TODO: start Game()
-							break;
+							button.text = "Graphics: Low";
+							Video.disableHighQualityGraphics();
 						}
-						
-						case BUTTON_OPTIONS:
+						else 
 						{
-							//Fade in the next buttons
-					    	buttonList.get(ButtonType.BUTTON_GRAPHICS).show();
-					    	buttonList.get(ButtonType.BUTTON_MAIN_MENU).show();
-					    	
-					    	//Fade out the existing buttons
-					    	buttonList.get(ButtonType.BUTTON_START_GAME).hide();
-					    	buttonList.get(ButtonType.BUTTON_OPTIONS).hide();
-					    	buttonList.get(ButtonType.BUTTON_EXIT).hide();
-							break;
-						}
-						
-						case BUTTON_EXIT:
-						{
-							System.exit(0);
-							break;
-						}
-						
-						case BUTTON_MAIN_MENU:
-						{
-							//Fade in the next buttons
-					    	buttonList.get(ButtonType.BUTTON_START_GAME).show();
-					    	buttonList.get(ButtonType.BUTTON_OPTIONS).show();
-					    	buttonList.get(ButtonType.BUTTON_EXIT).show();
-					    	
-					    	//Fade out the current buttons
-					    	buttonList.get(ButtonType.BUTTON_GRAPHICS).hide();
-					    	buttonList.get(ButtonType.BUTTON_MAIN_MENU).hide();
-							break;
-						}
-						
-						case BUTTON_GRAPHICS:
-						{
-							if(Video.isHighQualityMode()) 
-							{
-								button.text = "Graphics: Low";
-								Video.disableHighQualityGraphics();
-							}
-							else 
-							{
-								button.text = "Graphics: High";
-								Video.enableHighQualityGraphics();
-							}
+							button.text = "Graphics: High";
+							Video.enableHighQualityGraphics();
 						}
 					}
 				}
 			}
-			
-			//Slowly fade in the header
-			if(headerFade != 1)
-			{
-				//Load the header image here so that it doesn't blink
-				if(header == null)
-				{
-					header = new Image2D("data/title.png");
-					header.resize(Video.getScreenWidth()/2, Video.getScreenHeight()/8);
-				}
-				
-				headerFade += 0.0075f;
-				header.setAlpha(headerFade);
-			}
-			
-			//Make the background move around
-			bgScroll.add( bgSpeed );
-			
-			// Quick implement of universe bounds
-			float uniX = background.getUniverseSize().x;
-			float uniY = background.getUniverseSize().y;
-			
-			if 		(bgScroll.x < 0) 	 bgScroll.x = uniX + bgScroll.x;
-			else if (bgScroll.x > uniX)  bgScroll.x %= uniX;
-			
-			if 		(bgScroll.y < 0) 	 bgScroll.y = uniY + bgScroll.y;
-			else if (bgScroll.y > uniY)  bgScroll.y %= uniY;
-
-    		try 
-    		{
-                tm += 1000/60;
-                Thread.sleep(Math.max(0, tm - System.currentTimeMillis()));
-            }
-            catch(InterruptedException e)
-            {
-            	Log.warning(e.toString());
-            }
-            
-            repaint();
 		}
 		
-		music.stop();
+		//Slowly fade in the header
+		if(headerFade != 1)
+		{
+			//Load the header image here so that it doesn't blink
+			if(header == null)
+			{
+				header = new Image2D("data/title.png");
+				header.resize(Video.getScreenWidth()/2, Video.getScreenHeight()/8);
+			}
+			
+			headerFade += 0.0075f;
+			header.setAlpha(headerFade);
+		}
+		
+		//Make the background move around
+		bgScroll.add( bgSpeed );
+		
+		// Quick implement of universe bounds
+		float uniX = background.getUniverseSize().x;
+		float uniY = background.getUniverseSize().y;
+		
+		if 		(bgScroll.x < 0) 	 bgScroll.x = uniX + bgScroll.x;
+		else if (bgScroll.x > uniX)  bgScroll.x %= uniX;
+		
+		if 		(bgScroll.y < 0) 	 bgScroll.y = uniY + bgScroll.y;
+		else if (bgScroll.y > uniY)  bgScroll.y %= uniY;
+		
+		return GameWindow.gameState.GAME_MENU;
 	}
 		
-	/*
-	 * JJ> Paints every object of interest
-	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
-	 */
-	public void paint(Graphics rawGraphics) {
-		//Convert to the Graphics2D object which allows us more functions
-		Graphics2D g = (Graphics2D) rawGraphics;
-		
-		//Set quality mode
-		Video.getGraphicsSettings(g);
+	public void draw(Graphics2D g) {
 		
 		//Draw background
 		background.drawBackground( g, bgScroll );
-		//background.drawPlanets( g );
 		
 		//Draw header, but only if it is loaded
 		if( header != null )
@@ -253,10 +203,6 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
 		//Do last, draw buttons
         Iterator<Button> iterator = buttonList.values().iterator();
         while( iterator.hasNext() ) iterator.next().draw(g);
-      
-		//Done with this frame
-		g.dispose();
-		
 	}
 	
 	
@@ -294,10 +240,10 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
 				mouseOver = false;
 				return false;
 			}
-	        
+	       
 			//Are they holding the mouse over this object?
-	        if( mousePos.x > pos.x && mousePos.x < pos.x + size.x )
-	        	if( mousePos.y > pos.y && mousePos.y < pos.y + size.y )
+	        if( key.mousePos.x > pos.x && key.mousePos.x < pos.x + size.x )
+	        	if( key.mousePos.y > pos.y && key.mousePos.y < pos.y + size.y )
 	        	{
 	        		if( !mouseOver ) buttonHover.play();
 	        		mouseOver = true;
@@ -320,7 +266,6 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
 		}
 		
 		public void update() {
-			
 			if( hidden ) return;
 			
 			//Make it move if needed
@@ -355,29 +300,5 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
 		}
 		
 	}
-
-
-	public void mouseReleased(MouseEvent arg0) {
-		mouseClicked = false;		
-	}
-	public void mousePressed(MouseEvent e) {
-		if(e.getButton() == MouseEvent.BUTTON1) mouseClicked = true;
-	}
-	
-	public void mouseClicked(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
 

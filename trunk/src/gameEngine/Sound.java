@@ -34,6 +34,26 @@ import org.newdawn.easyogg.OggClip;
  */
 public class Sound
 {
+	private static Sound music;
+	public static void playMusic(Sound song){
+		
+		//Stop playing music if parameter is null
+		if(song == null)
+		{
+			music.stop();
+			music = null;
+			return;
+		}
+		
+		music = song;
+		music.setVolume( 0.75f );
+		music.playLooped();
+	}
+	public static void stopMusic(){
+		if(music == null) return;
+		music.stop();
+	}
+	
 	/** The sound itself as a audio stream */
 	private OggClip ogg;
 	private Clip    raw;

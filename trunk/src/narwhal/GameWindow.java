@@ -39,19 +39,26 @@ import javax.swing.JPanel;
 public class GameWindow extends JPanel implements Runnable, KeyListener, MouseListener {
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
-	private boolean running;
 	private JFrame frame;
 	private Input keys;
 	
 	private Game theGame;
+	private MainMenu theMenu;
+	private gameState state;
 	
-	public static void main(String[] args) throws InterruptedException{	
+	public static enum gameState {
+		GAME_MENU,
+		GAME_PLAYING, 
+		GAME_EXIT
+	}
+	
+	public static void main(String[] args) {
     	//Initialize the logging system, do this first so that error logging happens correctly.
     	Log.initialize();
 
 		//Now initialize Video settings
         Video.initialize();
-        Video.enableHighQualityGraphics();
+        Video.disableHighQualityGraphics();
         Video.setResolution(800, 600);
         //Video.setFullscreen();
 
@@ -63,9 +70,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		//parentWindow.setUndecorated(true);								//Remove borders
         parentWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         parentWindow.setVisible( true );
-        
-        //This ensures there is no flickering
-       	parentWindow.setIgnoreRepaint( true );
+       	parentWindow.setIgnoreRepaint( true );								//This ensures there is no flickering       	
   	}
 	
 	public GameWindow(JFrame frame) {
@@ -80,10 +85,12 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		frame.addMouseListener(this);
 		keys = new Input();	
 		
-		theGame = new Game(keys);
+       	//Start in the main menu
+       	state = gameState.GAME_MENU;
+       	theMenu = new MainMenu(keys);
+       	theGame = new Game(keys);
 		
 		//Thread (do last so that everything above is properly loaded before the main loop begins)
-		running = true;
 		new Thread(this).start();
 	}
 	
@@ -94,15 +101,14 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
     	long tm = System.currentTimeMillis();
     	
 		// Set the blank cursor to the JFrame.
-		frame.getContentPane().setCursor(Video.blankCursor);
+		//frame.getContentPane().setCursor(Video.blankCursor);
 		
     	//Load game resources TODO: Move this somewhere else
-		Sound music = new Sound("data/space.ogg");
-    	//Sound crash = new Sound("data/crash.au");
-    	music.play();
+		//Sound crash = new Sound("data/crash.au");
  	
-		while(running)
+		while( state != gameState.GAME_EXIT )
     	{
+			//Update mouse position within the frame
 			Point mouse = frame.getMousePosition();
 			if(mouse != null) keys.update(mouse.x, mouse.y);
 			
@@ -112,7 +118,8 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			}
 			catch (Exception e) { Log.warning(e); }
 			
-			theGame.update();
+			if(state == gameState.GAME_PLAYING) state = theGame.update();
+			else if(state == gameState.GAME_MENU) state = theMenu.update();
 			repaint();
 			
 			try 
@@ -140,8 +147,10 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		//Set quality mode
 		Video.getGraphicsSettings(g);
 		
-		theGame.draw(g);
-		
+		if(state == gameState.GAME_PLAYING) theGame.draw(g);
+		else if(state == gameState.GAME_MENU) theMenu.draw(g);
+
+		//Done drawing this frame
 		g.dispose();
 		painting = false;
 	}

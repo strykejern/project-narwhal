@@ -42,13 +42,15 @@ public class UI {
 		//Status bars
 		drawOneBar(g, new Vector(x, y), (int)hud.life, hud.lifeMax, new Color(153, 0 , 0, 200 ));
 		x -= width +5;
-		
-		drawOneBar(g, new Vector(x, y), (int)hud.shield, hud.shieldMax, new Color(0, 0 , 153, 200 ));
-		x -= width +5;
 
 		drawOneBar(g, new Vector(x, y), (int)hud.energy, hud.energyMax, new Color(255, 153 , 0, 200 ));
 		x -= width +5;
 
+		if(hud.shieldMax != 0)
+		{
+			drawOneBar(g, new Vector(x, y), (int)hud.shield, hud.shieldMax, new Color(0, 0 , 153, 200 ));
+			x -= width +5;
+		}
 	}
 	
 	private void drawOneBar(Graphics2D g, Vector pos, int current, int max, Color clr) {

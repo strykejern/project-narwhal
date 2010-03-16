@@ -171,8 +171,7 @@ public class Universe {
 		}
 	}
 	
-	public Vector getUniverseSize()
-	{
+	public Vector getUniverseSize() {
 		return new Vector( universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight() );
 	}
 				
