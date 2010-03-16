@@ -127,6 +127,10 @@ public class Video {
 		return  resolution;
 	}
 	
+	public static Vector getResolutionVector(){
+		return new Vector(resolution.width, resolution.height);
+	}
+	
 	public static void setResolution(Dimension res) {
 		resolution.setSize(res);
 	}

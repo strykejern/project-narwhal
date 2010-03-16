@@ -41,27 +41,31 @@ public class Game {
        	// Initialize the entity container
        	entities = new ArrayList<GameObject>();
        	
+       	// Size of the universe (for constructors)
+       	final int universeSize = 4;
+       	
 		//Initialize the player ship
-       	Spaceship player = new Spaceship(new Vector(200, 200), new Image2D("data/spaceship.png"), keys, particleList);
+		Spaceship player = new Spaceship(new Vector(200, 200), new Image2D("data/spaceship.png"), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleList);
 		entities.add(player);
 		
 		// Initialize the camera
 		viewPort = new Camera(
 				entities, 
-				new Universe(4, System.currentTimeMillis()), 
+				new Universe(universeSize, System.currentTimeMillis()), 
 				particleList,
 				entities.get(0));
 		
 		//Generate random planets
-		entities.add( new Planet(new Vector(1, 1), System.currentTimeMillis()) );
+		entities.add( new Planet(new Vector(800*4-50, 600*4-50), System.currentTimeMillis()) );
 		
-		// Initialize the hud and bind it to the player's ship
+		// Initialize the HUD and bind it to the player's ship
 		hud = new UI(player);
 		
 		this.keys = keys;
 	}
 	
 	public void update(){
+		handleInputs();
 		
 		// Update all entities
 		for (GameObject entity : entities)
@@ -69,20 +73,41 @@ public class Game {
 		
 		//Update particle effects
 		for( int i = 0; i < particleList.size(); i++ )
-			if ( !particleList.get(i).requestsDelete() ) 
+			if (!particleList.get(i).requestsDelete()) 
 				particleList.get(i).update();
 			else 
 				particleList.remove(i--);
 		
 	}
 	
+	private static int shootDelay = 0;
+	private void handleInputs(){
+		if ( shootDelay > 0 ) shootDelay--;
+		else if ( keys.shoot && shootDelay == 0 )
+		{
+			shootDelay = 200;
+			// Testing particle spawn
+			/*Random rand = new Random();
+			float angle = (float)Math.toRadians(rand.nextInt(360));
+			float angleAdd = (float)Math.toRadians(rand.nextInt(5)+1);
+			Vector pos = new Vector(ship.getPosition().x - mouse.getPoint().x, ship.getPosition().y - mouse.getPoint().y);
+			spawnParticle( new Particle( pos, "fire", 500, 1.0f, -0.005f, angle, angleAdd ));*/
+			// end
+		}
+	}
+	
 	public void draw(Graphics2D g){
 		viewPort.drawView(g);
 		keys.drawCrosshair(g);
 		hud.draw(g);
+		
+		//Debug info
+		g.setColor(Color.white);
+		//g.drawString("Ship position: X: " + ship.getPosition().x + ", Y: " + ship.getPosition().y, 5, 20);
+		//g.drawString("Number of particles: " + particleList.size(), 5, 40);
 	}
 	
-	public void spawnParticle( Particle prt ) {
+	private void spawnParticle( Particle prt ) {
 		if( particleList.size() >= Particle.MAX_PARTICLES ) return;
 		particleList.add( prt );
 	}

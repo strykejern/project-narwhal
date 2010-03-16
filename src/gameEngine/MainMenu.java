@@ -206,8 +206,8 @@ public class MainMenu extends JPanel implements Runnable, MouseListener {
 			bgScroll.add( bgSpeed );
 			
 			// Quick implement of universe bounds
-			float uniX = Video.getScreenWidth()*Universe.getUniverseSize();
-			float uniY = Video.getScreenHeight()*Universe.getUniverseSize();
+			float uniX = background.getUniverseSize().x;
+			float uniY = background.getUniverseSize().y;
 			
 			if 		(bgScroll.x < 0) 	 bgScroll.x = uniX + bgScroll.x;
 			else if (bgScroll.x > uniX)  bgScroll.x %= uniX;

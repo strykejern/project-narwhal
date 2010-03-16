@@ -141,5 +141,27 @@ public class Vector {
 	public float getAngle(){
 		return (float)Math.atan2(y, x);
 	}
-
+	
+	public boolean isInsideRect(Vector pos, Vector size){
+		if (x > pos.x && x < pos.x + size.x && y > pos.y && y < pos.y + size.y) return true;
+		return false;
+	}
+	
+	public void overflowWithin(Vector vec){
+		if (isInsideRect(new Vector(), vec)) return;
+		while (x < 0) 	  x += vec.x;
+		while (x > vec.x) x -= vec.x;
+		while (y < 0) 	  y += vec.y;
+		while (y > vec.y) y -= vec.y;
+	}
+	
+	public Vector returnOverflowWithin(Vector vec){
+		Vector clone = clone();
+		if (clone.isInsideRect(new Vector(), vec)) return clone;
+		while (clone.x < 0) 	clone.x += vec.x;
+		while (clone.x > vec.x) clone.x -= vec.x;
+		while (clone.y < 0) 	clone.y += vec.y;
+		while (clone.y > vec.y) clone.y -= vec.y;
+		return clone;
+	}
 }
