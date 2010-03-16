@@ -27,12 +27,14 @@ public class Planet extends GameObject {
 	private static ArrayList<Image2D> planetImages;
 	
 	private static void loadPlanets() {
-		File[] fileList = new File("data/planets").listFiles();
+		
+		File[] fileList = ResourceMananger.getFileList("/data/planets/");
 		planetImages = new ArrayList<Image2D>();
 		for( File f : fileList )
 		{
 			if( !f.isFile() ) continue;
-			planetImages.add( new Image2D( f.toString()) ) ;
+			Image2D load = new Image2D( "/data/planets/" + f.getName() );
+			planetImages.add( load ) ;
 		}
 	}
 	

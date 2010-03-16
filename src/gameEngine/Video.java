@@ -49,7 +49,7 @@ public class Video {
 	private static GraphicsDevice graphDevice;
 	private static GraphicsConfiguration graphicConf;
 		
-	public static enum VideoQuality{
+	public static enum VideoQuality {
 		VIDEO_LOW,
 		VIDEO_NORMAL,
 		VIDEO_HIGH

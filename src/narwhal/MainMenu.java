@@ -30,12 +30,12 @@ public class MainMenu {
 		this.key = key;
 			
 		//Menu music
-		Sound.playMusic( new Sound("data/menu.ogg") );
+		Sound.playMusic( new Sound("/data/menu.ogg") );
     	
     	//Load button sounds
-    	buttonHover = new Sound("data/hover.au");
+    	buttonHover = new Sound("/data/hover.au");
     	buttonHover.setVolume(0.10f);
-    	buttonClick = new Sound("data/click.au");
+    	buttonClick = new Sound("/data/click.au");
 		
 		//Initialize the background
     	background = new Universe(2, System.currentTimeMillis());
@@ -75,8 +75,11 @@ public class MainMenu {
 	private boolean intializeFont() {
 		try 
 		{
+			//Make sure the file exists
+			if( !ResourceMananger.fileExists("/data/font.ttf") ) throw new Exception("Missing font file! (/data/font.ttf)");
+			
 			//Load our awesome font
-			menuFont = Font.createFont(Font.TRUETYPE_FONT, new File("data/font.ttf") );
+			menuFont = Font.createFont(Font.TRUETYPE_FONT, new File(ResourceMananger.getFileURI("/data/font.ttf")) );
 			menuFont = menuFont.deriveFont(Font.BOLD, 14);
 			return true;
 		} 
@@ -179,7 +182,7 @@ public class MainMenu {
 			//Load the header image here so that it doesn't blink
 			if(header == null)
 			{
-				header = new Image2D("data/title.png");
+				header = new Image2D("/data/title.png");
 				header.resize(Video.getScreenWidth()/2, Video.getScreenHeight()/8);
 			}
 			

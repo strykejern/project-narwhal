@@ -18,11 +18,8 @@
 //********************************************************************************************
 package gameEngine;
 
-import java.io.File;
-import java.io.FileInputStream;
-
+import java.io.InputStream;
 import javax.sound.sampled.*;
-
 import org.newdawn.easyogg.OggClip;
 
 
@@ -61,23 +58,24 @@ public class Sound
 	 * @param fileName: path to the file to be loaded
 	 */
 	public Sound( String fileName ) {
+			InputStream stream = ResourceMananger.getInputStream(fileName);
 		
 			//First try to load it as a ogg vorbis file
 			if( fileName.endsWith(".ogg") ) try 
 			{
-				ogg = new OggClip(new FileInputStream(fileName));
+				ogg = new OggClip(stream);
    			    ogg.setGain( 0.65f );
 			} 
-			catch (Exception e) { Log.error( "Loading audio file failed - " + e.toString() ); }
+			catch (Exception e) { Log.error( "Loading ogg file failed - " + e.toString() ); }
 			
 			//Nope, try to load it raw! Roar!
 			else try
    			{
-   				AudioInputStream stream = AudioSystem.getAudioInputStream( new File(fileName) );
+   				AudioInputStream audioStream = AudioSystem.getAudioInputStream( stream );
    				
    			    // At present, ALAW and ULAW encodings must be converted
    			    // to PCM_SIGNED before it can be played
-   			    AudioFormat format = stream.getFormat();
+   			    AudioFormat format = audioStream.getFormat();
    			    if (format.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
    			        format = new AudioFormat(
    			                AudioFormat.Encoding.PCM_SIGNED,
@@ -87,16 +85,16 @@ public class Sound
    			                format.getFrameSize()*2,
    			                format.getFrameRate(),
    			                true);        // big endian
-   			        stream = AudioSystem.getAudioInputStream(format, stream);
+   			        audioStream = AudioSystem.getAudioInputStream(format, audioStream);
    			    }
 
    			    // Create the clip
    			    DataLine.Info info = new DataLine.Info(
-   			        Clip.class, stream.getFormat(), ((int)stream.getFrameLength()*format.getFrameSize()));
+   			        Clip.class, audioStream.getFormat(), ((int)audioStream.getFrameLength()*format.getFrameSize()));
    			    raw = (Clip) AudioSystem.getLine(info);
 
    			    // This method does not return until the audio file is completely loaded
-   			    raw.open(stream);
+   			    raw.open(audioStream);
 	   		}
 		    catch (Exception e) { Log.warning( "Loading audio file failed - " + e.toString() ); }
 		    setVolume(0.5f);
@@ -149,6 +147,26 @@ public class Sound
 	public void stop() {
 		if( raw != null ) 	   raw.stop();
 		else if( ogg == null ) ogg.stop();
+	}
+	
+	/**
+	 * JJ> Disposes this Sound freeing any resources it previously used. It will flush 
+	 *     any AudioStreams referenced to it as well.
+	 */
+	public void dispose()
+	{
+		if( raw != null ) 	   
+		{
+			raw.stop();
+			raw.close();
+			raw.flush();
+			raw.drain();
+		}
+		else if( ogg == null ) 
+		{
+			ogg.stop();
+			ogg.close();
+		}
 	}
 
 }

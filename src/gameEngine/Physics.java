@@ -32,10 +32,10 @@ public abstract class Physics extends Collidable{
 	public void collision(Physics object){
 		
 		//We are circle
-		if (this.shape == null)
+		if (this.shape == Shape.CIRCLE)
 		{
 			//They are circle
-			if (object.shape == null)
+			if (object.shape == Shape.CIRCLE)
 			{
 				Vector colVec = this.pos.minus(object.pos);
 				colVec.setLength((this.radius + object.radius) - colVec.length());
