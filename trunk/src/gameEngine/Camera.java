@@ -26,6 +26,7 @@ import narwhal.*;
 
 public class Camera {
 	private Vector 					cameraPos;
+	private Vector					cameraOverflow;
 	
 	private ArrayList<GameObject> 	entities;
 	private GameObject 				follow;
@@ -43,17 +44,20 @@ public class Camera {
 	public void drawView(Graphics2D g){
 		cameraPos.x = follow.pos.x - ((float)Video.getScreenWidth() / 2f);
 		cameraPos.y = follow.pos.y - ((float)Video.getScreenHeight() / 2f);
+		cameraPos.overflowWithin(background.getUniverseSize());
+		calculateCameraOverflow();
 		
 		// Draw background
-		background.drawBackground(g, follow.pos);
+		background.drawBackground(g, cameraPos);
 		
 		// Draw all entities
 		for (GameObject entity : entities)
 		{
-			if (isInFrame(entity))
+			Vector entityOffset = isInFrame(entity);
+			if (entityOffset != null)
 			{
-				entity.draw(g, cameraPos);
-				entity.drawCollision(g, cameraPos);
+				entity.draw(g, cameraPos.minus(entityOffset));
+				entity.drawCollision(g, cameraPos.minus(entityOffset));
 			}
 		}
 		
@@ -69,19 +73,56 @@ public class Camera {
 		g.drawString("PlanetPos X: " + entities.get(1).pos.getX() + " Y: " + entities.get(1).pos.getY(), 5, 40);
 	}
 
-	private boolean isInFrame(GameObject entity){
-		Vector[] points = new Vector[4];
-		points[0] = entity.pos;
-		points[1] = entity.pos.plus(new Vector(entity.size.x, 0));
-		points[2] = entity.pos.plus(new Vector(0, 			  entity.size.y));
-		points[3] = entity.pos.plus(new Vector(entity.size.x, entity.size.y));
+	private Vector isInFrame(GameObject entity){
+		Vector[] points = new Vector[3];
+		points[0] = entity.pos.plus(new Vector(entity.size.x, 0));
+		points[1] = entity.pos.plus(new Vector(0, 			  entity.size.y));
+		points[2] = entity.pos.plus(new Vector(entity.size.x, entity.size.y));
 		
+		boolean inframe = false;
+		if (entity.pos.isInsideRect(cameraPos, cameraPos.plus(Video.getResolutionVector())))
+		{
+			inframe = true;
+		}
 		for (Vector point : points)
-			if (point.x > cameraPos.x && 
-				point.x < cameraPos.x + Video.getScreenWidth() &&
-				point.y > cameraPos.y &&
-				point.y < cameraPos.y + Video.getScreenHeight()) 
-					return true;
+		{
+			if (point.returnOverflowWithin(background.getUniverseSize()).isInsideRect(cameraPos, cameraPos.plus(Video.getResolutionVector())))
+			{
+				inframe = true;
+				break;
+			}
+		}
+		// TODO: finish
+		if (inframe)
+		{
+			if (isInUniverse(entity.pos)) return new Vector();
+			else
+			{
+				boolean overFlowX = entity.pos.x > background.getUniverseSize().x / 2;
+				boolean overFlowY = entity.pos.y > background.getUniverseSize().y / 2;
+				
+				if (overFlowX && overFlowY) return background.getUniverseSize();
+				else if (overFlowX) return new Vector(background.getUniverseSize().x, 0);
+				else if (overFlowY) return new Vector(0, background.getUniverseSize().y);
+				else return new Vector();
+			}
+		}
+		
+		return null;
+	}
+	
+	private boolean isInUniverse(Vector point){
+		if (point.isInsideRect(new Vector(), background.getUniverseSize())) return true;
 		return false;
+	}
+	
+	private void calculateCameraOverflow(){
+		cameraOverflow = new Vector();
+		
+		if (cameraPos.x < 0) cameraOverflow.x -= 1;
+		else if (cameraPos.x + Video.getScreenWidth() > background.getUniverseSize().x) cameraOverflow.x += 1;
+		
+		if (cameraPos.y < 0) cameraOverflow.y -= 1;
+		else if (cameraPos.y + Video.getScreenHeight() > background.getUniverseSize().y) cameraOverflow.y += 1; 
 	}
 }

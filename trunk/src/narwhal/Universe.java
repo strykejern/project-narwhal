@@ -34,7 +34,7 @@ import javax.swing.ImageIcon;
  *
  */
 public class Universe {
-	private static int universeSize;
+	private int universeSize;
 	private Vector[][] bgPos;
 	private ArrayList<Image2D> nebulaList;
 	private ImageIcon[] stars;
@@ -171,9 +171,9 @@ public class Universe {
 		}
 	}
 	
-	public static int getUniverseSize()
+	public Vector getUniverseSize()
 	{
-		return universeSize;
+		return new Vector( universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight() );
 	}
 				
 	/**
@@ -188,8 +188,8 @@ public class Universe {
 		for(int i = 0; i < universeSize; i++)
 			for(int j = 0; j < universeSize; j++)
 			{
-				x = bgPos[i][j].getX()-pos.getX();
-				y = bgPos[i][j].getY()-pos.getY();		
+				x = bgPos[i][j].getX()+pos.getX();
+				y = bgPos[i][j].getY()+pos.getY();		
 				g.drawImage( universe[i][j], x, y, null );
 			}	
 		
@@ -273,7 +273,7 @@ public class Universe {
 		float uniX = Video.getScreenWidth()*universeSize;
 		float uniY = Video.getScreenHeight()*universeSize;
 		Vector pos = position.clone();
-		pos.negate();
+		//pos.negate();
 		
 		boolean u = false;
 		boolean d = false;

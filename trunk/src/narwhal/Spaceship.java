@@ -26,7 +26,8 @@ public class Spaceship extends GameObject{
 
 	private ArrayList<Particle> 	particleList;	// Contains Particles in the universe
 
-	private float MAX_SPEED = 15f;
+	private static float MAX_SPEED = 15f;
+	private Vector universeSize;
 	private Weapon weapon;
 	private int cooldown;
 	
@@ -37,10 +38,10 @@ public class Spaceship extends GameObject{
 	public int energyMax = 500;
 	public float energy = 350;
 	
-	public Spaceship(Vector spawnPos, Image2D newImg, Input newInput, ArrayList<Particle> particleList){
+	public Spaceship(Vector spawnPos, Image2D image, Input keys, Vector universeSize, ArrayList<Particle> particleList){
 		pos 	= spawnPos;
-		image 	= newImg;
-		keys 	= newInput;
+		this.image 	= image;
+		this.keys 	= keys;
 		direction = 0;
 		
 		//Where do we spawn particles?
@@ -58,6 +59,8 @@ public class Spaceship extends GameObject{
 		shape = Shape.CIRCLE;
 		canCollide = true;
 		anchored = false;
+		
+		this.universeSize = universeSize;
 	}
 
 	public void update() {
@@ -85,11 +88,11 @@ public class Spaceship extends GameObject{
 		direction += heading * 0.1f;
 		image.setDirection( direction );
 		
+		if (speed.length() > MAX_SPEED) speed.setLength(MAX_SPEED);
 		
 		// Quick implement of universe bounds
-		if (speed.length() > MAX_SPEED) speed.setLength(MAX_SPEED);
-		float uniX = Video.getScreenWidth()*Universe.getUniverseSize();
-		float uniY = Video.getScreenHeight()*Universe.getUniverseSize();
+		float uniX = universeSize.x;
+		float uniY = universeSize.y;
 		
 		if 		(pos.x < 0) 	pos.x = uniX + pos.x;
 		else if (pos.x > uniX)  pos.x %= uniX;
