@@ -57,8 +57,6 @@ public abstract class GameObject extends Physics{
 		int h = image.getHeight();		
 		g.setColor(Color.BLUE);
 		g.drawRect(drawX(offset), drawY(offset), w, h);
-		
-		g.drawRect(pos.getX() - offset.getX(), pos.getY() - offset.getY(), size.getX(), size.getY());
 
 		//Draw it as a circle
 		if( super.shape == Shape.CIRCLE )
@@ -71,11 +69,11 @@ public abstract class GameObject extends Physics{
 	}
 	
 	protected int drawX(Vector offset){
-		return pos.getX() - image.getWidth()/2 - offset.getX();
+		return pos.getX() - offset.getX();
 	}
 	
 	protected int drawY(Vector offset){
-		return pos.getY() - image.getHeight()/2 - offset.getY();
+		return pos.getY() - offset.getY();
 	}
 
 	public Vector getPosition() {
@@ -83,6 +81,6 @@ public abstract class GameObject extends Physics{
 	}
 	
 	public Vector getTopLeftVector(){
-		return pos.minus(size.negated().dividedBy(1.42f));
+		return pos.minus(new Vector(image.getWidth()/2, image.getHeight()/2));
 	}
 }
