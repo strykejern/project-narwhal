@@ -48,7 +48,7 @@ public class Spaceship extends GameObject{
 		this.particleList = particleList;
 		
 		//Ship weapons
-		weapon = new Weapon(45.0f, 50, 15, "fire");
+		weapon = new Weapon(45.0f, 30, 15, "laser");
 
 		//Calculate size
 		image.resize(Video.getScreenWidth()/12, Video.getScreenWidth()/12);
@@ -157,7 +157,7 @@ public class Spaceship extends GameObject{
 		
 		//Ship is on cooldown
 		if( cooldown > 0 ) return;
-		Sound snd = new Sound("data/fire.au");
+		Sound snd = new Sound("data/blaster.au");
 		snd.play();
 		
 		//It'll cost ya
@@ -165,7 +165,6 @@ public class Spaceship extends GameObject{
 		energy -= wpn.cost;
 
 		//Spawn particle effect
-		Vector speed = this.speed.clone().times(2);
-		particleList.add( new Particle(pos.clone(), wpn.particle, 200, 1.0f, -0.01f, direction, 0, speed ) );
+		wpn.spawnParticle(particleList, pos, direction, speed);
 	}
 }

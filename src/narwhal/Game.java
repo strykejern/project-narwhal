@@ -94,6 +94,6 @@ public class Game {
 		
 		//Debug info
 		g.setColor(Color.white);
-		//g.drawString("Number of particles: " + particleList.size(), 5, 40);
+		g.drawString("Number of particles: " + particleList.size(), 5, 50);
 	}	
 }
