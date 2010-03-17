@@ -29,11 +29,10 @@ public class MainMenu {
 		this.key = key;
 			
 		//Menu music
-		Sound.playMusic( new Sound("/data/menu.ogg") );
+//		Sound.playMusic( new Sound("/data/menu.ogg") );
     	
     	//Load button sounds
     	buttonHover = new Sound("/data/hover.au");
-    	buttonHover.setVolume(0.10f);
     	buttonClick = new Sound("/data/click.au");
 		
 		//Initialize the background
