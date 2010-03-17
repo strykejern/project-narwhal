@@ -1,15 +1,26 @@
+//********************************************************************************************
+//*
+//*    This file is part of Project Narwhal.
+//*
+//*    Project Narwhal is free software: you can redistribute it and/or modify it
+//*    under the terms of the GNU General Public License as published by
+//*    the Free Software Foundation, either version 3 of the License, or
+//*    (at your option) any later version.
+//*
+//*    Project Narwhal is distributed in the hope that it will be useful, but
+//*    WITHOUT ANY WARRANTY; without even the implied warranty of
+//*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//*    General Public License for more details.
+//*
+//*    You should have received a copy of the GNU General Public License
+//*    along with Project Narwhal.  If not, see <http://www.gnu.org/licenses/>.
+//*
+//********************************************************************************************
 package gameEngine;
 
 import gameEngine.Sound.OggClip;
-
 import java.io.BufferedInputStream;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
-
+import javax.sound.sampled.*;
 import com.jcraft.jogg.*;
 import com.jcraft.jorbis.*;
 
@@ -33,9 +44,9 @@ public class JOrbisPlayer {
 	private int bytes = 0;
 	private int rate;
 	private int channels;
+	private SourceDataLine outputLine;
 	
 	//Pointers
-	public SourceDataLine outputLine;
 	private BufferedInputStream bitStream;
 
 	//JJ> Constructor
@@ -54,11 +65,12 @@ public class JOrbisPlayer {
 					channels, true, // PCM_Signed
 					false // littleEndian
 			);
+			
 			DataLine.Info info = new DataLine.Info(SourceDataLine.class,
 					audioFormat, AudioSystem.NOT_SPECIFIED);
 			
 			//Make sure the AudioLine is supported
-			if (!AudioSystem.isLineSupported(info))  throw new Exception("Line " + info + " not supported.");
+			if (!AudioSystem.isLineSupported(info))  Log.warning("Line " + info + " not supported.");
 
 			try 
 			{
@@ -67,11 +79,11 @@ public class JOrbisPlayer {
 			} 
 			catch (LineUnavailableException ex) 
 			{
-				throw new Exception("Unable to open the sourceDataLine: " + ex);
+				Log.warning("Unable to open the sourceDataLine: " + ex);
 			} 
 			catch (IllegalArgumentException ex) 
 			{
-				throw new Exception("Illegal Argument: " + ex);
+				Log.warning("Illegal Argument: " + ex);
 			}
 
 			this.rate = rate;
@@ -81,6 +93,10 @@ public class JOrbisPlayer {
 		{
 			Log.warning("Initialize Java Sound - " + e);
 		}
+	}
+
+	public SourceDataLine getOutputLine() {
+		return outputLine;
 	}
 
 	private SourceDataLine getOutputLine(int channels, int rate) 

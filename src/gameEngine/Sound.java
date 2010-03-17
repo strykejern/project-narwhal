@@ -18,10 +18,9 @@
 //********************************************************************************************
 package gameEngine;
 
-import java.io.InputStream;
-import javax.sound.sampled.*;
-import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.net.URL;
+import javax.sound.sampled.*;
 
 
 /**
@@ -34,7 +33,7 @@ public class Sound
 {
 	public static boolean enabled = false;
 	private static float soundVolume = 0.75f;
-	private static float musicVolume = 0.50f;
+	private static float musicVolume = 0.25f;
 	private static Sound music;
 	
 	/**
@@ -53,66 +52,71 @@ public class Sound
 		if(song == null) return;
 		
 		//Play the next song
-		music.setVolume( musicVolume );
 		music.playLooped();
+		music.setVolume(musicVolume);
 	}
 	public static void stopMusic(){
 		if(music != null) music.stop();
 	}
 	
 	/** The sound itself as a audio stream */
-	private OggClip ogg = null;
-	private Clip    raw = null;
+	private Thread audio;
+	private AudioInputStream stream;
+	private SourceDataLine line;
+	private boolean looping = false;
+	private boolean stopped = true;
 	
-	/** JJ> Constructor that opens an input stream  to the audio file.
-	 * 
-	 * @param fileName: path to the file to be loaded
+	/** JJ> Constructor that opens an input stream to the audio file and ready all data so that it can
+	 * 		be played.
+	 * @param fileName Path to the file to be loaded
 	 */
 	public Sound( String fileName ) {
 		
-		//First try to load it as a ogg vorbis file
-		if( fileName.endsWith(".ogg") ) try 
+		//Figure out if we are loading a ogg file
+		boolean oggFile = false;		
+		if( fileName.endsWith(".ogg") ) oggFile = true;
+
+		try
 		{
-			InputStream stream = ResourceMananger.getInputStream(fileName);
-			ogg = new OggClip(stream);
-		} 
-		catch (Exception e) { Log.error( "Loading ogg file failed - " + e.toString() ); }
-		
-		//Nope, try to load it raw! Roar!
-		else try
-		{
-			AudioInputStream audioStream = AudioSystem.getAudioInputStream(
-					ResourceMananger.getFilePath(fileName) );
+			//First make sure the file actually exists
+			URL path = ResourceMananger.getFilePath(fileName);
+			if( path == null ) throw new Exception("Could not find file - " + fileName );
+			
+			//Try to open a stream to it
+			AudioInputStream rawstream = AudioSystem.getAudioInputStream(ResourceMananger.getInputStream(fileName));
+			AudioFormat baseFormat = rawstream.getFormat();
+	        
+			//Decode it if it is in OGG Vorbis format
+			if( oggFile )
+			{
+				//The ogg Vorbis format
+		        baseFormat = new AudioFormat(
+	                AudioFormat.Encoding.PCM_SIGNED,
+	                baseFormat.getSampleRate(),
+	                16,
+	                baseFormat.getChannels(),
+	                baseFormat.getChannels() * 2,
+	                baseFormat.getSampleRate(),
+	                false);
+			}
+			
+	         //Get AudioInputStream that will be decoded by underlying VorbisSPI
+	        stream = AudioSystem.getAudioInputStream(baseFormat, rawstream);
+	        stream.mark( Integer.MAX_VALUE );
+	        
+			//Open the line to the stream
+			DataLine.Info info = new DataLine.Info(SourceDataLine.class, stream.getFormat(), ((int) stream.getFrameLength() * stream.getFormat().getFrameSize()));
+			line = (SourceDataLine) AudioSystem.getLine(info);
+			line.open(stream.getFormat());
+			line.start();
 
-		    // At present, ALAW and ULAW encodings must be converted
-		    // to PCM_SIGNED before it can be played
-		    AudioFormat format = audioStream.getFormat();
-		    if (format.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
-		        format = new AudioFormat(
-		                AudioFormat.Encoding.PCM_SIGNED,
-		                format.getSampleRate(),
-		                format.getSampleSizeInBits()*2,
-		                format.getChannels(),
-		                format.getFrameSize()*2,
-		                format.getFrameRate(),
-		                true);        // big endian
-		        audioStream = AudioSystem.getAudioInputStream(format, audioStream);
-		    }
-
-		    // Create the clip
-		    DataLine.Info info = new DataLine.Info(
-		        Clip.class, audioStream.getFormat(), ((int)audioStream.getFrameLength()*format.getFrameSize()));
-		    raw = (Clip) AudioSystem.getLine(info);
-
-		    // This method does not return until the audio file is completely loaded
-		    raw.open(audioStream);
+			//Set default sound volume
+			setVolume(soundVolume);
    		}
 	    catch (Exception e) { Log.warning( "Loading audio file failed - " + e.toString() ); }
-	    
-	    //Set to default sound volume
-	    setVolume(soundVolume);
 	}
 
+	
 	/**
 	 * JJ> Attempt to set the global gain (volume ish) for the play back. If the control is not supported
 	 *     this method has no effect. 1.0 will set maximum gain, 0.0 minimum gain
@@ -120,17 +124,14 @@ public class Sound
 	 * @param gain The gain value
 	 */
 	public void setVolume(float gain) {
-		
+		if(line == null) return;
+
 		//Clip the volume to between 0.00 and 1.00
 		gain = Math.max(0.00f, Math.min(gain, 1.00f));
-		FloatControl gainControl = null;
-				
-		//Get the correct controller (ogg or raw)
-		if( raw != null )    gainControl = (FloatControl)raw.getControl(FloatControl.Type.MASTER_GAIN);
-		else if(ogg != null) gainControl = (FloatControl)ogg.getControl(FloatControl.Type.MASTER_GAIN);
-		
+		FloatControl gainControl = (FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN);
+	
 		//Now set it
-		if( gainControl != null ) gainControl.setValue((float)(Math.log(gain)/Math.log(10.0)*20.0));
+		gainControl.setValue((float)(Math.log(gain)/Math.log(10.0)*20.0));
 	}
 
 	/**
@@ -140,41 +141,75 @@ public class Sound
 	 * @param balance The balance value
 	 */
 	public void setBalance(float balance) {
+		if(line == null) return;
 		
 		//Clip the volume to between -1.00 and 1.00
 		balance = Math.max(-1.00f, Math.min(balance, 1.00f));
-		FloatControl gainControl = null;
-		
-		//Get the correct controller (ogg or raw)
-		if( raw != null )    gainControl = (FloatControl)raw.getControl(FloatControl.Type.BALANCE);
-		else if(ogg != null) gainControl = (FloatControl)ogg.getControl(FloatControl.Type.BALANCE);
-		
+		FloatControl gainControl = (FloatControl)line.getControl(FloatControl.Type.BALANCE);
+	
 		//Now set it
-		if(gainControl != null) gainControl.setValue(balance);
+		gainControl.setValue(balance);
 	}
 
 	/**
 	 *  JJ> Figures out if the sound is currently playing
 	 */
 	public boolean isPlaying() {
-		if( raw != null ) 	   return raw.isRunning();
-		else if( ogg != null ) return !ogg.stopped();
-		return false;
+		return !stopped;
 	}
 	
 	/**
 	 * JJ> Play the clip once, but only if it has finished playing
 	 */
 	public void play() {
-		if(!enabled) return;
+		if(!enabled || line == null || !stopped ) return;
 		
-		if( raw != null )
+		//Create a new thread for this sound to be played within
+		audio = new Thread()
 		{
-			//Reset position
-			if( raw.getMicrosecondLength() <= raw.getMicrosecondPosition() ) raw.setMicrosecondPosition(0);
-			raw.start();			
-		}
-		else if( ogg != null && ogg.stopped() ) ogg.play();
+			public void run()
+			{
+				//Try to open the sound
+				try 
+				{
+					line.open(stream.getFormat());
+				} 
+				catch (Exception e) 
+				{
+					Log.warning("Cannot play sound: " + e);
+					return;
+				}
+				line.start();
+				stopped = false;
+				
+				//This might be do once or in infinity, depending on the loop variable
+				do
+				{
+					//This actually plays the sound
+					int len = 0;
+					byte[] buffer = new byte[1024 * stream.getFormat().getFrameSize()];
+					try 
+					{
+						//Keep playing as long as there is data left and sound has not been stopped
+						while (!stopped && enabled && (len = stream.read(buffer, 0, buffer.length)) != -1) 
+							line.write(buffer, 0, len);
+					} 
+					catch (Exception e) { Log.warning("Error playing sound: " + e); }
+				} while(looping);
+				
+				//Done playing sound
+				line.drain();
+				line.stop();
+				line.close();
+				try { stream.reset(); } 
+				catch (IOException e) { /*Ignore*/ }
+				stopped = true;
+			}
+		};
+		
+		//Begin said thread
+		audio.setDaemon(true);
+		audio.start();
 	}
 
 	/**
@@ -182,166 +217,35 @@ public class Sound
 	 */
 	public void playLooped() {		
 		if(!enabled) return;
-		
-		if( raw != null ) 	   raw.loop(Clip.LOOP_CONTINUOUSLY);
-		else if( ogg != null ) ogg.loop(Clip.LOOP_CONTINUOUSLY);
+		looping = true;
+		play();
 	}
 	
 	/**
 	 * JJ> to stop the audio.
 	 */
 	public void stop() {
-		if( raw != null ) 	   raw.stop();
-		else if( ogg != null ) ogg.stop();
+		looping = false;
+		stopped = true;
 	}
 	
 	/**
 	 * JJ> Disposes this Sound freeing any resources it previously used. It will flush 
 	 *     any AudioStreams referenced to it as well.
 	 */
-	public void dispose()
-	{
-		if( raw != null ) 	   
+	public void dispose() {
+		try
 		{
-			raw.stop();
-			raw.close();
-			raw.flush();
+			audio = null;
+			line.stop();
+			line.close();
+			line.flush();
+			stream.close();	
 		}
-		else if( ogg == null ) 
+		catch( Exception e )
 		{
-			ogg.stop();
-			ogg.close();
+			Log.warning("Disposing of sound: " + e);
 		}
 	}
 	
-	/**
-	 * Simple Clip player for OGG's. 
-	 * @author kevin, heavily modified by Johan Jansen
-	 */
-	class OggClip {
-		private BufferedInputStream bitStream;
-		Thread player;
-		private JOrbisPlayer oggPlay;
-		
-		/**
-		 * Create a new clip based on a reference into the class path
-		 * 
-		 * @param in The stream from which the ogg can be read from
-		 * @throws IOException Indicated a failure to read from the stream
-		 */
-		public OggClip(InputStream in) throws IOException {
-			if (in == null) throw new IOException("Couldn't find input source.");
-			
-			//Convert the input stream to a bit stream
-			bitStream = new BufferedInputStream(in);
-			bitStream.mark(Integer.MAX_VALUE);
-			
-			//Init our player
-			oggPlay = new JOrbisPlayer( bitStream );
-		}
-		
-		public Control getControl(FloatControl.Type type) {
-			
-			//We need a stream of sound to get control over
-			if( oggPlay.outputLine == null ) return null;
-
-			return oggPlay.outputLine.getControl(type);
-		}
-				
-		/**
-		 * Check if the clip has been stopped
-		 * 
-		 * @return True if the clip has been stopped
-		 */
-		public boolean stopped() {
-			return ( (player == null) || ( !player.isAlive() ) );
-		}
-					
-		/**
-		 * JJ> Play the clip once
-		 */
-		public void play() { 
-			loop(1);
-		}
-		
-		/**
-		 * JJ> Loop clip
-		 * @param loop How many times
-		 */
-		public void loop(final int loop) {
-			
-			//Stop any existing stream
-			stop();
-			
-			try 
-			{
-				bitStream.reset();
-			} 
-			catch (IOException e) 
-			{
-				// ignore if no mark
-			}			
-			
-			//Create a new seperate thread to play sound
-			final OggClip ogg = this;
-			player = new Thread() 
-			{
-				public void run() 
-				{
-					int loopCount = 0;
-					while (player == Thread.currentThread()) 
-					{
-						//Stop looping if we reached the correct amount
-						if(loop != Clip.LOOP_CONTINUOUSLY)
-						{
-							if(loop < loopCount) break;
-							loopCount++;
-						}
-						
-						//Play the sound!
-						try 
-						{
-							oggPlay.playStream(ogg, Thread.currentThread());
-							bitStream.reset();
-						} 
-						catch (Exception e) 
-						{
-							Log.warning("Play ogg sound - " + e);
-							player = null;
-							break;
-						}							
-					}
-				}
-			};
-			
-			player.setDaemon(true);
-			player.start();
-		}
-		
-		/**
-		 * Stop the clip playing
-		 */
-		public void stop() 
-		{
-			if ( stopped() ) return;
-			
-			player = null;
-			if(oggPlay.outputLine != null) oggPlay.outputLine.drain();
-		}
-		
-		/**
-		 * Close the stream being played from
-		 */
-		public void close() 
-		{
-			try 
-			{
-				if (bitStream != null) bitStream.close();
-			} 
-			catch (IOException e) 
-			{
-				Log.warning("Could not close ogg bitstream: " + e);
-			}
-		}
-	}
 }
