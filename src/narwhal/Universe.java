@@ -194,7 +194,7 @@ public class Universe {
 	}
 
 	public void drawBounds(Graphics2D g, Vector pos){
-		boolean debug = false;
+		boolean debug = true;
 		
 		if(!debug) return;
 				
@@ -208,7 +208,7 @@ public class Universe {
 		for(int i = 0; i < universeSize; i++)
 			for(int j = 0; j < universeSize; j++)
 			{
-				g.drawRect(i*SCREEN_X - pos.getX(), j*SCREEN_Y - pos.getY(), SCREEN_X, SCREEN_Y);
+				g.drawRect(i*SCREEN_X + pos.getX(), j*SCREEN_Y + pos.getY(), SCREEN_X, SCREEN_Y);
 			}
 		
 	}

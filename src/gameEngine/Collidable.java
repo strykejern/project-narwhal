@@ -178,8 +178,7 @@ public abstract class Collidable {
 	}
 
 	
-	private boolean doCircleCollision(Collidable object)
-	{
+	private boolean doCircleCollision(Collidable object){
 		switch( object.shape )
 		{
 			
