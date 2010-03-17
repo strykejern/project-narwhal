@@ -19,7 +19,6 @@
 package narwhal;
 
 import gameEngine.*;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -28,12 +27,11 @@ public class Planet extends GameObject {
 	
 	private static void loadPlanets() {
 		
-		File[] fileList = ResourceMananger.getFileList("/data/planets/");
+		String[] fileList = ResourceMananger.getFileList("/data/planets/");
 		planetImages = new ArrayList<Image2D>();
-		for( File f : fileList )
+		for( String fileName : fileList )
 		{
-			if( !f.isFile() ) continue;
-			Image2D load = new Image2D( "/data/planets/" + f.getName() );
+			Image2D load = new Image2D( fileName );
 			planetImages.add( load ) ;
 		}
 	}

@@ -85,14 +85,13 @@ public class Universe {
 	}
 		
 	private void loadNebulas(){
-		File[] fileList = ResourceMananger.getFileList("/data/nebula");
+		String[] fileList = ResourceMananger.getFileList("/data/nebula/");
 
 		//Load nebulas into memory
 		nebulaList = new ArrayList<Image2D>();
-		for( File f : fileList )
+		for( String fileName : fileList )
 		{
-			if( !f.isFile() ) continue;
-			Image2D load = new Image2D("/data/nebula/" + f.getName(), Video.getScreenWidth(), Video.getScreenHeight());
+			Image2D load = new Image2D(fileName, Video.getScreenWidth(), Video.getScreenHeight());
 			nebulaList.add( load );
 		}
 	}
@@ -195,7 +194,10 @@ public class Universe {
 	}
 
 	public void drawBounds(Graphics2D g, Vector pos){
-		if(true) return;
+		boolean debug = false;
+		
+		if(!debug) return;
+				
 		final int SCREEN_X = Video.getScreenWidth();			//Screen width
 		final int SCREEN_Y = Video.getScreenHeight();		//Screen height
 		

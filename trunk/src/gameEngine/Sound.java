@@ -58,11 +58,11 @@ public class Sound
 	 * @param fileName: path to the file to be loaded
 	 */
 	public Sound( String fileName ) {
-			InputStream stream = ResourceMananger.getInputStream(fileName);
 		
 			//First try to load it as a ogg vorbis file
 			if( fileName.endsWith(".ogg") ) try 
 			{
+				InputStream stream = ResourceMananger.getInputStream(fileName);
 				ogg = new OggClip(stream);
    			    ogg.setGain( 0.65f );
 			} 
@@ -71,8 +71,9 @@ public class Sound
 			//Nope, try to load it raw! Roar!
 			else try
    			{
-   				AudioInputStream audioStream = AudioSystem.getAudioInputStream( stream );
-   				
+   				AudioInputStream audioStream = AudioSystem.getAudioInputStream(
+   						ResourceMananger.getFilePath(fileName) );
+
    			    // At present, ALAW and ULAW encodings must be converted
    			    // to PCM_SIGNED before it can be played
    			    AudioFormat format = audioStream.getFormat();
@@ -160,7 +161,6 @@ public class Sound
 			raw.stop();
 			raw.close();
 			raw.flush();
-			raw.drain();
 		}
 		else if( ogg == null ) 
 		{

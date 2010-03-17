@@ -7,7 +7,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
@@ -79,7 +78,7 @@ public class MainMenu {
 			if( !ResourceMananger.fileExists("/data/font.ttf") ) throw new Exception("Missing font file! (/data/font.ttf)");
 			
 			//Load our awesome font
-			menuFont = Font.createFont(Font.TRUETYPE_FONT, new File(ResourceMananger.getFileURI("/data/font.ttf")) );
+			menuFont = Font.createFont(Font.TRUETYPE_FONT, ResourceMananger.getInputStream("/data/font.ttf") );
 			menuFont = menuFont.deriveFont(Font.BOLD, 14);
 			return true;
 		} 
