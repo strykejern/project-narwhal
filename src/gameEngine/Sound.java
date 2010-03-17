@@ -44,6 +44,9 @@ public class Sound
 		//Play the next song
 		music.setVolume( 0.75f );
 		music.playLooped();
+		
+		//DEBUG
+		music.setVolume( 0 );
 	}
 	public static void stopMusic(){
 		if(music != null) music.stop();
@@ -129,9 +132,10 @@ public class Sound
 		if( raw != null )
 		{
 			if( raw.getMicrosecondLength() <= raw.getMicrosecondPosition() ) raw.setMicrosecondPosition(0);
-			raw.start();
+			raw.start();			
 		}
 		else if( ogg != null && ogg.stopped() ) ogg.play();
+		setVolume(0);//TODO: DEBUG
 	}
 
 	/**

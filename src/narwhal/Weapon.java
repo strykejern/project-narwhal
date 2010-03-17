@@ -30,6 +30,6 @@ public class Weapon {
 		Vector baseSpeed = speed.clone();
 		speed = new Vector(20.0f, direction, true);
 		speed.add(baseSpeed);
-		particleList.add( new Particle(pos.clone(), particle, 200, 1.0f, -0.01f, direction, 0, speed ) );
+		particleList.add( new Particle(pos.clone(), particle, 200, 0.75f, -0.01f, direction, 0, speed ) );
 	}
 }
