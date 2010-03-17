@@ -55,6 +55,7 @@ public class Camera {
 		// Draw background
 		background.drawBackground(g, cameraPos);
 		
+		int count = 0; // For debug purposes
 		// Draw all entities
 		for (GameObject entity : entities)
 		{
@@ -63,6 +64,7 @@ public class Camera {
 			{
 				entity.draw(g, entityOffset);
 				entity.drawCollision(g, entityOffset);
+				count++;
 			}
 		}
 		
@@ -76,13 +78,14 @@ public class Camera {
 		g.drawString("cameraPos X: " + cameraPos.getX() + " Y: " + cameraPos.getY(), 5, 20);
 		g.drawString("shipPos       X: " + entities.get(0).pos.getX() + " Y: " + entities.get(0).pos.getY(), 5, 30);
 		g.drawString("PlanetPos   X: " + entities.get(1).pos.getX() + " Y: " + entities.get(1).pos.getY(), 5, 40);
+		g.drawString("Drawn entities: " + count, 5, 60);
 	}
 
 	private Vector isInFrame(GameObject entity){
 		Vector topLeft  = entity.pos;
-		Vector botRight = entity.pos.plus(entity.size).returnOverflowWithin(universeBotRight);
-		Vector botLeft  = entity.pos.plus(new Vector(0, botRight.y)).returnOverflowWithin(universeBotRight);
-		Vector topRight = entity.pos.plus(new Vector(botRight.x, 0)).returnOverflowWithin(universeBotRight);
+		Vector botRight = topLeft.plus(new Vector(entity.image.getWidth(), entity.image.getHeight())).returnOverflowWithin(universeBotRight);
+		Vector botLeft  = topLeft.plus(new Vector(0, botRight.y)).returnOverflowWithin(universeBotRight);
+		Vector topRight = topLeft.plus(new Vector(botRight.x, 0)).returnOverflowWithin(universeBotRight);
 		
 		if (topLeft.isInsideRect( cameraPos, cameraPos.plus(Video.getResolutionVector()))) return cameraPos;
 		if (botRight.isInsideRect(cameraPos, cameraPos.plus(Video.getResolutionVector())))
@@ -160,13 +163,19 @@ public class Camera {
 			
 			if (botRight.isTopLeftOf(cameraBotRight)) 
 				return cameraPos;
+			
+			if (botLeft.isTopRightOf(cameraBotLeft))
+				return cameraPos;
+			
+			if (topRight.isBotLeftOf(cameraTopRight))
+				return cameraPos;
 		}
 		return null;
 	}
 	
 	private void updateCameraVectors(){
-		cameraPos.x = follow.pos.x - ((float)Video.getScreenWidth() / 2f);
-		cameraPos.y = follow.pos.y - ((float)Video.getScreenHeight() / 2f);
+		cameraPos.x = follow.pos.x - ((float)Video.getScreenWidth() / 2f) + follow.image.getWidth()/2;
+		cameraPos.y = follow.pos.y - ((float)Video.getScreenHeight() / 2f) + follow.image.getHeight()/2;
 		cameraPos.overflowWithin(background.getUniverseSize());
 		calculateCameraOverflow();
 		
