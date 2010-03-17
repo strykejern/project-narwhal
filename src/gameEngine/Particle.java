@@ -25,7 +25,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.VolatileImage;
-import java.io.File;
 import java.util.HashMap;
 
 import javax.swing.ImageIcon;
@@ -39,22 +38,20 @@ public class Particle {
 	 * JJ> Loads all particle images into a hash map for later use
 	 */
 	static public void loadParticles() {
-		File[] fileList = ResourceMananger.getFileList("/data/particles");
+		String[] fileList = ResourceMananger.getFileList("/data/particles/");
 		
 		//Make sure it is removed from memory
 		if( particleMap != null ) particleMap.clear();
 		
 		//Load all particles into the hash map
 		particleMap = new HashMap<Integer, ImageIcon>();
-		for( File f : fileList )
+		for( String fileName : fileList )
 		{
-			if( !f.isFile() ) continue;
-			ImageIcon loadGraphic = new ImageIcon( f.toString() );
+			ImageIcon loadGraphic = new ImageIcon(ResourceMananger.getFilePath(fileName));
 			
 			//Trim away the file extension (.jpg, .png, etc.) and the file path
-			String fileName = f.getName();
-			fileName = fileName.substring(fileName.lastIndexOf('\\')+1, fileName.length()-4 );
-
+			fileName = fileName.substring(fileName.lastIndexOf('/')+1, fileName.length()-4 );
+			
 			//Put the image into a hash map
 			particleMap.put( fileName.hashCode(), loadGraphic );
 		}

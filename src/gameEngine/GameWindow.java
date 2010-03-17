@@ -62,7 +62,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 	public static void main(String[] args) {
     	//Initialize the logging system, do this first so that error logging happens correctly.
     	Log.initialize();
-
+    	
 		//Now initialize Video settings
         Video.initialize();
         Video.setVideoQuality( VideoQuality.VIDEO_NORMAL );
