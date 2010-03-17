@@ -85,7 +85,13 @@ public class Camera {
 		Vector topRight = entity.pos.plus(new Vector(botRight.x, 0)).returnOverflowWithin(universeBotRight);
 		
 		if (topLeft.isInsideRect( cameraPos, cameraPos.plus(Video.getResolutionVector()))) return cameraPos;
-		if (botRight.isInsideRect(cameraPos, cameraPos.plus(Video.getResolutionVector()))) return cameraPos;
+		if (botRight.isInsideRect(cameraPos, cameraPos.plus(Video.getResolutionVector())))
+		{
+			if (topLeft.isTopLeftOf(cameraBotRight))
+				return cameraPos;
+			else
+				return background.getUniverseSize().plus(cameraPos);
+		}
 		
 		// Where is the bottom right part of the camera in relation to the top left
 		Vector cameraRelation = cameraBotRight.minus(cameraPos);
