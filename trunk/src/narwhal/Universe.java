@@ -19,10 +19,8 @@
 package narwhal;
 
 import gameEngine.*;
-import gameEngine.Video.VideoQuality;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
 import java.io.*;
 import java.util.ArrayList;
@@ -285,7 +283,6 @@ public class Universe {
 		float uniX = Video.getScreenWidth()*universeSize;
 		float uniY = Video.getScreenHeight()*universeSize;
 		Vector pos = position.clone();
-		//pos.negate();
 		
 		boolean u = false;
 		boolean d = false;
