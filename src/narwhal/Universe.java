@@ -23,6 +23,7 @@ import gameEngine.Video.VideoQuality;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.VolatileImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
@@ -127,10 +128,13 @@ public class Universe {
 		ArrayList<ImageIcon> tmpStars = new ArrayList<ImageIcon>();
 		for (int s = 1; s < 40; ++s)
 		{
+			VolatileImage star = Video.createVolatileImage(s, s);
+			Graphics2D starGraph = star.createGraphics();
 			for (int c = 0; c < 256; c += 16)
 			{
-				BufferedImage star = new BufferedImage(s, s, BufferedImage.TYPE_INT_ARGB);
-				Graphics2D starGraph = star.createGraphics();
+				//Clear background
+				starGraph.setBackground(new Color(0,0,0,0));
+				starGraph.clearRect(0, 0, star.getWidth(), star.getHeight());
 				
 				Color col;
 				int rareStar = rand.nextInt(20);	
@@ -143,16 +147,19 @@ public class Universe {
 					starGraph.fillOval(k, k, s-(2*k), s-(2*k));
 				}
 				
-				tmpStars.add(new ImageIcon(star));
-				starGraph.dispose();
+				//TODO: bad! it seems 55*256 elements are added to this ArrayList
+				tmpStars.add(new ImageIcon(star.getSnapshot()));
 			}
+			
+			//Release resources
+			starGraph.dispose();
 		}
-		
+				
 		stars = new ImageIcon[0];
 		stars = tmpStars.toArray(stars);
 		
 		// Writing stars to file
-		if (!starFile.exists())
+		if ( !starFile.exists() )
 		{
 			try
 			{
@@ -229,12 +236,15 @@ public class Universe {
 			{
 				try
 				{
-			    	BufferedImage buffer;
-					if( Video.getQualityMode() == VideoQuality.VIDEO_HIGH )  
+					Image buffer = Video.createVolatileImage(Video.getScreenWidth(), Video.getScreenHeight());
+					
+					/*if( Video.getQualityMode() == VideoQuality.VIDEO_HIGH )  
 						buffer = new BufferedImage(Video.getScreenWidth(), Video.getScreenHeight(), BufferedImage.TYPE_INT_ARGB);		
 					else 							   
 						buffer = new BufferedImage(Video.getScreenWidth(), Video.getScreenHeight(), BufferedImage.TYPE_USHORT_555_RGB);
-		    		Graphics2D g = buffer.createGraphics();
+		    		*/
+					
+		    		Graphics2D g = (Graphics2D)buffer.getGraphics();
 		        	
 		            //I: Nebula (10% chance) or Black background (90%)
 	    			g.setColor(Color.BLACK);
@@ -243,12 +253,12 @@ public class Universe {
 	
 		    		//II: Stars
 		    		drawRandomStarfield(rand, g);
-		    		
-		    		//All done!
-		    		g.dispose();
+		    				    		
 		    		universe[i][j] = buffer;
 		    		bgPos[i][j] = new Vector(i*Video.getScreenWidth(), j*Video.getScreenHeight());
-		    		buffer = null;
+
+		    		//All done! Free any resources we have used
+		    		g.dispose();
 				}
 	    	    catch (OutOfMemoryError e) 
 	    	    {
