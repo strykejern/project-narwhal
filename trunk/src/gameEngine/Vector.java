@@ -39,9 +39,17 @@ public class Vector {
     	return new Vector(x,y);
     }
     
+    public boolean equals(Vector vec){
+    	return x == vec.x && y == vec.y;
+    }
+    
     public void negate() {
         x = -x;
         y = -y;
+    }
+    
+    public Vector negated(){
+    	return new Vector(-x, -y);
     }
     
 	public void add(Vector v){
@@ -147,6 +155,11 @@ public class Vector {
 		return false;
 	}
 	
+	public boolean isInsideRect(Vector size){
+		if (x > 0 && x < size.x && y > 0 && y < size.y) return true;
+		return false;
+	}
+	
 	public void overflowWithin(Vector vec){
 		if (isInsideRect(new Vector(), vec)) return;
 		while (x < 0) 	  x += vec.x;
@@ -163,5 +176,48 @@ public class Vector {
 		while (clone.y < 0) 	clone.y += vec.y;
 		while (clone.y > vec.y) clone.y -= vec.y;
 		return clone;
+	}
+	
+	public boolean lessThan(Vector vec){
+		return x < vec.x && y < vec.y;
+	}
+	
+	public boolean lessThanEither(Vector vec){
+		return x < vec.x || y < vec.y;
+	}
+	
+	public void flipX(){
+		x = -x;
+	}
+	
+	public void flipY(){
+		y = -y;
+	}
+	
+	public Vector flippedX(){
+		return new Vector(-x, y);
+	}
+	
+	public Vector flippedY(){
+		return new Vector(x, -y);
+	}
+	
+	// Methods for game graphics with origin at top left of screen
+	public boolean isTopLeftOf(Vector vec){
+		return lessThan(vec);
+	}
+	
+	public boolean isBotRightOf(Vector vec){
+		return !lessThanEither(vec);
+	}
+	
+	public boolean isBotLeftOf(Vector vec){
+		if (x < vec.x && y > vec.y) return true;
+		return false;
+	}
+	
+	public boolean isTopRightOf(Vector vec){
+		if (x > vec.x && y < vec.y) return true;
+		return false;
 	}
 }

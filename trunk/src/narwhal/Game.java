@@ -62,6 +62,7 @@ public class Game {
 		
 		//Generate random planets
 		entities.add( new Planet(new Vector(800*4-50, 600*4-50), System.currentTimeMillis()) );
+		entities.add( new Planet(new Vector(200, 200), System.currentTimeMillis()) );
 		
 		// Initialize the HUD and bind it to the player's ship
 		hud = new UI(player);
@@ -86,7 +87,7 @@ public class Game {
 		
 		return gameState.GAME_PLAYING;
 	}
-		
+	
 	public void draw(Graphics2D g){
 		viewPort.drawView(g);
 		keys.drawCrosshair(g);
