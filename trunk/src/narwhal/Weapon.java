@@ -1,5 +1,10 @@
 package narwhal;
 
+import gameEngine.Particle;
+import gameEngine.Vector;
+
+import java.util.ArrayList;
+
 public class Weapon {
 	public float energyDamage;
 	public float damage;
@@ -18,5 +23,13 @@ public class Weapon {
 		this.particle = particle;
 		shieldMul = 1.00f;
 		lifeMul = 1.00f;
+	}
+
+	public void spawnParticle(ArrayList<Particle> particleList, Vector pos, float direction, Vector speed) {
+		direction %= 2 * Math.PI;
+		Vector baseSpeed = speed.clone();
+		speed = new Vector(20.0f, direction, true);
+		speed.add(baseSpeed);
+		particleList.add( new Particle(pos.clone(), particle, 200, 1.0f, -0.01f, direction, 0, speed ) );
 	}
 }
