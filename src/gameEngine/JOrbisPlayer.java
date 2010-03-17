@@ -16,8 +16,8 @@ import com.jcraft.jorbis.*;
 /****************************************************************************************
  * JJ> Everything below is taken from the JOrbis Player
  ***************************************************************************************/
-class OggPlayer
-{
+public class JOrbisPlayer {
+	
 	private final int BUFSIZE = 4096 * 2;
 	private int convsize = BUFSIZE * 2;
 	private byte[] convbuffer = new byte[convsize];
@@ -35,12 +35,14 @@ class OggPlayer
 	private int channels;
 	
 	//Pointers
-	private SourceDataLine outputLine;
-	private BufferedInputStream bitStream = null;
+	public SourceDataLine outputLine;
+	private BufferedInputStream bitStream;
 
 	//JJ> Constructor
-	public OggPlayer(){
+	public JOrbisPlayer(BufferedInputStream stream){
 		resetData();
+		outputLine = null;
+		bitStream = stream;
 	}
 
 	private void initJavaSound(int channels, int rate) {
@@ -74,13 +76,10 @@ class OggPlayer
 
 			this.rate = rate;
 			this.channels = channels;
-			
-			//setBalance(balance);
-			//setGain(gain);
 		} 
-		catch (Exception ee) 
+		catch (Exception e) 
 		{
-			System.out.println(ee);
+			Log.warning("Initialize Java Sound - " + e);
 		}
 	}
 
@@ -89,12 +88,15 @@ class OggPlayer
 		if (outputLine == null || this.rate != rate
 				|| this.channels != channels) 
 		{
+			//Stop outputline
 			if (outputLine != null) 
 			{
 				outputLine.drain();
 				outputLine.stop();
 				outputLine.close();
 			}
+			
+			//Start new outputline
 			initJavaSound(channels, rate);
 			outputLine.start();
 		}
@@ -119,17 +121,13 @@ class OggPlayer
 	    oy.init();
 	}
 
-	public void playStream(OggClip ogg) throws Exception {
+	public void playStream(OggClip ogg, Thread me) throws Exception {
 		boolean chained = false;
-		Thread me = Thread.currentThread();
 		resetData();
 
 		while (true) 
 		{
-			if (ogg.checkState()) 
-			{
-				return;
-			}
+			if ( ogg.stopped() ) return;
 			
 			int eos = 0;
 
@@ -181,7 +179,7 @@ class OggPlayer
 			{
 				while (i < 2) 
 				{
-					if ( ogg.checkState() ) return;
+					if ( ogg.stopped() ) return;
 					
 					int result = oy.pageout(og);
 					
@@ -255,7 +253,7 @@ class OggPlayer
 
 						while (true) 
 						{
-							if (ogg.checkState()) return;
+							if (ogg.stopped()) return;
 							
 							result = os.packetout(op);
 							if (result == 0) break; // need more data
@@ -281,7 +279,7 @@ class OggPlayer
 								}
 								while ((samples = vd.synthesis_pcmout(_pcmf,_index)) > 0) 
 								{
-									if (ogg.checkState()) return;
+									if ( ogg.stopped() ) return;
 									
 									float[][] pcmf = _pcmf[0];
 									int bout = (samples < convsize ? samples : convsize);
