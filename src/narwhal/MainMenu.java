@@ -29,7 +29,7 @@ public class MainMenu {
 		this.key = key;
 			
 		//Menu music
-//		Sound.playMusic( new Sound("/data/menu.ogg") );
+		Music.play( new Sound("/data/menu.ogg") );
     	
     	//Load button sounds
     	buttonHover = new Sound("/data/hover.au");
@@ -60,13 +60,19 @@ public class MainMenu {
 		if( Video.getQualityMode() == VideoQuality.VIDEO_LOW ) gfxText = "Graphics: Low";
 		else if( Video.getQualityMode() == VideoQuality.VIDEO_HIGH ) gfxText = "Graphics: High";
 		
-    	pos = new Vector( Video.getScreenWidth()/2, Video.getScreenHeight()/3 );
+    	String sndText = "Sound: On";
+		if( !Sound.enabled ) gfxText = "Sound: Off";
+
+		pos = new Vector( Video.getScreenWidth()/2, Video.getScreenHeight()/3 );
     	startPos = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2 );
     	buttonList.put( ButtonType.BUTTON_GRAPHICS, new Button(pos, size, gfxText, ButtonType.BUTTON_GRAPHICS, startPos ) );
     	pos.y += size.y*1.1f;
+    	buttonList.put( ButtonType.BUTTON_SOUND, new Button(pos, size, sndText, ButtonType.BUTTON_SOUND, startPos ) );
+    	pos.y += size.y*1.1f;
     	buttonList.put( ButtonType.BUTTON_MAIN_MENU, new Button(pos, size, "BACK", ButtonType.BUTTON_MAIN_MENU, startPos ) );
     	buttonList.get(ButtonType.BUTTON_GRAPHICS).hide();
-    	buttonList.get(ButtonType.BUTTON_MAIN_MENU).hide();    	
+    	buttonList.get(ButtonType.BUTTON_SOUND).hide();
+    	buttonList.get(ButtonType.BUTTON_MAIN_MENU).hide();
 	}
 
 	//JJ> Prepares our awesome font
@@ -125,6 +131,7 @@ public class MainMenu {
 					{
 						//Fade in the next buttons
 				    	buttonList.get(ButtonType.BUTTON_GRAPHICS).show();
+				    	buttonList.get(ButtonType.BUTTON_SOUND).show();
 				    	buttonList.get(ButtonType.BUTTON_MAIN_MENU).show();
 				    	
 				    	//Fade out the existing buttons
@@ -148,7 +155,18 @@ public class MainMenu {
 				    	
 				    	//Fade out the current buttons
 				    	buttonList.get(ButtonType.BUTTON_GRAPHICS).hide();
+				    	buttonList.get(ButtonType.BUTTON_SOUND).hide();
 				    	buttonList.get(ButtonType.BUTTON_MAIN_MENU).hide();
+						break;
+					}
+					
+					case BUTTON_SOUND:
+					{
+						Sound.enabled = !Sound.enabled;
+						if( Sound.enabled )
+							buttonList.get(ButtonType.BUTTON_SOUND).text = "SOUND: ON";
+						else
+							buttonList.get(ButtonType.BUTTON_SOUND).text = "SOUND: OFF";
 						break;
 					}
 					
@@ -225,7 +243,8 @@ public class MainMenu {
 		BUTTON_EXIT,
 		BUTTON_GFX, 
 		BUTTON_MAIN_MENU,
-		BUTTON_GRAPHICS
+		BUTTON_GRAPHICS,
+		BUTTON_SOUND
 	}
 	
 	class Button {

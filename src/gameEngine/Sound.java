@@ -19,7 +19,6 @@
 package gameEngine;
 
 import java.io.IOException;
-import java.net.URL;
 import javax.sound.sampled.*;
 
 
@@ -31,33 +30,8 @@ import javax.sound.sampled.*;
  */
 public class Sound
 {
-	public static boolean enabled = false;
+	public static boolean enabled = true;
 	private static float soundVolume = 0.75f;
-	private static float musicVolume = 0.25f;
-	private static Sound music;
-	
-	/**
-	 * JJ> Starts looping a music track. only one music track can 
-	 *     be played at the same time
-	 * @param song The Sound object to be looped.
-	 */
-	public static void playMusic(Sound song){
-		if(!enabled) return;
-		
-		//Stop any existing music
-		if(music != null) music.stop();
-		
-		//Set the new song
-		music = song;
-		if(song == null) return;
-		
-		//Play the next song
-		music.playLooped();
-		music.setVolume(musicVolume);
-	}
-	public static void stopMusic(){
-		if(music != null) music.stop();
-	}
 	
 	/** The sound itself as a audio stream */
 	private Thread audio;
@@ -71,17 +45,22 @@ public class Sound
 	 * @param fileName Path to the file to be loaded
 	 */
 	public Sound( String fileName ) {
-		
+
+		//First make sure the file actually exists
+		if( !ResourceMananger.fileExists(fileName) )
+		{
+			Log.warning("Could not find file - " + fileName );
+			return;
+		}
+
 		//Figure out if we are loading a ogg file
 		boolean oggFile = false;		
 		if( fileName.endsWith(".ogg") ) oggFile = true;
 
+		
+		//Load the sound
 		try
-		{
-			//First make sure the file actually exists
-			URL path = ResourceMananger.getFilePath(fileName);
-			if( path == null ) throw new Exception("Could not find file - " + fileName );
-			
+		{			
 			//Try to open a stream to it
 			AudioInputStream rawstream = AudioSystem.getAudioInputStream(ResourceMananger.getInputStream(fileName));
 			AudioFormat baseFormat = rawstream.getFormat();
@@ -102,16 +81,15 @@ public class Sound
 			
 	         //Get AudioInputStream that will be decoded by underlying VorbisSPI
 	        stream = AudioSystem.getAudioInputStream(baseFormat, rawstream);
-	        stream.mark( Integer.MAX_VALUE );
+	        stream.mark( Integer.MAX_VALUE );						//Mark it so it can be reset
 	        
 			//Open the line to the stream
 			DataLine.Info info = new DataLine.Info(SourceDataLine.class, stream.getFormat(), ((int) stream.getFrameLength() * stream.getFormat().getFrameSize()));
 			line = (SourceDataLine) AudioSystem.getLine(info);
 			line.open(stream.getFormat());
-			line.start();
 
 			//Set default sound volume
-			setVolume(soundVolume);
+			setVolume(1.00f);
    		}
 	    catch (Exception e) { Log.warning( "Loading audio file failed - " + e.toString() ); }
 	}
@@ -125,7 +103,26 @@ public class Sound
 	 */
 	public void setVolume(float gain) {
 		if(line == null) return;
+		gain *= soundVolume;
+		
+		//Clip the volume to between 0.00 and 1.00
+		gain = Math.max(0.00f, Math.min(gain, 1.00f));
+		FloatControl gainControl = (FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN);
+	
+		//Now set it
+		gainControl.setValue((float)(Math.log(gain)/Math.log(10.0)*20.0));
+	}
 
+	/**
+	 * JJ> Attempt to set the global gain (volume ish) for the play back. If the control is not supported
+	 *     this method has no effect. 1.0 will set maximum gain, 0.0 minimum gain
+	 *     This function will override the default global sound volume level.
+	 * 
+	 * @param gain The gain value
+	 */
+	public void setVolumeOverride(float gain) {
+		if(line == null) return;
+		
 		//Clip the volume to between 0.00 and 1.00
 		gain = Math.max(0.00f, Math.min(gain, 1.00f));
 		FloatControl gainControl = (FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN);
@@ -162,10 +159,10 @@ public class Sound
 	 * JJ> Play the clip once, but only if it has finished playing
 	 */
 	public void play() {
-		if(!enabled || line == null || !stopped ) return;
+		if( !enabled || line == null ) return;
 		
 		//Create a new thread for this sound to be played within
-		audio = new Thread()
+		Thread audio = new Thread()
 		{
 			public void run()
 			{
