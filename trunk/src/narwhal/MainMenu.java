@@ -61,7 +61,7 @@ public class MainMenu {
 		else if( Video.getQualityMode() == VideoQuality.VIDEO_HIGH ) gfxText = "Graphics: High";
 		
     	String sndText = "Sound: On";
-		if( !Sound.enabled ) gfxText = "Sound: Off";
+		if( !Sound.enabled ) sndText = "Sound: Off";
 
 		pos = new Vector( Video.getScreenWidth()/2, Video.getScreenHeight()/3 );
     	startPos = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2 );
