@@ -1,6 +1,7 @@
 package narwhal;
 
 import gameEngine.Particle;
+import gameEngine.Sound;
 import gameEngine.Vector;
 
 import java.util.ArrayList;
@@ -16,7 +17,10 @@ public class Weapon {
 	public float shieldMul;			//How effective against shields?
 	public float lifeMul;			//How effective against life?
 	
+	private Sound snd;
+	
 	public Weapon(float damage, int cost, int cooldown, String particle) {
+		snd = new Sound("data/blaster.au");
 		this.damage = damage;
 		this.cost = cost;
 		this.cooldown = cooldown;
@@ -31,5 +35,6 @@ public class Weapon {
 		speed = new Vector(20.0f, direction, true);
 		speed.add(baseSpeed);
 		particleList.add( new Particle(pos.clone(), particle, 200, 0.75f, -0.01f, direction, 0, speed ) );
+		snd.play();
 	}
 }

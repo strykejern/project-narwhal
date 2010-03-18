@@ -157,14 +157,12 @@ public class Spaceship extends GameObject{
 		
 		//Ship is on cooldown
 		if( cooldown > 0 ) return;
-		Sound snd = new Sound("data/blaster.au");
-		snd.play();
 		
 		//It'll cost ya
 		cooldown += wpn.cooldown;
 		energy -= wpn.cost;
 
 		//Spawn particle effect
-		wpn.spawnParticle(particleList, pos, direction, speed);
+		wpn.spawnParticle(particleList, new Vector(pos.x + image.getWidth()/2, pos.y + image.getHeight()/2), direction, speed);
 	}
 }

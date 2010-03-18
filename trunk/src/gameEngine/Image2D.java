@@ -284,6 +284,7 @@ public class Image2D {
 				for(int y = 0; y < draw.getHeight(); y++)
 					draw.setRGB( x, y, draw.getRGB(x, y) & colorTint );
 		
+		//Calculate offset so that rotated images stay centered
 		int offsetX = 0;
 		int offsetY = 0;
 		if(currentAngle != 0) 
@@ -291,6 +292,7 @@ public class Image2D {
 			offsetX = (width-baseWidth)/2;
 			offsetY = (height-baseHeight)/2;
 		}
+		
 		//Now actually draw the image
 		g.drawImage(
 				draw,							//Draw the base image (possibly with blur)
