@@ -22,6 +22,8 @@ import gameEngine.*;
 import gameEngine.GameWindow.gameState;
 
 import java.awt.*;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 
@@ -96,5 +98,5 @@ public class Game {
 		//Debug info
 		g.setColor(Color.white);
 		g.drawString("Number of particles: " + particleList.size(), 5, 50);
-	}	
+	}
 }
