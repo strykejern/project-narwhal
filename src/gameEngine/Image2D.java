@@ -24,7 +24,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
-import java.awt.image.VolatileImage;
 
 import javax.swing.ImageIcon;
 
@@ -40,7 +39,7 @@ public class Image2D {
 	        1f/9f, 1f/9f, 1f/9f});
 	
 	private BufferedImage original;					//The image itself
-	private VolatileImage processed;				//The image with effects added (rotation, alpha, etc.)
+	private BufferedImage processed;				//The image with effects added (rotation, alpha, etc.)
 	private int width, height;
 	private int baseWidth, baseHeight;
 
@@ -105,13 +104,12 @@ public class Image2D {
 	}
 		
 	/**
-	 * JJ> Makes sure we have a VolatileImage object to draw on
-	 *     If it got lost, it creates a new one.
+	 * JJ> Makes sure we have a proper place in memory to store our processed image
 	 */
-	private Graphics2D getVolatileMemory() {
-		if( processed == null || processed.contentsLost() || processed.getWidth() != width || processed.getHeight() != height )
+	private Graphics2D getBufferMemory() {
+		if( processed == null || processed.getWidth() != width || processed.getHeight() != height )
 		{
-			processed = Video.createVolatileImage(width, height);
+			processed = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		}
 
         Graphics2D g = processed.createGraphics();
@@ -220,91 +218,86 @@ public class Image2D {
 	 * JJ> Returns this Image2D as a Image instance
 	 * @return the image ready to be drawn with proper rotation and all
 	 */
-	public Image toImage() {
-		
+	final public Image toImage() {
+				
 		//If there are no changes, try to get the old image from memory first
-		if( noChange && processed != null && !processed.contentsLost() )
+		if( noChange && processed != null )
 		{
 			return processed;
 		}
 		
-		//Draw the image with all filters
-		Graphics2D g = getVolatileMemory();
-		
-		//To make life easier
-		BufferedImage draw = original.getSubimage(0, 0, original.getWidth(), original.getHeight());
-		
+		//Create a buffer from the original image
+		BufferedImage buffer = original.getSubimage(0, 0, original.getWidth(), original.getHeight());
+		Graphics2D g = buffer.createGraphics();
+        Video.getGraphicsSettings(g);
+				
         // Set the Graphics composite to Alpha
 		if( currentAlpha < 1 ) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, currentAlpha));  
-        if( currentAlpha == 0 ) return processed;
-		
-		//Do rotation
-		if(currentAngle != 0) g.rotate(currentAngle, width/2.0, height/2.0);
-		
+		//TODO: alpha == 0 optimization
+				
 		//Blur effect
-		//TODO: does this actually work?
-		if(blurEffect||true)
+		if( blurEffect )
 		{
-			BufferedImageOp op = new ConvolveOp(blur);
-			draw = op.filter(draw, null);
+			BufferedImageOp op = new ConvolveOp( blur, ConvolveOp.EDGE_ZERO_FILL, null);
+			buffer = op.filter(buffer, null);
 		}
 		
 		// Flip the image vertically or horizontally
 		if( flipHorizontal && flipVertical )
 		{
-			Graphics2D flip = draw.createGraphics();
-			flip.drawImage (draw, 
-		             0, draw.getHeight(), draw.getWidth(), 0,
-		             0, 0, draw.getWidth(), draw.getHeight(),
+			g.drawImage (buffer, 
+		             0, buffer.getHeight(), buffer.getWidth(), 0,
+		             0, 0, buffer.getWidth(), buffer.getHeight(),
 		             null);
-			flip.dispose();
 		}
 		else if( flipHorizontal )
 		{
-			Graphics2D flip = draw.createGraphics();
-			flip.drawImage (draw, 
-		             0, draw.getHeight(), draw.getWidth(), 0,
-		             0, 0, draw.getWidth(), draw.getHeight(),
+			g.drawImage (buffer, 
+		             0, buffer.getHeight(), buffer.getWidth(), 0,
+		             0, 0, buffer.getWidth(), buffer.getHeight(),
 		             null );
-			flip.dispose();
 		}
 		else if( flipVertical )
 		{
-			Graphics2D flip = draw.createGraphics();
-			flip.drawImage (draw, 
-		             draw.getWidth(), 0, 0, draw.getHeight(),
-		             0, 0, draw.getWidth(), draw.getHeight(),
+			g.drawImage (buffer, 
+		             buffer.getWidth(), 0, 0, buffer.getHeight(),
+		             0, 0, buffer.getWidth(), buffer.getHeight(),
 		             null);
-			flip.dispose();
 		}
 		
 		//Color tint
 		if( colorTint != 0xFFFFFFFF )
-			for(int x = 0; x < draw.getWidth(); x++)
-				for(int y = 0; y < draw.getHeight(); y++)
-					draw.setRGB( x, y, draw.getRGB(x, y) & colorTint );
+			for(int x = 0; x < buffer.getWidth(); x++)
+				for(int y = 0; y < buffer.getHeight(); y++)
+					buffer.setRGB( x, y, buffer.getRGB(x, y) & colorTint );
 		
-		//Calculate offset so that rotated images stay centered
+		//Now actually store the buffered instance in memory
+		//And apply rotation and resizing (done last)
+		Graphics2D memory = getBufferMemory();
+		
+		//Do rotation
 		int offsetX = 0;
 		int offsetY = 0;
-		if(currentAngle != 0) 
+		if(currentAngle != 0)
 		{
+			memory.rotate(currentAngle, width/2.0, height/2.0);
 			offsetX = (width-baseWidth)/2;
 			offsetY = (height-baseHeight)/2;
 		}
 		
-		//Now actually draw the image
-		g.drawImage(
-				draw,							//Draw the base image (possibly with blur)
+		//Resize
+		memory.drawImage(
+				buffer,						    //Draw the base image
 				offsetX, 						//X offset
 				offsetY, 						//Y offset
 				baseWidth, 						//How much to draw
 				baseHeight,								
 				null);
 		
-		//All done!
-        g.dispose();
-        draw.flush();
+		//All done! Free any resources...
+		memory.dispose();
+		g.dispose();
+		buffer.flush();
         noChange = true;
 		return processed;
 	}
@@ -339,12 +332,20 @@ public class Image2D {
 		noChange = false;
 		currentAlpha = 1;
 		currentAngle = 0;
+		colorTint = 0xFFFFFFFF;
 		flipHorizontal = flipVertical = false;
 		resize( original.getWidth(), original.getHeight() );
 	}
 	
+	/**
+	 * JJ> Flushes all reconstructable resources being used by this Image2D object. 
+	 */
 	public void dispose() {
-		if(processed != null) processed.flush();
+		if(processed != null) 
+		{
+			processed.flush();
+			processed = null;
+		}
 		original.flush();
 	}
 }

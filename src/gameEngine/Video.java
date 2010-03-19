@@ -64,6 +64,10 @@ public class Video {
 		graphEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		graphDevice = graphEnv.getDefaultScreenDevice();
 		graphicConf = graphDevice.getDefaultConfiguration();
+		
+		//Windows acceleration
+		System.setProperty("sun.java2d.translaccel", "true");
+		System.setProperty("sun.java2d.ddforcevram", "true");
 	}
 	
 	/**
