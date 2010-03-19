@@ -83,7 +83,7 @@ public class Game {
 		//Update particle effects
 		for( int i = 0; i < particleList.size(); i++ )
 			if (!particleList.get(i).requestsDelete()) 
-				particleList.get(i).update();
+				particleList.get(i).update(viewPort);
 			else 
 				particleList.remove(i--);
 		

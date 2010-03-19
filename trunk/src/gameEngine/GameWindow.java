@@ -29,11 +29,8 @@ import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -103,7 +100,9 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
        	theMenu = new MainMenu(keys);
 		
 		//Thread (do last so that everything above is properly loaded before the main loop begins)
-		new Thread(this).start();
+       	Thread mainLoop = new Thread(this);
+       	mainLoop.setPriority(Thread.MAX_PRIORITY);
+       	mainLoop.start();
 	}
 	
 	//JJ> This is the main game loop
@@ -111,10 +110,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		
 		// Remember the starting time
     	long tm = System.currentTimeMillis();
-    	
-		// Set the blank cursor to the JFrame.
-		//frame.getContentPane().setCursor(Video.blankCursor);
-		 	
+    			 
 		while( state != gameState.GAME_EXIT )
     	{
 			//Update mouse position within the frame
@@ -128,12 +124,20 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 
 			try
 			{
-				while (painting) Thread.sleep(1);
+				while (painting) Thread.sleep(0, 5000);
 			}
 			catch (Exception e) { Log.warning(e); }
 			
-			if(state == gameState.GAME_PLAYING) state = theGame.update();
-			else if(state == gameState.GAME_MENU) state = theMenu.update(theGame == null);
+			if(state == gameState.GAME_PLAYING)
+			{
+				state = theGame.update();
+				frame.getContentPane().setCursor(Video.blankCursor);	//TODO: bad change cursor every frame?
+			}
+			else if(state == gameState.GAME_MENU)
+			{
+		    	frame.getContentPane().setCursor( null );				//TODO: bad change cursor every frame?
+				state = theMenu.update(theGame == null);
+			}
 			repaint();
 			
 			try 
@@ -320,16 +324,6 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		painting = false;
 	}
 	private boolean painting = false;
-	
-	
-	//TODO: remove this function
-	static public boolean isInScreen(Rectangle rect)
-	{
-		if( rect.x < -rect.width || rect.x > Video.getScreenWidth() ) return false;
-		if( rect.y < -rect.height || rect.y > Video.getScreenHeight() ) return false;
-		return true;
-	}
-	
 	
 	//Functions handling input update
 	public void keyPressed(KeyEvent key) {

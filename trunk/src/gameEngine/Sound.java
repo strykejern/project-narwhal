@@ -18,7 +18,6 @@
 //********************************************************************************************
 package gameEngine;
 
-import java.io.IOException;
 import javax.sound.sampled.*;
 
 
@@ -30,15 +29,16 @@ import javax.sound.sampled.*;
  */
 public class Sound
 {
+	//Global settings
 	public static boolean enabled = true;
 	private static float soundVolume = 0.75f;
 	
 	/** The sound itself as a audio stream */
-	private Thread audio;
 	private AudioInputStream stream;
-	private SourceDataLine line;
 	private boolean looping = false;
 	private boolean stopped = true;
+	private float balance;
+	private float volume;
 	
 	/** JJ> Constructor that opens an input stream to the audio file and ready all data so that it can
 	 * 		be played.
@@ -83,11 +83,6 @@ public class Sound
 	        stream = AudioSystem.getAudioInputStream(baseFormat, rawstream);
 	        stream.mark( Integer.MAX_VALUE );						//Mark it so it can be reset
 	        
-			//Open the line to the stream
-			DataLine.Info info = new DataLine.Info(SourceDataLine.class, stream.getFormat(), ((int) stream.getFrameLength() * stream.getFormat().getFrameSize()));
-			line = (SourceDataLine) AudioSystem.getLine(info);
-			line.open(stream.getFormat());
-
 			//Set default sound volume
 			setVolume(1.00f);
    		}
@@ -102,33 +97,8 @@ public class Sound
 	 * @param gain The gain value
 	 */
 	public void setVolume(float gain) {
-		if(line == null) return;
-		gain *= soundVolume;
-		
 		//Clip the volume to between 0.00 and 1.00
-		gain = Math.max(0.00f, Math.min(gain, 1.00f));
-		FloatControl gainControl = (FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN);
-	
-		//Now set it
-		gainControl.setValue((float)(Math.log(gain)/Math.log(10.0)*20.0));
-	}
-
-	/**
-	 * JJ> Attempt to set the global gain (volume ish) for the play back. If the control is not supported
-	 *     this method has no effect. 1.0 will set maximum gain, 0.0 minimum gain
-	 *     This function will override the default global sound volume level.
-	 * 
-	 * @param gain The gain value
-	 */
-	public void setVolumeOverride(float gain) {
-		if(line == null) return;
-		
-		//Clip the volume to between 0.00 and 1.00
-		gain = Math.max(0.00f, Math.min(gain, 1.00f));
-		FloatControl gainControl = (FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN);
-	
-		//Now set it
-		gainControl.setValue((float)(Math.log(gain)/Math.log(10.0)*20.0));
+		volume = Math.max(0.00f, Math.min(gain, 1.00f));
 	}
 
 	/**
@@ -138,14 +108,8 @@ public class Sound
 	 * @param balance The balance value
 	 */
 	public void setBalance(float balance) {
-		if(line == null) return;
-		
-		//Clip the volume to between -1.00 and 1.00
-		balance = Math.max(-1.00f, Math.min(balance, 1.00f));
-		FloatControl gainControl = (FloatControl)line.getControl(FloatControl.Type.BALANCE);
-	
-		//Now set it
-		gainControl.setValue(balance);
+		//Clip the balance to between -1.00 and 1.00
+		this.balance = Math.max(-1.00f, Math.min(balance, 1.00f));
 	}
 
 	/**
@@ -159,36 +123,45 @@ public class Sound
 	 * JJ> Play the clip once, but only if it has finished playing
 	 */
 	public void play() {
-		if( !enabled || line == null ) return;
-		
+		if( !enabled ) return;
+
 		//Create a new thread for this sound to be played within
-		Thread audio = new Thread()
+		Thread channel = new Thread()
 		{
 			public void run()
 			{
 				//Try to open the sound
+				SourceDataLine line;
 				try 
 				{
+					//Reset position to the start first
+					if ( stream.markSupported() )
+					stream.reset();
+					
+					//Open the line to the stream
+					DataLine.Info info = new DataLine.Info(SourceDataLine.class, stream.getFormat(), ((int) stream.getFrameLength() * stream.getFormat().getFrameSize()));
+					line = (SourceDataLine) AudioSystem.getLine(info);
 					line.open(stream.getFormat());
+					line.start();
+					mixSoundEffects(line);
 				} 
 				catch (Exception e) 
 				{
 					Log.warning("Cannot play sound: " + e);
 					return;
 				}
-				line.start();
 				stopped = false;
 				
 				//This might be do once or in infinity, depending on the loop variable
 				do
 				{
 					//This actually plays the sound
-					int len = 0;
-					byte[] buffer = new byte[1024 * stream.getFormat().getFrameSize()];
 					try 
 					{
+						int len = 0;
+						byte[] buffer = new byte[1024 * stream.getFormat().getFrameSize()];
 						//Keep playing as long as there is data left and sound has not been stopped
-						while (!stopped && enabled && (len = stream.read(buffer, 0, buffer.length)) != -1) 
+						while ( !stopped && enabled && (len = stream.read(buffer, 0, buffer.length)) != -1 ) 
 							line.write(buffer, 0, len);
 					} 
 					catch (Exception e) { Log.warning("Error playing sound: " + e); }
@@ -198,15 +171,15 @@ public class Sound
 				line.drain();
 				line.stop();
 				line.close();
-				try { stream.reset(); } 
-				catch (IOException e) { /*Ignore*/ }
+				line.flush();
 				stopped = true;
 			}
 		};
 		
 		//Begin said thread
-		audio.setDaemon(true);
-		audio.start();
+		channel.setPriority(Thread.MIN_PRIORITY);
+		channel.setDaemon(true);
+		channel.start();
 	}
 
 	/**
@@ -233,10 +206,7 @@ public class Sound
 	public void dispose() {
 		try
 		{
-			audio = null;
-			line.stop();
-			line.close();
-			line.flush();
+			this.stop();
 			stream.close();	
 		}
 		catch( Exception e )
@@ -245,4 +215,27 @@ public class Sound
 		}
 	}
 	
+	private void mixSoundEffects(SourceDataLine line) {
+		
+		//Adjust sound balance
+		if( balance != 0 )
+		{
+			try
+			{
+				FloatControl gainControl = (FloatControl)line.getControl(FloatControl.Type.BALANCE);
+				gainControl.setValue(balance);
+			}
+			catch (IllegalArgumentException e) {};
+		}
+		
+		//Set sound volume
+		try
+		{
+			FloatControl gainControl = (FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN);	
+			float gain = (float)(Math.log(volume*soundVolume)/Math.log(10.0f)*20.0f);
+			gain = Math.max(0.00f, Math.min(gain, 1.00f));
+			gainControl.setValue(gain);
+		}
+		catch (IllegalArgumentException e) {};
+	}
 }

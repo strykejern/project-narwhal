@@ -22,7 +22,7 @@ public class Music {
 		
 		//Play the next song
 		music.playLooped();
-		music.setVolumeOverride(musicVolume);
+		music.setVolume(musicVolume);
 	}
 	
 	/**

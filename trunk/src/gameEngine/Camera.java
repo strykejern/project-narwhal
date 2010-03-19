@@ -56,6 +56,7 @@ public class Camera {
 		background.drawBackground(g, cameraPos);
 		
 		int count = 0; // For debug purposes
+		
 		// Draw all entities
 		for (GameObject entity : entities)
 		{
@@ -188,7 +189,7 @@ public class Camera {
 		cameraTopRight		= cameraPos.plus(new Vector(Video.getResolutionVector().x, 0)).returnOverflowWithin(universeBotRight);
 	}
 	
-	private boolean isInUniverse(Vector point){
+	public boolean isInUniverse(Vector point){
 		if (point.isInsideRect(new Vector(), background.getUniverseSize())) return true;
 		return false;
 	}
