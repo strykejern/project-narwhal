@@ -22,7 +22,6 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.VolatileImage;
 import java.util.HashMap;
@@ -118,12 +117,23 @@ public class Particle {
 	}
 	
 	private Graphics2D createMemoryImage(int width, int height){
+		
+		//Create the image buffer in memory if needed
 		if( memoryImg == null || memoryImg.contentsLost() || width != memoryImg.getWidth()
 				|| height != memoryImg.getHeight() )
 		{
 			memoryImg = Video.createVolatileImage(width, height);
 		}
 		Graphics2D g = memoryImg.createGraphics();
+		
+		//We make particles as fast as possible
+		g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
+		g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
+		g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED );
+	   	g.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE );
+	   	g.setRenderingHint( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED );
+
+	   	//Clear any existing image
 		g.setBackground(new Color(0,0,0,0));
 		g.clearRect(0, 0, memoryImg.getWidth(), memoryImg.getHeight());
 		return g;
@@ -150,7 +160,7 @@ public class Particle {
 		return onScreen;
 	}
 
-	public void update() {
+	public void update(Camera screen) {
 		
 		//Update effects for next frame
 		alpha += alphaAdd;
@@ -162,47 +172,53 @@ public class Particle {
 		pos.add(speed);
 		
 		//Figure out if we are inside the screen or not
-		onScreen = false;
-		int w = (int) (particleMap.get(hashCode).getIconWidth()  * size);
-		int h = (int) (particleMap.get(hashCode).getIconHeight() * size);
-		int xPos = pos.getX() - this.pos.getX() - w/2;
-		int yPos = pos.getY() - this.pos.getY() - h/2;
-		onScreen = GameWindow.isInScreen(new Rectangle( xPos, yPos, w, h ));
-
-		//Only do image operations if the image is actually on the screen
-		if( onScreen )
-		{
-			//Make sure the VolatileImage exists
-			Graphics2D g = createMemoryImage(w, h);
-			
-			//Make it fast!
-			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
-			g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
-			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED );
-		   	g.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE );
-		   	g.setRenderingHint( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED );
-		   	 
-	        //Do any alpha
-			alpha = Math.min( 1.00f, Math.max(0.00f, alpha) );
-			if(alpha < 1) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));  
-
-			//Rotate to direction
-			if( angle != 0 ) 
-			{
-		    	g.rotate(angle, w/2, h/2);
-		    	g.drawImage(particleMap.get(hashCode).getImage(), (memoryImg.getWidth()-w)/2, (memoryImg.getHeight()-h)/2, w, h, null);
-			}
-	        
-			//Draw it normally
-			else g.drawImage(particleMap.get(hashCode).getImage(), 0,0, w, h, null);
-			
-			//All done!
-			g.dispose();
-		}
+		onScreen = screen.isInUniverse( pos );
+				
+		//Only do rendering operations if the image is actually on the screen
+		if( onScreen ) renderParticle();
 		
 		//Mark particles for removal when their time is up or when alpha has made it invisible
 		time--;
 		if(time <= 0 || alpha <= 0 && size <= 0 ) requestDelete = true;		
+	}
+	
+	private Thread renderParticle() {
+		
+		Thread render = new Thread()
+		{
+			public void run()
+			{
+				onScreen = false;
+				int w = (int) (particleMap.get(hashCode).getIconWidth()  * size);
+				int h = (int) (particleMap.get(hashCode).getIconHeight() * size);
+				
+				//Make sure the VolatileImage exists
+				Graphics2D g = createMemoryImage(w, h);
+						   	 
+		        //Do any alpha
+				alpha = Math.min( 1.00f, Math.max(0.00f, alpha) );
+				if(alpha < 1) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));  
+	
+				//Rotate to direction
+				if( angle != 0 ) 
+				{
+			    	g.rotate(angle, w/2, h/2);
+			    	g.drawImage(particleMap.get(hashCode).getImage(), (memoryImg.getWidth()-w)/2, (memoryImg.getHeight()-h)/2, w, h, null);
+				}
+		        
+				//Draw it normally
+				else g.drawImage(particleMap.get(hashCode).getImage(), 0,0, w, h, null);
+				
+				//All done!
+				g.dispose();
+				onScreen = true;
+			}
+		};
+		
+		render.setDaemon(true);
+		render.start();
+		render.setPriority(Thread.NORM_PRIORITY);
+		return render;
 	}
 	
 	public void draw(Graphics g, Vector offset) {

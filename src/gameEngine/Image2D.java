@@ -1,4 +1,3 @@
-package gameEngine;
 //********************************************************************************************
 //*
 //*    This file is part of Project Narwhal.
@@ -17,6 +16,7 @@ package gameEngine;
 //*    along with Project Narwhal.  If not, see <http://www.gnu.org/licenses/>.
 //*
 //********************************************************************************************
+package gameEngine;
 
 
 import java.awt.*;
@@ -35,7 +35,7 @@ public class Image2D {
 	final private static Kernel blur = new Kernel(3, 3,
 		    new float[] {
 	        1f/9f, 1f/9f, 1f/9f,
-	        1f/9f, 1f/9f, 1f/9f,
+	        1f/9f, 1f/9f, 1f/9,
 	        1f/9f, 1f/9f, 1f/9f});
 	
 	private BufferedImage original;					//The image itself
@@ -234,14 +234,7 @@ public class Image2D {
         // Set the Graphics composite to Alpha
 		if( currentAlpha < 1 ) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, currentAlpha));  
 		//TODO: alpha == 0 optimization
-				
-		//Blur effect
-		if( blurEffect )
-		{
-			BufferedImageOp op = new ConvolveOp( blur, ConvolveOp.EDGE_ZERO_FILL, null);
-			buffer = op.filter(buffer, null);
-		}
-		
+						
 		// Flip the image vertically or horizontally
 		if( flipHorizontal && flipVertical )
 		{
@@ -263,6 +256,13 @@ public class Image2D {
 		             buffer.getWidth(), 0, 0, buffer.getHeight(),
 		             0, 0, buffer.getWidth(), buffer.getHeight(),
 		             null);
+		}
+		
+		//Blur effect
+		if( blurEffect )
+		{
+			BufferedImageOp op = new ConvolveOp( blur, ConvolveOp.EDGE_ZERO_FILL, null);
+			buffer = op.filter(buffer, null);
 		}
 		
 		//Color tint
