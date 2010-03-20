@@ -54,7 +54,7 @@ public abstract class GameObject extends Physics{
 		
 		//Always draw the image bounds
 		int w = image.getWidth();
-		int h = image.getHeight();		
+		int h = image.getHeight();
 		g.setColor(Color.BLUE);
 		g.drawRect(drawX(offset), drawY(offset), w, h);
 
@@ -64,7 +64,7 @@ public abstract class GameObject extends Physics{
 			w = size.getX();
 			h = size.getY();
 			g.setColor(Color.RED);
-			g.drawOval(drawX(offset), drawY(offset), w, h);			
+			g.drawOval(drawX(offset)-w/2, drawY(offset)-h/2, w, h);			
 		}
 	}
 	

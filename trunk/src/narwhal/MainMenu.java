@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.Random;
 
 public class MainMenu {
-	private static final long serialVersionUID = 1L;
 	private Universe background;
 	private HashMap<ButtonType, Button> buttonList;
 	private Font menuFont;

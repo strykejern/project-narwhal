@@ -120,13 +120,13 @@ public abstract class Collidable {
 		//Figure out collision type
 		switch( this.shape )
 		{
-			case RECT: return doRectangleCollision(object);			
-			case TRIANGLE: return doTriangleCollision(object);
-			default: case CIRCLE: return doCircleCollision(object);
+			case RECT: return detectRectangleCollision(object);			
+			case TRIANGLE: return detectTriangleCollision(object);
+			default: case CIRCLE: return detectCircleCollision(object);
 		}		
 	}
 	
-	private boolean doTriangleCollision(Collidable object) {
+	private boolean detectTriangleCollision(Collidable object) {
 		
 		switch( object.shape )
 		{
@@ -154,7 +154,7 @@ public abstract class Collidable {
 	}
 
 	
-	private boolean doRectangleCollision(Collidable object) {
+	private boolean detectRectangleCollision(Collidable object) {
 		
 		switch( object.shape )
 		{
@@ -173,12 +173,12 @@ public abstract class Collidable {
 			}
 			
 			//Collision between rectangle and circle
-			default: case CIRCLE:	return object.doCircleCollision(this);
+			default: case CIRCLE:	return object.detectCircleCollision(this);
 		}		
 	}
 
 	
-	private boolean doCircleCollision(Collidable object){
+	private boolean detectCircleCollision(Collidable object){
 		switch( object.shape )
 		{
 			
@@ -199,7 +199,10 @@ public abstract class Collidable {
 			}
 			
 			//Circle with circle (perfect)
-			default: case CIRCLE: return (this.pos.minus(object.pos).length() < this.radius + object.radius);
+			default: case CIRCLE:
+			{
+				return (this.pos.minus(object.pos).length() < this.radius + object.radius);
+			}
 		}
 	}
 	
