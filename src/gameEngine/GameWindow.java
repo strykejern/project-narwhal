@@ -67,7 +67,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 	public static void main(String[] args) {
     	//Initialize the logging system, do this first so that error logging happens correctly.
     	Log.initialize();
-    	
+    	    	
     	//Load settings
         Video.initialize();
     	loadSettings();
@@ -131,7 +131,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			if(state == gameState.GAME_PLAYING)
 			{
 				state = theGame.update();
-				frame.getContentPane().setCursor(Video.blankCursor);	//TODO: bad change cursor every frame?
+				frame.getContentPane().setCursor(Video.BLANK_CURSOR);	//TODO: bad change cursor every frame?
 			}
 			else if(state == gameState.GAME_MENU)
 			{

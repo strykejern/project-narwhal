@@ -1,4 +1,3 @@
-package gameEngine;
 //********************************************************************************************
 //*
 //*    This file is part of Project Narwhal.
@@ -17,10 +16,10 @@ package gameEngine;
 //*    along with Project Narwhal.  If not, see <http://www.gnu.org/licenses/>.
 //*
 //********************************************************************************************
+package gameEngine;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Calendar;
 import java.text.SimpleDateFormat;
 
@@ -82,7 +81,7 @@ public class Log
 		String text = "FATAL ERROR: " + rawText; 
 		System.err.println(text);
 		println(text);
-		close();
+		close();			//TODO: replace with GameWindow.exit()
 		System.exit(-1);
 	}
 	public static void error(Exception ex) { error(ex.toString()); }
@@ -102,7 +101,7 @@ public class Log
 	        //program crashes for some reason
 	        logFile.write(message);
 			if(newLine) logFile.newLine(); 	//We use this function instead of \n, since new line feeds are system dependent
-	        logFile.flush();	        
+	        logFile.flush();
 	     } 	       
 	     catch (Exception ex) 
 	     {
@@ -135,7 +134,7 @@ public class Log
 	        message("Shutting down logging system...");
             logFile.close();
         } 
-        catch (IOException ex) 
+        catch (Exception ex) 
         {
             ex.printStackTrace();
         }

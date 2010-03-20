@@ -22,9 +22,8 @@ import gameEngine.*;
 import gameEngine.GameWindow.gameState;
 
 import java.awt.*;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Random;
 
 
 public class Game {
@@ -63,8 +62,14 @@ public class Game {
 				entities.get(0));
 		
 		//Generate random planets
-		entities.add( new Planet(new Vector(800*4-50, 600*4-50), System.currentTimeMillis()) );
-		entities.add( new Planet(new Vector(200, 200), System.currentTimeMillis()) );
+		Random rand = new Random();
+		for(int x = 0; x < universeSize; x++)
+			for(int y = 0; y < universeSize; y++)
+			{
+				int offX = rand.nextInt(Video.getScreenWidth() - Planet.getMaxSize());
+				int offY = rand.nextInt(Video.getScreenHeight() - Planet.getMaxSize());
+				entities.add( new Planet(new Vector(x*Video.getScreenWidth() + offX, y*Video.getScreenHeight() + offY), System.nanoTime()) );			
+			}
 		
 		// Initialize the HUD and bind it to the player's ship
 		hud = new UI(player);
@@ -78,7 +83,21 @@ public class Game {
 				
 		// Update all entities
 		for (GameObject entity : entities)
+		{
 			entity.update();
+			if( entity.caseCollidesWith(entities.get(0)) )
+			entity.collision(entities.get(0));
+		}
+		
+		//Collision detection
+		for(int i = 0; i < entities.size(); i++ )
+			for(int j = ++i; j < entities.size(); j++)
+			{
+				GameObject us = entities.get(i);
+				GameObject them = entities.get(i);
+				if( us.caseCollidesWith(them) )
+					us.collision( them );
+			}
 		
 		//Update particle effects
 		for( int i = 0; i < particleList.size(); i++ )

@@ -60,4 +60,9 @@ public class Planet extends GameObject {
 		anchored = true;
 		canCollide = true;
 	}
+	
+	public static final int getMaxSize() {
+		return Video.getScreenWidth()/4 + Video.getScreenHeight()/4;
+	}
+
 }
