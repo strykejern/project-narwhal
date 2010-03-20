@@ -62,8 +62,10 @@ public class Particle {
 	private Vector pos;					//Position
 	private boolean requestDelete;		//Remove me?
 	private boolean onScreen;			//Was it on the screen this update?
-	private VolatileImage memoryImg;
+	private boolean rendering;			//Has it finished rendering?
+	private VolatileImage memoryImg;	//The actual image in volatile memory
 	
+	//Image effects
 	private float alpha;
 	private float alphaAdd;
 	
@@ -75,26 +77,36 @@ public class Particle {
 	
 	private Vector speed;
 	
-	//JJ> Most simple form
+	/*
+	 * JJ> Most simple form
+	 */
 	public Particle( Vector spawnPos, String hash, int lifeTime ) {
 		init(spawnPos, hash.hashCode(), lifeTime, 1, 0, 0, 0, 1, 0, new Vector());
 	}
 	
-	//JJ> With alpha
+	/*
+	 * JJ> With alpha
+	 */
 	public Particle( Vector spawnPos, String hash, int lifeTime, float trans, float transAdd ) {
 		init(spawnPos, hash.hashCode(), lifeTime, trans, transAdd, 0, 0, 1, 0, new Vector());
 	}
 
-	//JJ> With alpha and rotation
+	/*
+	 * JJ> With alpha and rotation
+	 */
 	public Particle( Vector pos, String hash, int time, float alpha, float alphaAdd, 
 			float angle, float angleAdd, Vector speed ) {
 		init(pos, hash.hashCode(), time, alpha, alphaAdd, angle, angleAdd, 1, 0, speed);
 	}
 	
+	/**
+	 * JJ> Initialises all particle variables
+	 */
 	private void init( Vector setPos, int setHash, int setTime, float setAlpha, float setAlphaAdd, 
 			float setAngle, float setAngleAdd, float setSize, float setSizeAdd, Vector setSpeed ) {
 		requestDelete = false;
-		onScreen = true;
+		onScreen = false;
+		rendering = false;
 		pos = setPos;
 		time = setTime;
 		hashCode = setHash;
@@ -116,6 +128,7 @@ public class Particle {
 		}
 	}
 	
+	
 	private Graphics2D createMemoryImage(int width, int height){
 		
 		//Create the image buffer in memory if needed
@@ -133,7 +146,7 @@ public class Particle {
 	   	g.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE );
 	   	g.setRenderingHint( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED );
 
-	   	//Clear any existing image
+	   	//Clear any existing pixels
 		g.setBackground(new Color(0,0,0,0));
 		g.clearRect(0, 0, memoryImg.getWidth(), memoryImg.getHeight());
 		return g;
@@ -168,6 +181,16 @@ public class Particle {
 		size  += sizeAdd;
 		angle %= 2 * Math.PI;
 		
+		//Mark particles for removal when their time is up or when alpha has made it invisible
+		time--;
+		if(time <= 0 || alpha <= 0 && size <= 0 )
+		{
+			if(memoryImg != null) memoryImg.flush();
+			requestDelete = true;
+			onScreen = false;
+			return;
+		}
+		
 		//Movement
 		pos.add(speed);
 		
@@ -175,20 +198,19 @@ public class Particle {
 		onScreen = screen.isInUniverse( pos );
 				
 		//Only do rendering operations if the image is actually on the screen
-		if( onScreen ) renderParticle();
-		
-		//Mark particles for removal when their time is up or when alpha has made it invisible
-		time--;
-		if(time <= 0 || alpha <= 0 && size <= 0 ) requestDelete = true;		
+		if( onScreen ) renderParticle();		
 	}
 	
 	private Thread renderParticle() {
+		
+		//We are already rendering the particle in an existing thread
+		if( rendering ) return null;
 		
 		Thread render = new Thread()
 		{
 			public void run()
 			{
-				onScreen = false;
+				rendering = true;
 				int w = (int) (particleMap.get(hashCode).getIconWidth()  * size);
 				int h = (int) (particleMap.get(hashCode).getIconHeight() * size);
 				
@@ -211,23 +233,97 @@ public class Particle {
 				
 				//All done!
 				g.dispose();
-				onScreen = true;
+				rendering = false;
 			}
 		};
 		
 		render.setDaemon(true);
 		render.start();
-		render.setPriority(Thread.NORM_PRIORITY);
+		render.setPriority( Thread.NORM_PRIORITY );
 		return render;
 	}
 	
 	public void draw(Graphics g, Vector offset) {
 
 		//Only draw if inside the screen bounds
-		if( !onScreen || memoryImg == null ) return;		
-				
+		if( !onScreen || rendering || memoryImg == null ) return;		
+
 		int xPos = pos.getX() - memoryImg.getWidth()/2 - offset.getX();
 		int yPos = pos.getY() - memoryImg.getHeight()/2 - offset.getY();
 		g.drawImage( memoryImg, xPos, yPos, null );
+	}
+
+	
+	//JJ> Auto generated getters and setters
+	public int getTime() {
+		return time;
+	}
+
+	public void setTime(int time) {
+		this.time = time;
+	}
+
+	public Vector getPos() {
+		return pos;
+	}
+
+	public void setPos(Vector pos) {
+		this.pos = pos;
+	}
+
+	public float getAlpha() {
+		return alpha;
+	}
+
+	public void setAlpha(float alpha) {
+		this.alpha = alpha;
+	}
+
+	public float getAlphaAdd() {
+		return alphaAdd;
+	}
+
+	public void setAlphaAdd(float alphaAdd) {
+		this.alphaAdd = alphaAdd;
+	}
+
+	public float getAngle() {
+		return angle;
+	}
+
+	public void setAngle(float angle) {
+		this.angle = angle;
+	}
+
+	public float getAngleAdd() {
+		return angleAdd;
+	}
+
+	public void setAngleAdd(float angleAdd) {
+		this.angleAdd = angleAdd;
+	}
+
+	public float getSize() {
+		return size;
+	}
+
+	public void setSize(float size) {
+		this.size = size;
+	}
+
+	public float getSizeAdd() {
+		return sizeAdd;
+	}
+
+	public void setSizeAdd(float sizeAdd) {
+		this.sizeAdd = sizeAdd;
+	}
+
+	public Vector getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(Vector speed) {
+		this.speed = speed;
 	}
 }

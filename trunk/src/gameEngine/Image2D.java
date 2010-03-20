@@ -338,7 +338,7 @@ public class Image2D {
 	}
 	
 	/**
-	 * JJ> Flushes all reconstructable resources being used by this Image2D object. 
+	 * JJ> Flushes all reconstructible resources being used by this Image2D object. 
 	 */
 	public void dispose() {
 		if(processed != null) 

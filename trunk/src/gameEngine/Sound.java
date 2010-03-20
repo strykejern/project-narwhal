@@ -36,7 +36,7 @@ public class Sound
 	/** The sound itself as a audio stream */
 	private AudioInputStream stream;
 	private boolean looping = false;
-	private boolean stopped = true;
+	private boolean playing = true;
 	private float balance;
 	private float volume;
 	
@@ -116,7 +116,7 @@ public class Sound
 	 *  JJ> Figures out if the sound is currently playing
 	 */
 	public boolean isPlaying() {
-		return !stopped;
+		return playing;
 	}
 	
 	/**
@@ -130,49 +130,52 @@ public class Sound
 		{
 			public void run()
 			{
-				//Try to open the sound
-				SourceDataLine line;
-				try 
-				{
-					//Reset position to the start first
-					if ( stream.markSupported() )
-					stream.reset();
-					
-					//Open the line to the stream
-					DataLine.Info info = new DataLine.Info(SourceDataLine.class, stream.getFormat(), ((int) stream.getFrameLength() * stream.getFormat().getFrameSize()));
-					line = (SourceDataLine) AudioSystem.getLine(info);
-					line.open(stream.getFormat());
-					line.start();
-					mixSoundEffects(line);
-				} 
-				catch (Exception e) 
-				{
-					Log.warning("Cannot play sound: " + e);
-					return;
-				}
-				stopped = false;
 				
 				//This might be do once or in infinity, depending on the loop variable
 				do
 				{
+
+					//Try to open the sound
+					SourceDataLine line;
+					try 
+					{
+						//Reset position to the start first
+						if ( stream.markSupported() )
+						stream.reset();
+						
+						//Open the line to the stream
+						DataLine.Info info = new DataLine.Info(SourceDataLine.class, stream.getFormat(), ((int) stream.getFrameLength() * stream.getFormat().getFrameSize()));
+						line = (SourceDataLine) AudioSystem.getLine(info);
+						line.open(stream.getFormat());
+						line.start();
+						mixSoundEffects(line);
+					} 
+					catch (Exception e) 
+					{
+						Log.warning("Cannot play sound: " + e);
+						return;
+					}
+									
 					//This actually plays the sound
 					try 
 					{
+						playing = true;
 						int len = 0;
 						byte[] buffer = new byte[1024 * stream.getFormat().getFrameSize()];
 						//Keep playing as long as there is data left and sound has not been stopped
-						while ( !stopped && enabled && (len = stream.read(buffer, 0, buffer.length)) != -1 ) 
+						while ( playing && enabled && (len = stream.read(buffer, 0, buffer.length)) != -1 ) 
 							line.write(buffer, 0, len);
 					} 
 					catch (Exception e) { Log.warning("Error playing sound: " + e); }
+					
+					//Done playing sound
+					line.drain();
+					line.stop();
+					line.close();
+					line.flush();
 				} while(looping);
 				
-				//Done playing sound
-				line.drain();
-				line.stop();
-				line.close();
-				line.flush();
-				stopped = true;
+				playing = false;
 			}
 		};
 		
@@ -186,7 +189,7 @@ public class Sound
 	 * JJ> play the clip repeatedly forever until Sound.stop() is called
 	 */
 	public void playLooped() {		
-		if(!enabled) return;
+		if( !enabled ) return;
 		looping = true;
 		play();
 	}
@@ -196,7 +199,7 @@ public class Sound
 	 */
 	public void stop() {
 		looping = false;
-		stopped = true;
+		playing = false;
 	}
 	
 	/**
@@ -215,6 +218,10 @@ public class Sound
 		}
 	}
 	
+	/**
+	 * JJ> This adds sound mixer effects like volume and sound balance to a audio line
+	 * @param line Which audio line to adjust
+	 */
 	private void mixSoundEffects(SourceDataLine line) {
 		
 		//Adjust sound balance
@@ -225,7 +232,7 @@ public class Sound
 				FloatControl gainControl = (FloatControl)line.getControl(FloatControl.Type.BALANCE);
 				gainControl.setValue(balance);
 			}
-			catch (IllegalArgumentException e) {};
+			catch (IllegalArgumentException e) {/*Ignore: we cant change the balance*/};
 		}
 		
 		//Set sound volume
@@ -236,6 +243,6 @@ public class Sound
 			gain = Math.max(0.00f, Math.min(gain, 1.00f));
 			gainControl.setValue(gain);
 		}
-		catch (IllegalArgumentException e) {};
+		catch (IllegalArgumentException e) {/*Ignore: we cant change the volume*/};
 	}
 }

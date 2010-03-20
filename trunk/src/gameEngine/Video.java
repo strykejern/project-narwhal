@@ -41,7 +41,7 @@ public class Video {
 	private static RenderingHints quality = new RenderingHints(null);
 	
 	// Create a new blank cursor.
-	public static final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+	public static final Cursor BLANK_CURSOR = Toolkit.getDefaultToolkit().createCustomCursor(
 			new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "blank cursor");
 
 	//Hardware graphic stuff
@@ -65,9 +65,18 @@ public class Video {
 		graphDevice = graphEnv.getDefaultScreenDevice();
 		graphicConf = graphDevice.getDefaultConfiguration();
 		
-		//Windows acceleration
-		System.setProperty("sun.java2d.translaccel", "true");
-		System.setProperty("sun.java2d.ddforcevram", "true");
+		//Force proper graphics acceleration
+		if(System.getProperty("os.name").contains("Linux") )
+		{
+			//Linux OpenGL acceleration
+			//TODO
+		}
+		else
+		{
+			//Windows DirectDraw acceleration
+			System.setProperty("sun.java2d.translaccel", "true");
+			System.setProperty("sun.java2d.ddforcevram", "true");
+		}
 	}
 	
 	/**
@@ -78,7 +87,8 @@ public class Video {
 	}
 
 	/**
-	 * JJ> Sets all graphics settings to nice
+	 * JJ> Sets the graphics quality for all rendering processes.
+	 *     Can be either VIDEO_LOW, VIDEO_NORMAL or VIDEO_HIGH
 	 */
 	public static void setVideoQuality( VideoQuality setQuality) {
 		videoQuality = setQuality;
@@ -166,6 +176,9 @@ public class Video {
 		resolution.setSize(res);
 	}
 	
+	/**
+	 * JJ> Changes the Resolution to the desktop resolution
+	 */
 	public static void setFullscreen() {
 		resolution.setSize(Toolkit.getDefaultToolkit().getScreenSize());
 	}
