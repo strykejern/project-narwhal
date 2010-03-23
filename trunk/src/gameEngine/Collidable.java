@@ -123,7 +123,7 @@ public abstract class Collidable {
 			case RECT: return detectRectangleCollision(object);			
 			case TRIANGLE: return detectTriangleCollision(object);
 			default: case CIRCLE: return detectCircleCollision(object);
-		}		
+		}
 	}
 	
 	private boolean detectTriangleCollision(Collidable object) {

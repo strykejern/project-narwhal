@@ -21,6 +21,7 @@ package gameEngine;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.Random;
 
 import narwhal.*;
 
@@ -40,7 +41,9 @@ public class Camera {
 	private GameObject 				follow;
 	private Universe 				background;
 	private ArrayList<Particle>		particleList;
-	
+
+	private int 					shakeCamera = 0;
+
 	public Camera(ArrayList<GameObject> entities, Universe background, ArrayList<Particle> particleList, GameObject follow){
 		this.entities = entities;
 		this.follow = follow;
@@ -52,6 +55,16 @@ public class Camera {
 	public void drawView(Graphics2D g){
 		updateCameraVectors();
 		
+		//Twist and shout! Shake it baby!
+		if( shakeCamera != 0 )
+		{
+			Random rand = new Random();
+			int x = rand.nextInt(shakeCamera)-shakeCamera/2;
+			int y = rand.nextInt(shakeCamera)-shakeCamera/2;
+			cameraPos.x += x;
+			cameraPos.y += y;
+		}
+
 		// Draw background
 		background.drawBackground(g, cameraPos);
 		
@@ -75,6 +88,7 @@ public class Camera {
 			particleList.get(i).draw(g, cameraPos);
 		}
 		
+		//Debug info
 		g.setColor(Color.WHITE);
 		g.drawString("cameraPos X: " + cameraPos.getX() + " Y: " + cameraPos.getY(), 5, 20);
 		g.drawString("shipPos       X: " + entities.get(0).pos.getX() + " Y: " + entities.get(0).pos.getY(), 5, 30);

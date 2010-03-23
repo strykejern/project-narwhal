@@ -32,11 +32,11 @@ public class Spaceship extends GameObject{
 	private int cooldown;
 	
 	public int lifeMax = 100;
-	public float life = 50;
+	public float life = lifeMax;
 	public int shieldMax = 200;
-	public float shield = 200;
+	public float shield = shieldMax;
 	public int energyMax = 500;
-	public float energy = 350;
+	public float energy = energyMax;
 	
 	public Spaceship(Vector spawnPos, Image2D image, Input keys, Vector universeSize, ArrayList<Particle> particleList){
 		pos 	= spawnPos;
@@ -105,6 +105,17 @@ public class Spaceship extends GameObject{
 		else if (pos.y > uniY)  pos.y %= uniY;
 		
 		super.update();
+	}
+
+	public void planetHit() {
+		int damage = lifeMax >> 3;
+			
+		//Next, lose some life
+		life -= damage;
+		if(life <= 0)
+		{
+			//TODO: die
+		}		
 	}
 	
 	public void damage(Spaceship attacker) {
