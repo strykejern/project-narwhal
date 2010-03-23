@@ -2,8 +2,8 @@
 
 ==Gruppens medlemmer:==
 
-- Anders Eie, Bachelor Informatikk 1.år
-- Johan Jansen, Bachelor Informatikk 1.år
+  * Anders Eie, Bachelor Informatikk 1.år
+  * Johan Jansen, Bachelor Informatikk 1.år
 
 Vi har snakket Hallvard om at vi bare var to personer. Han mente det var helt greit så lenge vi viste at vi virkelig var seriøs og i stand til å gjennomføre spillprosjektet med to personer.
 
@@ -50,4 +50,5 @@ Vi bruker OGG vorbis API dekoder biblioteket som lar oss spille av andre lydtype
 ==Linker==
 
 Prosjektside - http://code.google.com/p/project-narwhal/
+
 Screenshots - http://code.google.com/p/project-narwhal/wiki/Screenshots 
