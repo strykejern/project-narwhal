@@ -26,21 +26,21 @@ Bruker SVN og Skype for å koordinere kodeutviklingen.
 
 Først utvikle spillmotoren. Vi kommer til å trenge flere komponenter i spillmotoren: 
 
-*Grafikk - Rotasjon, forstørrelse, delbilder, alpha, partikkel motor (effektiv generering og rendering av mange images samtidig på skjermen).
-*Ressurs Mananger - Lasting av data slik at alt fungerer "cross-platform" og som JAR fil.
-*Fysikk - Kollidering, flytting av spillobjekter med realistisk fysikk, osv...
-*Lyd - Dekoding og avspilling av lydformater som OGG, WAV og AU. Både for musikk og lydeffekter. Mulighet til å slå av lyd, justere volum, loops, osv.
-*Input - Enkel klasse for lesing av tilstanden til knapper som brukes til å styre spillet, både fra mus og keyboard.
-*Spillobjekt - Et spill objekt er et romskip, planet, rakett osv. Altså et hvilketsomhelst objekt som man kan interaktere med i spillet.
-*Når vi har bygget opp grunnsteinene for prosjektet så kan vi utvikle selve elementene i spillet selv.
+  *Grafikk - Rotasjon, forstørrelse, delbilder, alpha, partikkel motor (effektiv generering og rendering av mange images samtidig på skjermen).
+  *Ressurs Mananger - Lasting av data slik at alt fungerer "cross-platform" og som JAR fil.
+  *Fysikk - Kollidering, flytting av spillobjekter med realistisk fysikk, osv...
+  *Lyd - Dekoding og avspilling av lydformater som OGG, WAV og AU. Både for musikk og lydeffekter. Mulighet til å slå av lyd, justere volum, loops, osv.
+  *Input - Enkel klasse for lesing av tilstanden til knapper som brukes til å styre spillet, både fra mus og keyboard.
+  *Spillobjekt - Et spill objekt er et romskip, planet, rakett osv. Altså et hvilketsomhelst objekt som man kan interaktere med i spillet.
+  *Når vi har bygget opp grunnsteinene for prosjektet så kan vi utvikle selve elementene i spillet selv.
 
-*Game - Hoved loop som holder orden på spillets gang.
-*Romskip - Arver fra Spillobjekt, leser Input, bruker grafikk og lyd
-*Planeter - Arver fra Spillobjekt
-*Våpen - Våpen enheter som romskip kan bruke. Bruker grafikk og lyd
-*Bakgrunn - Genererer stjerner og for bakgrunnsbilder. Bruker grafikk
-*UI - Tegner opp en in-game UI som viser hvor mye liv romskipet til spilleren har.
-*Menu - Spill-meny, forandre instillinger, starte nytt spill, avslutte, osv.
+  *Game - Hoved loop som holder orden på spillets gang.
+  *Romskip - Arver fra Spillobjekt, leser Input, bruker grafikk og lyd
+  *Planeter - Arver fra Spillobjekt
+  *Våpen - Våpen enheter som romskip kan bruke. Bruker grafikk og lyd
+  *Bakgrunn - Genererer stjerner og for bakgrunnsbilder. Bruker grafikk
+  *UI - Tegner opp en in-game UI som viser hvor mye liv romskipet til spilleren har.
+  *Menu - Spill-meny, forandre instillinger, starte nytt spill, avslutte, osv.
 Alle nåværende klasser finnes i SVN
 
 ==Eventuelt==
