@@ -1,3 +1,4 @@
+#summary Prosjektplan for spillprosjekt 2009 i TDT4100
 =Prosjektplan for spillprosjekt 2009 i TDT4100=
 
 ==Gruppens medlemmer:==
