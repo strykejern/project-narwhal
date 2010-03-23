@@ -51,15 +51,9 @@ public class Game {
        	Music.play( new Sound("/data/space.ogg") );
        	
 		//Initialize the player ship
-		Spaceship player = new Spaceship(new Vector(200, 200), new Image2D("/data/spaceship.png"), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleList);
+		Spaceship player = new Spaceship(new Vector(200, 200), new Image2D("/data/spaceship2.png"), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleList);
 		entities.add(player);
 		
-		// Initialize the camera
-		viewPort = new Camera(
-				entities, 
-				new Universe(universeSize, System.currentTimeMillis()), 
-				particleList,
-				entities.get(0));
 		
 		//Generate random planets
 		Random rand = new Random();
@@ -70,6 +64,13 @@ public class Game {
 				int offY = rand.nextInt(Video.getScreenHeight() - Planet.getMaxSize());
 				entities.add( new Planet(new Vector(x*Video.getScreenWidth() + offX, y*Video.getScreenHeight() + offY), System.nanoTime()) );			
 			}
+		
+		// Initialize the camera
+		viewPort = new Camera(
+				entities, 
+				new Universe(universeSize, System.currentTimeMillis()), 
+				particleList,
+				player);
 		
 		// Initialize the HUD and bind it to the player's ship
 		hud = new UI(player);
@@ -94,9 +95,15 @@ public class Game {
 			for(int j = ++i; j < entities.size(); j++)
 			{
 				GameObject us = entities.get(i);
+				
+				//Only go through spaceships
+				if( !( us instanceof Spaceship) ) continue;
+				
 				GameObject them = entities.get(i);
 				if( us.caseCollidesWith(them) )
+				{
 					us.collision( them );
+				}	
 			}
 		
 		//Update particle effects
