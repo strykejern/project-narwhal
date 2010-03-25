@@ -25,12 +25,19 @@ import gameEngine.*;
 public class Spaceship extends GameObject{
 
 	private ArrayList<Particle> 	particleList;	// Contains Particles in the universe
-
-	private static float MAX_SPEED = 15f;
 	private Vector universeSize;
-	private Weapon weapon;
-	private int cooldown;
+
+	//Engine
+	private float maxSpeed = 15f;
+	private float acceleration = 0.25f;
+	private float turnRate = 0.1f;
+	private boolean autoBreaks = false;
 	
+	//Weapon systems
+	private Weapon weapon;
+	private int cooldown;					//Global ship cooldown
+		
+	//Defensive systems
 	public int lifeMax = 100;
 	public float life = lifeMax;
 	public int shieldMax = 200;
@@ -38,8 +45,10 @@ public class Spaceship extends GameObject{
 	public int energyMax = 500;
 	public float energy = energyMax;
 	
+	
+	
 	public Spaceship(Vector spawnPos, Image2D image, Input keys, Vector universeSize, ArrayList<Particle> particleList){
-		pos 	= spawnPos;
+		pos 	    = spawnPos;
 		this.image 	= image;
 		this.keys 	= keys;
 		direction = 0;
@@ -77,11 +86,16 @@ public class Spaceship extends GameObject{
 		if( keys.mosButton1 ) activateWeapon(weapon);
 		
 		//Key move
-		if 		(keys.up) 	speed.add(new Vector(0.25f, direction, true));
+		if 		(keys.up) 	speed.add(new Vector(acceleration, direction, true));
 		else if (keys.down)
 		{
 			if (speed.length() < 0.2f) speed.setLength(0);
 			else speed.divide(1.01f);
+		}
+		else if( autoBreaks )
+		{
+			if (speed.length() < 0.5f) speed.setLength(0);
+			else speed.divide(1.05f);
 		}
 		direction %= 2 * Math.PI;
 		
@@ -89,10 +103,10 @@ public class Spaceship extends GameObject{
 		float heading = keys.mousePos.minus(new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2)).getAngle() - direction;
 		if 		(heading > Math.PI)  heading = -((2f * (float)Math.PI) - heading);
 		else if (heading < -Math.PI) heading =  ((2f * (float)Math.PI) + heading);
-		direction += heading * 0.1f;
+		direction += heading * turnRate;
 		image.setDirection( direction );
 		
-		if (speed.length() > MAX_SPEED) speed.setLength(MAX_SPEED);
+		if (speed.length() > maxSpeed) speed.setLength(maxSpeed);
 		
 		// Quick implement of universe bounds
 		float uniX = universeSize.x;
@@ -174,6 +188,6 @@ public class Spaceship extends GameObject{
 		energy -= wpn.cost;
 
 		//Spawn particle effect
-		wpn.spawnParticle(particleList, new Vector(pos.x + image.getWidth()/2, pos.y + image.getHeight()/2), direction, speed);
+		wpn.spawnParticle(particleList, getPosCentre(), direction, speed);
 	}
 }

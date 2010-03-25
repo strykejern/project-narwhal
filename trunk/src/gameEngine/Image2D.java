@@ -65,7 +65,7 @@ public class Image2D {
 		ImageIcon load = new ImageIcon(ResourceMananger.getFilePath(fileName));
 
 		//Load the image into a BufferedImage
-		original = new BufferedImage( load.getIconWidth(), load.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+		original = Video.createBufferedImage( load.getIconWidth(), load.getIconHeight() );
         Graphics2D g = original.createGraphics();
         Video.getGraphicsSettings(g);
         g.drawImage(load.getImage(), 0, 0, null ); 
@@ -109,7 +109,7 @@ public class Image2D {
 	private Graphics2D getBufferMemory() {
 		if( processed == null || processed.getWidth() != width || processed.getHeight() != height )
 		{
-			processed = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+			processed = Video.createBufferedImage(width, height);
 		}
 
         Graphics2D g = processed.createGraphics();
@@ -230,7 +230,7 @@ public class Image2D {
 		BufferedImage buffer = original.getSubimage(0, 0, original.getWidth(), original.getHeight());
 		Graphics2D g = buffer.createGraphics();
         Video.getGraphicsSettings(g);
-				
+
         // Set the Graphics composite to Alpha
 		if( currentAlpha < 1 ) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, currentAlpha));  
 		//TODO: alpha == 0 optimization

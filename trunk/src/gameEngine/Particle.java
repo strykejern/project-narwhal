@@ -132,8 +132,7 @@ public class Particle {
 	private Graphics2D createMemoryImage(int width, int height){
 		
 		//Create the image buffer in memory if needed
-		if( memoryImg == null || memoryImg.contentsLost() || width != memoryImg.getWidth()
-				|| height != memoryImg.getHeight() )
+		if( memoryImg == null || memoryImg.contentsLost() )
 		{
 			memoryImg = Video.createVolatileImage(width, height);
 		}
@@ -205,17 +204,19 @@ public class Particle {
 		
 		//We are already rendering the particle in an existing thread
 		if( rendering ) return null;
-		
+	
 		Thread render = new Thread()
 		{
 			public void run()
 			{
 				rendering = true;
-				int w = (int) (particleMap.get(hashCode).getIconWidth()  * size);
-				int h = (int) (particleMap.get(hashCode).getIconHeight() * size);
+				int baseWidth = particleMap.get(hashCode).getIconWidth(); 
+				int baseHeight = particleMap.get(hashCode).getIconHeight();
+				int w = (int) ( baseWidth * size);
+				int h = (int) ( baseHeight * size);
 				
 				//Make sure the VolatileImage exists
-				Graphics2D g = createMemoryImage(w, h);
+				Graphics2D g = createMemoryImage(baseWidth, baseHeight);
 						   	 
 		        //Do any alpha
 				alpha = Math.min( 1.00f, Math.max(0.00f, alpha) );

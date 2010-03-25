@@ -87,6 +87,13 @@ public class Video {
 	}
 
 	/**
+	 * JJ> Used for constructing a BufferedImage
+	 */
+	public static BufferedImage createBufferedImage( int width, int height ) {
+		return graphicConf.createCompatibleImage( width, height, VolatileImage.TRANSLUCENT );
+	}
+
+	/**
 	 * JJ> Sets the graphics quality for all rendering processes.
 	 *     Can be either VIDEO_LOW, VIDEO_NORMAL or VIDEO_HIGH
 	 */

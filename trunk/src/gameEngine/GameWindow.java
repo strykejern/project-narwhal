@@ -310,11 +310,15 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 	 */
 	public void paint(Graphics rawGraphics) {
 		painting = true;
+		
 		//Convert to the Graphics2D object which allows us more functions
 		Graphics2D g = (Graphics2D) rawGraphics;
 		
 		//Set quality mode
 		Video.getGraphicsSettings(g);
+		
+		g.setBackground(Color.BLACK);
+		g.clearRect(0, 0, Video.getScreenWidth(), Video.getScreenHeight());
 		
 		if(state == gameState.GAME_PLAYING && theGame != null) theGame.draw(g);
 		else if(state == gameState.GAME_MENU) theMenu.draw(g);
