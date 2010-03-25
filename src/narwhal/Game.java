@@ -51,7 +51,7 @@ public class Game {
        	Music.play( new Sound("/data/space.ogg") );
        	
 		//Initialize the player ship
-		Spaceship player = new Spaceship(new Vector(200, 200), new Image2D("/data/spaceship2.png"), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleList);
+		Spaceship player = new Spaceship(new Vector(200, 200), new Image2D("/data/spaceship3.png"), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleList);
 		entities.add(player);
 		
 		
@@ -124,5 +124,6 @@ public class Game {
 		//Debug info
 		g.setColor(Color.white);
 		g.drawString("Number of particles: " + particleList.size(), 5, 50);
+		g.drawString("Number of threads: " + Thread.activeCount(), 5, 70);
 	}
 }

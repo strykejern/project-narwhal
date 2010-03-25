@@ -134,7 +134,6 @@ public class Sound
 				//This might be do once or in infinity, depending on the loop variable
 				do
 				{
-
 					//Try to open the sound
 					SourceDataLine line;
 					try 
@@ -173,7 +172,7 @@ public class Sound
 					line.stop();
 					line.close();
 					line.flush();
-				} while(looping);
+				} while( looping );
 				
 				playing = false;
 			}

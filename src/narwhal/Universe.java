@@ -280,6 +280,17 @@ public class Universe {
 	}
 
 	public void drawBackground(Graphics2D g, Vector position) {
+
+		Vector pos = position.clone();
+		for(int i = 0; i < universeSize; i++)
+			for(int j = 0; j < universeSize; j++)
+			{
+				int x = bgPos[i][j].getX()-pos.getX();
+				int y = bgPos[i][j].getY()-pos.getY();
+				g.drawImage( universe[i][j], x, y, null );
+			}	
+		
+		/*
 		float uniX = Video.getScreenWidth()*universeSize;
 		float uniY = Video.getScreenHeight()*universeSize;
 		Vector pos = position.clone();
@@ -309,6 +320,6 @@ public class Universe {
 		else if (u && r) drawSingleBackground(g, pos.plus(new Vector( uniX,-uniY)));
 		else if (d && l) drawSingleBackground(g, pos.plus(new Vector(-uniX, uniY)));
 		else if (d && r) drawSingleBackground(g, pos.plus(new Vector( uniX, uniY)));
-
+*/
 	}
 }
