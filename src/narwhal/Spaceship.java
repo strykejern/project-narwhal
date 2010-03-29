@@ -45,8 +45,6 @@ public class Spaceship extends GameObject{
 	public int energyMax = 500;
 	public float energy = energyMax;
 	
-	
-	
 	public Spaceship(Vector spawnPos, Image2D image, Input keys, Vector universeSize, ArrayList<Particle> particleList){
 		pos 	    = spawnPos;
 		this.image 	= image;
@@ -109,14 +107,14 @@ public class Spaceship extends GameObject{
 		if (speed.length() > maxSpeed) speed.setLength(maxSpeed);
 		
 		// Quick implement of universe bounds
-	/*	float uniX = universeSize.x;
+		float uniX = universeSize.x;
 		float uniY = universeSize.y;
 		
 		if 		(pos.x < 0) 	pos.x = uniX + pos.x;
 		else if (pos.x > uniX)  pos.x %= uniX;
 		
 		if 		(pos.y < 0) 	pos.y = uniY + pos.y;
-		else if (pos.y > uniY)  pos.y %= uniY;*/
+		else if (pos.y > uniY)  pos.y %= uniY;
 		
 		super.update();
 	}

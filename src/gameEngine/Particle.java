@@ -30,7 +30,6 @@ import javax.swing.ImageIcon;
 
 
 public class Particle {	
-	public static final int MAX_PARTICLES = 256;	
 	private static HashMap<Integer, ImageIcon> particleMap;
 	
 	/**
@@ -128,7 +127,12 @@ public class Particle {
 		}
 	}
 	
-	
+	/**
+	 * JJ> Allocates a image in the hardware memory
+	 * @param width width of the image
+	 * @param height height of the image
+	 * @return the Graphics2D for the new image, ready to be drawn on
+	 */
 	private Graphics2D createMemoryImage(int width, int height){
 		
 		//Create the image buffer in memory if needed
@@ -166,7 +170,7 @@ public class Particle {
 	}
 
 	/**
-	 * @return true if this particle is marked for removal
+	 * @return true if this particle was in the camera view this update
 	 */
 	public boolean isOnScreen() {
 		return onScreen;
@@ -200,6 +204,7 @@ public class Particle {
 		if( onScreen ) renderParticle();		
 	}
 	
+	//TODO: probably should not do this in own thread
 	private Thread renderParticle() {
 		
 		//We are already rendering the particle in an existing thread
@@ -246,7 +251,7 @@ public class Particle {
 	
 	public void draw(Graphics g, Vector offset) {
 
-		//Only draw if inside the screen bounds
+		//Only draw if it is okay to draw
 		if( !onScreen || rendering || memoryImg == null ) return;		
 
 		int xPos = pos.getX() - memoryImg.getWidth()/2 - offset.getX();
