@@ -199,7 +199,7 @@ public class Universe {
 	}
 
 	public void drawBounds(Graphics2D g, Vector pos){
-		boolean debug = true;
+		boolean debug = false;
 		
 		if(!debug) return;
 				
@@ -289,37 +289,5 @@ public class Universe {
 				int y = bgPos[i][j].getY()-pos.getY();
 				g.drawImage( universe[i][j], x, y, null );
 			}	
-		
-		/*
-		float uniX = Video.getScreenWidth()*universeSize;
-		float uniY = Video.getScreenHeight()*universeSize;
-		Vector pos = position.clone();
-		
-		boolean u = false;
-		boolean d = false;
-		boolean l = false;
-		boolean r = false;
-		
-		if 		(pos.x < 0) 		  	l = true;
-		else if (pos.x > uniX - Video.getScreenWidth()) 	r = true;
-		
-		if		(pos.y < 0)				u = true;
-		else if (pos.y > uniY - Video.getScreenHeight())	d = true;
-
-		pos.negate();
-		
-		drawSingleBackground(g, pos);
-		
-		if 		(l) drawSingleBackground(g, pos.plus(new Vector(-uniX,0)));
-		else if (r) drawSingleBackground(g, pos.plus(new Vector( uniX,0)));
-
-		if 		(u) drawSingleBackground(g, pos.plus(new Vector(0,-uniY)));
-		else if (d) drawSingleBackground(g, pos.plus(new Vector(0, uniY)));
-		
-		if 		(u && l) drawSingleBackground(g, pos.plus(new Vector(-uniX,-uniY)));
-		else if (u && r) drawSingleBackground(g, pos.plus(new Vector( uniX,-uniY)));
-		else if (d && l) drawSingleBackground(g, pos.plus(new Vector(-uniX, uniY)));
-		else if (d && r) drawSingleBackground(g, pos.plus(new Vector( uniX, uniY)));
-*/
 	}
 }

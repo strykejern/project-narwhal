@@ -194,7 +194,7 @@ public class Particle {
 		pos.add(speed);
 		
 		//Figure out if we are inside the screen or not
-		onScreen = screen.isInUniverse( pos );
+		onScreen = screen.isInFrame( this );
 				
 		//Only do rendering operations if the image is actually on the screen
 		if( onScreen ) renderParticle();		

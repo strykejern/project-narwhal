@@ -109,14 +109,14 @@ public class Spaceship extends GameObject{
 		if (speed.length() > maxSpeed) speed.setLength(maxSpeed);
 		
 		// Quick implement of universe bounds
-		float uniX = universeSize.x;
+	/*	float uniX = universeSize.x;
 		float uniY = universeSize.y;
 		
 		if 		(pos.x < 0) 	pos.x = uniX + pos.x;
 		else if (pos.x > uniX)  pos.x %= uniX;
 		
 		if 		(pos.y < 0) 	pos.y = uniY + pos.y;
-		else if (pos.y > uniY)  pos.y %= uniY;
+		else if (pos.y > uniY)  pos.y %= uniY;*/
 		
 		super.update();
 	}
