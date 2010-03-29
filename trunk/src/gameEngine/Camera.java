@@ -55,16 +55,6 @@ public class Camera {
 	public void drawView(Graphics2D g){
 		updateCameraVectors();
 		
-		//Twist and shout! Shake it baby!
-		if( shakeCamera != 0 )
-		{
-			Random rand = new Random();
-			int x = rand.nextInt(shakeCamera)-shakeCamera/2;
-			int y = rand.nextInt(shakeCamera)-shakeCamera/2;
-			cameraPos.x += x;
-			cameraPos.y += y;
-		}
-
 		// Draw background
 		background.drawBackground(g, cameraPos);
 		
@@ -73,11 +63,10 @@ public class Camera {
 		// Draw all entities
 		for (GameObject entity : entities)
 		{
-			Vector entityOffset = isInFrame(entity);
-			if (entityOffset != null)
+			if ( isInFrame(entity) )
 			{
-				entity.draw(g, entityOffset);
-				entity.drawCollision(g, entityOffset);
+				entity.draw(g, cameraPos);
+				entity.drawCollision(g, cameraPos);
 				count++;
 			}
 		}
@@ -85,7 +74,8 @@ public class Camera {
 		//Draw all particles
 		for( int i = 0; i < particleList.size(); i++ ) 
 		{
-			particleList.get(i).draw(g, cameraPos);
+			if( isInFrame(particleList.get(i)) )
+				particleList.get(i).draw(g, cameraPos);
 		}
 		
 		//Debug info
@@ -95,126 +85,56 @@ public class Camera {
 		g.drawString("PlanetPos   X: " + entities.get(1).pos.getX() + " Y: " + entities.get(1).pos.getY(), 5, 40);
 		g.drawString("Drawn entities: " + count, 5, 60);
 	}
-
-	private Vector isInFrame(GameObject entity){
-		Vector topLeft  = entity.pos;
-		Vector botRight = topLeft.plus(new Vector(entity.image.getWidth(), entity.image.getHeight())).returnOverflowWithin(universeBotRight);
-		Vector botLeft  = topLeft.plus(new Vector(0, botRight.y)).returnOverflowWithin(universeBotRight);
-		Vector topRight = topLeft.plus(new Vector(botRight.x, 0)).returnOverflowWithin(universeBotRight);
-		
-		if (topLeft.isInsideRect( cameraPos, cameraPos.plus(Video.getResolutionVector()))) return cameraPos;
-		if (botRight.isInsideRect(cameraPos, cameraPos.plus(Video.getResolutionVector())))
-		{
-			if (topLeft.isTopLeftOf(cameraBotRight))
-				return cameraPos;
-			else
-				return background.getUniverseSize().plus(cameraPos);
-		}
-		
-		// Where is the bottom right part of the camera in relation to the top left
-		Vector cameraRelation = cameraBotRight.minus(cameraPos);
-		
-		// Camera overlaps to the right
-		if (cameraRelation.x < 0 && cameraRelation.y > 0)
-		{
-			// topLeft is inside right side
-			if (topLeft.isBotLeftOf(cameraTopRight) && topLeft.isTopLeftOf(cameraBotRight)) 
-				return (new Vector(universeBotRight.x, 0)).negated().plus(cameraPos);
-			
-			// botLeft is inside left side
-			if (botLeft.isTopRightOf(cameraBotLeft) && botLeft.isBotRightOf(cameraPos)) 
-			{
-				if (topLeft.isTopRightOf(cameraBotLeft)) 
-					return cameraPos;
-				else 
-					return (new Vector(0, universeBotRight.y)).plus(cameraPos);
-			}
-			
-			// botLeft is inside right side TODO: test
-			if (botLeft.isTopLeftOf(cameraBotRight) && botLeft.isBotLeftOf(cameraTopRight))
-			{
-				if (topLeft.isTopLeftOf(botRight))
-					return (new Vector(universeBotRight.x, 0)).negated().plus(cameraPos);
-				else
-					return (new Vector(universeBotRight.x, -universeBotRight.y)).negated().plus(cameraPos);
-			}
-		}
-		// Camera overlaps to the bottom
-		if (cameraRelation.x > 0 && cameraRelation.y < 0)
-		{
-			// topLeft is inside bottom part
-			if (topLeft.isTopLeftOf(cameraBotRight) && topLeft.isTopRightOf(cameraBotLeft)) 
-				return (new Vector(0, universeBotRight.y)).negated().plus(cameraPos);
-			
-			// topRight is inside top part TODO test
-			if (topRight.isBotLeftOf(cameraTopRight) && topRight.isBotRightOf(cameraPos))
-			{
-				if (topLeft.isBotLeftOf(cameraPos))
-					return cameraPos;
-				else
-					return (new Vector(universeBotRight.x, 0)).plus(cameraPos);
-			}
-			
-			// topRight is inside bottom part TODO test
-			if (topRight.isTopLeftOf(cameraBotRight) && topRight.isTopRightOf(cameraBotLeft))
-			{
-				if (topLeft.isTopLeftOf(cameraBotLeft))
-					return (new Vector(0, universeBotRight.y)).negated().plus(cameraPos);
-				else
-					return (new Vector(-universeBotRight.x, universeBotRight.y)).negated().plus(cameraPos);
-			}
-		}
-		// Camera overlaps to the right and the bottom
-		if (cameraRelation.x < 0 && cameraRelation.y < 0)
-		{
-			if (topLeft.isInsideRect(cameraBotRight)) 
-				return background.getUniverseSize().negated().plus(cameraPos);
-			
-			if (topLeft.isTopRightOf(cameraBotLeft))  
-				return (new Vector(0, background.getUniverseSize().y)).negated().plus(cameraPos);
-			
-			if (topLeft.isBotLeftOf(cameraTopRight))  
-				return (new Vector(background.getUniverseSize().x, 0)).negated().plus(cameraPos);
-			
-			if (botRight.isTopLeftOf(cameraBotRight)) 
-				return cameraPos;
-			
-			if (botLeft.isTopRightOf(cameraBotLeft))
-				return cameraPos;
-			
-			if (topRight.isBotLeftOf(cameraTopRight))
-				return cameraPos;
-		}
-		return null;
+	
+	
+	/**
+	 * JJ> Returns true if the specified GameObject is inside the screen
+	 * @param object Which GameObject to check
+	 * @return True if it is inside the screen. False otherwise.
+	 */
+	public boolean isInFrame(GameObject object) {
+		return isInFrame( object.pos, new Vector(object.image.getWidth(), object.image.getHeight()) );
 	}
 	
+	/**
+	 * JJ> Returns true if the specified particle is inside the screen
+	 * @param part Which particle to check
+	 * @return True if it is inside the screen. False otherwise.
+	 */
+	public boolean isInFrame(Particle part) {
+		return isInFrame( part.getPos(), new Vector() );
+	}
+	
+	/**
+	 * JJ> Returns true if the specified position is inside the screen
+	 * @param pos Position to be inside screen.
+	 * @param tolerance The size of the image of the object
+	 * @return True if it is inside the screen. False otherwise.
+	 */
+	private boolean isInFrame(Vector pos, Vector tolerance) {
+		float drawX = pos.x - cameraPos.x;
+		float drawY = pos.y - cameraPos.y;
+		
+		if( drawX > Video.getScreenWidth() )  return false;
+		if( drawY > Video.getScreenHeight() ) return false;
+		if( drawX < -tolerance.x ) 			  return false;
+		if( drawY < -tolerance.y ) 			  return false;
+		
+		return true;
+	}
+
 	private void updateCameraVectors(){
 		cameraPos.x = follow.pos.x - ((float)Video.getScreenWidth() / 2f) + follow.image.getWidth()/2;
 		cameraPos.y = follow.pos.y - ((float)Video.getScreenHeight() / 2f) + follow.image.getHeight()/2;
-		cameraPos.overflowWithin(background.getUniverseSize());
-		calculateCameraOverflow();
 		
-		universeBotRight	= background.getUniverseSize();
-		universeBotLeft		= new Vector(0, universeBotRight.y);
-		universeTopRight	= new Vector(universeBotRight.x, 0);
-		
-		cameraBotRight		= cameraPos.plus(Video.getResolutionVector()).returnOverflowWithin(universeBotRight);
-		cameraBotLeft		= cameraPos.plus(new Vector(0, Video.getResolutionVector().y)).returnOverflowWithin(universeBotRight);
-		cameraTopRight		= cameraPos.plus(new Vector(Video.getResolutionVector().x, 0)).returnOverflowWithin(universeBotRight);
-	}
-	
-	public boolean isInUniverse(Vector point){
-		if (point.isInsideRect(new Vector(), background.getUniverseSize())) return true;
-		return false;
-	}
-	
-	private void calculateCameraOverflow(){
-		cameraOverflow = new Vector();
-		
-		if (cameraPos.x < 0) cameraOverflow.x -= 1;
-		else if (cameraPos.x + Video.getScreenWidth() > background.getUniverseSize().x) cameraOverflow.x += 1;
-		
-		if (cameraPos.y < 0) cameraOverflow.y -= 1;
-		else if (cameraPos.y + Video.getScreenHeight() > background.getUniverseSize().y) cameraOverflow.y += 1; 
+		//Twist and shout! Shake it baby!
+		if( shakeCamera != 0 )
+		{
+			Random rand = new Random();
+			int x = rand.nextInt(shakeCamera)-shakeCamera/2;
+			int y = rand.nextInt(shakeCamera)-shakeCamera/2;
+			cameraPos.x += x;
+			cameraPos.y += y;
+		}
 	}
 }
