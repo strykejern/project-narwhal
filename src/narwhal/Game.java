@@ -71,6 +71,7 @@ public class Game {
 				new Universe(universeSize, System.currentTimeMillis()), 
 				particleList,
 				player);
+		viewPort.configureInputHandler(keys);
 		
 		// Initialize the HUD and bind it to the player's ship
 		hud = new UI(player);
@@ -86,25 +87,26 @@ public class Game {
 		for (GameObject entity : entities)
 		{
 			entity.update();
-			if( entity.caseCollidesWith(entities.get(0)) )
-			entity.collision(entities.get(0));
+			//if( entity.caseCollidesWith(entities.get(0)) )
+			//	entity.collision(entities.get(0));
 		}
 		
 		//Collision detection
 		for(int i = 0; i < entities.size(); i++ )
-			for(int j = ++i; j < entities.size(); j++)
+		{
+			GameObject us = entities.get(i);
+			//Only go through spaceships
+			//if( !( us instanceof Spaceship) ) continue;
+			
+			for(int j = i + 1; j < entities.size(); j++)
 			{
-				GameObject us = entities.get(i);
-				
-				//Only go through spaceships
-				if( !( us instanceof Spaceship) ) continue;
-				
-				GameObject them = entities.get(i);
-				if( us.caseCollidesWith(them) )
+				GameObject them = entities.get(j);
+				if( us.collidesWith(them) )
 				{
 					us.collision( them );
 				}	
 			}
+		}
 		
 		//Update particle effects
 		for( int i = 0; i < particleList.size(); i++ )

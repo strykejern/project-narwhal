@@ -27,15 +27,8 @@ import narwhal.*;
 
 public class Camera {
 	private Vector 					cameraPos;
-	private Vector					cameraOverflow;
 	
-	private Vector					cameraBotRight;
-	private Vector					cameraBotLeft;
-	private Vector					cameraTopRight;
-	
-	private Vector					universeBotRight;
-	private Vector					universeBotLeft;
-	private Vector					universeTopRight;
+	private Vector					universeSize;
 	
 	private ArrayList<GameObject> 	entities;
 	private GameObject 				follow;
@@ -50,6 +43,11 @@ public class Camera {
 		this.background = background;
 		this.particleList = particleList;
 		this.cameraPos = new Vector();
+		universeSize = background.getUniverseSize();
+	}
+	
+	public void configureInputHandler(Input in){
+		in.setCameraPos(cameraPos);
 	}
 	
 	public void drawView(Graphics2D g){
@@ -126,6 +124,12 @@ public class Camera {
 	private void updateCameraVectors(){
 		cameraPos.x = follow.pos.x - ((float)Video.getScreenWidth() / 2f) + follow.image.getWidth()/2;
 		cameraPos.y = follow.pos.y - ((float)Video.getScreenHeight() / 2f) + follow.image.getHeight()/2;
+		
+		if (cameraPos.x < 0) cameraPos.x = 0;
+		else if (cameraPos.x > universeSize.x - Video.getScreenWidth()) cameraPos.x = universeSize.x - Video.getScreenWidth();
+		
+		if (cameraPos.y < 0) cameraPos.y = 0;
+		else if (cameraPos.y > universeSize.y - Video.getScreenHeight()) cameraPos.y = universeSize.y - Video.getScreenHeight();
 		
 		//Twist and shout! Shake it baby!
 		if( shakeCamera != 0 )

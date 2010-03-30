@@ -78,7 +78,7 @@ public abstract class Collidable {
 		{
 			if (object.shape == Shape.CIRCLE)
 			{
-				if (this.pos.minus(object.pos).length() < this.radius + object.radius) collision = true;
+				if (this.getPosCentre().minus(object.getPosCentre()).length() < this.radius + object.radius) collision = true;
 			}
 			else if (object.shape == Shape.RECT)
 			{
@@ -209,5 +209,9 @@ public abstract class Collidable {
 	protected void setRadius(int radius){
 		this.radius = radius;
 		this.size = new Vector(radius*2, radius*2);
+	}
+	
+	protected Vector getPosCentre(){
+		return pos;
 	}
 }

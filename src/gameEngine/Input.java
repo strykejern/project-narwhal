@@ -28,6 +28,7 @@ public class Input {
 	public boolean up, down, left, right, escape;
 	public boolean mosButton1, mosButton2, mosButton3;
 	public Vector mousePos;
+	private Vector cameraPos;
 	
 	public Input(){
 		up = false;
@@ -60,5 +61,13 @@ public class Input {
 	public void drawCrosshair(Graphics g){
 		g.setColor(Color.green);
 		g.drawOval(mousePos.getX()-5, mousePos.getY()-5, 10, 10);
+	}
+	
+	public Vector mouseUniversePos(){
+		return cameraPos.plus(mousePos);
+	}
+	
+	public void setCameraPos(Vector cameraPos){
+		this.cameraPos = cameraPos;
 	}
 }
