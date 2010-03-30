@@ -98,7 +98,7 @@ public class Spaceship extends GameObject{
 		direction %= 2 * Math.PI;
 		
 		//mouse move
-		float heading = keys.mousePos.minus(new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2)).getAngle() - direction;
+		float heading = keys.mouseUniversePos().minus(getPosCentre()).getAngle() - direction;
 		if 		(heading > Math.PI)  heading = -((2f * (float)Math.PI) - heading);
 		else if (heading < -Math.PI) heading =  ((2f * (float)Math.PI) + heading);
 		direction += heading * turnRate;

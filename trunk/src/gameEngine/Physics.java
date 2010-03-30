@@ -37,19 +37,20 @@ public abstract class Physics extends Collidable{
 			//They are circle
 			if (object.shape == Shape.CIRCLE)
 			{
-				Vector colVec = this.pos.minus(object.pos);
+				Vector colVec = this.getPosCentre().minus(object.getPosCentre());
 				colVec.setLength((this.radius + object.radius) - colVec.length());
 				if (this.anchored && !object.anchored)
 				{
 					colVec.negate();
 					object.speed.add(colVec);
 					object.pos.add(colVec);
-					object.speed.add(colVec);
 					object.speed.multiply(0.85f);		//Lose 15% speed
 				}
 				else if (!this.anchored && object.anchored)
 				{
-					// TODO: Implement					
+					this.speed.add(colVec);
+					this.pos.add(colVec);
+					this.speed.multiply(0.85f);		//Lose 15% speed				
 				}
 				else
 				{

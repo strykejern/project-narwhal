@@ -61,8 +61,9 @@ public abstract class GameObject extends Physics{
 		{
 			w = size.getX();
 			h = size.getY();
+			Vector drawPos = getPosCentre().minus(new Vector(radius, radius)).minus(offset);
 			g.setColor(Color.RED);
-			g.drawOval(drawX(offset)-w/2, drawY(offset)-h/2, w, h);
+			g.drawOval(drawPos.getX(), drawPos.getY(), w, h);
 		}
 	}
 	
