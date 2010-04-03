@@ -4,17 +4,16 @@ import gameEngine.*;
 import gameEngine.Video.VideoQuality;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
+import narwhal.GameFont.FontType;
+
 public class MainMenu {
 	private Universe background;
 	private HashMap<ButtonType, Button> buttonList;
-	private Font menuFont;
 	private Vector bgScroll = new Vector(), bgSpeed;
 	private Sound buttonHover, buttonClick;
 	private Input key;
@@ -37,9 +36,6 @@ public class MainMenu {
 		//Initialize the background
     	background = new Universe(2, System.currentTimeMillis());
     	bgSpeed = new Vector(rand.nextInt(4)-2, rand.nextInt(4)-2);
-
-    	//Load font
-    	if( menuFont == null ) intializeFont();
     	    	
     	//Load buttons
     	buttonList = new HashMap<ButtonType, Button>();
@@ -73,33 +69,6 @@ public class MainMenu {
     	buttonList.get(ButtonType.BUTTON_SOUND).hide();
     	buttonList.get(ButtonType.BUTTON_MAIN_MENU).hide();
 	}
-
-	//JJ> Prepares our awesome font
-	private boolean intializeFont() {
-		try 
-		{
-			//Make sure the file exists
-			if( !ResourceMananger.fileExists("/data/font.ttf") ) throw new Exception("Missing font file! (/data/font.ttf)");
-			
-			//Load our awesome font
-			menuFont = Font.createFont(Font.TRUETYPE_FONT, ResourceMananger.getInputStream("/data/font.ttf") );
-			menuFont = menuFont.deriveFont(Font.BOLD, 14);
-			return true;
-		} 
-		catch (Exception e) 
-		{
-			//Use default font instead
-			Log.warning(e);
-			menuFont = new Font("Arial", Font.BOLD, 14);
-		}
-		return false;
-	}
-	
-		
-	private int getFontWidth(String text, Graphics2D g){
-		FontMetrics metric = g.getFontMetrics();
-		return metric.stringWidth(text);
-	}
 	
 	//JJ> Main menu loop
 	public GameWindow.gameState update(boolean newGame) {
@@ -124,6 +93,7 @@ public class MainMenu {
 					case BUTTON_START_GAME:
 					{
 						return GameWindow.gameState.GAME_PLAYING;
+						//return GameWindow.gameState.GAME_SELECT_SHIP;		//Ship selection
 					}
 					
 					case BUTTON_OPTIONS:
@@ -308,7 +278,8 @@ public class MainMenu {
 		
 		public void draw(Graphics2D g){
 			if( hidden ) return;
-				
+			GameFont font = new GameFont();
+			
 			//Calculate fade away (not implemented)
 			float trans = Math.min(1, Math.max(0, 0.5f-alpha));
 			float solid = Math.min(1, Math.max(0, 1.0f-alpha));
@@ -323,11 +294,11 @@ public class MainMenu {
 			else		    g.setColor(new Color(0.1f, 0.9f, 0.1f, trans) );
 			g.fillRoundRect(movePos.getX()+size.minus(v).getX()/2, movePos.getY()+size.minus(v).getY()/2, v.getX(), v.getY(), 25, 25);
 			
-			//Text
-			g.setFont( menuFont );
+			//Text	
+			font.set(g, FontType.FONT_MENU);
 			if( mouseOver ) g.setColor(new Color(1, 1, 1, solid) );
 			else		    g.setColor(new Color(0, 0, 0, solid) );
-			g.drawString(text, movePos.getX()+ (size.getX()/2) - (getFontWidth(text, g)/2), movePos.getY()+ size.getY()/1.75f);
+			g.drawString(text, movePos.getX()+ (size.getX()/2) - (font.getWidth(text, g)/2), movePos.getY()+ size.getY()/1.75f);
 		}
 		
 	}

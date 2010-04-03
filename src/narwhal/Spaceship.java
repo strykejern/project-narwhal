@@ -34,7 +34,7 @@ public class Spaceship extends GameObject{
 	private boolean autoBreaks = false;
 	
 	//Weapon systems
-	private Weapon weapon;
+	public Weapon weapon;
 	private int cooldown;					//Global ship cooldown
 		
 	//Defensive systems
@@ -44,18 +44,20 @@ public class Spaceship extends GameObject{
 	public float shield = shieldMax;
 	public int energyMax = 500;
 	public float energy = energyMax;
+	public String name;
 	
-	public Spaceship(Vector spawnPos, Image2D image, Input keys, Vector universeSize, ArrayList<Particle> particleList){
+	public Spaceship(Vector spawnPos, Image2D image, Input keys, Vector universeSize, ArrayList<Particle> particleList, String name){
 		pos 	    = spawnPos;
 		this.image 	= image;
 		this.keys 	= keys;
+		this.name   = name;
 		direction = 0;
 		
 		//Where do we spawn particles?
 		this.particleList = particleList;
 		
 		//Ship weapons
-		weapon = new Weapon(45.0f, 30, 15, "laser");
+		weapon = new Weapon(45.0f, 30, 15, "laser", "Laser Cannon");
 
 		//Calculate size
 		image.resize(Video.getScreenWidth()/12, Video.getScreenWidth()/12);
@@ -69,7 +71,7 @@ public class Spaceship extends GameObject{
 		
 		this.universeSize = universeSize;
 	}
-
+	
 	public void update() {
 		
 		//Do ship regeneration
@@ -169,8 +171,7 @@ public class Spaceship extends GameObject{
 		}
 		
 		//We lose 15% speed as well
-		speed.multiply(0.85f);
-		
+		speed.multiply(0.85f);	
 	}
 	
 	public void activateWeapon(Weapon wpn) {
@@ -187,5 +188,9 @@ public class Spaceship extends GameObject{
 
 		//Spawn particle effect
 		wpn.spawnParticle(particleList, getPosCentre(), direction, speed);
+	}
+	
+	public Image2D getImage(){
+		return image;
 	}
 }

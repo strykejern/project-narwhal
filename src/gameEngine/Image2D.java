@@ -102,6 +102,25 @@ public class Image2D {
 		baseHeight = imgHeight;
 		height = (int)(baseHeight*1.20f);
 	}
+	
+	/**
+	 * JJ> Constructor that turns a Image2D into a new Image2D
+	 * @note: The Image2D reset state is the current state of the Image2D to be cloned
+	 */
+	private Image2D( Image2D clone ) {
+		baseWidth = clone.getWidth();
+		baseHeight = clone.getHeight();
+		width = (int)(baseWidth*1.20f);
+		height = (int)(baseHeight*1.20f);
+		
+		//Make a copy of the current state of the Image2D
+		original = new BufferedImage( baseWidth, baseHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = original.createGraphics();
+        Video.getGraphicsSettings(g);
+        g.drawImage(clone.toImage(), 0, 0, baseWidth, baseHeight, null ); 
+        g.dispose();
+	}
+
 		
 	/**
 	 * JJ> Makes sure we have a proper place in memory to store our processed image
@@ -306,14 +325,14 @@ public class Image2D {
 	 * JJ> Get width for this buffered image
 	 */
 	public int getWidth() {
-		return width;
+		return baseWidth;
 	}
 	
 	/**
 	 * JJ> Get height for this buffered image
 	 */
 	public int getHeight() {
-		return height;
+		return baseHeight;
 	}
 
 	/**
@@ -347,5 +366,12 @@ public class Image2D {
 			processed = null;
 		}
 		original.flush();
+	}
+	
+	/**
+	 * JJ> Returns a new clone of this Image2D
+	 */
+	public Image2D clone() {
+		return new Image2D(this);
 	}
 }
