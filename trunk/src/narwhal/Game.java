@@ -51,9 +51,8 @@ public class Game {
        	Music.play( new Sound("/data/space.ogg") );
        	
 		//Initialize the player ship
-		Spaceship player = new Spaceship(new Vector(200, 200), new Image2D("/data/spaceship3.png"), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleList);
-		entities.add(player);
-		
+		Spaceship player = new Spaceship(new Vector(200, 200), new Image2D("/data/spaceship3.png"), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleList, "Vindicator");
+		entities.add(player);		
 		
 		//Generate random planets
 		Random rand = new Random();
@@ -87,8 +86,6 @@ public class Game {
 		for (GameObject entity : entities)
 		{
 			entity.update();
-			//if( entity.caseCollidesWith(entities.get(0)) )
-			//	entity.collision(entities.get(0));
 		}
 		
 		//Collision detection
@@ -119,10 +116,11 @@ public class Game {
 	}
 	
 	public void draw(Graphics2D g){
+
 		viewPort.drawView(g);
 		keys.drawCrosshair(g);
 		hud.draw(g);
-		
+				
 		//Debug info
 		g.setColor(Color.white);
 		g.drawString("Number of particles: " + particleList.size(), 5, 50);

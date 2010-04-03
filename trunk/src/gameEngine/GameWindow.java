@@ -37,6 +37,7 @@ import javax.swing.JPanel;
 
 import narwhal.Game;
 import narwhal.MainMenu;
+import narwhal.Shipyard;
 
 
 /**
@@ -53,11 +54,13 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 	private Game theGame;
 	private MainMenu theMenu;
 	private gameState state;
+	private Shipyard selectShip;
 	
 	public static enum gameState {
 		GAME_MENU,
 		GAME_PLAYING, 
-		GAME_EXIT
+		GAME_EXIT,
+		GAME_SELECT_SHIP
 	}
 	
 	/**
@@ -137,6 +140,13 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			{
 		    	frame.getContentPane().setCursor( null );				//TODO: bad change cursor every frame?
 				state = theMenu.update(theGame == null);
+			}
+			else if(state == gameState.GAME_SELECT_SHIP)
+			{
+				if(selectShip == null) selectShip = new Shipyard();
+				
+		    	frame.getContentPane().setCursor( null );				//TODO: bad change cursor every frame?
+		    	state = selectShip.update();
 			}
 			repaint();
 			
@@ -322,6 +332,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		
 		if(state == gameState.GAME_PLAYING && theGame != null) theGame.draw(g);
 		else if(state == gameState.GAME_MENU) theMenu.draw(g);
+		else if(state == gameState.GAME_SELECT_SHIP && selectShip != null) selectShip.draw(g);
 
 		//Done drawing this frame
 		g.dispose();

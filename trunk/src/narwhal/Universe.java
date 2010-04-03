@@ -178,26 +178,6 @@ public class Universe {
 		return new Vector( universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight() );
 	}
 				
-	/**
-	 * JJ> Draw the finished background to the Graphics specified in the parameter
-	 * @param g What do we draw it on?
-	 * @param pos Center position of the screen in space
-	 */
-	private void drawSingleBackground(Graphics2D g, Vector pos){
-		int x, y;
-				
-		//TODO: optimize this
-		for(int i = 0; i < universeSize; i++)
-			for(int j = 0; j < universeSize; j++)
-			{
-				x = bgPos[i][j].getX()+pos.getX();
-				y = bgPos[i][j].getY()+pos.getY();		
-				g.drawImage( universe[i][j], x, y, null );
-			}	
-		
-		drawBounds(g, pos);
-	}
-
 	public void drawBounds(Graphics2D g, Vector pos){
 		boolean debug = false;
 		
