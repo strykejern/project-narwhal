@@ -18,6 +18,8 @@
 //********************************************************************************************
 package narwhal;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import gameEngine.*;
@@ -45,22 +47,59 @@ public class Spaceship extends GameObject{
 	public int energyMax = 500;
 	public float energy = energyMax;
 	public String name;
+
+	private String parse(String line) {
+		return line.substring(line.indexOf(':')+1).trim();
+	}
 	
-	public Spaceship(Vector spawnPos, Image2D image, Input keys, Vector universeSize, ArrayList<Particle> particleList, String name){
-		pos 	    = spawnPos;
-		this.image 	= image;
-		this.keys 	= keys;
-		this.name   = name;
+	public Spaceship( String fileName ) {		
+		float sizeMul = 1.00f;
+		
+		try
+		{
+			BufferedReader parse = new BufferedReader(
+					new InputStreamReader(
+					ResourceMananger.getInputStream(fileName)));
+			
+			//Parse the ship file
+			while(true)
+			{
+				String line = parse.readLine();
+				
+				//Reached end of file
+				if(line == null) break;
+				
+				//Translate line into data
+				if     (line.startsWith("[NAME]:"))    name = parse(line);
+				else if(line.startsWith("[FILE]:"))    image = new Image2D("/data/ships/" + parse(line));
+				else if(line.startsWith("[SIZE]:"))    sizeMul = Float.parseFloat(parse(line));
+				else if(line.startsWith("[LIFE]:"))    life = Integer.parseInt(parse(line));
+				else if(line.startsWith("[SHIELD]:"))  shield = Integer.parseInt(parse(line));
+				else if(line.startsWith("[ENERGY]:"))  energy = Integer.parseInt(parse(line));
+				else if(line.startsWith("[EREGEN]:"))  ;	//TODO
+				else if(line.startsWith("[WEAPON]:"))  ;	//TODO
+				else if(line.startsWith("[SREGEN]:"))  ;	//TODO
+				else Log.warning("Loading ship file ( "+ fileName +") unrecognized line - " + line);
+				/*TODO: weapon, engine and regen and mods*/
+			}
+			if(image == null) throw new Exception("Missing a '[FILE]:' line describing which image to load!");
+		}
+		catch( Exception e )
+		{
+			//Something went wrong
+			Log.warning("Loading ship (" + fileName + ") - " + e);
+		}
+		
+		//Default values
+		pos 	  = new Vector();
 		direction = 0;
-		
-		//Where do we spawn particles?
-		this.particleList = particleList;
-		
-		//Ship weapons
+				
+		//TODO Ship weapons (remove here)
 		weapon = new Weapon(45.0f, 30, 15, "laser", "Laser Cannon");
 
 		//Calculate size
 		image.resize(Video.getScreenWidth()/12, Video.getScreenWidth()/12);
+		image.scale(sizeMul);
 		setRadius(image.getWidth()/2);
 
 		//Physics
@@ -68,8 +107,13 @@ public class Spaceship extends GameObject{
 		shape = Shape.CIRCLE;
 		canCollide = true;
 		anchored = false;
-		
+	}
+	
+	public void instantiate(Vector pos, Input keys, Vector universeSize, ArrayList<Particle> particleList) {
+		this.pos 	      = pos;
+		this.keys 	      = keys;
 		this.universeSize = universeSize;
+		this.particleList = particleList;
 	}
 	
 	public void update() {

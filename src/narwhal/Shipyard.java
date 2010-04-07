@@ -1,12 +1,13 @@
 package narwhal;
 
 import gameEngine.Image2D;
-import gameEngine.Vector;
+import gameEngine.ResourceMananger;
 import gameEngine.Video;
 import gameEngine.GameWindow.gameState;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 
 import narwhal.GameFont.FontType;
 
@@ -16,10 +17,11 @@ public class Shipyard {
 	private Image2D right;
 	private Spaceship ship;
 	private GameFont font;
+	ArrayList<Spaceship> shipList;
 	
 	public Shipyard() {
-		ship = new Spaceship(new Vector(200, 200), new Image2D("/data/spaceship3.png"), null, new Vector(), null, "Vindicator");
-		
+		parseShipList();
+		ship = shipList.get(0);		
 		image = ship.getImage().clone();
 		
 		//Ready font
@@ -86,6 +88,17 @@ public class Shipyard {
 	public gameState update() {
 		// TODO Auto-generated method stub
 		return gameState.GAME_SELECT_SHIP;
+	}
+	
+	private void parseShipList() {
+		String[] fileList = ResourceMananger.getFileList("/data/ships/");
+
+		shipList = new ArrayList<Spaceship>();
+		for( String fileName : fileList )
+		{
+			if( !fileName.endsWith(".ship") ) continue;
+			shipList.add( new Spaceship(fileName) );
+		}
 	}
 
 }
