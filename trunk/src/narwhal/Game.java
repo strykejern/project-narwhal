@@ -51,8 +51,9 @@ public class Game {
        	Music.play( new Sound("/data/space.ogg") );
        	
 		//Initialize the player ship
-		Spaceship player = new Spaceship(new Vector(200, 200), new Image2D("/data/spaceship3.png"), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleList, "Vindicator");
-		entities.add(player);		
+       	Spaceship player = new Spaceship("/data/ships/raptor.ship");
+       	player.instantiate( new Vector(200, 200), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleList );
+		entities.add(player);
 		
 		//Generate random planets
 		Random rand = new Random();
