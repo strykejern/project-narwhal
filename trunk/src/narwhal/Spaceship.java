@@ -40,12 +40,12 @@ public class Spaceship extends GameObject{
 	private int cooldown;					//Global ship cooldown
 		
 	//Defensive systems
-	public int lifeMax = 100;
-	public float life = lifeMax;
-	public int shieldMax = 200;
-	public float shield = shieldMax;
-	public int energyMax = 500;
-	public float energy = energyMax;
+	public int lifeMax;
+	public float life;
+	public int shieldMax;
+	public float shield;
+	public int energyMax;
+	public float energy;
 	public String name;
 
 	/**
@@ -61,6 +61,11 @@ public class Spaceship extends GameObject{
 	public Spaceship( String fileName ) {		
 		float sizeMul = 1.00f;
 		
+		//Set defaults
+		lifeMax = 100;
+		shieldMax = 200;
+		energyMax = 500;
+				
 		try
 		{
 			BufferedReader parse = new BufferedReader(
@@ -82,9 +87,9 @@ public class Spaceship extends GameObject{
 				if     (line.startsWith("[NAME]:"))    name = parse(line);
 				else if(line.startsWith("[FILE]:"))    image = new Image2D("/data/ships/" + parse(line));
 				else if(line.startsWith("[SIZE]:"))    sizeMul = Float.parseFloat(parse(line));
-				else if(line.startsWith("[LIFE]:"))    life = Integer.parseInt(parse(line));
-				else if(line.startsWith("[SHIELD]:"))  shield = Integer.parseInt(parse(line));
-				else if(line.startsWith("[ENERGY]:"))  energy = Integer.parseInt(parse(line));
+				else if(line.startsWith("[LIFE]:"))    lifeMax = Integer.parseInt(parse(line));
+				else if(line.startsWith("[SHIELD]:"))  shieldMax = Integer.parseInt(parse(line));
+				else if(line.startsWith("[ENERGY]:"))  energyMax = Integer.parseInt(parse(line));
 				else if(line.startsWith("[EREGEN]:"))  ;	//TODO
 				else if(line.startsWith("[WEAPON]:"))  ;	//TODO
 				else if(line.startsWith("[SREGEN]:"))  ;	//TODO
@@ -102,6 +107,9 @@ public class Spaceship extends GameObject{
 		//Default values
 		pos 	  = new Vector();
 		direction = 0;
+		life = lifeMax;
+		shield = shieldMax;
+		energy = energyMax;
 				
 		//TODO Ship weapons (remove here)
 		weapon = new Weapon(45.0f, 30, 15, "laser", "Laser Cannon");

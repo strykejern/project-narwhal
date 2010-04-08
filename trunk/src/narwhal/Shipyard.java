@@ -23,16 +23,19 @@ public class Shipyard {
 	private Spaceship ship;
 	private GameFont font;
 	private Input key;
+	
 	ArrayList<Spaceship> shipList;
+	private int currentShip;
 	
 	private HashMap<Integer, Button> buttonList;
 	static final int BUTTON_START_GAME = 0;
 	static final int BUTTON_NEXT_SHIP = 1;
-	
+		
 	public Shipyard(Input key) {
+		
+		//Load the list of ships and get the first ship in the list
 		parseShipList();
-		ship = shipList.get(0);
-		image = ship.getImage().clone();
+		setCurrentShip(0);
 		
 		//Ready font
 		font = new GameFont();
@@ -42,11 +45,8 @@ public class Shipyard {
     	Vector size = new Vector( 200, 50 );
     	Vector pos = new Vector( Video.getScreenWidth()-size.x, Video.getScreenHeight()-size.y );
 		buttonList.put(BUTTON_START_GAME, new Button(pos, size, "Start Game", BUTTON_START_GAME, pos));
-
-		//Make it look computerized green
-		image.setColorTint(0, 255, 0);
-		image.resize(Video.getScreenWidth()/4, Video.getScreenWidth()/4);
-		image.setDirection((float)-Math.PI/2);
+		pos.y -= size.y;
+		buttonList.put(BUTTON_NEXT_SHIP, new Button(pos, size.dividedBy(2), "Next", BUTTON_NEXT_SHIP, pos));
 		
 		//Ready background
 		bg = new Image2D("/data/shipyard.png");
@@ -73,7 +73,7 @@ public class Shipyard {
 		//Ship description
 		int x = bg.getWidth() + OFFSET_X;
 		int y = OFFSET_Y;
-		g.setColor(Color.GREEN);				
+		g.setColor(Color.GREEN);	
 		
 		//Ship name
 		font.set(g, FontType.FONT_MENU);
@@ -130,6 +130,11 @@ public class Shipyard {
 					{
 						return GameWindow.gameState.GAME_PLAYING;
 					}
+					case BUTTON_NEXT_SHIP:
+					{
+						setCurrentShip(++currentShip);
+						break;
+					}
 				}
 			}
         }
@@ -150,5 +155,26 @@ public class Shipyard {
 			shipList.add( new Spaceship(fileName) );
 		}
 	}
+	
+	/**
+	 * JJ> Changes the current ship we are focusing on
+	 * @param index The index number in the ship list
+	 */
+	private void setCurrentShip( int index ) {
+		
+		//Clip to valid value
+		if(index < 0 || index >= shipList.size()) index = 0;
+		
+		//Change current ship
+		currentShip = index;
+		ship = shipList.get(index);
+		
+		//Make it look computerized green
+		image = ship.getImage().clone();	
+		image.setColorTint(0, 255, 0);
+		image.resize(Video.getScreenWidth()/4, Video.getScreenWidth()/4);
+		image.setDirection((float)-Math.PI/2);
+	}
+
 
 }
