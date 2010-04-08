@@ -36,10 +36,8 @@ public class Game {
 	
 	public Game(Input keys){
 		//Prepare graphics
-		particleList = new ArrayList<Particle>();
-       	
-		//TODO: move this to a resource loader
        	Particle.loadParticles();
+		particleList = new ArrayList<Particle>();
        	
        	// Initialize the entity container
        	entities = new ArrayList<GameObject>();
@@ -49,9 +47,14 @@ public class Game {
        	
        	//Game music
        	Music.play( new Sound("/data/space.ogg") );
-       	
+
+       	//Debug other ship
+       	Spaceship xs = new Spaceship("/data/ships/raptor.ship");
+       	xs.instantiate( new Vector(126, 126), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleList );
+       	entities.add(xs);
+
 		//Initialize the player ship
-       	Spaceship player = new Spaceship("/data/ships/raptor.ship");
+		Spaceship player = new Spaceship("/data/ships/juggernaught.ship");
        	player.instantiate( new Vector(200, 200), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleList );
 		entities.add(player);
 		

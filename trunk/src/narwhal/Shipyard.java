@@ -1,13 +1,18 @@
 package narwhal;
 
+import gameEngine.GameWindow;
 import gameEngine.Image2D;
+import gameEngine.Input;
 import gameEngine.ResourceMananger;
+import gameEngine.Vector;
 import gameEngine.Video;
 import gameEngine.GameWindow.gameState;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import narwhal.GameFont.FontType;
 
@@ -17,15 +22,26 @@ public class Shipyard {
 	private Image2D right;
 	private Spaceship ship;
 	private GameFont font;
+	private Input key;
 	ArrayList<Spaceship> shipList;
 	
-	public Shipyard() {
+	private HashMap<Integer, Button> buttonList;
+	static final int BUTTON_START_GAME = 0;
+	static final int BUTTON_NEXT_SHIP = 1;
+	
+	public Shipyard(Input key) {
 		parseShipList();
-		ship = shipList.get(0);		
+		ship = shipList.get(0);
 		image = ship.getImage().clone();
 		
 		//Ready font
 		font = new GameFont();
+		
+		//Ready buttons
+		buttonList = new HashMap<Integer, Button>();
+    	Vector size = new Vector( 200, 50 );
+    	Vector pos = new Vector( Video.getScreenWidth()-size.x, Video.getScreenHeight()-size.y );
+		buttonList.put(BUTTON_START_GAME, new Button(pos, size, "Start Game", BUTTON_START_GAME, pos));
 
 		//Make it look computerized green
 		image.setColorTint(0, 255, 0);
@@ -37,6 +53,9 @@ public class Shipyard {
 		bg.resize((int)(Video.getScreenWidth()*0.50f), Video.getScreenHeight());
 		right = new Image2D("/data/interface.png");
 		right.resize(Video.getScreenWidth() - bg.getWidth(), Video.getScreenHeight());
+		
+		//Input controller
+		this.key = key;
 	}
 
 	public void draw(Graphics2D g) {
@@ -83,13 +102,44 @@ public class Shipyard {
 		y += font.getHeight(g);
 		g.drawString("Energy: " + ship.energyMax, x, y);
 		y += font.getHeight(g);
+		
+		//Do last, draw all buttons
+        Iterator<Button> iterator = buttonList.values().iterator();
+        while( iterator.hasNext() ) iterator.next().draw(g);
 	}
 
 	public gameState update() {
-		// TODO Auto-generated method stub
+        
+        //Check if the player is holding over any mouse buttons
+        Iterator<Button> iterator = buttonList.values().iterator();
+        while( iterator.hasNext() )
+        {
+        	Button button = iterator.next();
+			button.update();
+			
+			//Clicked as well?
+			if( button.mouseOver(key) && key.mosButton1 )
+			{
+				key.mosButton1 = false;
+				button.playClick();
+				
+				//Determine button effect
+				switch( button.getID() )
+				{
+					case BUTTON_START_GAME:
+					{
+						return GameWindow.gameState.GAME_PLAYING;
+					}
+				}
+			}
+        }
+        
 		return gameState.GAME_SELECT_SHIP;
 	}
 	
+	/**
+	 * JJ> This loads all the *.ship files from the data folder and puts them into a list
+	 */
 	private void parseShipList() {
 		String[] fileList = ResourceMananger.getFileList("/data/ships/");
 
