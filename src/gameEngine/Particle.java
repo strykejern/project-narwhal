@@ -36,10 +36,11 @@ public class Particle {
 	 * JJ> Loads all particle images into a hash map for later use
 	 */
 	static public void loadParticles() {
-		String[] fileList = ResourceMananger.getFileList("/data/particles/");
 		
-		//Make sure it is removed from memory
-		if( particleMap != null ) particleMap.clear();
+		//Already loaded?
+		if( particleMap != null ) return;
+		
+		String[] fileList = ResourceMananger.getFileList("/data/particles/");
 		
 		//Load all particles into the hash map
 		particleMap = new HashMap<Integer, ImageIcon>();

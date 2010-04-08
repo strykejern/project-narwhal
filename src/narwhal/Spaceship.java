@@ -48,6 +48,12 @@ public class Spaceship extends GameObject{
 	public float energy = energyMax;
 	public String name;
 
+	/**
+	 * JJ> This is simply to make parsing easier. Gets whatever is behind the colon and trims all
+	 *     whitespace before and after the text.
+	 * @param line The String to parse
+	 * @return The parsed String
+	 */
 	private String parse(String line) {
 		return line.substring(line.indexOf(':')+1).trim();
 	}
@@ -68,6 +74,9 @@ public class Spaceship extends GameObject{
 				
 				//Reached end of file
 				if(line == null) break;
+				
+				//Ignore comments
+				if( line.startsWith("//") ) continue;
 				
 				//Translate line into data
 				if     (line.startsWith("[NAME]:"))    name = parse(line);

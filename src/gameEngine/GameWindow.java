@@ -143,7 +143,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			}
 			else if(state == gameState.GAME_SELECT_SHIP)
 			{
-				if(selectShip == null) selectShip = new Shipyard();
+				if(selectShip == null) selectShip = new Shipyard(keys);
 				
 		    	frame.getContentPane().setCursor( null );				//TODO: bad change cursor every frame?
 		    	state = selectShip.update();
