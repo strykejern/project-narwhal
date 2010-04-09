@@ -67,7 +67,7 @@ public class Universe {
 		if( rand.nextBoolean() ) nebula.verticalFlip();
 
 		//Now draw it
-		g.drawImage( nebula.toImage(), 0, 0, null);
+		nebula.draw(g, 0, 0);
 	}
 	
 	/**

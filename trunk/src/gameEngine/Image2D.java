@@ -33,16 +33,16 @@ import javax.swing.ImageIcon;
  * @author Johan Jansen and Anders Eie
  */
 public class Image2D {
-	final private static Kernel blur = new Kernel(3, 3,
+	final private static Kernel BLUR = new Kernel(3, 3,
 		    new float[] {
 	        1f/9f, 1f/9f, 1f/9f,
 	        1f/9f, 1f/9f, 1f/9,
 	        1f/9f, 1f/9f, 1f/9f});
+	final private static int NO_RGB_TINT = 0xFFFFFFF; 
 	
 	private BufferedImage original;					//The image itself
 	private BufferedImage processed;				//The image with effects added (rotation, alpha, etc.)
 	private int width, height;
-	private int baseWidth, baseHeight;
 
 	private boolean flipHorizontal = false;
 	private boolean flipVertical = false;
@@ -50,14 +50,14 @@ public class Image2D {
 	private boolean noChange = false;
 	private float currentAlpha = 1;
 	private float currentAngle = 0;
-	private int   colorTint = 0xFFFFFFFF;
+	private int   colorTint = NO_RGB_TINT;
 	
 	/**
 	 * JJ> Constructor makes sure the image is correctly loaded
 	 * @param fileName: the path and name of the file to load
 	 */
 	public Image2D( String fileName ) {
-		
+
 		//First make sure the file actually exists
 		if( !ResourceMananger.fileExists(fileName) )
 		{
@@ -66,16 +66,14 @@ public class Image2D {
 		ImageIcon load = new ImageIcon(ResourceMananger.getFilePath(fileName));
 
 		//Load the image into a BufferedImage
-		original = Video.createBufferedImage( load.getIconWidth(), load.getIconHeight() );
+		processed = original = Video.createBufferedImage( load.getIconWidth(), load.getIconHeight() );
         Graphics2D g = original.createGraphics();
         Video.getGraphicsSettings(g);
         g.drawImage(load.getImage(), 0, 0, null ); 
         g.dispose();
         
-		baseWidth = load.getIconWidth();
-		width = (int)(baseWidth*1.20f);
-		baseHeight = load.getIconHeight();
-		height = (int)(baseHeight*1.20f);
+		width = original.getWidth();
+		height = original.getHeight();
 	}
 	
 	/**
@@ -98,10 +96,8 @@ public class Image2D {
         g.drawImage(load.getImage(), 0, 0, imgWidth, imgHeight, null ); 
         g.dispose();
         
-		baseWidth = imgWidth;
-		width = (int)(baseWidth*1.20f);
-		baseHeight = imgHeight;
-		height = (int)(baseHeight*1.20f);
+		width = original.getWidth();
+		height = original.getHeight();
 	}
 	
 	/**
@@ -109,37 +105,15 @@ public class Image2D {
 	 * @note: The Image2D reset state is the current state of the Image2D to be cloned
 	 */
 	private Image2D( Image2D clone ) {
-		baseWidth = clone.getWidth();
-		baseHeight = clone.getHeight();
-		width = (int)(baseWidth*1.20f);
-		height = (int)(baseHeight*1.20f);
+		width = clone.getWidth();
+		height = clone.getHeight();
 		
 		//Make a copy of the current state of the Image2D
-		original = new BufferedImage( baseWidth, baseHeight, BufferedImage.TYPE_INT_ARGB);
+		original = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = original.createGraphics();
         Video.getGraphicsSettings(g);
-        g.drawImage(clone.toImage(), 0, 0, baseWidth, baseHeight, null ); 
+        g.drawImage(clone.getSnapshot(), 0, 0, width, height, null ); 
         g.dispose();
-	}
-
-		
-	/**
-	 * JJ> Makes sure we have a proper place in memory to store our processed image
-	 */
-	private Graphics2D getBufferMemory() {
-		if( processed == null || processed.getWidth() != width || processed.getHeight() != height )
-		{
-			processed = Video.createBufferedImage(width, height);
-		}
-
-        Graphics2D g = processed.createGraphics();
-        Video.getGraphicsSettings(g);
-
-		//Clear the background
-		g.setBackground(new Color(0,0,0,0));
-		g.clearRect(0, 0, width, height);
-		
-		return g;
 	}
 	
 	/**
@@ -178,10 +152,8 @@ public class Image2D {
         //Valid resize?
         if( newW <= 0 || newH <= 0 ) return;
         
-        baseWidth = newW;
-        baseHeight = newH;
-        width = (int)(baseWidth*1.20f);
-        height = (int)(baseHeight*1.20f);         
+        width = newW;
+        height = newH;
 		noChange = false;
     }
 	
@@ -235,90 +207,12 @@ public class Image2D {
 	}
 		
 	/**
-	 * JJ> Returns this Image2D as a Image instance
-	 * @return the image ready to be drawn with proper rotation and all
+	 * JJ> Returns a static snapshot image of this object. The Image returned is only 
+	 * current with the Image2D at the time of the request and will not be updated 
+	 * with any future changes to the Image2D. 
+	 * @return Returns: a Image representation of this Image2D
 	 */
-	final public Image toImage() {
-				
-		//If there are no changes, try to get the old image from memory first
-		if( noChange && processed != null )
-		{
-			return processed;
-		}
-		
-		//Create a buffer from the original image
-		BufferedImage buffer = original.getSubimage(0, 0, original.getWidth(), original.getHeight());
-		Graphics2D g = buffer.createGraphics();
-        Video.getGraphicsSettings(g);
-
-        // Set the Graphics composite to Alpha
-		if( currentAlpha < 1 ) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, currentAlpha));  
-		//TODO: alpha == 0 optimization
-						
-		// Flip the image vertically or horizontally
-		if( flipHorizontal && flipVertical )
-		{
-			g.drawImage (buffer, 
-		             0, buffer.getHeight(), buffer.getWidth(), 0,
-		             0, 0, buffer.getWidth(), buffer.getHeight(),
-		             null);
-		}
-		else if( flipHorizontal )
-		{
-			g.drawImage (buffer, 
-		             0, buffer.getHeight(), buffer.getWidth(), 0,
-		             0, 0, buffer.getWidth(), buffer.getHeight(),
-		             null );
-		}
-		else if( flipVertical )
-		{
-			g.drawImage (buffer, 
-		             buffer.getWidth(), 0, 0, buffer.getHeight(),
-		             0, 0, buffer.getWidth(), buffer.getHeight(),
-		             null);
-		}
-		
-		//Blur effect
-		if( blurEffect )
-		{
-			BufferedImageOp op = new ConvolveOp( blur, ConvolveOp.EDGE_ZERO_FILL, null);
-			buffer = op.filter(buffer, null);
-		}
-		
-		//Color tint
-		if( colorTint != 0xFFFFFFFF )
-			for(int x = 0; x < buffer.getWidth(); x++)
-				for(int y = 0; y < buffer.getHeight(); y++)
-					buffer.setRGB( x, y, buffer.getRGB(x, y) & colorTint );
-		
-		//Now actually store the buffered instance in memory
-		//And apply rotation and resizing (done last)
-		Graphics2D memory = getBufferMemory();
-		
-		//Do rotation
-		int offsetX = 0;
-		int offsetY = 0;
-		if(currentAngle != 0)
-		{
-		/*	memory.rotate(currentAngle, width/2.0, height/2.0);
-			offsetX = (width-baseWidth)/2;
-			offsetY = (height-baseHeight)/2;*/
-		}
-		
-		//Resize
-		memory.drawImage(
-				buffer,						    //Draw the base image
-				offsetX, 						//X offset
-				offsetY, 						//Y offset
-				baseWidth, 						//How much to draw
-				baseHeight,								
-				null);
-		
-		//All done! Free any resources...
-		memory.dispose();
-		g.dispose();
-		buffer.flush();
-        noChange = true;
+	public Image getSnapshot() {
 		return processed;
 	}
 	
@@ -326,14 +220,14 @@ public class Image2D {
 	 * JJ> Get width for this buffered image
 	 */
 	public int getWidth() {
-		return baseWidth;
+		return width;
 	}
 	
 	/**
 	 * JJ> Get height for this buffered image
 	 */
 	public int getHeight() {
-		return baseHeight;
+		return height;
 	}
 
 	/**
@@ -374,5 +268,80 @@ public class Image2D {
 	 */
 	public Image2D clone() {
 		return new Image2D(this);
+	}
+
+	/**
+	 * JJ> This draws this Image2D to a Graphics2D
+	 * @param g Which Graphics2D to draw on
+	 * @param x X position of image
+	 * @param y Y position of image
+	 */
+	public void draw(Graphics2D g, int x, int y) {
+		
+		//Don't draw invisible images
+		if( currentAlpha == 0 ) return;
+		
+		//Re-render if there were changes on the image
+		if( !noChange )
+		{
+			//Create a buffer from the original image
+			processed = Video.createBufferedImage(width, height);
+			Graphics2D r = processed.createGraphics();
+	        Video.getGraphicsSettings(r);
+	        r.drawImage(original, 0, 0, width, height, null);
+	
+	        // Set the Graphics composite to Alpha
+			if( currentAlpha < 1 ) r.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, currentAlpha));  
+							
+			// Flip the image vertically or horizontally
+			if( flipHorizontal && flipVertical )
+			{
+				r.drawImage (processed, 
+			             0, processed.getHeight(), processed.getWidth(), 0,
+			             0, 0, processed.getWidth(), processed.getHeight(),
+			             null);
+			}
+			else if( flipHorizontal )
+			{
+				r.drawImage (processed, 
+			             0, processed.getHeight(), processed.getWidth(), 0,
+			             0, 0, processed.getWidth(), processed.getHeight(),
+			             null );
+			}
+			else if( flipVertical )
+			{
+				r.drawImage (processed, 
+			             processed.getWidth(), 0, 0, processed.getHeight(),
+			             0, 0, processed.getWidth(), processed.getHeight(),
+			             null);
+			}
+			
+			//Blur effect
+			if( blurEffect )
+			{
+				BufferedImageOp op = new ConvolveOp( BLUR, ConvolveOp.EDGE_ZERO_FILL, null);
+				processed = op.filter(processed, null);
+			}
+			
+			//Color tint
+			if( colorTint != NO_RGB_TINT )
+				for(int i = 0; i < processed.getWidth(); i++)
+					for(int j = 0; j < processed.getHeight(); j++)
+						processed.setRGB( i, j, processed.getRGB(i, j) & colorTint );
+	
+			//All done! Free any resources...
+			r.dispose();
+	        noChange = true;
+		}
+		
+		//Correct position
+		AffineTransform xs = g.getTransform();
+		xs.translate(x, y);
+		
+		//Rotate
+		if(currentAngle != 0) xs.rotate(currentAngle, width/2, height/2);
+
+		//Now actually draw it!
+		g.drawImage(processed, xs, null);
 	}
 }

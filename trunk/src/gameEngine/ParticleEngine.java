@@ -2,7 +2,6 @@ package gameEngine;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
@@ -198,13 +197,13 @@ public class ParticleEngine {
 		private boolean requestDelete;		//Remove me?
 		private boolean onScreen;			//Was it on the screen this update?
 		private boolean rendering;			//Has it finished rendering?
+		
+		private ImageIcon image; 
 		private VolatileImage memoryImg;	//The actual image in volatile memory
-		private ParticleTemplate prt;
 			
 		//Particle properties
 		private int time;					//How many frames it has to live
 		private Vector pos;					//Position
-		
 		private float alpha;				//Transparency
 		private float alphaAdd;
 		
@@ -214,7 +213,7 @@ public class ParticleEngine {
 		private float size;					//Size
 		private float sizeAdd;
 		
-		private Vector speed;				//Movement
+		private float speed;				//Movement
 		
 		public Particle( Vector spawnPos, ParticleTemplate template, float rotation ) {
 			
@@ -222,8 +221,19 @@ public class ParticleEngine {
 			onScreen = false;
 			rendering = false;
 			
-			prt = template;
-			pos = spawnPos;
+			//Is this particle attached to a specific position?
+			if( template.attached )	
+			{
+				pos = spawnPos;
+				speed = 0;
+			}
+			else
+			{
+				pos = spawnPos.clone();
+				speed = template.speed;
+			}
+			
+			image = template.image;			
 			time = template.time;
 			alpha = template.alpha;
 			alphaAdd = template.alphaAdd;
@@ -231,7 +241,6 @@ public class ParticleEngine {
 			angleAdd = template.angleAdd;
 			size = template.size;
 			sizeAdd = template.sizeAdd;
-			speed = new Vector();		//TODO
 		}
 			
 		/**
@@ -290,7 +299,7 @@ public class ParticleEngine {
 			}
 			
 			//Movement
-			pos.add(speed);
+			pos.add(new Vector(speed, angle, true));
 			
 			//Figure out if we are inside the screen or not
 			if( viewPort != null )
@@ -302,11 +311,7 @@ public class ParticleEngine {
 		
 		//TODO: probably should not do this in own thread
 		private Thread renderParticle() {
-			if(prt == null) 
-				{
-				Log.warning("ERROR");
-				return null;
-				}
+
 			//We are already rendering the particle in an existing thread
 			if( rendering ) return null;
 		
@@ -315,8 +320,8 @@ public class ParticleEngine {
 				public void run()
 				{
 					rendering = true;
-					int w = (int) ( prt.getImageWidth() * size);
-					int h = (int) ( prt.getImageHeight() * size);
+					int w = (int) ( image.getIconWidth() * size);
+					int h = (int) ( image.getIconHeight() * size);
 
 					//Make sure the VolatileImage exists
 					Graphics2D g = createMemoryImage(w, h);
@@ -324,17 +329,9 @@ public class ParticleEngine {
 			        //Do any alpha
 					alpha = Math.min( 1.00f, Math.max(0.00f, alpha) );
 					if(alpha < 1) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-		
-					//Rotate to direction
-/*					if( angle != 0 ) 
-					{
-						AffineTransform t = g.getTransform();
-						t.rotate(angle, w/2, h/2);
-						g.setTransform(t); 
-					}*/
 					
 					//Now render it in memory
-				     g.drawImage(prt.image.getImage(), 0,0, w, h, null);
+				     g.drawImage(image.getImage(), 0,0, w, h, null);
 				     
 					//All done!
 					g.dispose();
@@ -356,7 +353,7 @@ public class ParticleEngine {
 
 			int xPos = pos.getX() - memoryImg.getWidth()/2 - offset.getX();
 			int yPos = pos.getY() - memoryImg.getHeight()/2 - offset.getY();
-			
+
 			//Rotate before drawing
 			AffineTransform xs = g.getTransform();
 			xs.translate(xPos, yPos);

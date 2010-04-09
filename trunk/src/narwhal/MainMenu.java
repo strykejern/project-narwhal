@@ -202,8 +202,7 @@ public class MainMenu {
 		background.drawBackground( g, bgScroll );
 		
 		//Draw header, but only if it is loaded
-		if( header != null )
-			g.drawImage( header.toImage(), (Video.getScreenWidth()/2) - (int)(header.getWidth()*0.43), header.getHeight(), null );
+		if( header != null ) header.draw(g, (Video.getScreenWidth()/2) - (int)(header.getWidth()*0.43), header.getHeight() );
 
 		//Do last, draw buttons
         Iterator<Button> iterator = buttonList.values().iterator();

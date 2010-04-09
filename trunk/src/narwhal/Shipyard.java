@@ -63,12 +63,12 @@ public class Shipyard {
 		final int OFFSET_Y = Video.getScreenHeight()/16;
 		
 		//Do first, draw background
-		g.drawImage(bg.toImage(), 0, 0, null);	
-		g.drawImage(right.toImage(), bg.getWidth(), 0, null);
+		bg.draw(g, 0, 0);
+		right.draw(g, bg.getWidth(), 0);
 		
 		//Draw the ship
 		image.rotate(0.01f);
-		g.drawImage(image.toImage(), bg.getWidth()/2-image.getWidth()/2, bg.getHeight()/2-image.getHeight()/2, null);
+		image.draw(g, bg.getWidth()/2-image.getWidth()/2, bg.getHeight()/2-image.getHeight()/2);
 		
 		//Ship description
 		int x = bg.getWidth() + OFFSET_X;
