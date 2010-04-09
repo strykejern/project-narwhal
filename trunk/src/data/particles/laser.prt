@@ -1,0 +1,17 @@
+//Laser cannon particle
+[IMAGE]: laser.png
+[TIME]: 200
+[SPEED]: 20
+[ATTACHED]: False
+
+//Size
+[SIZE]: 1.00
+[SIZE_ADD]: 0
+
+//Transparency
+[ALPHA]: 0.75
+[ALPHA_ADD]: -0.01
+
+//Rotation
+[ROTATE]: 0
+[ROTATE_ADD]: 0

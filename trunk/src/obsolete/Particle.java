@@ -24,110 +24,64 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.VolatileImage;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 
-
-public class Particle {	
-	private static HashMap<Integer, ImageIcon> particleMap;
-	
-	/**
-	 * JJ> Loads all particle images into a hash map for later use
-	 */
-	static public void loadParticles() {
-		
-		//Already loaded?
-		if( particleMap != null ) return;
-		
-		String[] fileList = ResourceMananger.getFileList("/data/particles/");
-		
-		//Load all particles into the hash map
-		particleMap = new HashMap<Integer, ImageIcon>();
-		for( String fileName : fileList )
-		{
-			ImageIcon loadGraphic = new ImageIcon(ResourceMananger.getFilePath(fileName));
-			
-			//Trim away the file extension (.jpg, .png, etc.) and the file path
-			fileName = fileName.substring(fileName.lastIndexOf('/')+1, fileName.length()-4 );
-			
-			//Put the image into a hash map
-			particleMap.put( fileName.hashCode(), loadGraphic );
-		}
-	}
+private class Particle {
 	
 	//Object functions
-	private int hashCode;				//Unique hash code to identify which image to draw
-	private int time;					//How many frames it has to live
-	private Vector pos;					//Position
 	private boolean requestDelete;		//Remove me?
 	private boolean onScreen;			//Was it on the screen this update?
 	private boolean rendering;			//Has it finished rendering?
 	private VolatileImage memoryImg;	//The actual image in volatile memory
+	private ParticleTemplate prt;
 	
-	//Image effects
-	private float alpha;
+	
+	//Particle variables
+	private int time;					//How many frames it has to live
+	private Vector pos;					//Position
+	
+	private float alpha;				//Transparency
 	private float alphaAdd;
 	
-	private float angle;
+	private float angle;				//Rotation
 	private float angleAdd;
 	
-	private float size;
+	private float size;					//Size
 	private float sizeAdd;
 	
-	private Vector speed;
+	private Vector speed;				//Movement
 	
-	/*
-	 * JJ> Most simple form
-	 */
-	public Particle( Vector spawnPos, String hash, int lifeTime ) {
-		init(spawnPos, hash.hashCode(), lifeTime, 1, 0, 0, 0, 1, 0, new Vector());
-	}
-	
-	/*
-	 * JJ> With alpha
-	 */
-	public Particle( Vector spawnPos, String hash, int lifeTime, float trans, float transAdd ) {
-		init(spawnPos, hash.hashCode(), lifeTime, trans, transAdd, 0, 0, 1, 0, new Vector());
-	}
-
-	/*
-	 * JJ> With alpha and rotation
-	 */
-	public Particle( Vector pos, String hash, int time, float alpha, float alphaAdd, 
-			float angle, float angleAdd, Vector speed ) {
-		init(pos, hash.hashCode(), time, alpha, alphaAdd, angle, angleAdd, 1, 0, speed);
-	}
-	
-	/**
-	 * JJ> Initialises all particle variables
-	 */
-	private void init( Vector setPos, int setHash, int setTime, float setAlpha, float setAlphaAdd, 
-			float setAngle, float setAngleAdd, float setSize, float setSizeAdd, Vector setSpeed ) {
-		requestDelete = false;
-		onScreen = false;
-		rendering = false;
-		pos = setPos;
-		time = setTime;
-		hashCode = setHash;
-		alpha = setAlpha;
-		alphaAdd = setAlphaAdd;
-		angle = setAngle;
-		angleAdd = setAngleAdd;
-		size = setSize;
-		sizeAdd = setSizeAdd;
-		speed = setSpeed;
+	public Particle( Vector spawnPos, String hash ) {
 		
 		//Check for invalid spawns
-		if( particleMap.get(hashCode) == null )
+		ParticleTemplate prt = particleMap.get(hash);
+		if( prt == null )
 		{
 			requestDelete = true;
 			onScreen = false;
-			Log.warning("Invalid particle spawn: " + setHash);
+			Log.warning("Invalid particle spawn: " + hash);
 			return;
 		}
+
+		requestDelete = false;
+		onScreen = false;
+		rendering = false;
+		
+		pos = spawnPos;
+		time = prt.time;
+		alpha = prt.alpha;
+		alphaAdd = prt.alphaAdd;
+		angle = prt.angle;
+		angleAdd = prt.alphaAdd;
+		size = prt.size;
+		sizeAdd = prt.sizeAdd;
+		speed = new Vector();		//TODO
 	}
-	
+		
 	/**
 	 * JJ> Allocates a image in the hardware memory
 	 * @param width width of the image
@@ -216,8 +170,8 @@ public class Particle {
 			public void run()
 			{
 				rendering = true;
-				int baseWidth = particleMap.get(hashCode).getIconWidth(); 
-				int baseHeight = particleMap.get(hashCode).getIconHeight();
+				int baseWidth = prt.image.getIconWidth(); 
+				int baseHeight = prt.image.getIconHeight();
 				int w = (int) ( baseWidth * size);
 				int h = (int) ( baseHeight * size);
 				
@@ -232,11 +186,11 @@ public class Particle {
 				if( angle != 0 ) 
 				{
 			    	g.rotate(angle, w/2, h/2);
-			    	g.drawImage(particleMap.get(hashCode).getImage(), (memoryImg.getWidth()-w)/2, (memoryImg.getHeight()-h)/2, w, h, null);
+			    	g.drawImage(prt.image.getImage(), (memoryImg.getWidth()-w)/2, (memoryImg.getHeight()-h)/2, w, h, null);
 				}
 		        
 				//Draw it normally
-				else g.drawImage(particleMap.get(hashCode).getImage(), 0,0, w, h, null);
+				else g.drawImage(prt.image.getImage(), 0,0, w, h, null);
 				
 				//All done!
 				g.dispose();

@@ -20,13 +20,12 @@ package narwhal;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 
 import gameEngine.*;
 
 public class Spaceship extends GameObject{
 
-	private ArrayList<Particle> 	particleList;	// Contains Particles in the universe
+	private ParticleEngine 	particleEngine;
 	private Vector universeSize;
 
 	//Engine
@@ -112,7 +111,7 @@ public class Spaceship extends GameObject{
 		energy = energyMax;
 				
 		//TODO Ship weapons (remove here)
-		weapon = new Weapon(45.0f, 30, 15, "laser", "Laser Cannon");
+		weapon = new Weapon(45.0f, 30, 15, "laser.prt", "Laser Cannon");
 
 		//Calculate size
 		image.resize(Video.getScreenWidth()/12, Video.getScreenWidth()/12);
@@ -126,11 +125,11 @@ public class Spaceship extends GameObject{
 		anchored = false;
 	}
 	
-	public void instantiate(Vector pos, Input keys, Vector universeSize, ArrayList<Particle> particleList) {
+	public void instantiate(Vector pos, Input keys, Vector universeSize, ParticleEngine particleEngine) {
 		this.pos 	      = pos;
 		this.keys 	      = keys;
 		this.universeSize = universeSize;
-		this.particleList = particleList;
+		this.particleEngine = particleEngine;
 	}
 	
 	public void update() {
@@ -218,8 +217,7 @@ public class Spaceship extends GameObject{
 				shield -= shieldDmg;
 				
 				//Spawn a shield effect
-				particleList.add( new Particle(pos, "shield", 100, 0.75f, -0.025f, direction, 0 , new Vector() ) );
-
+				particleEngine.spawnParticle("shield" , pos, direction);
 				return;
 			}
 		}
@@ -248,7 +246,7 @@ public class Spaceship extends GameObject{
 		energy -= wpn.cost;
 
 		//Spawn particle effect
-		wpn.spawnParticle(particleList, getPosCentre(), direction, speed);
+		particleEngine.spawnParticle( wpn.particle, getPosCentre().clone(), direction );
 	}
 	
 	public Image2D getImage(){

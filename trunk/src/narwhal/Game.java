@@ -28,34 +28,33 @@ import java.util.Random;
 
 public class Game {
 	private ArrayList<GameObject>	entities;		// Contains all gameObjects in the universe...
-	private ArrayList<Particle> 	particleList;	// Contains Particles in the universe
+	private ParticleEngine 	        particleEngine;	// Handles all particles
 	private Input 					keys;			// Class to read inputs from
 	private UI						hud;			// User interface
 	
 	private Camera					viewPort;		// Handles viewpoints and drawing
 	
-	public Game(Input keys){
-		//Prepare graphics
-       	Particle.loadParticles();
-		particleList = new ArrayList<Particle>();
-       	
+	public Game(Input keys){       	
        	// Initialize the entity container
        	entities = new ArrayList<GameObject>();
        	
        	// Size of the universe (for constructors)
        	final int universeSize = 4;
        	
+		//Prepare particle engine
+		particleEngine = new ParticleEngine();
+       	
        	//Game music
        	Music.play( new Sound("/data/space.ogg") );
 
        	//Debug other ship
        	Spaceship xs = new Spaceship("/data/ships/raptor.ship");
-       	xs.instantiate( new Vector(126, 126), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleList );
+       	xs.instantiate( new Vector(126, 126), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleEngine );
        	entities.add(xs);
 
 		//Initialize the player ship
 		Spaceship player = new Spaceship("/data/ships/juggernaught.ship");
-       	player.instantiate( new Vector(200, 200), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleList );
+       	player.instantiate( new Vector(200, 200), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleEngine );
 		entities.add(player);
 		
 		//Generate random planets
@@ -72,10 +71,10 @@ public class Game {
 		viewPort = new Camera(
 				entities, 
 				new Universe(universeSize, System.currentTimeMillis()), 
-				particleList,
 				player);
 		viewPort.configureInputHandler(keys);
-		
+		particleEngine.setRenderCamera(viewPort);
+
 		// Initialize the HUD and bind it to the player's ship
 		hud = new UI(player);
 		
@@ -109,12 +108,7 @@ public class Game {
 			}
 		}
 		
-		//Update particle effects
-		for( int i = 0; i < particleList.size(); i++ )
-			if (!particleList.get(i).requestsDelete()) 
-				particleList.get(i).update(viewPort);
-			else 
-				particleList.remove(i--);
+		particleEngine.update();
 		
 		return gameState.GAME_PLAYING;
 	}
@@ -127,7 +121,7 @@ public class Game {
 				
 		//Debug info
 		g.setColor(Color.white);
-		g.drawString("Number of particles: " + particleList.size(), 5, 50);
+		g.drawString("Number of particles: " + particleEngine.getParticleCount(), 5, 50);
 		g.drawString("Number of threads: " + Thread.activeCount(), 5, 70);
 	}
 }
