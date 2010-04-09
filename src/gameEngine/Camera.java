@@ -27,21 +27,18 @@ import narwhal.*;
 
 public class Camera {
 	private Vector 					cameraPos;
-	
 	private Vector					universeSize;
 	
 	private ArrayList<GameObject> 	entities;
 	private GameObject 				follow;
 	private Universe 				background;
-	private ArrayList<Particle>		particleList;
-
+	private ParticleEngine		    particleEngine;
 	private int 					shakeCamera = 0;
 
-	public Camera(ArrayList<GameObject> entities, Universe background, ArrayList<Particle> particleList, GameObject follow){
+	public Camera(ArrayList<GameObject> entities, Universe background, GameObject follow){
 		this.entities = entities;
 		this.follow = follow;
 		this.background = background;
-		this.particleList = particleList;
 		this.cameraPos = new Vector();
 		universeSize = background.getUniverseSize();
 	}
@@ -49,7 +46,7 @@ public class Camera {
 	public void configureInputHandler(Input in){
 		in.setCameraPos(cameraPos);
 	}
-	
+		
 	public void drawView(Graphics2D g){
 		updateCameraVectors();
 		
@@ -69,12 +66,8 @@ public class Camera {
 			}
 		}
 		
-		//Draw all particles
-		for( int i = 0; i < particleList.size(); i++ ) 
-		{
-			if( isInFrame(particleList.get(i)) )
-				particleList.get(i).draw(g, cameraPos);
-		}
+		//Draw particles
+		if( particleEngine != null ) particleEngine.render(g);
 		
 		//Debug info
 		g.setColor(Color.WHITE);
@@ -95,21 +88,12 @@ public class Camera {
 	}
 	
 	/**
-	 * JJ> Returns true if the specified particle is inside the screen
-	 * @param part Which particle to check
-	 * @return True if it is inside the screen. False otherwise.
-	 */
-	public boolean isInFrame(Particle part) {
-		return isInFrame( part.getPos(), new Vector() );
-	}
-	
-	/**
 	 * JJ> Returns true if the specified position is inside the screen
 	 * @param pos Position to be inside screen.
 	 * @param tolerance The size of the image of the object
 	 * @return True if it is inside the screen. False otherwise.
 	 */
-	private boolean isInFrame(Vector pos, Vector tolerance) {
+	public boolean isInFrame(Vector pos, Vector tolerance) {
 		float drawX = pos.x - cameraPos.x;
 		float drawY = pos.y - cameraPos.y;
 		
@@ -140,5 +124,13 @@ public class Camera {
 			cameraPos.x += x;
 			cameraPos.y += y;
 		}
+	}
+
+	public Vector getCameraPos() {
+		return cameraPos;
+	}
+
+	public void setParticleEngine(ParticleEngine particleEngine) {
+		this.particleEngine = particleEngine;
 	}
 }

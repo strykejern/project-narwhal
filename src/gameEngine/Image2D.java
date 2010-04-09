@@ -20,6 +20,7 @@ package gameEngine;
 
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ConvolveOp;
@@ -299,9 +300,9 @@ public class Image2D {
 		int offsetY = 0;
 		if(currentAngle != 0)
 		{
-			memory.rotate(currentAngle, width/2.0, height/2.0);
+		/*	memory.rotate(currentAngle, width/2.0, height/2.0);
 			offsetX = (width-baseWidth)/2;
-			offsetY = (height-baseHeight)/2;
+			offsetY = (height-baseHeight)/2;*/
 		}
 		
 		//Resize
