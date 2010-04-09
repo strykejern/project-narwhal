@@ -21,7 +21,6 @@ package gameEngine;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 
 public abstract class GameObject extends Physics{
 	protected Input keys;
@@ -47,11 +46,7 @@ public abstract class GameObject extends Physics{
 	}
 	
 	public void draw(Graphics2D g, Vector offset) {
-		
-		AffineTransform xs = g.getTransform();
-		xs.translate(drawX(offset), drawY(offset));
-		xs.rotate(image.getAngle(), image.getWidth()/2, image.getHeight()/2);
-		g.drawImage(image.toImage(), xs, null);
+		image.draw(g, drawX(offset), drawY(offset));
 	}
 	
 	public void drawCollision(Graphics g, Vector offset) {

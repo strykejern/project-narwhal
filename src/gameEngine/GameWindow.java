@@ -91,7 +91,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		//The actual frame
 		this.frame = frame;
 		Image2D icon = new Image2D("/data/icon.png");
-		frame.setIconImage( icon.toImage() );
+		frame.setIconImage( icon.getSnapshot() );
 
 		//Input controls
 		frame.addKeyListener(this);
