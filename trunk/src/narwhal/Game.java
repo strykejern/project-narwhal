@@ -98,17 +98,18 @@ public class Game {
 			//Only go through spaceships
 			//if( !( us instanceof Spaceship) ) continue;
 			
+			//Collision with other entities
 			for(int j = i + 1; j < entities.size(); j++)
 			{
 				GameObject them = entities.get(j);
 				if( us.collidesWith(them) )
 				{
 					us.collision( them );
-				}	
+				}
 			}
 		}
 		
-		particleEngine.update();
+		particleEngine.update(entities);
 		
 		return gameState.GAME_PLAYING;
 	}

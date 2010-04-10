@@ -38,7 +38,7 @@ public class ParticleEngine {
 			ParticleTemplate load = new ParticleTemplate(fileName);
 			
 			//Only load it if the image was loaded properly
-			if(load.getImageWidth() > 0) particleMap.put( hash, load );
+			if(load.image.getIconHeight() > 0) particleMap.put( hash, load );
 		}
 	}
 	
@@ -51,17 +51,37 @@ public class ParticleEngine {
 		else viewPort.setParticleEngine(this);
 	}
 	
-	public void update() {
+	public void update(ArrayList<GameObject> entities) {
 		
 		//Update particle effects
 		for( int i = 0; i < particleList.size(); i++ )
-			if ( !particleList.get(i).requestsDelete() ) 
-				particleList.get(i).update();
-			else 
-				particleList.remove(i--);		
+		{
+			Particle prt = particleList.get(i);
+			
+			//Remove unused particles
+			if( prt.requestsDelete() )
+			{
+				particleList.remove(i--);
+				continue;
+			}
+			
+			//Update this particle
+			particleList.get(i).update();
+			
+			//Collision detection between particles and GameObjects
+			for(int j = 0; j < entities.size(); j++ )
+			{	
+				GameObject object  = entities.get(j);
+				if( prt.collidesWith(object) )
+				{
+					prt.delete();
+				}
+			}
+
+		}
 	}
 	
-	public boolean spawnParticle(String name, Vector position , float rotation) {
+	public boolean spawnParticle(String name, Vector position , float rotation, GameObject spawner) {
 		
 		//Limit number of particles
 		if( particleList.size() > MAX_PARTICLES ) return false;
@@ -75,7 +95,7 @@ public class ParticleEngine {
 		}
 		
 		//Nope everything went well, add it to the active list!
-		particleList.add( new Particle(position, type, rotation) );
+		particleList.add( new Particle(position, type, rotation, spawner) );
 		return true;
 	}
 
@@ -102,14 +122,6 @@ public class ParticleEngine {
 		public final float sizeAdd;	
 		public final float speed;				//Movement
 		private boolean attached;			//Attached to spawner?
-
-		int getImageWidth(){
-			return image.getIconWidth();
-		}
-		
-		int getImageHeight(){
-			return image.getIconHeight();
-		}
 		
 		public ParticleTemplate( String fileName ) {		
 			
@@ -188,10 +200,10 @@ public class ParticleEngine {
 		 */
 		private String parse(String line) {
 			return line.substring(line.indexOf(':')+1).trim();
-		}		
+		}
 	}
 	
-	private class Particle {
+	private class Particle extends Physics {
 		
 		//Object functions
 		private boolean requestDelete;		//Remove me?
@@ -203,7 +215,6 @@ public class ParticleEngine {
 			
 		//Particle properties
 		private int time;					//How many frames it has to live
-		private Vector pos;					//Position
 		private float alpha;				//Transparency
 		private float alphaAdd;
 		
@@ -213,24 +224,24 @@ public class ParticleEngine {
 		private float size;					//Size
 		private float sizeAdd;
 		
-		private float speed;				//Movement
+		private float velocity;				//Movement
 		
-		public Particle( Vector spawnPos, ParticleTemplate template, float rotation ) {
+		private Particle( Vector spawnPos, ParticleTemplate template, float rotation, GameObject spawner ) {
 			
 			requestDelete = false;
 			onScreen = false;
 			rendering = false;
 			
 			//Is this particle attached to a specific position?
-			if( template.attached )	
+			if( template.attached && spawner != null )	
 			{
-				pos = spawnPos;
-				speed = 0;
+				pos = spawner.pos;
+				velocity = 0;
 			}
 			else
 			{
 				pos = spawnPos.clone();
-				speed = template.speed;
+				velocity = template.speed;
 			}
 			
 			image = template.image;			
@@ -241,6 +252,14 @@ public class ParticleEngine {
 			angleAdd = template.angleAdd;
 			size = template.size;
 			sizeAdd = template.sizeAdd;
+			
+			//Physics stuff
+			canCollide = true;
+			shape = Shape.CIRCLE;
+			anchored = false;
+			if(spawner == null) 	speed = new Vector();
+			else					speed = spawner.speed.clone();
+			setRadius( image.getIconWidth()/2 );
 		}
 			
 		/**
@@ -299,7 +318,9 @@ public class ParticleEngine {
 			}
 			
 			//Movement
-			pos.add(new Vector(speed, angle, true));
+			Vector move = new Vector(velocity, angle, true);
+			move.add(speed);
+			pos.add(move);
 			
 			//Figure out if we are inside the screen or not
 			if( viewPort != null )
@@ -359,6 +380,10 @@ public class ParticleEngine {
 			xs.translate(xPos, yPos);
 			xs.rotate(angle, memoryImg.getWidth()/2, memoryImg.getHeight()/2);
 			g.drawImage( memoryImg, xs, null);
+		}
+
+		public void delete() {
+			requestDelete = true;			
 		}
 	}
 }

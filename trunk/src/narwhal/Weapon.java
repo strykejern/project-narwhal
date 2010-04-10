@@ -18,6 +18,7 @@ public class Weapon {
 	
 	public Weapon(float damage, int cost, int cooldown, String particle, String name) {
 		snd = new Sound("data/blaster.au");
+		snd.play();
 		this.damage = damage;
 		this.cost = cost;
 		this.cooldown = cooldown;
@@ -26,13 +27,4 @@ public class Weapon {
 		shieldMul = 1.00f;
 		lifeMul = 1.00f;
 	}
-
-/*	public void spawnParticle(ArrayList<Particle> particleList, Vector pos, float direction, Vector speed) {
-		direction %= 2 * Math.PI;
-		Vector baseSpeed = speed.clone();
-		speed = new Vector(20.0f, direction, true);
-		speed.add(baseSpeed);
-		particleList.add( new Particle(pos.clone(), particle ) );
-		snd.play();
-	}*/
 }
