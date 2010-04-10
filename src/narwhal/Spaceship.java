@@ -217,7 +217,7 @@ public class Spaceship extends GameObject{
 				shield -= shieldDmg;
 				
 				//Spawn a shield effect
-				particleEngine.spawnParticle("shield" , pos, direction);
+				particleEngine.spawnParticle( "shield", pos, direction, this );
 				return;
 			}
 		}
@@ -244,9 +244,13 @@ public class Spaceship extends GameObject{
 		//It'll cost ya
 		cooldown += wpn.cooldown;
 		energy -= wpn.cost;
+		
+		//Spawn in front of ship
+		Vector spawnPos = getPosCentre();
+		spawnPos.add(new Vector(radius*2, direction, true));
 
 		//Spawn particle effect
-		particleEngine.spawnParticle( wpn.particle, getPosCentre().clone(), direction );
+		particleEngine.spawnParticle( wpn.particle, spawnPos, direction, this );
 	}
 	
 	public Image2D getImage(){
