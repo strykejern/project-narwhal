@@ -174,24 +174,17 @@ public class MainMenu {
 			{
 				header = new Image2D("/data/title.png");
 				header.resize(Video.getScreenWidth()/2, Video.getScreenHeight()/8);
+				header.setAlpha(0.1f);
 			}
 			
 			//headerFade += 0.0075f;
-			header.setAlpha(headerFade);
+			//header.setAlpha(0.1f);
 		}
-		
-		//Make the background move around
-		bgScroll.add( bgSpeed );
-		
+				
 		// Quick implement of universe bounds
-		float uniX = background.getUniverseSize().x;
-		float uniY = background.getUniverseSize().y;
-		
-		if 		(bgScroll.x < 0) 	 bgScroll.x = uniX + bgScroll.x;
-		else if (bgScroll.x > uniX)  bgScroll.x %= uniX;
-		
-		if 		(bgScroll.y < 0) 	 bgScroll.y = uniY + bgScroll.y;
-		else if (bgScroll.y > uniY)  bgScroll.y %= uniY;
+		if(bgScroll.x < 0 || bgScroll.x > background.getUniverseSize().x- Video.getScreenWidth()) 	   bgSpeed.negate();
+		else if(bgScroll.y < 0 || bgScroll.y > background.getUniverseSize().y- Video.getScreenHeight()) bgSpeed.negate();
+		bgScroll.add( bgSpeed );
 		
 		return gameState.GAME_MENU;
 	}
@@ -202,7 +195,7 @@ public class MainMenu {
 		background.drawBackground( g, bgScroll );
 		
 		//Draw header, but only if it is loaded
-		if( header != null ) header.draw(g, (Video.getScreenWidth()/2) - (int)(header.getWidth()*0.43), header.getHeight() );
+		if( header != null ) header.draw(g, (Video.getScreenWidth()/2) - header.getWidth()/2, header.getHeight() );
 
 		//Do last, draw buttons
         Iterator<Button> iterator = buttonList.values().iterator();

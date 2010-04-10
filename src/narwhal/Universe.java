@@ -145,7 +145,7 @@ public class Universe {
 					starGraph.fillOval(k, k, s-(2*k), s-(2*k));
 				}
 				
-				//TODO: bad! it seems 55*256 elements are added to this ArrayList
+				//TODO: bad! it seems 40*256 elements are added to this ArrayList
 				tmpStars.add(new ImageIcon(star.getSnapshot()));
 			}
 			
@@ -179,7 +179,7 @@ public class Universe {
 	}
 				
 	public void drawBounds(Graphics2D g, Vector pos){
-		boolean debug = false;
+		boolean debug = true;
 		
 		if(!debug) return;
 				
@@ -189,7 +189,6 @@ public class Universe {
 		//Make rectangles yellow
 		g.setColor(Color.YELLOW);
 		
-		//TODO: Draw entire grid... this can be optimized
 		for(int i = 0; i < universeSize; i++)
 			for(int j = 0; j < universeSize; j++)
 			{
@@ -260,6 +259,7 @@ public class Universe {
 	}
 
 	public void drawBackground(Graphics2D g, Vector position) {
+		int bg = 0;
 
 		Vector pos = position.clone();
 		for(int i = 0; i < universeSize; i++)
@@ -267,7 +267,18 @@ public class Universe {
 			{
 				int x = bgPos[i][j].getX()-pos.getX();
 				int y = bgPos[i][j].getY()-pos.getY();
+				
+				//Only draw whatever we need to draw
+				if(x < -Video.getScreenWidth() || x > Video.getScreenWidth()) break;
+				if(++y > Video.getScreenHeight()) break;
+				if(y < -Video.getScreenHeight()) continue;
+				
 				g.drawImage( universe[i][j], x, y, null );
+				bg++;
 			}	
+		
+		//Debug info
+		g.setColor(Color.WHITE);
+		g.drawString("Backgrounds drawn: " + bg, 5, 80);
 	}
 }
