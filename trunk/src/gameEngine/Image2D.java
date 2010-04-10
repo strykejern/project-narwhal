@@ -90,7 +90,7 @@ public class Image2D {
 		ImageIcon load = new ImageIcon(ResourceMananger.getFilePath(fileName));
 		
 		//Load the image into a BufferedImage
-		original = new BufferedImage( imgWidth, imgHeight, BufferedImage.TYPE_INT_ARGB);
+		original = Video.createBufferedImage(imgWidth, imgHeight);
         Graphics2D g = original.createGraphics();
         Video.getGraphicsSettings(g);
         g.drawImage(load.getImage(), 0, 0, imgWidth, imgHeight, null ); 
@@ -109,8 +109,8 @@ public class Image2D {
 		height = clone.getHeight();
 		
 		//Make a copy of the current state of the Image2D
-		original = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = original.createGraphics();
+		original = Video.createBufferedImage(width, height);
+		Graphics2D g = original.createGraphics();
         Video.getGraphicsSettings(g);
         g.drawImage(clone.getSnapshot(), 0, 0, width, height, null ); 
         g.dispose();

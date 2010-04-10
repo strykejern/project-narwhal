@@ -17,9 +17,9 @@ public class GameFont {
 		FONT_NORMAL
 	}
 	
-	//Empty constructor
+	//JJ> Simple constructor
 	public GameFont() {
-		
+		if( !initialized ) initializeFont();
 	}
 
 	//JJ> Prepares our awesome font
@@ -47,7 +47,6 @@ public class GameFont {
 	
 	//JJ> Changes the font type
 	public void set(Graphics2D g, FontType fnt) {
-		if( !initialized ) initializeFont();
 		
 		//Determine font type
 		switch( fnt )
