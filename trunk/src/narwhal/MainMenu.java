@@ -34,7 +34,7 @@ public class MainMenu {
 		this.key = key;
 			
 		//Menu music
-		Music.play( new Sound("/data/menu.ogg") );
+		//Music.play( new Sound("menu.ogg") );
 		
 		//Initialize the background
     	background = new Universe(2, System.currentTimeMillis());

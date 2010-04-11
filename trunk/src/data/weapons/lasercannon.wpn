@@ -1,0 +1,8 @@
+//Laser cannon Weapon
+[NAME]: Laser Cannon
+[DAMAGE]: 50
+[COST]: 15
+[PARTICLE]: laser.prt
+[COOLDOWN]: 15
+[SHIELD_MUL]: 110%
+[LIFE_MUL]: 90%

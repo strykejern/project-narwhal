@@ -122,6 +122,9 @@ public class ParticleEngine {
 		public final float sizeAdd;	
 		public final float speed;				//Movement
 		private boolean attached;			//Attached to spawner?
+		public final String particleEnd;
+		public final Sound soundEnd;
+		public final Sound soundSpawn;
 		
 		public ParticleTemplate( String fileName ) {		
 			
@@ -134,8 +137,11 @@ public class ParticleEngine {
 			float size = 1;
 			float sizeAdd = 0;	
 			float speed = 0;
+			Sound soundSpawn = null;
+			Sound soundEnd = null;
+			String particleEnd = null;
 			attached = false;
-
+			
 			try
 			{
 				BufferedReader parse = new BufferedReader(
@@ -168,6 +174,9 @@ public class ParticleEngine {
 					else if(line.startsWith("[ROTATE_ADD]:")) 	angleAdd = Float.parseFloat(parse(line));
 					else if(line.startsWith("[SPEED]:"))  		speed = Float.parseFloat(parse(line));
 					else if(line.startsWith("[ATTACHED]:"))  	attached = Boolean.parseBoolean(parse(line));
+					else if(line.startsWith("[SOUND_SPAWN]:"))  soundSpawn = Sound.loadSound( parse(line) );
+					else if(line.startsWith("[SOUND_END]:"))    soundEnd   = Sound.loadSound( parse(line) );
+					else if(line.startsWith("[PARTICLE_END]:")) particleEnd = parse(line);
 					else Log.warning("Loading particle file ( "+ fileName +") unrecognized line - " + line);
 				}
 				if(image == null) throw new Exception("Missing a '[IMAGE]:' line describing which image to load!");
@@ -188,6 +197,9 @@ public class ParticleEngine {
 			this.size = size;
 			this.sizeAdd = sizeAdd;	
 			this.speed = attached ? 0 : speed;
+			this.soundSpawn = soundSpawn;	
+			this.soundEnd = soundEnd;
+			this.particleEnd = particleEnd;
 			
 			Log.message("Loaded particle: " + fileName);
 		}
@@ -210,9 +222,12 @@ public class ParticleEngine {
 		private boolean onScreen;			//Was it on the screen this update?
 		private boolean rendering;			//Has it finished rendering?
 		
-		private ImageIcon image; 
+		private ImageIcon image;
 		private VolatileImage memoryImg;	//The actual image in volatile memory
 			
+		private String particleEnd;			//What particle to spawn on end
+		private Sound soundEnd;				//What sound to play on end
+		
 		//Particle properties
 		private int time;					//How many frames it has to live
 		private float alpha;				//Transparency
@@ -252,6 +267,13 @@ public class ParticleEngine {
 			angleAdd = template.angleAdd;
 			size = template.size;
 			sizeAdd = template.sizeAdd;
+			particleEnd = template.particleEnd;
+			
+			//Prepare end sound
+			soundEnd = template.soundEnd;
+			
+			//Play spawn sound
+			if( template.soundSpawn != null ) template.soundSpawn.play();
 			
 			//Physics stuff
 			canCollide = true;
@@ -311,9 +333,7 @@ public class ParticleEngine {
 			time--;
 			if(time <= 0 || alpha <= 0 && size <= 0 )
 			{
-				if(memoryImg != null) memoryImg.flush();
-				requestDelete = true;
-				onScreen = false;
+				this.delete();
 				return;
 			}
 			
@@ -382,8 +402,25 @@ public class ParticleEngine {
 			g.drawImage( memoryImg, xs, null);
 		}
 
+		/**
+		 * JJ> Marks this particle for removal and does any end stuff it needs to do (such as
+		 *     spawning other particles or playing sound) and then frees any resources used.
+		 */
 		public void delete() {
-			requestDelete = true;			
+			requestDelete = true;
+			onScreen = false;
+			
+			//Play end sound
+			if( soundEnd != null ) soundEnd.play();
+			
+			//Spawn any end particle
+			if(particleEnd != null)
+			{
+				spawnParticle( particleEnd, this.pos, this.angle, null );
+			}
+			
+			//Free any memory used
+			if( memoryImg != null ) memoryImg.flush();
 		}
 	}
 }

@@ -15,3 +15,6 @@
 //Rotation
 [ROTATE]: 0
 [ROTATE_ADD]: 0
+
+//Sound effect
+[SOUND_SPAWN]: blaster.au
