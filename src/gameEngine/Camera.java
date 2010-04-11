@@ -18,7 +18,11 @@
 //********************************************************************************************
 package gameEngine;
 
+import gameEngine.Video.VideoQuality;
+
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Random;
@@ -51,7 +55,22 @@ public class Camera {
 		updateCameraVectors();
 		
 		// Draw background
-		background.drawBackground(g, cameraPos);
+
+		if( Video.getQualityMode() == VideoQuality.VIDEO_LOW )
+		{
+			//Without motion blur
+			g.setBackground(Color.BLACK);
+			g.clearRect(0, 0, Video.getScreenWidth(), Video.getScreenHeight());
+			background.drawBackground(g, cameraPos);
+		}
+		else
+		{
+			//With motion blur
+			Composite reset = g.getComposite();
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.60f));
+			background.drawBackground(g, cameraPos);
+			g.setComposite(reset);
+		}
 		
 		int count = 0; // For debug purposes
 		
@@ -61,6 +80,7 @@ public class Camera {
 			if ( isInFrame(entity) )
 			{
 				entity.draw(g, cameraPos);
+				
 				entity.drawCollision(g, cameraPos);
 				count++;
 			}

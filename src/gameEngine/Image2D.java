@@ -33,10 +33,15 @@ import javax.swing.ImageIcon;
  * @author Johan Jansen and Anders Eie
  */
 public class Image2D {
+	final private static Kernel EMBOSS = new Kernel(3, 3,
+		    new float[] {
+		        -2, 0, 0,
+		        0, 1, 0,
+		        0, 0, 2});
 	final private static Kernel BLUR = new Kernel(3, 3,
 		    new float[] {
 	        1f/9f, 1f/9f, 1f/9f,
-	        1f/9f, 1f/9f, 1f/9,
+	        1f/9f, 1f/9f, 1f/9f,
 	        1f/9f, 1f/9f, 1f/9f});
 	final private static int NO_RGB_TINT = 0xFFFFFFF; 
 	
@@ -47,6 +52,7 @@ public class Image2D {
 	private boolean flipHorizontal = false;
 	private boolean flipVertical = false;
 	private boolean blurEffect = false;
+	private boolean embossEffect = false;
 	private boolean noChange = false;
 	private float currentAlpha = 1;
 	private float currentAngle = 0;
@@ -123,7 +129,6 @@ public class Image2D {
 	public void rotate(float angle) {
 		if(angle == 0) return;
 		currentAngle += angle;
-		noChange = false;
 	}
 
 	/**
@@ -133,15 +138,13 @@ public class Image2D {
 	public void setDirection(float angle) {  
 		if(angle == 0) return;
 		currentAngle = angle;
-		noChange = false;
     }  
 	
 	/**
 	 * JJ> direct scaling of a image using the resize method
 	 */
 	public void scale(float multiplier) {   
-        resize( (int)(width * multiplier), (int)(height * multiplier) );	
-		noChange = false;
+        resize( (int)(width * multiplier), (int)(height * multiplier) );
 	}
 	
 	/**
@@ -162,7 +165,6 @@ public class Image2D {
 	 */
 	public void horizontalFlip() {
 		flipHorizontal = !flipHorizontal;
-		noChange = false;
 	}
 	
 	/**
@@ -170,7 +172,6 @@ public class Image2D {
 	 */
 	public void verticalFlip() {  
 		flipVertical = !flipVertical;
-		noChange = false;
     } 
 		
 	/**
@@ -179,7 +180,7 @@ public class Image2D {
      */
 	public void setAlpha(float transperancy) { 
 		//Clip the parameter to a valid value so that we do not get an error message
-		currentAlpha = Math.min( 1.00f, Math.max(0.00f, transperancy) );        
+		currentAlpha = Math.min( 1.00f, Math.max(0.00f, transperancy) );
 		noChange = false;
     }
 	
@@ -188,6 +189,14 @@ public class Image2D {
      */
 	public void blurImage() {
 		blurEffect = !blurEffect;
+		noChange = false;
+	}
+
+	/**
+	 * JJ> Enables or disables emboss effect when rendering this image 
+     */
+	public void embossImage() {
+		embossEffect = !embossEffect;
 		noChange = false;
 	}
 
@@ -284,45 +293,30 @@ public class Image2D {
 		//Re-render if there were changes on the image
 		if( !noChange )
 		{
-			//Create a buffer from the original image
+			//Create a buffer from the original image			
 			processed = Video.createBufferedImage(width, height);
+			
 			Graphics2D r = processed.createGraphics();
 	        Video.getGraphicsSettings(r);
 	        r.drawImage(original, 0, 0, width, height, null);
 	
 	        // Set the Graphics composite to Alpha
 			if( currentAlpha < 1 ) r.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, currentAlpha));  
-							
-			// Flip the image vertically or horizontally
-			if( flipHorizontal && flipVertical )
-			{
-				r.drawImage (processed, 
-			             0, processed.getHeight(), processed.getWidth(), 0,
-			             0, 0, processed.getWidth(), processed.getHeight(),
-			             null);
-			}
-			else if( flipHorizontal )
-			{
-				r.drawImage (processed, 
-			             0, processed.getHeight(), processed.getWidth(), 0,
-			             0, 0, processed.getWidth(), processed.getHeight(),
-			             null );
-			}
-			else if( flipVertical )
-			{
-				r.drawImage (processed, 
-			             processed.getWidth(), 0, 0, processed.getHeight(),
-			             0, 0, processed.getWidth(), processed.getHeight(),
-			             null);
-			}
 			
 			//Blur effect
 			if( blurEffect )
 			{
-				BufferedImageOp op = new ConvolveOp( BLUR, ConvolveOp.EDGE_ZERO_FILL, null);
+				BufferedImageOp op = new ConvolveOp( BLUR );
 				processed = op.filter(processed, null);
 			}
-			
+						
+			//Emboss effect
+			if( embossEffect )
+			{
+				BufferedImageOp op = new ConvolveOp( EMBOSS );
+				processed = op.filter(processed, null);
+			}
+				
 			//Color tint
 			if( colorTint != NO_RGB_TINT )
 				for(int i = 0; i < processed.getWidth(); i++)
@@ -338,10 +332,22 @@ public class Image2D {
 		AffineTransform xs = g.getTransform();
 		xs.translate(x, y);
 		
+		//Image flipping
+		if( flipHorizontal ) 
+		{
+			xs.scale(-1.0, 1.0);
+			xs.translate(-width, 0);
+		}
+		if( flipVertical )
+		{
+			xs.scale(1.0, -1.0);
+			xs.translate(0, -height);
+		}
+			
 		//Rotate
 		if(currentAngle != 0) xs.rotate(currentAngle, width/2, height/2);
 
-		//Now actually draw it!
+		//Now do the actual drawing
 		g.drawImage(processed, xs, null);
 	}
 }
