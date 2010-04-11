@@ -1,11 +1,9 @@
 package gameEngine;
 
 import java.awt.AlphaComposite;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
-import java.awt.image.VolatileImage;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -109,7 +107,7 @@ public class ParticleEngine {
 		return particleList.size();
 	}	
 		
-	private class ParticleTemplate {
+	private final class ParticleTemplate {
 		
 		//Particle variables
 		private ImageIcon image;
@@ -228,10 +226,8 @@ public class ParticleEngine {
 		//Object functions
 		private boolean requestDelete;		//Remove me?
 		private boolean onScreen;			//Was it on the screen this update?
-		private boolean rendering;			//Has it finished rendering?
 		
 		private ImageIcon image;
-		private VolatileImage memoryImg;	//The actual image in volatile memory
 			
 		private String particleEnd;			//What particle to spawn on end
 		private Sound soundEnd;				//What sound to play on end
@@ -255,7 +251,6 @@ public class ParticleEngine {
 			
 			requestDelete = false;
 			onScreen = false;
-			rendering = false;
 			
 			//Is this particle attached to a specific position?
 			if( template.attached && spawner != null )	
@@ -293,34 +288,6 @@ public class ParticleEngine {
 			else					speed = spawner.speed.clone();
 			setRadius( image.getIconWidth()/4 );
 		}
-			
-		/**
-		 * JJ> Allocates a image in the hardware memory
-		 * @param width width of the image
-		 * @param height height of the image
-		 * @return the Graphics2D for the new image, ready to be drawn on
-		 */
-		private Graphics2D createMemoryImage(int width, int height) {
-			
-			//Create the image buffer in memory if needed
-			if( memoryImg == null || memoryImg.contentsLost() )
-			{
-				memoryImg = Video.createVolatileImage(width, height);
-			}
-			Graphics2D g = memoryImg.createGraphics();
-			
-			//We make particles as fast as possible
-			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
-			g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
-			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED );
-		   	g.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE );
-		   	g.setRenderingHint( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED );
-
-		   	//Clear any existing pixels
-			g.setBackground(new Color(0,0,0,0));
-			g.clearRect(0, 0, memoryImg.getWidth(), memoryImg.getHeight());
-			return g;
-		}
 		
 		/**
 		 * @return true if this particle is marked for removal
@@ -329,16 +296,19 @@ public class ParticleEngine {
 			return requestDelete;
 		}
 
+		/**
+		 * JJ> Keeps a particle up to date with movement, rotation, etc.
+		 */
 		final public void update() {
 			
 			if( requestDelete ) return;
 			
 			//Update effects for next frame
-			alpha += alphaAdd;
+			alpha = Math.min( 1.00f, Math.max(0.00f, alpha+alphaAdd) );
 			angle += angleAdd;
 			size  += sizeAdd;
 			angle %= 2 * Math.PI;
-			
+
 			//Mark particles for removal when their time is up or when alpha has made it invisible
 			time--;
 			if(time <= 0 || alpha <= 0 && size <= 0 )
@@ -353,68 +323,46 @@ public class ParticleEngine {
 			pos.add(move);
 			
 			//Figure out if we are inside the screen or not
-			if( viewPort != null )
-				onScreen = viewPort.isInFrame( this.pos, new Vector() );
-					
-			//Only do rendering operations if the image is actually on the screen
-			if( onScreen ) renderParticle();		
+			if( viewPort != null ) onScreen = viewPort.isInFrame( this.pos, new Vector() );
 		}
 		
-		//TODO: probably should not do this in own thread
-		private Thread renderParticle() {
-
-			//We are already rendering the particle in an existing thread
-			if( rendering ) return null;
-		
-			Thread render = new Thread()
-			{
-				public void run()
-				{
-					rendering = true;
-					int w = (int) ( image.getIconWidth() * size);
-					int h = (int) ( image.getIconHeight() * size);
-
-					//Make sure the VolatileImage exists
-					Graphics2D g = createMemoryImage(w, h);
-									     
-			        //Do any alpha
-					alpha = Math.min( 1.00f, Math.max(0.00f, alpha) );
-					if(alpha < 1) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
-					
-					//Now render it in memory
-				     g.drawImage(image.getImage(), 0,0, w, h, null);
-				     
-					//All done!
-					g.dispose();
-					rendering = false;
-				}
-			};
-			
-			render.setDaemon(true);
-			render.start();
-			render.setPriority( Thread.NORM_PRIORITY );
-			return render;
-		}
-		
+		/**
+		 * JJ> This performs all rendering operations for a single particle.
+		 * @param g Which Graphics2D object to do the rendering to
+		 */
 		final public void draw(Graphics2D g) {
 
 			//Only draw if it is okay to draw
-			if( !onScreen || rendering || memoryImg == null || viewPort == null ) return;		
-			Vector offset = viewPort.getCameraPos();
+			if( !onScreen || viewPort == null ) return;
+			g = (Graphics2D)g.create();
 
-			int xPos = pos.getX() - memoryImg.getWidth()/2 - offset.getX();
-			int yPos = pos.getY() - memoryImg.getHeight()/2 - offset.getY();
+			//We make particles as fast as possible
+			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
+			g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
+			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED );
+		   	g.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE );
+		   	g.setRenderingHint( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED );
+
+			//Calculate new width and height
+			int w = (int) ( image.getIconWidth() * size);
+			int h = (int) ( image.getIconHeight() * size);
+
+			//Calculate position
+			Vector offset = viewPort.getCameraPos();
+			int xPos = pos.getX() - w/2 - offset.getX();
+			int yPos = pos.getY() - h/2 - offset.getY();
+			
+	        //Do any alpha
+			if(alpha < 1) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
 
 			//Rotate before drawing
-			AffineTransform xs = g.getTransform();
+			AffineTransform xs = g.getTransform(); 
 			xs.translate(xPos, yPos);
-			xs.rotate(angle, memoryImg.getWidth()/2, memoryImg.getHeight()/2);
-			g.drawImage( memoryImg, xs, null);
+			xs.rotate(angle, w/2, h/2);
+			xs.scale(size, size);
 			
-			//Particle collisions
-			int radius = (int)this.radius;
-			g.setColor(Color.YELLOW);
-			g.drawOval(xPos, yPos - radius, radius*2, radius*2);
+			//Now draw it to screen after doing all render operations
+			g.drawImage( image.getImage(), xs, null);			
 		}
 
 		/**
@@ -430,9 +378,6 @@ public class ParticleEngine {
 			
 			//Spawn any end particle
 			if(particleEnd != null) spawnParticle( particleEnd, this.pos, this.angle, null );
-			
-			//Free any memory used
-			if( memoryImg != null ) memoryImg.flush();
 		}
 	}
 }

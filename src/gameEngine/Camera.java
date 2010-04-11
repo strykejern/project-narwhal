@@ -31,11 +31,11 @@ public class Camera {
 	
 	private ArrayList<GameObject> 	entities;
 	private GameObject 				follow;
-	private Universe 				background;
+	private Background 				background;
 	private ParticleEngine		    particleEngine;
 	private int 					shakeCamera = 0;
 
-	public Camera(ArrayList<GameObject> entities, Universe background, GameObject follow){
+	public Camera(ArrayList<GameObject> entities, Background background, GameObject follow){
 		this.entities = entities;
 		this.follow = follow;
 		this.background = background;
