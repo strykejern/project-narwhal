@@ -11,7 +11,7 @@ import java.util.Random;
 
 
 public class MainMenu {
-	private Universe background;
+	private Background background;
 	private Vector bgScroll = new Vector(), bgSpeed;
 	private Input key;
 	
@@ -37,7 +37,7 @@ public class MainMenu {
 		//Music.play( new Sound("menu.ogg") );
 		
 		//Initialize the background
-    	background = new Universe(2, System.currentTimeMillis());
+    	background = new Background(2, System.currentTimeMillis());
     	bgSpeed = new Vector(rand.nextInt(4)-2, rand.nextInt(4)-2);
     	    	
     	//Load buttons

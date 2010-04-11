@@ -33,7 +33,7 @@ import javax.swing.ImageIcon;
  * @author Johan Jansen and Anders Eie
  *
  */
-public class Universe {
+public class Background {
 	private int universeSize;
 	private Vector[][] bgPos;
 	private ArrayList<Image2D> nebulaList;
@@ -44,7 +44,7 @@ public class Universe {
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
 	 *     component every update. Instead we just draw the BufferedImage.
 	 */
-	public Universe(int size, long seed){
+	public Background(int size, long seed){
 		Profiler.begin("Initializing background");
 		loadNebulas();
 		loadStars();

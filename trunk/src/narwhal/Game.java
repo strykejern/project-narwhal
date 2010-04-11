@@ -70,7 +70,7 @@ public class Game {
 		// Initialize the camera
 		viewPort = new Camera(
 				entities, 
-				new Universe(universeSize, System.currentTimeMillis()), 
+				new Background(universeSize, System.currentTimeMillis()), 
 				player);
 		viewPort.configureInputHandler(keys);
 		particleEngine.setRenderCamera(viewPort);
