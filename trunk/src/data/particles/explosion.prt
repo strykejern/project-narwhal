@@ -1,23 +1,23 @@
-//Shield particle
-[IMAGE]: shield.png
-[TIME]: 100
+//Explosion particle
+[IMAGE]: fire.png
+[TIME]: 200
 [SPEED]: 0
-[ATTACHED]: True
+[ATTACHED]: False
 
 //Size
 [SIZE]: 1.00
-[SIZE_ADD]: 0
+[SIZE_ADD]: -0.005
 
 //Transparency
-[ALPHA]: 1.00
-[ALPHA_ADD]: -0.02
+[ALPHA]: 0.9
+[ALPHA_ADD]: -0.006
 
 //Rotation
 [ROTATE]: 0
-[ROTATE_ADD]: 0
+[ROTATE_ADD]: 0.025
 
 //Sound effect
-[SOUND_SPAWN]: NONE
+[SOUND_SPAWN]: fire.au
 [SOUND_END]: NONE
 
 //Ending conditions

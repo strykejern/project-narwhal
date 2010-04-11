@@ -122,6 +122,8 @@ public class ParticleEngine {
 		public final float sizeAdd;	
 		public final float speed;				//Movement
 		private boolean attached;			//Attached to spawner?
+		public boolean collisionEnd;		//End particle if it collides?
+		
 		public final String particleEnd;
 		public final Sound soundEnd;
 		public final Sound soundSpawn;
@@ -141,6 +143,7 @@ public class ParticleEngine {
 			Sound soundEnd = null;
 			String particleEnd = null;
 			attached = false;
+			collisionEnd = true;
 			
 			try
 			{
@@ -159,6 +162,9 @@ public class ParticleEngine {
 					//Ignore comments
 					if( line.startsWith("//") || line.equals("") ) continue;
 					
+					//Ignore NONE values
+					if(line.indexOf("NONE") != -1) continue;
+
 					//Translate line into data
 					if(line.startsWith("[IMAGE]:"))    	 		
 					{
@@ -175,8 +181,9 @@ public class ParticleEngine {
 					else if(line.startsWith("[SPEED]:"))  		speed = Float.parseFloat(parse(line));
 					else if(line.startsWith("[ATTACHED]:"))  	attached = Boolean.parseBoolean(parse(line));
 					else if(line.startsWith("[SOUND_SPAWN]:"))  soundSpawn = Sound.loadSound( parse(line) );
-					else if(line.startsWith("[SOUND_END]:"))    soundEnd   = Sound.loadSound( parse(line) );
+					else if(line.startsWith("[SOUND_END]:"))	soundEnd = Sound.loadSound( parse(line) );
 					else if(line.startsWith("[PARTICLE_END]:")) particleEnd = parse(line);
+					else if(line.startsWith("[COLLISION_END]:")) collisionEnd = Boolean.parseBoolean(parse(line));
 					else Log.warning("Loading particle file ( "+ fileName +") unrecognized line - " + line);
 				}
 				if(image == null) throw new Exception("Missing a '[IMAGE]:' line describing which image to load!");
@@ -210,7 +217,8 @@ public class ParticleEngine {
 		 * @param line The String to parse
 		 * @return The parsed String
 		 */
-		private String parse(String line) {
+		private String parse(String line) {			
+			//Return the trimmed value
 			return line.substring(line.indexOf(':')+1).trim();
 		}
 	}
@@ -227,6 +235,7 @@ public class ParticleEngine {
 			
 		private String particleEnd;			//What particle to spawn on end
 		private Sound soundEnd;				//What sound to play on end
+		private boolean collisionEnd;
 		
 		//Particle properties
 		private int time;					//How many frames it has to live
@@ -240,6 +249,7 @@ public class ParticleEngine {
 		private float sizeAdd;
 		
 		private float velocity;				//Movement
+		
 		
 		private Particle( Vector spawnPos, ParticleTemplate template, float rotation, GameObject spawner ) {
 			
@@ -276,12 +286,12 @@ public class ParticleEngine {
 			if( template.soundSpawn != null ) template.soundSpawn.play();
 			
 			//Physics stuff
-			canCollide = true;
+			canCollide = template.collisionEnd;
 			shape = Shape.CIRCLE;
 			anchored = false;
 			if(spawner == null) 	speed = new Vector();
 			else					speed = spawner.speed.clone();
-			setRadius( image.getIconWidth()/2 );
+			setRadius( image.getIconWidth()/4 );
 		}
 			
 		/**
@@ -400,6 +410,11 @@ public class ParticleEngine {
 			xs.translate(xPos, yPos);
 			xs.rotate(angle, memoryImg.getWidth()/2, memoryImg.getHeight()/2);
 			g.drawImage( memoryImg, xs, null);
+			
+			//Particle collisions
+			int radius = (int)this.radius;
+			g.setColor(Color.YELLOW);
+			g.drawOval(xPos, yPos - radius, radius*2, radius*2);
 		}
 
 		/**
@@ -414,10 +429,7 @@ public class ParticleEngine {
 			if( soundEnd != null ) soundEnd.play();
 			
 			//Spawn any end particle
-			if(particleEnd != null)
-			{
-				spawnParticle( particleEnd, this.pos, this.angle, null );
-			}
+			if(particleEnd != null) spawnParticle( particleEnd, this.pos, this.angle, null );
 			
 			//Free any memory used
 			if( memoryImg != null ) memoryImg.flush();

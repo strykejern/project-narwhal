@@ -18,3 +18,8 @@
 
 //Sound effect
 [SOUND_SPAWN]: blaster.au
+[SOUND_END]: NONE
+
+//Ending conditions
+[COLLISION_END]: True
+[PARTICLE_END]: explosion.prt
