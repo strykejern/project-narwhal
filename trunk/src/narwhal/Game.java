@@ -47,21 +47,22 @@ public class Game {
        	//Game music
        	//Music.play( new Sound("/data/space.ogg") );
 
-       	//Debug other ship
-       	Spaceship xs = new Spaceship("/data/ships/raptor.ship");
-       	xs.instantiate( new Vector(126, 126), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleEngine );
-       	entities.add(xs);
-
 		//Initialize the player ship
 		Spaceship player = new Spaceship("/data/ships/juggernaught.ship");
        	player.instantiate( new Vector(200, 200), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleEngine );
 		entities.add(player);
-		
+
+       	//Debug other ship
+       	Spaceship enemy = new Spaceship("/data/ships/raptor.ship");
+       	enemy.instantiate( new Vector(126, 126), new AI(player), new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleEngine );
+       	entities.add(enemy);
+
 		//Generate random planets
 		Random rand = new Random();
 		for(int x = 0; x < universeSize; x++)
 			for(int y = 0; y < universeSize; y++)
 			{
+				if( rand.nextInt(100) >= 25 ) continue;
 				int offX = rand.nextInt(Video.getScreenWidth() - Planet.getMaxSize());
 				int offY = rand.nextInt(Video.getScreenHeight() - Planet.getMaxSize());
 				entities.add( new Planet(new Vector(x*Video.getScreenWidth() + offX, y*Video.getScreenHeight() + offY), System.nanoTime()) );			
