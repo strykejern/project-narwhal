@@ -45,7 +45,7 @@ public class Game {
 		particleEngine = new ParticleEngine();
        	
        	//Game music
-       	Music.play( new Sound("/data/space.ogg") );
+       	//Music.play( new Sound("/data/space.ogg") );
 
        	//Debug other ship
        	Spaceship xs = new Spaceship("/data/ships/raptor.ship");

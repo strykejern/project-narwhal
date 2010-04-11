@@ -90,7 +90,7 @@ public class Spaceship extends GameObject{
 				else if(line.startsWith("[SHIELD]:"))  shieldMax = Integer.parseInt(parse(line));
 				else if(line.startsWith("[ENERGY]:"))  energyMax = Integer.parseInt(parse(line));
 				else if(line.startsWith("[EREGEN]:"))  ;	//TODO
-				else if(line.startsWith("[WEAPON]:"))  ;	//TODO
+				else if(line.startsWith("[WEAPON]:"))  weapon = new Weapon(parse(line));
 				else if(line.startsWith("[SREGEN]:"))  ;	//TODO
 				else Log.warning("Loading ship file ( "+ fileName +") unrecognized line - " + line);
 				/*TODO: weapon, engine and regen and mods*/
@@ -110,9 +110,6 @@ public class Spaceship extends GameObject{
 		shield = shieldMax;
 		energy = energyMax;
 				
-		//TODO Ship weapons (remove here)
-		weapon = new Weapon(45.0f, 30, 15, "laser.prt", "Laser Cannon");
-
 		//Calculate size
 		image.resize(Video.getScreenWidth()/12, Video.getScreenWidth()/12);
 		image.scale(sizeMul);

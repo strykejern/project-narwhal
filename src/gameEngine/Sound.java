@@ -18,6 +18,8 @@
 //********************************************************************************************
 package gameEngine;
 
+import java.util.HashMap;
+
 import javax.sound.sampled.*;
 
 
@@ -32,6 +34,42 @@ public class Sound
 	//Global settings
 	public static boolean enabled = true;
 	private static float soundVolume = 0.75f;
+	private static HashMap<String, Sound> soundList;
+	
+	/**
+	 * JJ> Loads all sounds into memory, done only once to save time and memory
+	 */
+	private static void loadAllSounds() {
+		soundList = new HashMap<String, Sound>();
+		String[] fileList = ResourceMananger.getFileList("/data/sounds/");
+		for(String file : fileList) 
+		{
+			soundList.put(file.substring(file.lastIndexOf('/')+1), new Sound(file) );
+		}
+	}	
+
+	/**
+	 * JJ> This gets the specified sound that is loaded globally into memory
+	 *     Sounds loaded this way are only loaded once in memory and thus saves both
+	 *     memory and processing time.
+	 * @param fileName Which sound to get
+	 * @return The Sound if it was found or null otherwise.
+	 */
+	public static Sound loadSound( String fileName ) {
+
+		//First make sure sounds are loaded to memory
+		if( soundList == null ) loadAllSounds();
+		
+		//First make sure the file actually exists
+		if( soundList.get(fileName) == null )
+		{
+			Log.warning("Could not find file - " + fileName );
+			return null;
+		}
+				
+		return soundList.get(fileName);
+	}
+
 	
 	/** The sound itself as a audio stream */
 	private AudioInputStream stream;
@@ -44,20 +82,12 @@ public class Sound
 	 * 		be played.
 	 * @param fileName Path to the file to be loaded
 	 */
-	public Sound( String fileName ) {
-
-		//First make sure the file actually exists
-		if( !ResourceMananger.fileExists(fileName) )
-		{
-			Log.warning("Could not find file - " + fileName );
-			return;
-		}
-
+	private Sound( String fileName ) {
+		Log.message("Loading sound - " + fileName);
 		//Figure out if we are loading a ogg file
 		boolean oggFile = false;		
 		if( fileName.endsWith(".ogg") ) oggFile = true;
 
-		
 		//Load the sound
 		try
 		{			
@@ -123,7 +153,7 @@ public class Sound
 	 * JJ> Play the clip once, but only if it has finished playing
 	 */
 	public void play() {
-		if( !enabled ) return;
+		if( !enabled || stream == null ) return;
 
 		//Create a new thread for this sound to be played within
 		Thread channel = new Thread()
@@ -205,7 +235,7 @@ public class Sound
 	 * JJ> Disposes this Sound freeing any resources it previously used. It will flush 
 	 *     any AudioStreams referenced to it as well.
 	 */
-	public void dispose() {
+	/*public void dispose() {
 		try
 		{
 			this.stop();
@@ -215,7 +245,7 @@ public class Sound
 		{
 			Log.warning("Disposing of sound: " + e);
 		}
-	}
+	}*/
 	
 	/**
 	 * JJ> This adds sound mixer effects like volume and sound balance to a audio line

@@ -25,9 +25,9 @@ public class Button {
 		
     	//Load static button sounds if they haven't been loaded yet
     	if( buttonHover == null )
-    		buttonHover = new Sound("/data/hover.au");
+    		buttonHover = Sound.loadSound("hover.au");
     	if( buttonClick == null )
-        	buttonClick = new Sound("/data/click.au");
+        	buttonClick = Sound.loadSound("click.au");
 		
 		alpha = 0;
 		hidden = false;
