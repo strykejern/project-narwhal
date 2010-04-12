@@ -1,9 +1,9 @@
 [NAME]:   Juggernaught
 [FILE]:   juggernaught.png
 [SIZE]:   1.25
-[LIFE]:   200
-[SHIELD]: 220
-[ENERGY]: 800
+[LIFE]:   100
+[SHIELD]: 75
+[ENERGY]: 500
 [EREGEN]: 10
 [SREGEN]: 5
 [WEAPON]: lasercannon.wpn
