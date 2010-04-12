@@ -47,14 +47,14 @@ public class Weapon {
 				{
 					//Translate percent to float
 					String percent = parse(line);
-					percent = percent.substring(0, percent.lastIndexOf('%')-1);
+					percent = percent.substring(0, percent.lastIndexOf('%'));
 					shieldMul = Float.parseFloat(percent) / 100;
 				}
 				else if(line.startsWith("[LIFE_MUL]:"))
 				{
 					//Translate percent to float
 					String percent = parse(line);
-					percent = percent.substring(0, percent.lastIndexOf('%')-1);
+					percent = percent.substring(0, percent.lastIndexOf('%'));
 					lifeMul = Float.parseFloat(percent) / 100;
 				}
 				else Log.warning("Loading particle file ( "+ fileName +") unrecognized line - " + line);

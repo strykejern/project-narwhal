@@ -5,12 +5,12 @@
 [ATTACHED]: True
 
 //Size
-[SIZE]: 1.00
+[SIZE]: 1.25
 [SIZE_ADD]: 0
 
 //Transparency
 [ALPHA]: 1.00
-[ALPHA_ADD]: -0.02
+[ALPHA_ADD]: -0.03
 
 //Rotation
 [ROTATE]: 0
