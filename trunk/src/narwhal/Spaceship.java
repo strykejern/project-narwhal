@@ -222,6 +222,9 @@ public class Spaceship extends GameObject{
 			{
 				damage -= shield;
 				shield = 0;
+				
+				//Spawn a explosion effect
+				particleEngine.spawnParticle( "explosion.prt", pos, direction, this );
 			}
 			else
 			{
