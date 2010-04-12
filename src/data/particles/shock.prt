@@ -1,0 +1,25 @@
+//Shock cannon particle
+[IMAGE]: shock.png
+[TIME]: 200
+[SPEED]: 20
+[ATTACHED]: False
+
+//Size
+[SIZE]: 0.5
+[SIZE_ADD]: 0.01
+
+//Transparency
+[ALPHA]: 0.6
+[ALPHA_ADD]: -0.005
+
+//Rotation
+[ROTATE]: 0
+[ROTATE_ADD]: 0
+
+//Sound effect
+[SOUND_SPAWN]: thunder.wav
+[SOUND_END]: NONE
+
+//Ending conditions
+[COLLISION_END]: True
+[PARTICLE_END]: NONE

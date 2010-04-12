@@ -9,15 +9,15 @@
 [SIZE_ADD]: 0
 
 //Transparency
-[ALPHA]: 1.00
-[ALPHA_ADD]: -0.03
+[ALPHA]: 0.7
+[ALPHA_ADD]: -0.015
 
 //Rotation
-[ROTATE]: 0
+[ROTATE]: RANDOM
 [ROTATE_ADD]: 0
 
 //Sound effect
-[SOUND_SPAWN]: NONE
+[SOUND_SPAWN]: electric.wav
 [SOUND_END]: NONE
 
 //Ending conditions

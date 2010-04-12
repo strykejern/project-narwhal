@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 
@@ -108,7 +109,7 @@ public class ParticleEngine {
 	public void render(Graphics2D g) {
 		
 		//Draw all particles
-		for( Particle prt : particleList ) prt.draw(g);
+		for(int i = 0; i < particleList.size(); i++) particleList.get(i).draw(g);
 	}
 	
 	public int getParticleCount() {
@@ -116,6 +117,8 @@ public class ParticleEngine {
 	}	
 		
 	private final class ParticleTemplate {
+		
+		static final float RANDOM_ANGLE = Float.MIN_VALUE;
 		
 		//Particle variables
 		private ImageIcon image;
@@ -182,7 +185,11 @@ public class ParticleEngine {
 					else if(line.startsWith("[SIZE_ADD]:")) 	sizeAdd = Float.parseFloat(parse(line));
 					else if(line.startsWith("[ALPHA]:"))  		alpha = Float.parseFloat(parse(line));
 					else if(line.startsWith("[ALPHA_ADD]:"))	alphaAdd = Float.parseFloat(parse(line));
-					else if(line.startsWith("[ROTATE]:"))  		angle = Float.parseFloat(parse(line));
+					else if(line.startsWith("[ROTATE]:"))  		
+					{
+						if(line.indexOf("RANDOM") == -1) angle = Float.parseFloat(parse(line));
+						else							 angle = RANDOM_ANGLE;
+					}
 					else if(line.startsWith("[ROTATE_ADD]:")) 	angleAdd = Float.parseFloat(parse(line));
 					else if(line.startsWith("[SPEED]:"))  		speed = Float.parseFloat(parse(line));
 					else if(line.startsWith("[ATTACHED]:"))  	attached = Boolean.parseBoolean(parse(line));
@@ -275,12 +282,20 @@ public class ParticleEngine {
 				velocity = template.speed;
 			}
 			
+			//Randomize angle?
+			if(template.angle == ParticleTemplate.RANDOM_ANGLE) 
+			{
+				Random rand = new Random();
+				float randAngle = rand.nextFloat() + rand.nextInt(4);
+				angle = randAngle + rotation;
+			}
+			else angle = template.angle + rotation;
+			angleAdd = template.angleAdd;
+			
 			image = template.image;			
 			time = template.time;
 			alpha = template.alpha;
 			alphaAdd = template.alphaAdd;
-			angle = template.angle + rotation;
-			angleAdd = template.angleAdd;
 			size = template.size;
 			sizeAdd = template.sizeAdd;
 			particleEnd = template.particleEnd;
@@ -355,9 +370,9 @@ public class ParticleEngine {
 			//We make particles as fast as possible
 			g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
 			g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
+		   	g.setRenderingHint( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED );
 			g.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED );
 		   	g.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE );
-		   	g.setRenderingHint( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED );
 
 			//Calculate new width and height
 			int w = (int) ( image.getIconWidth() * size);

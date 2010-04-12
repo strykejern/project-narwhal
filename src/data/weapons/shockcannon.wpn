@@ -1,0 +1,8 @@
+//Shock cannon Weapon
+[NAME]: Shock Cannon
+[DAMAGE]: 40
+[COST]: 70
+[PARTICLE]: shock.prt
+[COOLDOWN]: 40
+[SHIELD_MUL]: 175%
+[LIFE_MUL]: 50%

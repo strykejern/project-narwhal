@@ -55,6 +55,7 @@ public class UI {
 			x -= width +5;
 		}
 		
+		//Draw ships that are tracked
 		for (Spaceship target : tracking)
 		{
 			Vector screenMid = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2);
@@ -73,8 +74,7 @@ public class UI {
 			botLeft = screenMid.plus(botLeft);
 			botRight = screenMid.plus(botRight);
 			
-			g.setColor(Color.green);
-			//g.drawLine(screenMid.getX(), screenMid.getY(), diff.getX(), diff.getY());
+			g.setColor( new Color(0, 255, 0, 75) );
 			int[] xPoints = new int[]{ tip.getX(), botLeft.getX(), botRight.getX() };
 			int[] yPoints = new int[]{ tip.getY(), botLeft.getY(), botRight.getY() };
 			g.fillPolygon(xPoints, yPoints, 3);
@@ -91,7 +91,7 @@ public class UI {
 				else rightMost = botRight;
 			}
 			
-			g.drawString(""+dist, rightMost.getX()+20, rightMost.getY());
+			g.drawString(Integer.toString(dist), rightMost.getX()+20, rightMost.getY());
 		}
 	}
 	
