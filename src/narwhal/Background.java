@@ -79,7 +79,10 @@ public class Background {
 		int numberOfStars = 125 + rand.nextInt(250);
 		for (int i = 0; i < numberOfStars; ++i)
 		{
-			g.drawImage(stars[rand.nextInt(stars.length)].getImage(), rand.nextInt(Video.getScreenWidth()), rand.nextInt(Video.getScreenHeight()), null);
+			Image starImage = stars[rand.nextInt(stars.length)].getImage();
+			int x = rand.nextInt(Video.getScreenWidth()  - starImage.getWidth(null) );
+			int y = rand.nextInt(Video.getScreenHeight() - starImage.getHeight(null));
+			g.drawImage(starImage, x, y, null);
 		}		
 	}
 		
