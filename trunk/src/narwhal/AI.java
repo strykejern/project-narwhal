@@ -22,12 +22,13 @@ public class AI {
 		{
 			controller.up = true;
 			controller.down = false;
-			controller.mosButton1 = true;
+			controller.mosButton1 = false;
 		}
 		else
 		{
 			controller.up = false;
 			controller.down = true;
+			controller.mosButton1 = true;
 		}
 		
 		controller.mousePos = target.getPosCentre();

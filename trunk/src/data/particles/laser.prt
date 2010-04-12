@@ -22,4 +22,4 @@
 
 //Ending conditions
 [COLLISION_END]: True
-[PARTICLE_END]: explosion.prt
+[PARTICLE_END]: NONE

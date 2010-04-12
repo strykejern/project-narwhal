@@ -205,8 +205,7 @@ public class Spaceship extends GameObject{
 		}		
 	}
 	
-	public void damage(Spaceship attacker) {
-		Weapon weapon = attacker.weapon;
+	public void damage(Weapon weapon) {
 		float damage = weapon.damage;
 		
 		//Apply energy damage first
@@ -230,7 +229,7 @@ public class Spaceship extends GameObject{
 				shield -= shieldDmg;
 				
 				//Spawn a shield effect
-				particleEngine.spawnParticle( "shield", pos, direction, this );
+				particleEngine.spawnParticle( "shield.prt", pos, direction, this );
 				return;
 			}
 		}

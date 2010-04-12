@@ -11,6 +11,9 @@ import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 
+import narwhal.Spaceship;
+import narwhal.Weapon;
+
 public class ParticleEngine {
 	private static final int MAX_PARTICLES = 512;
 	private HashMap<String, ParticleTemplate> particleMap;
@@ -73,6 +76,11 @@ public class ParticleEngine {
 				if( prt.collidesWith(object) )
 				{
 					prt.delete();
+					if( object instanceof Spaceship )
+					{
+						Spaceship them = (Spaceship)object;
+						them.damage( new Weapon("lasercannon.wpn") );
+					}
 				}
 			}
 
@@ -232,6 +240,7 @@ public class ParticleEngine {
 		private String particleEnd;			//What particle to spawn on end
 		private Sound soundEnd;				//What sound to play on end
 		private boolean collisionEnd;
+		private Physics attached;
 		
 		//Particle properties
 		private int time;					//How many frames it has to live
@@ -247,7 +256,7 @@ public class ParticleEngine {
 		private float velocity;				//Movement
 		
 		
-		private Particle( Vector spawnPos, ParticleTemplate template, float rotation, GameObject spawner ) {
+		private Particle( Vector spawnPos, ParticleTemplate template, float rotation, Physics spawner ) {
 			
 			requestDelete = false;
 			onScreen = false;
@@ -255,11 +264,13 @@ public class ParticleEngine {
 			//Is this particle attached to a specific position?
 			if( template.attached && spawner != null )	
 			{
+				attached = spawner;
 				pos = spawner.pos;
 				velocity = 0;
 			}
 			else
 			{
+				attached = null;
 				pos = spawnPos.clone();
 				velocity = template.speed;
 			}
@@ -302,6 +313,11 @@ public class ParticleEngine {
 		final public void update() {
 			
 			if( requestDelete ) return;
+			
+			if( attached != null )
+			{
+				pos = attached.pos.plus(new Vector(attached.radius, attached.radius));
+			}
 			
 			//Update effects for next frame
 			alpha = Math.min( 1.00f, Math.max(0.00f, alpha+alphaAdd) );
