@@ -1,9 +1,9 @@
 [NAME]:   Raptor
 [FILE]:   raptor.png
 [SIZE]:   1.00
-[LIFE]:   100
-[SHIELD]: 200
-[ENERGY]: 500
+[LIFE]:   75
+[SHIELD]: 60
+[ENERGY]: 400
 [EREGEN]: 10
 [SREGEN]: 5
 [WEAPON]: shockcannon.wpn
