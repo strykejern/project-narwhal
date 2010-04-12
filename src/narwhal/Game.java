@@ -78,6 +78,7 @@ public class Game {
 
 		// Initialize the HUD and bind it to the player's ship
 		hud = new UI(player);
+		hud.addTracking(enemy);
 		
 		this.keys = keys;
 	}

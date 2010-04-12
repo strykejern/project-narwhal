@@ -23,13 +23,16 @@ import gameEngine.Video;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 
 //Skeleton class for the UI
 public class UI {
-	private Spaceship hud;	
+	private Spaceship hud;
+	private ArrayList<Spaceship> tracking;
 	
 	public UI(Spaceship observe){
 		hud = observe;
+		tracking = new ArrayList<Spaceship>();
 	}
 	
 	public void draw(Graphics2D g) {
@@ -51,6 +54,45 @@ public class UI {
 			drawOneBar(g, new Vector(x, y), (int)hud.shield, hud.shieldMax, new Color(0, 0 , 153, 200 ));
 			x -= width +5;
 		}
+		
+		for (Spaceship target : tracking)
+		{
+			Vector screenMid = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2);
+			Vector diff = target.getPosCentre().minus(hud.getPosCentre());
+			if (diff.x > -screenMid.x && diff.x < screenMid.x && diff.y > -screenMid.y && diff.y < screenMid.y) continue;
+			int dist = (int)diff.length();
+			diff.setLength(150);
+			
+			Vector tip = diff.clone();
+			Vector botLeft = tip.clone();
+			botLeft.setLength(125);
+			Vector botRight = botLeft.clone();
+			botLeft.rotateBy((float)-(Math.PI/32.0));
+			botRight.rotateBy((float)(Math.PI/32.0));
+			tip = screenMid.plus(tip);
+			botLeft = screenMid.plus(botLeft);
+			botRight = screenMid.plus(botRight);
+			
+			g.setColor(Color.green);
+			//g.drawLine(screenMid.getX(), screenMid.getY(), diff.getX(), diff.getY());
+			int[] xPoints = new int[]{ tip.getX(), botLeft.getX(), botRight.getX() };
+			int[] yPoints = new int[]{ tip.getY(), botLeft.getY(), botRight.getY() };
+			g.fillPolygon(xPoints, yPoints, 3);
+			
+			Vector rightMost;
+			if (tip.x > botLeft.x)
+			{
+				if (tip.x > botRight.x)  rightMost = tip;
+				else rightMost = botRight;
+			}
+			else
+			{
+				if (botLeft.x > botRight.x) rightMost = botLeft;
+				else rightMost = botRight;
+			}
+			
+			g.drawString(""+dist, rightMost.getX()+20, rightMost.getY());
+		}
 	}
 	
 	private void drawOneBar(Graphics2D g, Vector pos, int current, int max, Color clr) {
@@ -65,5 +107,9 @@ public class UI {
 		g.setColor( clr );
 		height = Math.max( 0, (int)((height/(float)max) * current) );
 		g.fillRoundRect(pos.getX()-width, pos.getY()-height, width, height, 25, 25);
+	}
+	
+	public void addTracking(Spaceship target){
+		tracking.add(target);
 	}
 }
