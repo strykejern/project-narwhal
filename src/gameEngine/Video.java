@@ -64,7 +64,7 @@ public class Video {
 		graphEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		graphDevice = graphEnv.getDefaultScreenDevice();
 		graphicConf = graphDevice.getDefaultConfiguration();
-		
+
 		//Force proper graphics acceleration
 		if(System.getProperty("os.name").contains("Linux") )
 		{

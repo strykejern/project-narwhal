@@ -19,6 +19,7 @@
 package narwhal;
 
 import gameEngine.*;
+import gameEngine.Video.VideoQuality;
 
 import java.awt.*;
 import java.awt.image.VolatileImage;
@@ -217,13 +218,6 @@ public class Background {
 				try
 				{
 					Image buffer = Video.createVolatileImage(Video.getScreenWidth(), Video.getScreenHeight());
-					
-					/*if( Video.getQualityMode() == VideoQuality.VIDEO_HIGH )  
-						buffer = new BufferedImage(Video.getScreenWidth(), Video.getScreenHeight(), BufferedImage.TYPE_INT_ARGB);		
-					else 							   
-						buffer = new BufferedImage(Video.getScreenWidth(), Video.getScreenHeight(), BufferedImage.TYPE_USHORT_555_RGB);
-		    		*/
-					
 		    		Graphics2D g = (Graphics2D)buffer.getGraphics();
 		        	
 		            //I: Nebula (10% chance) or Black background (90%)
@@ -261,15 +255,29 @@ public class Background {
 		nebulaList = null;		
 	}
 
-	public void drawBackground(Graphics2D g, Vector position) {
+	public void drawBackground(Graphics2D g, Vector position, Vector speed) {
 		int bg = 0;
+		Composite reset = g.getComposite();
+		
+		if( Video.getQualityMode() == VideoQuality.VIDEO_LOW )
+		{
+			//Without motion blur
+			g.setBackground(Color.BLACK);
+			g.clearRect(0, 0, Video.getScreenWidth(), Video.getScreenHeight());
+		}
+		else
+		{
+			//With motion blur
+			float blur = 1f / Math.max(1, speed.length()*0.125f);
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, blur));
+		}
 
-		Vector pos = position.clone();
+
 		for(int i = 0; i < universeSize; i++)
 			for(int j = 0; j < universeSize; j++)
 			{
-				int x = bgPos[i][j].getX()-pos.getX();
-				int y = bgPos[i][j].getY()-pos.getY();
+				int x = bgPos[i][j].getX()-position.getX();
+				int y = bgPos[i][j].getY()-position.getY();
 				
 				//Only draw whatever we need to draw
 				if(x < -Video.getScreenWidth() || x > Video.getScreenWidth()) break;
@@ -279,7 +287,10 @@ public class Background {
 				g.drawImage( universe[i][j], x, y, null );
 				bg++;
 			}	
-		
+
+		//Remove any blur effect
+		g.setComposite(reset);
+
 		//Debug info
 		g.setColor(Color.WHITE);
 		g.drawString("Backgrounds drawn: " + bg, 5, 80);

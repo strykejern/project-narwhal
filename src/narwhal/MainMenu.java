@@ -192,7 +192,7 @@ public class MainMenu {
 	public void draw(Graphics2D g) {
 		
 		//Draw background
-		background.drawBackground( g, bgScroll );
+		background.drawBackground( g, bgScroll, bgSpeed );
 		
 		//Draw header, but only if it is loaded
 		if( header != null ) header.draw(g, (Video.getScreenWidth()/2) - header.getWidth()/2, header.getHeight() );

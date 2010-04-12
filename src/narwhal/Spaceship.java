@@ -28,9 +28,6 @@ public class Spaceship extends GameObject{
 	//References
 	private ParticleEngine 	particleEngine;
 	private Vector universeSize;
-
-	//AI
-	private AI ai;
 	
 	//Engine
 	private float maxSpeed = 15f;
@@ -133,19 +130,8 @@ public class Spaceship extends GameObject{
 		this.particleEngine = particleEngine;
 	}
 
-	public void instantiate(Vector pos, AI ai, Vector universeSize, ParticleEngine particleEngine) {
-		this.pos 	      = pos;
-		this.universeSize = universeSize;
-		this.particleEngine = particleEngine;
-		this.ai = ai;
-		this.ai.us = this;
-		this.keys = ai.controller;
-	}
-
 	public void update() {
-		
-		if( ai != null ) ai.think();
-		
+				
 		//Do ship regeneration
 		if(cooldown > 0) 	   cooldown--;
 		else
@@ -224,7 +210,7 @@ public class Spaceship extends GameObject{
 				shield = 0;
 				
 				//Spawn a explosion effect
-				particleEngine.spawnParticle( "explosion.prt", pos, direction, this );
+				particleEngine.spawnParticle( "explosion.prt", pos.plus(size.dividedBy(2)), direction, this );
 			}
 			else
 			{

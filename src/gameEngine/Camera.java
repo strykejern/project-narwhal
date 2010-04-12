@@ -55,22 +55,7 @@ public class Camera {
 		updateCameraVectors();
 		
 		// Draw background
-
-		if( Video.getQualityMode() == VideoQuality.VIDEO_LOW )
-		{
-			//Without motion blur
-			g.setBackground(Color.BLACK);
-			g.clearRect(0, 0, Video.getScreenWidth(), Video.getScreenHeight());
-			background.drawBackground(g, cameraPos);
-		}
-		else
-		{
-			//With motion blur
-			Composite reset = g.getComposite();
-			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.60f));
-			background.drawBackground(g, cameraPos);
-			g.setComposite(reset);
-		}
+		background.drawBackground(g, cameraPos, follow.speed);
 		
 		int count = 0; // For debug purposes
 		

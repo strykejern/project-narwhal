@@ -53,9 +53,10 @@ public class Game {
 		entities.add(player);
 
        	//Debug other ship
-       	Spaceship enemy = new Spaceship("/data/ships/raptor.ship");
-       	enemy.instantiate( new Vector(126, 126), new AI(player), new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleEngine );
+       	AI enemy = new AI("/data/ships/raptor.ship");
+       	enemy.instantiate( new Vector(400, 400), null, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleEngine );
        	entities.add(enemy);
+       	enemy.setTarget(player);
 
 		//Generate random planets
 		Random rand = new Random();
