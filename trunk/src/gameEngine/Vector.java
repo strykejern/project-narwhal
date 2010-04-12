@@ -105,6 +105,10 @@ public class Vector {
 		this.rotateTo((float)Math.toRadians(degree));
 	}
 	
+	public void rotateBy(float radian){
+		rotateTo(getAngle()+radian);
+	}
+	
 	public void setLength(float length){
 		float hyp = length();
 		float fx, fy;
