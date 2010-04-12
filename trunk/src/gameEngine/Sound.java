@@ -150,7 +150,7 @@ public class Sound
 	}
 	
 	/**
-	 * JJ> Play the clip once, but only if it has finished playing
+	 * JJ> Play the sound clip with all specified effects (volume, looping, etc.)
 	 */
 	public void play() {
 		if( !enabled || stream == null ) return;
@@ -171,11 +171,11 @@ public class Sound
 						//Reset position to the start first
 						if ( stream.markSupported() )
 						stream.reset();
-						
+
 						//Open the line to the stream
 						DataLine.Info info = new DataLine.Info(SourceDataLine.class, stream.getFormat(), ((int) stream.getFrameLength() * stream.getFormat().getFrameSize()));
 						line = (SourceDataLine) AudioSystem.getLine(info);
-						line.open(stream.getFormat());
+						line.open( stream.getFormat() );
 						line.start();
 						mixSoundEffects(line);
 					} 
