@@ -1,6 +1,10 @@
 package narwhal;
 
+import java.util.ArrayList;
+
+import gameEngine.GameObject;
 import gameEngine.Input;
+import gameEngine.Log;
 import gameEngine.Vector;
 
 /**
@@ -21,6 +25,7 @@ public class AI extends Spaceship implements Cloneable {
 	private aiLevel   level;
 	private aiState   state;
 	private long 	  aiTimer;
+	private ArrayList<GameObject>	entities;		// Contains all gameObjects in the universe...
 	
 	//TODO: change this to AI type?
 	//Brute - Brute force attacks straight on, low retreat
@@ -56,16 +61,19 @@ public class AI extends Spaceship implements Cloneable {
 			keys 		= world.getPlayerController();
 		}
 			
-		target 			= this;
 		level 		   	= aiLevel.DEFAULT;
 		universeSize   	= world.universeSize;
 		particleEngine 	= world.getParticleEngine();		
+		entities 		= world.getEntityList();
 	}
 	
-	public void setTarget(Spaceship target) {
-		this.target = target;
+	private boolean invalidTarget(){
+		if( target == null ) 		return true;
+		if( target.life == KILLED ) return true;
+		if( target.equals(this) ) 	return true;
+		return false;
 	}
-	
+		
 	public void update() {		
 		
 		//Don't do AI loop for players
@@ -74,7 +82,13 @@ public class AI extends Spaceship implements Cloneable {
 			super.update();
 			return;
 		}
-				
+		
+		//Find new target if needed
+//		if( invalidTarget() )
+		{
+			target = getClosestTarget();
+		}
+
 		//Calculate distance from target
 		Vector vDistance = target.getPosCentre().minus(getPosCentre());
 		float fDistance = vDistance.length();
@@ -145,9 +159,12 @@ public class AI extends Spaceship implements Cloneable {
 			//- if under attack from behind
 			//- need to regenerate energy
 			//- to prepare an ambush
-			
+						
 			//Stop retreating if we are ready (33% energy and 20% shield)
-			if( energy > energyMax/3 && shield > shieldMax/5) state = aiState.INTERCEPT;
+			if( energy > energyMax/3 && shield > shieldMax/5) 
+			{
+				state = aiState.INTERCEPT;
+			}
 			
 			//Run away
 			if(fDistance < 500)
@@ -172,5 +189,38 @@ public class AI extends Spaceship implements Cloneable {
 		}
 		
 		super.update();
+	}
+	
+	private Spaceship getClosestTarget() {
+		Spaceship bestTarget = this;
+		float bestDistance = Float.MAX_VALUE;
+		
+		//Go through every entity in the game
+		for(int i = 0; i < entities.size(); i++)
+		{
+			//Skip non-spaceships
+			if( !(entities.get(i) instanceof Spaceship) ) continue;						
+			Spaceship target = (Spaceship)entities.get(i);
+			
+			//Don't target ourself, that would be silly
+			if( target == this || target.life == KILLED ) continue;
+			
+			//Calculate distance. If it is less than the last target, keep this one instead
+			float dist = target.getPosCentre().minus(getPosCentre()).length();
+			if( dist < bestDistance ) 
+			{	
+				bestTarget = target;
+				bestDistance = dist;
+			}
+		}
+		
+		//TODO: Debug?
+		if(target == this )
+		{
+			Log.message("Could not find a target! Disabling AI");
+			state = aiState.DISABLED;
+		}
+		
+		return bestTarget;
 	}
 }

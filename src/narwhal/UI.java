@@ -37,10 +37,12 @@ public class UI {
 	
 	public void draw(Graphics2D g) {
 		
+		//Don't draw HUD for players who lost
+		if(hud.life == Spaceship.KILLED) return;
+		
 		//Calculate positions
 		int width = Video.getScreenWidth()/20;
 		int x = Video.getScreenWidth() - 10;
-		int y = Video.getScreenHeight() - 30;
 		
 		Vector hudPos = Video.getResolutionVector().minus(new Vector(200, 200));
 		
@@ -69,8 +71,17 @@ public class UI {
 		}
 		
 		//Draw ships that are tracked
-		for (Spaceship target : tracking)
+		for( int i = 0; i < tracking.size(); i++ )
 		{
+			Spaceship target = tracking.get(i);
+			
+			//Remove destroyed enemies from the list
+			if(target.life == Spaceship.KILLED)
+			{
+				tracking.remove(i--);
+				continue;
+			}
+			
 			Vector screenMid = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2);
 			Vector diff = target.getPosCentre().minus(hud.getPosCentre());
 			if (diff.x > -screenMid.x && diff.x < screenMid.x && diff.y > -screenMid.y && diff.y < screenMid.y) continue;

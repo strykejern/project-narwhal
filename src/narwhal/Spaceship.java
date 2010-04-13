@@ -22,6 +22,8 @@ import gameEngine.*;
 
 public class Spaceship extends GameObject {
 
+	public static final int KILLED = Integer.MIN_VALUE;
+	
 	//References
 	protected ParticleEngine  particleEngine;
 	protected int 		      universeSize;
@@ -140,7 +142,7 @@ public class Spaceship extends GameObject {
 		life -= damage;
 		if(life <= 0)
 		{
-			//TODO: die
+			this.kill();
 		}		
 	}
 	
@@ -163,7 +165,7 @@ public class Spaceship extends GameObject {
 				shield = 0;
 				
 				//Spawn a explosion effect
-				particleEngine.spawnParticle( "explosion.prt", pos.plus(size.dividedBy(2)), direction, this );
+				particleEngine.spawnParticle( "explosion.prt", getPosCentre(), direction, this );
 			}
 			else
 			{
@@ -171,7 +173,7 @@ public class Spaceship extends GameObject {
 				shield -= shieldDmg;
 				
 				//Spawn a shield effect
-				particleEngine.spawnParticle( "shield.prt", pos, direction, this );
+				particleEngine.spawnParticle( "shield.prt", getPosCentre(), direction, this );
 				return;
 			}
 		}
@@ -180,7 +182,7 @@ public class Spaceship extends GameObject {
 		life -= damage*weapon.lifeMul;	
 		if(life <= 0)
 		{
-			//TODO: die
+			this.kill();
 		}
 		
 		//We lose 15% speed as well
@@ -209,5 +211,19 @@ public class Spaceship extends GameObject {
 	
 	public Image2D getImage(){
 		return image;
+	}
+	
+	public void kill(){
+		
+		//Spawn particle effect
+		particleEngine.spawnParticle( "bigexplosion.prt", getPosCentre(), direction, this );
+		for(int i = 0; i < 4; i++) particleEngine.spawnParticle( "explosion.prt", getPosCentre(), direction, this );
+		
+		//Mark as dead so that it gets removed in the next update
+		life = KILLED;
+		
+		//Free any resources
+		image.dispose();
+		particleEngine = null;
 	}
 }

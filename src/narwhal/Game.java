@@ -66,18 +66,16 @@ public class Game {
        	//Debug other ship
         for(int i = 0; i < 3; i++)
         {
-			Spaceship enemy = shipyard.spawnShip("raptor.ship", new Vector(i*50, i*50), this, true);
+			Spaceship enemy = shipyard.spawnShip("raptor.ship", new Vector(i*100, i*100), this, true);
 	       	entities.add(enemy);
 			hud.addTracking(enemy);		
-			((AI)enemy).setTarget((Spaceship)entities.get(i));
         }
        	//Debug other ship
         for(int i = 0; i < 3; i++)
         {
-			Spaceship enemy = shipyard.spawnShip("juggernaught.ship", new Vector(i*50, i*50), this, true);
+			Spaceship enemy = shipyard.spawnShip("juggernaught.ship", new Vector(i*100, 0), this, true);
 	       	entities.add(enemy);
 			hud.addTracking(enemy);		
-			((AI)enemy).setTarget((Spaceship)entities.get(i));
         }
 
 		//Generate random planets
@@ -106,8 +104,22 @@ public class Game {
 		if(keys.escape) return gameState.GAME_MENU;
 				
 		// Update all entities
-		for (GameObject entity : entities)
+		for (int i = 0; i < entities.size(); i++)
 		{
+			GameObject entity = entities.get(i);
+			
+			//Remove destroyed spaceships from the list
+			if(entity instanceof Spaceship)
+			{
+				Spaceship ship = ((Spaceship) entity);
+				if(ship.life == Spaceship.KILLED)
+				{
+					entities.remove(ship);
+					continue;
+				}
+			}
+			
+			//Update
 			entity.update();
 		}
 		
@@ -137,7 +149,11 @@ public class Game {
 	ParticleEngine getParticleEngine(){
 		return particleEngine;
 	}
-	
+
+	ArrayList<GameObject> getEntityList(){
+		return entities;
+	}
+
 	Input getPlayerController() {
 		return keys;
 	}
