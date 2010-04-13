@@ -107,6 +107,8 @@ public class Spaceship extends GameObject {
 			if (speed.length() < 0.5f) speed.setLength(0);
 			else speed.divide(1.05f);
 		}
+		if (keys.left) speed.add(new Vector(acceleration, direction-((float)Math.PI/2.0f), true));
+		else if (keys.right) speed.add(new Vector(acceleration, direction+((float)Math.PI/2.0f), true));
 		direction %= 2 * Math.PI;
 		
 		//mouse move
