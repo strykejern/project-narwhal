@@ -61,6 +61,9 @@ public class UI {
 		g.setColor(Color.red);
 		g.fillArc(hudPos.getX()+60, hudPos.getY()+60, 280, 280, 180, -(int) (90*(hud.life/hud.lifeMax)));
 
+		g.setColor(new Color(10, 10, 10));
+		g.fillArc(hudPos.getX()+100, hudPos.getY()+100, 200, 200, 180, -90);
+
 		//drawOneBar(g, new Vector(x, y), (int)hud.energy, hud.energyMax, new Color(255, 153 , 0, 200 ));
 		x -= width +5;
 
