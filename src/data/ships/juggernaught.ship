@@ -4,6 +4,6 @@
 [LIFE]:   100
 [SHIELD]: 75
 [ENERGY]: 500
-[EREGEN]: 10
-[SREGEN]: 5
+[EREGEN]: 1
+[SREGEN]: 0.5
 [WEAPON]: lasercannon.wpn

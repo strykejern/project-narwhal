@@ -43,10 +43,10 @@ public class UI {
 		int y = Video.getScreenHeight() - 30;
 		
 		//Status bars
-		drawOneBar(g, new Vector(x, y), (int)hud.life, hud.lifeMax, new Color(153, 0 , 0, 200 ));
+		drawOneBar(g, new Vector(x, y), hud.life, hud.lifeMax, new Color(153, 0 , 0, 200 ));
 		x -= width +5;
 
-		drawOneBar(g, new Vector(x, y), (int)hud.energy, hud.energyMax, new Color(255, 153 , 0, 200 ));
+		drawOneBar(g, new Vector(x, y), hud.energy, hud.energyMax, new Color(255, 153 , 0, 200 ));
 		x -= width +5;
 
 		if(hud.shieldMax != 0)
@@ -95,7 +95,7 @@ public class UI {
 		}
 	}
 	
-	private void drawOneBar(Graphics2D g, Vector pos, int current, int max, Color clr) {
+	private void drawOneBar(Graphics2D g, Vector pos, float current, float max, Color clr) {
 		int width = Video.getScreenWidth()/20;
 		int height = Video.getScreenHeight()/4;
 
@@ -105,7 +105,7 @@ public class UI {
 		
 		//Draw remaining bar
 		g.setColor( clr );
-		height = Math.max( 0, (int)((height/(float)max) * current) );
+		height = Math.max( 0, (int)((height/max) * current) );
 		g.fillRoundRect(pos.getX()-width, pos.getY()-height, width, height, 25, 25);
 	}
 	

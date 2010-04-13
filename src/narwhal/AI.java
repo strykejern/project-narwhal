@@ -16,7 +16,7 @@ import gameEngine.Vector;
  *
  */
 
-public class AI extends Spaceship {
+public class AI extends Spaceship implements Cloneable {
 	private Spaceship target;
 	private aiLevel   level;
 	private aiState   state;
@@ -38,9 +38,8 @@ public class AI extends Spaceship {
 		COMBAT				//Shoot at target, maybe move in circles around it?
 	}
 	
-	public AI(String name) {
+	public AI(SpaceshipTemplate name) {
 		super(name);
-		
 	}
 	
 	public void instantiate(Vector pos, Game world, boolean AI) {
@@ -156,5 +155,4 @@ public class AI extends Spaceship {
 		
 		super.update();
 	}
-
 }
