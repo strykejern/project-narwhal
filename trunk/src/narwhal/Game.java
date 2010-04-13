@@ -65,8 +65,6 @@ public class Game {
        	entities.add(enemy);
        	((AI)enemy).setTarget(player);
 
-        ((AI)player).setTarget(enemy);
-
 		//Generate random planets
 		Random rand = new Random();
 		for(int x = 0; x < universeSize; x++)

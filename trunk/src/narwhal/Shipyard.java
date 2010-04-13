@@ -44,12 +44,12 @@ public class Shipyard {
 	private Image2D bg;
 	private Image2D image;
 	private Image2D right;
-	private Spaceship ship;
+	private SpaceshipTemplate ship;
 	private GameFont font;
 	private Input key;
 	
 	//The blueprints of all ships
-	private HashMap<String, AI> shipList;
+	private HashMap<String, SpaceshipTemplate> shipList;
 	
 	//Clickable buttons
 	private HashMap<Integer, Button> buttonList;
@@ -95,10 +95,9 @@ public class Shipyard {
 	 */
 	public Spaceship spawnShip(String name, Vector pos, Game world, boolean AI) {
 		
-		Spaceship produced;
-		produced = shipList.get(name).getClone();
-		((AI)produced).instantiate(pos, world, AI);
-		
+		AI produced;
+		produced = new AI(shipList.get(name));
+		produced.instantiate(pos, world, AI);
 				
 		return produced;
 	}
@@ -193,11 +192,11 @@ public class Shipyard {
 	private void parseShipList() {
 		String[] fileList = ResourceMananger.getFileList("/data/ships/");
 
-		shipList = new HashMap<String, AI>();
+		shipList = new HashMap<String, SpaceshipTemplate>();
 		for( String fileName : fileList )
 		{
 			if( !fileName.endsWith(".ship") ) continue;
-			shipList.put( fileName.substring(fileName.lastIndexOf('/')+1), new AI(fileName) );
+			shipList.put( fileName.substring(fileName.lastIndexOf('/')+1), new SpaceshipTemplate(fileName) );
 		}
 	}
 	
@@ -211,7 +210,7 @@ public class Shipyard {
 		ship = shipList.get(name);
 		
 		//Make it look computerized green
-		image = ship.getImage().clone();	
+		image = ship.image.clone();
 		image.setColorTint(0, 255, 0);
 		image.resize(Video.getScreenWidth()/4, Video.getScreenWidth()/4);
 		image.setDirection((float)-Math.PI/2);

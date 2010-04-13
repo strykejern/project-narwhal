@@ -18,11 +18,8 @@
 //********************************************************************************************
 package gameEngine;
 
-import gameEngine.Video.VideoQuality;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Random;

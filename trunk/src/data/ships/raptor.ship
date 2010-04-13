@@ -4,6 +4,6 @@
 [LIFE]:   75
 [SHIELD]: 60
 [ENERGY]: 400
-[EREGEN]: 10
-[SREGEN]: 5
+[EREGEN]: 1.5
+[SREGEN]: 0.6
 [WEAPON]: shockcannon.wpn

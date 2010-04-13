@@ -18,92 +18,61 @@
 //********************************************************************************************
 package narwhal;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 import gameEngine.*;
 
-public class Spaceship extends GameObject implements Cloneable {
+public class Spaceship extends GameObject {
 
 	//References
-	protected ParticleEngine 	particleEngine;
-	protected int universeSize;
+	protected ParticleEngine  particleEngine;
+	protected int 		      universeSize;
 	
 	//Engine
-	private float maxSpeed = 15f;
-	private float acceleration = 0.25f;
-	private float turnRate = 0.1f;
-	private boolean autoBreaks = false;
+	private float maxSpeed;
+	private float acceleration;
+	private float turnRate;
+	private boolean autoBreaks;
+	private float slow = 1.00f;				//Slow factor, 0.5f means 50% of normal speed
 	
 	//Weapon systems
 	public Weapon weapon;
 	private int cooldown;					//Global ship cooldown
 	
 	//Defensive systems
-	public int lifeMax;
+	public float lifeMax;
 	public float life;
-	public int shieldMax;
+	public float shieldMax;
+	public float shieldRegen;
 	public float shield;
-	public int energyMax;
+	public float energyMax;
+	public float energyRegen;
 	public float energy;
 	public String name;
 	
-	public Spaceship( String fileName ) {		
-		float sizeMul = 1.00f;
+	public Spaceship( SpaceshipTemplate blueprint ) {		
+
+		//Load the variables from the spaceship template and clone them
+		name = new String(blueprint.name);
+		image = blueprint.image.clone();
 		
-		//Set defaults
-		lifeMax = 100;
-		shieldMax = 200;
-		energyMax = 500;
-				
-		try
-		{
-			BufferedReader parse = new BufferedReader(
-					new InputStreamReader(
-					ResourceMananger.getInputStream(fileName)));
-			
-			//Parse the ship file
-			while(true)
-			{
-				String line = parse.readLine();
-				
-				//Reached end of file
-				if(line == null) break;
-				
-				//Ignore comments
-				if( line.startsWith("//") ) continue;
-				
-				//Translate line into data
-				if     (line.startsWith("[NAME]:"))    name = parse(line);
-				else if(line.startsWith("[FILE]:"))    image = new Image2D("/data/ships/" + parse(line));
-				else if(line.startsWith("[SIZE]:"))    sizeMul = Float.parseFloat(parse(line));
-				else if(line.startsWith("[LIFE]:"))    lifeMax = Integer.parseInt(parse(line));
-				else if(line.startsWith("[SHIELD]:"))  shieldMax = Integer.parseInt(parse(line));
-				else if(line.startsWith("[ENERGY]:"))  energyMax = Integer.parseInt(parse(line));
-				else if(line.startsWith("[EREGEN]:"))  ;	//TODO
-				else if(line.startsWith("[WEAPON]:"))  weapon = new Weapon(parse(line));
-				else if(line.startsWith("[SREGEN]:"))  ;	//TODO
-				else Log.warning("Loading ship file ( "+ fileName +") unrecognized line - " + line);
-				/*TODO: weapon, engine and regen and mods*/
-			}
-			if(image == null) throw new Exception("Missing a '[FILE]:' line describing which image to load!");
-		}
-		catch( Exception e )
-		{
-			//Something went wrong
-			Log.warning("Loading ship (" + fileName + ") - " + e);
-		}
+		life = lifeMax = blueprint.lifeMax;
+		shield = shieldMax = blueprint.shieldMax;
+		shieldRegen = blueprint.shieldRegen;
+		energy = energyMax = blueprint.energyMax;
+		energyRegen = blueprint.energyRegen;
+		
+		weapon = blueprint.weapon;
+
+		maxSpeed = blueprint.maxSpeed;
+		acceleration = blueprint.acceleration;
+		autoBreaks = blueprint.autoBreaks;
+		turnRate = blueprint.turnRate;
 		
 		//Default values
 		pos 	  = new Vector();
 		direction = 0;
-		life = lifeMax;
-		shield = shieldMax;
-		energy = energyMax;
+		cooldown  = 0;
 				
 		//Calculate size
-		image.resize(Video.getScreenWidth()/12, Video.getScreenWidth()/12);
-		image.scale(sizeMul);
 		setRadius(image.getWidth()/2);
 
 		//Physics
@@ -112,16 +81,6 @@ public class Spaceship extends GameObject implements Cloneable {
 		canCollide = true;
 		anchored = false;
 	}
-
-	/**
-	 * JJ> This is simply to make parsing easier. Gets whatever is behind the colon and trims all
-	 *     whitespace before and after the text.
-	 * @param line The String to parse
-	 * @return The parsed String
-	 */
-	private String parse(String line) {
-		return line.substring(line.indexOf(':')+1).trim();
-	}
 	
 	public void update() {
 				
@@ -129,16 +88,15 @@ public class Spaceship extends GameObject implements Cloneable {
 		if(cooldown > 0) 	   cooldown--;
 		else
 		{
-			//TODO: load regen values
-			if(shield < shieldMax) shield += 0.25f;
-			if(energy < energyMax) energy += 0.5f;
+			if(shield < shieldMax) shield += shieldRegen;
+			if(energy < energyMax) energy += energyRegen;
 		}
 		
 		//Fire!
 		if( keys.mosButton1 ) activateWeapon(weapon);
 		
 		//Key move
-		if 		(keys.up) 	speed.add(new Vector(acceleration, direction, true));
+		if 		(keys.up) 	speed.add(new Vector(acceleration*slow, direction, true));
 		else if (keys.down)
 		{
 			if (speed.length() < 0.2f) speed.setLength(0);
@@ -158,7 +116,7 @@ public class Spaceship extends GameObject implements Cloneable {
 		direction += heading * turnRate;
 		image.setDirection( direction );
 		
-		if (speed.length() > maxSpeed) speed.setLength(maxSpeed);
+		if (speed.length() > maxSpeed*slow) speed.setLength(maxSpeed);
 		
 		// Quick implement of universe bounds
 		float uniX = universeSize * Video.getScreenWidth();
@@ -174,7 +132,7 @@ public class Spaceship extends GameObject implements Cloneable {
 	}
 
 	public void planetHit() {
-		int damage = lifeMax >> 3;
+		float damage = lifeMax / 4;
 			
 		//Next, lose some life
 		life -= damage;
@@ -249,17 +207,5 @@ public class Spaceship extends GameObject implements Cloneable {
 	
 	public Image2D getImage(){
 		return image;
-	}
-
-	public Spaceship getClone() {
-		try 
-		{
-			return (Spaceship) this.clone();
-		} 
-		catch (CloneNotSupportedException e) 
-		{
-			Log.warning("Could not create clone of Spaceship, using blueprint instead - very bad! " + e);
-			return this;
-		}
 	}
 }
