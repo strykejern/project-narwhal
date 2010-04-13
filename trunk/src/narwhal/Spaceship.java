@@ -23,11 +23,11 @@ import java.io.InputStreamReader;
 
 import gameEngine.*;
 
-public class Spaceship extends GameObject{
+public class Spaceship extends GameObject implements Cloneable {
 
 	//References
-	private ParticleEngine 	particleEngine;
-	private Vector universeSize;
+	protected ParticleEngine 	particleEngine;
+	protected int universeSize;
 	
 	//Engine
 	private float maxSpeed = 15f;
@@ -47,16 +47,6 @@ public class Spaceship extends GameObject{
 	public int energyMax;
 	public float energy;
 	public String name;
-
-	/**
-	 * JJ> This is simply to make parsing easier. Gets whatever is behind the colon and trims all
-	 *     whitespace before and after the text.
-	 * @param line The String to parse
-	 * @return The parsed String
-	 */
-	private String parse(String line) {
-		return line.substring(line.indexOf(':')+1).trim();
-	}
 	
 	public Spaceship( String fileName ) {		
 		float sizeMul = 1.00f;
@@ -122,14 +112,17 @@ public class Spaceship extends GameObject{
 		canCollide = true;
 		anchored = false;
 	}
-	
-	public void instantiate(Vector pos, Input keys, Vector universeSize, ParticleEngine particleEngine) {
-		this.pos 	      = pos;
-		this.keys 	      = keys;
-		this.universeSize = universeSize;
-		this.particleEngine = particleEngine;
-	}
 
+	/**
+	 * JJ> This is simply to make parsing easier. Gets whatever is behind the colon and trims all
+	 *     whitespace before and after the text.
+	 * @param line The String to parse
+	 * @return The parsed String
+	 */
+	private String parse(String line) {
+		return line.substring(line.indexOf(':')+1).trim();
+	}
+	
 	public void update() {
 				
 		//Do ship regeneration
@@ -168,8 +161,8 @@ public class Spaceship extends GameObject{
 		if (speed.length() > maxSpeed) speed.setLength(maxSpeed);
 		
 		// Quick implement of universe bounds
-		float uniX = universeSize.x;
-		float uniY = universeSize.y;
+		float uniX = universeSize * Video.getScreenWidth();
+		float uniY = universeSize * Video.getScreenHeight();
 		
 		if 		(pos.x < 0) 	pos.x = uniX + pos.x;
 		else if (pos.x > uniX)  pos.x %= uniX;
@@ -256,5 +249,17 @@ public class Spaceship extends GameObject{
 	
 	public Image2D getImage(){
 		return image;
+	}
+
+	public Spaceship getClone() {
+		try 
+		{
+			return (Spaceship) this.clone();
+		} 
+		catch (CloneNotSupportedException e) 
+		{
+			Log.warning("Could not create clone of Spaceship, using blueprint instead - very bad! " + e);
+			return this;
+		}
 	}
 }

@@ -15,6 +15,7 @@ import gameEngine.Vector;
  * @author Anders Eie and Johan Jansen
  *
  */
+
 public class AI extends Spaceship {
 	private Spaceship target;
 	private aiLevel   level;
@@ -31,6 +32,7 @@ public class AI extends Spaceship {
 	}
 	
 	enum aiState {
+		DISABLED,			//No AI, the player is controlling this one
 		RETREAT,			//Run away to fill energy and shields or to retreat from attack
 		INTERCEPT,			//Move in to target, maybe from behind or maybe the fastest route
 		COMBAT				//Shoot at target, maybe move in circles around it?
@@ -39,11 +41,25 @@ public class AI extends Spaceship {
 	public AI(String name) {
 		super(name);
 		
-		super.keys = new Input();
-		keys.setCameraPos(new Vector());
-		target = this;
-		state = aiState.INTERCEPT;
-		level = aiLevel.DEFAULT;
+	}
+	
+	public void instantiate(Vector pos, Game world, boolean AI) {
+		this.pos 	    = pos;
+		if(AI)
+		{
+			state 		= aiState.INTERCEPT;
+			keys 		= new Input();
+		}
+		else
+		{
+			state 		= aiState.DISABLED;
+			keys 		= world.getPlayerController();
+		}
+			
+		target 			= this;
+		level 		   	= aiLevel.DEFAULT;
+		universeSize   	= world.universeSize;
+		particleEngine 	= world.getParticleEngine();		
 	}
 	
 	public void setTarget(Spaceship target) {
@@ -51,11 +67,12 @@ public class AI extends Spaceship {
 	}
 	
 	public void update() {		
-		//Some strange bug is causing this not to happen in the constructor above?
-		if(keys == null)
+		
+		//Don't do AI loop for players
+		if( state == aiState.DISABLED )
 		{
-			super.keys = new Input();
-			keys.setCameraPos(new Vector());
+			super.update();
+			return;
 		}
 		
 		//Calculate distance from target
@@ -72,7 +89,8 @@ public class AI extends Spaceship {
 	
 			//Retreat if less than 10% energy left
 			//but only if our enemy has more energy than us (cheat!)
-			else if( energy < energyMax/10 && target.energy > energy ) state = aiState.RETREAT;
+	//		else if( energy < energyMax/10 && target.energy > energy ) state = aiState.RETREAT;
+			//TODO: disabled this because the AI got very chicken, needs more work
 		}
 		
 		//AI State - Intercept
