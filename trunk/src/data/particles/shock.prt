@@ -23,3 +23,5 @@
 //Ending conditions
 [COLLISION_END]: True
 [PARTICLE_END]: NONE
+
+[FRIENDLY_FIRE]: False

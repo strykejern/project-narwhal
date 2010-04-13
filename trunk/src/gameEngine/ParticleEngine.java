@@ -68,7 +68,7 @@ public class ParticleEngine {
 			}
 			
 			//Update this particle
-			particleList.get(i).update();
+			prt.update();
 			
 			//Collision detection between particles and GameObjects
 			for(int j = 0; j < entities.size(); j++ )
@@ -76,11 +76,17 @@ public class ParticleEngine {
 				GameObject object  = entities.get(j);
 				if( prt.collidesWith(object) )
 				{
+					//Skip if no friendly fire
+					if( !prt.friendlyFire && (object instanceof Spaceship) && prt.team.equals(((Spaceship)object).team) ) continue;
+					
+					//Collision!
 					prt.delete();
-					if( object instanceof Spaceship )
+					
+					//Damage them
+					if( prt.weapon != null && object instanceof Spaceship )
 					{
 						Spaceship them = (Spaceship)object;
-						them.damage( new Weapon("lasercannon.wpn") );
+						them.damage( prt.weapon );
 					}
 				}
 			}
@@ -130,12 +136,14 @@ public class ParticleEngine {
 		public final float size;					//Size
 		public final float sizeAdd;	
 		public final float speed;				//Movement
-		private boolean attached;			//Attached to spawner?
-		public boolean collisionEnd;		//End particle if it collides?
+		private final boolean attached;			//Attached to spawner?
+		public final boolean collisionEnd;		//End particle if it collides?
 		
 		public final String particleEnd;
 		public final Sound soundEnd;
 		public final Sound soundSpawn;
+
+		public final boolean friendlyFire;
 		
 		public ParticleTemplate( String fileName ) {		
 			
@@ -151,8 +159,9 @@ public class ParticleEngine {
 			Sound soundSpawn = null;
 			Sound soundEnd = null;
 			String particleEnd = null;
-			attached = false;
-			collisionEnd = true;
+			boolean attached = false;
+			boolean collisionEnd = true;
+			boolean friendlyFire = true;
 			
 			try
 			{
@@ -197,6 +206,7 @@ public class ParticleEngine {
 					else if(line.startsWith("[SOUND_END]:"))	soundEnd = Sound.loadSound( parse(line) );
 					else if(line.startsWith("[PARTICLE_END]:")) particleEnd = parse(line);
 					else if(line.startsWith("[COLLISION_END]:")) collisionEnd = Boolean.parseBoolean(parse(line));
+					else if(line.startsWith("[FRIENDLY_FIRE]:")) friendlyFire = Boolean.parseBoolean(parse(line));
 					else Log.warning("Loading particle file ( "+ fileName +") unrecognized line - " + line);
 				}
 				if(image == null) throw new Exception("Missing a '[IMAGE]:' line describing which image to load!");
@@ -220,6 +230,9 @@ public class ParticleEngine {
 			this.soundSpawn = soundSpawn;	
 			this.soundEnd = soundEnd;
 			this.particleEnd = particleEnd;
+			this.friendlyFire = friendlyFire;
+			this.collisionEnd = collisionEnd;
+			this.attached = attached;
 			
 			Log.message("Loaded particle: " + fileName);
 		}
@@ -248,7 +261,12 @@ public class ParticleEngine {
 		private Sound soundEnd;				//What sound to play on end
 		private boolean collisionEnd;
 		private Physics attached;
-		
+
+		private String team;				//Who's side is it on?
+		private boolean friendlyFire;		//Does it collide with friendlies?
+
+		public Weapon weapon;
+
 		//Particle properties
 		private int time;					//How many frames it has to live
 		private float alpha;				//Transparency
@@ -299,6 +317,16 @@ public class ParticleEngine {
 			size = template.size;
 			sizeAdd = template.sizeAdd;
 			particleEnd = template.particleEnd;
+			
+			//Set team
+			friendlyFire = template.friendlyFire;
+			if( spawner instanceof Spaceship )
+			{
+				Spaceship owner = (Spaceship)spawner;
+				team = owner.team;
+				weapon = owner.weapon;
+			}
+			else	team = "NEUTRAL";
 			
 			//Prepare end sound
 			soundEnd = template.soundEnd;
