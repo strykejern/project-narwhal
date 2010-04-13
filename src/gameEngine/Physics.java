@@ -52,9 +52,15 @@ public abstract class Physics extends Collidable{
 					this.pos.add(colVec);
 					this.speed.multiply(0.85f);		//Lose 15% speed				
 				}
-				else
+				else if (!this.anchored && !object.anchored)
 				{
-					// TODO: Implement			
+					this.speed.add(colVec);
+					this.pos.add(colVec);
+					this.speed.multiply(0.85f);		//Lose 15% speed	
+					colVec.negate();
+					object.speed.add(colVec);
+					object.pos.add(colVec);
+					object.speed.multiply(0.85f);		//Lose 15% speed
 				}
 			}
 			else if (object.shape == Shape.RECT)
