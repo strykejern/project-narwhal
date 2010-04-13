@@ -47,6 +47,7 @@ public class Shipyard {
 	private Image2D image;
 	private Image2D right;
 	private SpaceshipTemplate ship;
+	private Iterator<String> select;
 	private GameFont font;
 	private Input key;
 	
@@ -62,7 +63,8 @@ public class Shipyard {
 		
 		//Load the list of ships and get the first ship in the list
 		parseShipList();
-		setCurrentShip("juggernaught.ship");
+		select = shipList.keySet().iterator();
+		setCurrentShip(select.next());		
 		
 		//Ready font
 		font = new GameFont();
@@ -138,9 +140,9 @@ public class Shipyard {
 		y += font.getHeight(g);
 		g.drawString("Damage: " + ship.weapon.damage, x, y);
 		y += font.getHeight(g);
-		g.drawString("Hull Penentration: " + ship.weapon.lifeMul*100 + "%", x, y);
+		g.drawString("Hull Penentration: " + (int)(ship.weapon.lifeMul*100) + "%", x, y);
 		y += font.getHeight(g);
-		g.drawString("Shield Penentration: " + ship.weapon.shieldMul*100 + "%", x, y);
+		g.drawString("Shield Penentration: " + (int)(ship.weapon.shieldMul*100) + "%", x, y);
 		y += font.getHeight(g);
 		g.drawString("Energy Cost: " + ship.weapon.cost, x, y);
 		y += font.getHeight(g)*3;
@@ -184,7 +186,8 @@ public class Shipyard {
 					}
 					case BUTTON_NEXT_SHIP:
 					{
-						setCurrentShip("juggernaught.ship");
+						if( !select.hasNext() ) select = shipList.keySet().iterator();
+						setCurrentShip(select.next());
 						break;
 					}
 				}
@@ -222,6 +225,23 @@ public class Shipyard {
 		image.setColorTint(0, 255, 0);
 		image.resize(Video.getScreenWidth()/4, Video.getScreenWidth()/4);
 		image.setDirection((float)-Math.PI/2);
+	}
+	
+	/**
+	 * JJ> Spawns the ship that is currently selected in the Shipyard menu
+	 * @param pos The Vector position in the world where it is spawned
+	 * @param keys What Input controller controls this ship? (could be AI)
+	 * @param universeSize A Vector that tells us how big is the world around us is
+	 * @param particleEngine Which ParticleEngine are we supposed to use to spawn particles
+	 * @return The new Spaceship ready to fight!
+	 */
+	public Spaceship spawnSelectedShip(Vector pos, Game world, aiType AI, String team) {
+		
+		AI produced = new AI(ship, team);
+		produced.instantiate(pos, world, AI);
+				
+		return produced;
+		
 	}
 
 
