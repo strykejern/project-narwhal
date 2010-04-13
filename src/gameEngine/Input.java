@@ -36,6 +36,7 @@ public class Input {
 		left = false;
 		right = false;
 		mousePos = new Vector();
+		cameraPos = new Vector();
 	}
 	
 	public void update(KeyEvent key, boolean pressed){

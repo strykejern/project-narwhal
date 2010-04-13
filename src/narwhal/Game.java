@@ -31,15 +31,24 @@ public class Game {
 	private ParticleEngine 	        particleEngine;	// Handles all particles
 	private Input 					keys;			// Class to read inputs from
 	private UI						hud;			// User interface
+	private Shipyard                shipyard;		// The factory that spawns ships for us
+   	public final int universeSize;
 	
 	private Camera					viewPort;		// Handles viewpoints and drawing
 	
-	public Game(Input keys){       	
+	public Game(Input keys, int universeSize, Shipyard shipyard){       	
+       	
+		// Size of the universe
+		this.universeSize = universeSize;
+
+       	//Reference to the shipyard
+       	this.shipyard = shipyard;
+
+       	//Reference to player input control
+		this.keys = keys;
+
        	// Initialize the entity container
        	entities = new ArrayList<GameObject>();
-       	
-       	// Size of the universe (for constructors)
-       	final int universeSize = 4;
        	
 		//Prepare particle engine
 		particleEngine = new ParticleEngine();
@@ -48,15 +57,15 @@ public class Game {
        	//Music.play( new Sound("/data/space.ogg") );
 
 		//Initialize the player ship
-		Spaceship player = new Spaceship("/data/ships/juggernaught.ship");
-       	player.instantiate( new Vector(200, 200), keys, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleEngine );
-		entities.add(player);
+		Spaceship player = shipyard.spawnShip("juggernaught.ship", new Vector(200, 200), this, false);
+        entities.add(player);
 
        	//Debug other ship
-       	AI enemy = new AI("/data/ships/raptor.ship");
-       	enemy.instantiate( new Vector(400, 400), null, new Vector(universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight()), particleEngine );
+        Spaceship enemy = shipyard.spawnShip("raptor.ship", new Vector(400, 400), this, true);
        	entities.add(enemy);
-       	enemy.setTarget(player);
+       	((AI)enemy).setTarget(player);
+
+        ((AI)player).setTarget(enemy);
 
 		//Generate random planets
 		Random rand = new Random();
@@ -79,9 +88,7 @@ public class Game {
 
 		// Initialize the HUD and bind it to the player's ship
 		hud = new UI(player);
-		hud.addTracking(enemy);
-		
-		this.keys = keys;
+		hud.addTracking(enemy);		
 	}
 	
 	public GameWindow.gameState update(){
@@ -115,6 +122,14 @@ public class Game {
 		particleEngine.update(entities);
 		
 		return gameState.GAME_PLAYING;
+	}
+	
+	ParticleEngine getParticleEngine(){
+		return particleEngine;
+	}
+	
+	Input getPlayerController() {
+		return keys;
 	}
 	
 	public void draw(Graphics2D g){

@@ -28,12 +28,18 @@ import gameEngine.GameWindow.gameState;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import narwhal.GameFont.FontType;
 
+/**
+ * JJ> This class works like a factory of Spaceships. First it loads all blueprints of all
+ *     Spaceship when this class is constructed. Then it can produce new Spaceships using those
+ *     blueprints.
+ * @author Anders Eie and Johan Jansen
+ *
+ */
 public class Shipyard {
 	private Image2D bg;
 	private Image2D image;
@@ -42,9 +48,10 @@ public class Shipyard {
 	private GameFont font;
 	private Input key;
 	
-	ArrayList<Spaceship> shipList;
-	private int currentShip;
+	//The blueprints of all ships
+	private HashMap<String, AI> shipList;
 	
+	//Clickable buttons
 	private HashMap<Integer, Button> buttonList;
 	static final int BUTTON_START_GAME = 0;
 	static final int BUTTON_NEXT_SHIP = 1;
@@ -53,7 +60,7 @@ public class Shipyard {
 		
 		//Load the list of ships and get the first ship in the list
 		parseShipList();
-		setCurrentShip(0);
+		setCurrentShip("juggernaught.ship");
 		
 		//Ready font
 		font = new GameFont();
@@ -74,6 +81,26 @@ public class Shipyard {
 		
 		//Input controller
 		this.key = key;
+	}
+	
+	/**
+	 * JJ> This function gets a spaceship from the list of all spaceships that are current loaded into 
+	 *     memory by this Shipyard object and instantiates it into a Universe as a new unique object.
+	 * @param name The String reference to the list of spaceships currently loaded ("raptor.ship" for example)
+	 * @param pos The Vector position in the world where it is spawned
+	 * @param keys What Input controller controls this ship? (could be AI)
+	 * @param universeSize A Vector that tells us how big is the world around us is
+	 * @param particleEngine Which ParticleEngine are we supposed to use to spawn particles
+	 * @return The new Spaceship ready to fight!
+	 */
+	public Spaceship spawnShip(String name, Vector pos, Game world, boolean AI) {
+		
+		Spaceship produced;
+		produced = shipList.get(name).getClone();
+		((AI)produced).instantiate(pos, world, AI);
+		
+				
+		return produced;
 	}
 
 	public void draw(Graphics2D g) {
@@ -150,7 +177,7 @@ public class Shipyard {
 					}
 					case BUTTON_NEXT_SHIP:
 					{
-						setCurrentShip(++currentShip);
+						setCurrentShip("juggernaught.ship");
 						break;
 					}
 				}
@@ -166,11 +193,11 @@ public class Shipyard {
 	private void parseShipList() {
 		String[] fileList = ResourceMananger.getFileList("/data/ships/");
 
-		shipList = new ArrayList<Spaceship>();
+		shipList = new HashMap<String, AI>();
 		for( String fileName : fileList )
 		{
 			if( !fileName.endsWith(".ship") ) continue;
-			shipList.add( new Spaceship(fileName) );
+			shipList.put( fileName.substring(fileName.lastIndexOf('/')+1), new AI(fileName) );
 		}
 	}
 	
@@ -178,14 +205,10 @@ public class Shipyard {
 	 * JJ> Changes the current ship we are focusing on
 	 * @param index The index number in the ship list
 	 */
-	private void setCurrentShip( int index ) {
-		
-		//Clip to valid value
-		if(index < 0 || index >= shipList.size()) index = 0;
-		
+	private void setCurrentShip( String name ) {
+				
 		//Change current ship
-		currentShip = index;
-		ship = shipList.get(index);
+		ship = shipList.get(name);
 		
 		//Make it look computerized green
 		image = ship.getImage().clone();	

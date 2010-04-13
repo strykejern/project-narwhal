@@ -122,7 +122,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			//Start a new game if needed
 			if( theGame == null && state == gameState.GAME_PLAYING)
 			{
-		       	theGame = new Game(keys);
+		       	theGame = new Game(keys, 4, selectShip);
 			}
 
 			try
