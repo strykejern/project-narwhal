@@ -21,21 +21,19 @@ import gameEngine.Vector;
  *
  */
 
-public class AI extends Spaceship implements Cloneable {
+public class AI extends Spaceship {
 	private Spaceship target;
-	private aiLevel   level;
+	private aiType    type;
 	private aiState   state;
 	private long 	  aiTimer;
 	private ArrayList<GameObject>	entities;		// Contains all gameObjects in the universe...
 	
-	//TODO: change this to AI type?
-	//Brute - Brute force attacks straight on, low retreat
-	//Ambush - Attacks from behind, retreats if shot on
-	//Controller - Tries to adapt tactics and use special powers
-	enum aiLevel{
-		STUPID,				//Extra stupid AI, no pathfinding? Do not avoid planets or black holes?
-		DEFAULT,			//The normal AI
-		SMART				//Perfect calculations? Tries to attack player from behind? Dodge enemy fire?
+	enum aiType{
+		PLAYER,		 //This one is player controlled
+		BRUTE,		 //Brute force attacks straight on, low retreat
+		AMBUSH,		 //Attacks from behind, retreats if shot on, sneaky sniper
+		CONTROLLER,	 //Tries to adapt tactics and use special powers. Perfect calculations? Tries to attack player from behind? Dodge enemy fire?
+		FOOL		 //The stupid clumsy AI, Extra stupid AI, no pathfinding? Do not avoid planets or black holes?
 	}
 	
 	enum aiState {
@@ -49,20 +47,23 @@ public class AI extends Spaceship implements Cloneable {
 		super(name, team);
 	}
 	
-	public void instantiate(Vector pos, Game world, boolean AI) {
+	public void instantiate(Vector pos, Game world, aiType AI) {
 		this.pos 	    = pos;
-		if(AI)
-		{
-			state 		= aiState.INTERCEPT;
-			keys 		= new Input();
-		}
-		else
+		
+		//Are we player or AI?
+		type 		   	= AI;
+		if( AI == aiType.PLAYER )
 		{
 			state 		= aiState.DISABLED;
 			keys 		= world.getPlayerController();
 		}
-			
-		level 		   	= aiLevel.DEFAULT;
+		else
+		{
+			state 		= aiState.INTERCEPT;
+			keys 		= new Input();
+		}
+		
+		//Set references
 		universeSize   	= world.universeSize;
 		particleEngine 	= world.getParticleEngine();		
 		entities 		= world.getEntityList();
@@ -77,40 +78,128 @@ public class AI extends Spaceship implements Cloneable {
 	}
 		
 	public void update() {		
-		
-		//Don't do AI loop for players
+
+		//Don't do AI
 		if( state == aiState.DISABLED || aiTimer > System.currentTimeMillis() )
 		{
 			super.update();
 			return;
 		}
-		
-		//Find new target if needed
-//		if( invalidTarget() )				//TODO no need to get new target every update?
-		{
-			target = getClosestTarget();
+
+		//Figure out what AI to use
+		switch( type )
+		{			
+			//Brute force attacks straight on, low retreat
+			case BRUTE:  	 doBruteAI();    	break;
+			
+			//Attacks from behind, retreats if shot on, sneaky sniper
+			case AMBUSH: 	 doAmbusherAI(); 	break;	
+			
+			//Tries to adapt tactics and use special powers. Perfect calculations? Tries to attack player from behind? Dodge enemy fire?
+			case CONTROLLER: doControllerAI();	break;  
+			
+			//The stupid clumsy AI, Extra stupid AI, no pathfinding? Do not avoid planets or black holes?
+			case FOOL:		 doFoolAI();		break;
+			
+			//Player controlled, don't run any AI
+			default: case PLAYER:				break;
 		}
+				
+		super.update();
+	}
+	
+	private void doFoolAI() {
+		// TODO Auto-generated method stub
 		
+	}
+
+	private void doAmbusherAI() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void doBruteAI() {
 		//Randomizer
 		Random rand = new Random();
+
+		//Try to stick to a single target
+		if( invalidTarget() )
+		{
+			target = getClosestTarget();
+		}		
 
 		//Calculate distance from target
 		Vector vDistance = target.getPosCentre().minus(getPosCentre());
 		float fDistance = vDistance.length();
-		
-		//Consider retreating if we are not stupid
-		if( level != aiLevel.STUPID )
+
+		//AI State - Intercept
+		if( state == aiState.INTERCEPT )
 		{
-			//Retreat if shields are down
-			//but only if the enemy has some shields left and some energy to spend
-			if( ( shieldMax != 0 && shield == 0 ) && target.shield != 0 
-					&& target.energy > target.energyMax/10 ) 			state = aiState.RETREAT;
-	
-			//Retreat if less than 10% energy left
-			//but only if our enemy has more energy than us (cheat!)
-	//		else if( energy < energyMax/10 && target.energy > energy ) state = aiState.RETREAT;
-			//TODO: disabled this because the AI got very chicken, needs more work
+			//Start combat mode if close enough
+			if(fDistance < 600) state = aiState.COMBAT;
+			
+			//Move towards target, but slow down once we are close enough
+			if( fDistance < 1200 && speed.length() > maxSpeed*0.66f )
+			{
+				keys.up = false;
+				keys.down = true;
+			}
+			else
+			{
+				keys.up = true;
+				keys.down = false;
+			}
+			keys.mosButton1 = false;
+			
+			//Focus on target
+			keys.mousePos = target.getPosCentre();
+			
+			//Slow and steady follow
+			aiTimer = System.currentTimeMillis() + 200 + rand.nextInt(250);
 		}
+		
+		//AI State - Combat
+		else if( state == aiState.COMBAT )
+		{
+			//Intercept if target ran away
+			if(fDistance > 600) state = aiState.INTERCEPT;
+
+			//Stand still and shoot
+			keys.up = false;
+			keys.down = true;
+			keys.mosButton1 = true;
+			
+			//Focus on target
+			keys.mousePos = target.getPosCentre();
+			
+			//Combat intensive
+			aiTimer = System.currentTimeMillis() + rand.nextInt(20);
+		}
+		
+		
+	}
+
+	private void doControllerAI() {
+		//Randomizer
+		Random rand = new Random();
+
+		//We change targets very often, depending on the situation
+		target = getClosestTarget();
+
+		//Calculate distance from target
+		Vector vDistance = target.getPosCentre().minus(getPosCentre());
+		float fDistance = vDistance.length();
+
+		//Consider retreating
+		//Retreat if shields are down
+		//but only if the enemy has some shields left and some energy to spend
+		if( ( shieldMax != 0 && shield == 0 ) && target.shield != 0 
+				&& target.energy > target.energyMax/10 ) 			state = aiState.RETREAT;
+
+		//Retreat if less than 10% energy left
+		//but only if our enemy has more energy than us (cheat!)
+		//else if( energy < energyMax/10 && target.energy > energy ) state = aiState.RETREAT;
+		//TODO: disabled this because the AI got very chicken, needs more work
 		
 		//AI State - Intercept
 		if( state == aiState.INTERCEPT )
@@ -191,11 +280,14 @@ public class AI extends Spaceship implements Cloneable {
 			
 			//Slow reaction retreat
 			aiTimer = System.currentTimeMillis() + 500 + rand.nextInt(350);
-		}
-		
-		super.update();
+		}		
 	}
 	
+	/**
+	 * JJ> This loops through every active Spaceship in the game to find a valid
+	 *     enemy target that is active and not invisible for us.
+	 * @return The closest alive enemy target to this Spaceship
+	 */
 	private Spaceship getClosestTarget() {
 		Spaceship bestTarget = this;
 		float bestDistance = Float.MAX_VALUE;

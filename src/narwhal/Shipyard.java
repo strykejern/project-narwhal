@@ -31,6 +31,7 @@ import java.awt.Graphics2D;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import narwhal.AI.aiType;
 import narwhal.GameFont.FontType;
 
 /**
@@ -93,7 +94,7 @@ public class Shipyard {
 	 * @param particleEngine Which ParticleEngine are we supposed to use to spawn particles
 	 * @return The new Spaceship ready to fight!
 	 */
-	public Spaceship spawnShip(String name, Vector pos, Game world, boolean AI, String team) {
+	public Spaceship spawnShip(String name, Vector pos, Game world, aiType AI, String team) {
 		
 		AI produced;
 		produced = new AI(shipList.get(name), team);

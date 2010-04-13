@@ -25,6 +25,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 
+import narwhal.AI.aiType;
+
 
 public class Game {
 	private ArrayList<GameObject>	entities;		// Contains all gameObjects in the universe...
@@ -57,7 +59,7 @@ public class Game {
        	//Music.play( new Sound("/data/space.ogg") );
 
 		//Initialize the player ship
-		Spaceship player = shipyard.spawnShip("raptor.ship", new Vector(200, 200), this, false, "GOOD");
+		Spaceship player = shipyard.spawnShip("raptor.ship", new Vector(200, 200), this, aiType.PLAYER, "GOOD");
         entities.add(player);
 
 		// Initialize the HUD and bind it to the player's ship
@@ -66,7 +68,7 @@ public class Game {
        	//Spawn allies
         for(int i = 0; i < 2; i++)
         {
-			Spaceship ally = shipyard.spawnShip("raptor.ship", new Vector(i*100, i*100), this, true, "GOOD");
+			Spaceship ally = shipyard.spawnShip("raptor.ship", new Vector(i*100, i*100), this, aiType.CONTROLLER, "GOOD");
 	       	entities.add(ally);
 			hud.addTracking(ally);		
         }
@@ -74,7 +76,7 @@ public class Game {
        	//Spawn enemies
         for(int i = 0; i < 3; i++)
         {
-			Spaceship enemy = shipyard.spawnShip("juggernaught.ship", new Vector(i*100, 0), this, true, "EVIL");
+			Spaceship enemy = shipyard.spawnShip("juggernaught.ship", new Vector(i*100, 0), this, aiType.BRUTE, "EVIL");
 	       	entities.add(enemy);
 			hud.addTracking(enemy);		
         }

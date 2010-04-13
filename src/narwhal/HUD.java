@@ -34,6 +34,11 @@ public class HUD {
 	private final static Color BACKGROUND   = new Color(10, 10 , 10 );
 	private final static Color ENERGY   	= new Color(150, 150 , 0 );
 
+	//Radar colors
+	private final static Color ENEMY 		= new Color(255, 0 , 0, 75 );
+	private final static Color FRIEND    	= new Color(0, 255 , 0, 75 );
+	private final static Color NEUTRAL   	= new Color(0, 0 , 255, 75 );
+
 	//HUD data
 	private Spaceship observer;
 	private ArrayList<Spaceship> tracking;
@@ -101,19 +106,22 @@ public class HUD {
 			g.drawLine(0, Video.getScreenHeight(), (int)(Math.cos((Math.PI/44)*i)*200.0), Video.getScreenHeight()-(int)(Math.sin((Math.PI/44)*i)*200.0));
 		
 		//Draw ships that are tracked
-		for( int i = 0; i < tracking.size(); i++ )
+		if(observer.radarLevel > 0)
 		{
-			Spaceship target = tracking.get(i);
-			
-			//Remove destroyed ships from the list
-			if( !target.active() )
+			for( int i = 0; i < tracking.size(); i++ )
 			{
-				tracking.remove(i--);
-				continue;
+				Spaceship target = tracking.get(i);
+				
+				//Remove destroyed ships from the list
+				if( !target.active() )
+				{
+					tracking.remove(i--);
+					continue;
+				}
+				
+				//Track it
+				drawRadar(target, g);
 			}
-			
-			//Track it
-			drawRadar(target, g);
 		}
 	}
 		
@@ -143,10 +151,14 @@ public class HUD {
 		botLeft = screenMid.plus(botLeft);
 		botRight = screenMid.plus(botRight);
 		
-		//Allies get green arrow
-		if(observer.team.equals(target.team)) g.setColor( new Color(0, 255, 0, 75) );
-		else						     g.setColor( new Color(255, 0, 0, 75) );
-		
+		//Good radars make difference from enemies and allies
+		if( observer.radarLevel >= 2 )
+		{
+			//Allies get green arrow
+			if(observer.team.equals(target.team)) g.setColor( FRIEND );
+			else						          g.setColor( ENEMY );
+		}
+		else g.setColor( NEUTRAL );
 		
 		//Draw the arrow pointer
 		int[] xPoints = new int[]{ tip.getX(), botLeft.getX(), botRight.getX() };
@@ -154,20 +166,22 @@ public class HUD {
 		g.fillPolygon(xPoints, yPoints, 3);
 		
 		
-		//Draw distance to target
-		Vector rightMost;
-		if (tip.x > botLeft.x)
+		//Draw distance to target (Radar level 2 or higher)
+		if( observer.radarLevel >= 2 )
 		{
-			if (tip.x > botRight.x)  rightMost = tip;
-			else rightMost = botRight;
-		}
-		else
-		{
-			if (botLeft.x > botRight.x) rightMost = botLeft;
-			else rightMost = botRight;
-		}
-		
-		g.drawString(Integer.toString(dist), rightMost.getX()+20, rightMost.getY());
+			Vector rightMost;
+			if (tip.x > botLeft.x)
+			{
+				if (tip.x > botRight.x)  rightMost = tip;
+				else rightMost = botRight;
+			}
+			else
+			{
+				if (botLeft.x > botRight.x) rightMost = botLeft;
+				else rightMost = botRight;
+			}
+			g.drawString(Integer.toString(dist), rightMost.getX()+20, rightMost.getY());
+		}		
 	}
 	
 	//Depecrated old status bars, keep here for reference sake
