@@ -59,7 +59,7 @@ public class Game {
        	Music.play( "battle.ogg" );
 
 		//Initialize the player ship
-		Spaceship player = shipyard.spawnShip("raptor.ship", new Vector(200, 200), this, aiType.PLAYER, "GOOD");
+		Spaceship player = shipyard.spawnSelectedShip(new Vector(200, 200), this, aiType.PLAYER, "GOOD");
         entities.add(player);
 
 		// Initialize the HUD and bind it to the player's ship
