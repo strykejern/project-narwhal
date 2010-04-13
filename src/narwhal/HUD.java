@@ -29,9 +29,10 @@ import java.util.ArrayList;
 public class HUD {
 
 	//HUD colors
-	private final static Color SHIELD 		= new Color(0, 0 , 153, 128 );
-	private final static Color LIFE   		= new Color(153, 0 , 0, 200 );
-	private final static Color BACKGROUND   = new Color(10, 10 , 10, 200 );
+	private final static Color SHIELD 		= new Color(0, 0 , 153 );
+	private final static Color LIFE   		= new Color(153, 0 , 0 );
+	private final static Color BACKGROUND   = new Color(10, 10 , 10 );
+	private final static Color ENERGY   	= new Color(150, 150 , 0 );
 
 	//HUD data
 	private Spaceship observer;
@@ -64,7 +65,7 @@ public class HUD {
 		if(observer.shieldMax != 0)
 		{
 			g.setColor(SHIELD);
-			g.fillArc(hudPos.getX()+10, hudPos.getY()+10, 380, 380, 180, -(int) (90*(observer.shield/observer.shieldMax)));
+			g.fillArc(hudPos.getX()+10, hudPos.getY()+10, 380, 380, 180, -(int) (90f*(observer.shield/observer.shieldMax)));
 		}
 
 		//Life background
@@ -73,10 +74,31 @@ public class HUD {
 		
 		//Life
 		g.setColor(LIFE);
-		g.fillArc(hudPos.getX()+60, hudPos.getY()+60, 280, 280, 180, -(int) (90*(observer.life/observer.lifeMax)));
-
+		g.fillArc(hudPos.getX()+60, hudPos.getY()+60, 280, 280, 180, -(int) (90f*(observer.life/observer.lifeMax)));
 		
-		//TODO: energy
+		g.setColor(BACKGROUND);
+		g.fillArc(hudPos.getX()+100, hudPos.getY()+100, 200, 200, 180, -90);
+		
+		//Draw separation lines in the bars
+		for (int i = 1; i < 22; ++i)
+			g.drawLine(Video.getScreenWidth(), Video.getScreenHeight(), Video.getScreenWidth()-(int)(Math.cos((Math.PI/44)*i)*200.0), Video.getScreenHeight()-(int)(Math.sin((Math.PI/44)*i)*200.0));
+		
+		hudPos.sub(new Vector(Video.getScreenWidth(), 0));
+		
+		//Energy background
+		g.setColor(BACKGROUND);
+		g.fillArc(hudPos.getX(), hudPos.getY(), 400, 400, 0, 90);
+		
+		//Energy
+		g.setColor(ENERGY);
+		g.fillArc(hudPos.getX()+10, hudPos.getY()+10, 380, 380, 0, (int) (90f*(observer.energy/observer.energyMax)));
+		
+		g.setColor(BACKGROUND);
+		g.fillArc(hudPos.getX()+50, hudPos.getY()+50, 300, 300, 0, 90);
+		
+		//Draw separation lines in the bars
+		for (int i = 1; i < 22; ++i)
+			g.drawLine(0, Video.getScreenHeight(), (int)(Math.cos((Math.PI/44)*i)*200.0), Video.getScreenHeight()-(int)(Math.sin((Math.PI/44)*i)*200.0));
 		
 		//Draw ships that are tracked
 		for( int i = 0; i < tracking.size(); i++ )
