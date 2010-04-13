@@ -40,11 +40,12 @@ public class Input {
 	}
 	
 	public void update(KeyEvent key, boolean pressed){
-		if 		(key.getKeyCode() == KeyEvent.VK_UP) up = pressed;
-		else if (key.getKeyCode() == KeyEvent.VK_DOWN) down = pressed;
-		else if (key.getKeyCode() == KeyEvent.VK_LEFT) left = pressed;
-		else if (key.getKeyCode() == KeyEvent.VK_RIGHT) right = pressed;
-		else if (key.getKeyCode() == KeyEvent.VK_ESCAPE) escape = pressed;
+		int code = key.getKeyCode();
+		if 		(code == KeyEvent.VK_UP || code == KeyEvent.VK_W) up = pressed;
+		else if (code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S) down = pressed;
+		else if (code == KeyEvent.VK_LEFT || code == KeyEvent.VK_A) left = pressed;
+		else if (code == KeyEvent.VK_RIGHT || code == KeyEvent.VK_D) right = pressed;
+		else if (code == KeyEvent.VK_ESCAPE) escape = pressed;
 	}
 
 	public void update(MouseEvent key, boolean pressed){
