@@ -77,7 +77,7 @@ public class AI extends Spaceship implements Cloneable {
 				
 		//Calculate distance from target
 		Vector vDistance = target.getPosCentre().minus(getPosCentre());
-		float fDistance = Math.abs(vDistance.x + vDistance.y);
+		float fDistance = vDistance.length();
 		
 		//Consider retreating if we are not stupid
 		if( level != aiLevel.STUPID )
@@ -99,7 +99,7 @@ public class AI extends Spaceship implements Cloneable {
 			//Start combat mode if close enough
 			if(fDistance < 600) state = aiState.COMBAT;
 			
-			//Move towards target
+			//Move towards target, but slow down once we are close enough
 			if( fDistance < 1200 && speed.length() < maxSpeed/2 )
 			{
 				keys.up = false;

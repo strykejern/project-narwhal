@@ -60,10 +60,25 @@ public class Game {
 		Spaceship player = shipyard.spawnShip("juggernaught.ship", new Vector(200, 200), this, false);
         entities.add(player);
 
+		// Initialize the HUD and bind it to the player's ship
+		hud = new UI(player);
+
        	//Debug other ship
-        Spaceship enemy = shipyard.spawnShip("raptor.ship", new Vector(400, 400), this, true);
-       	entities.add(enemy);
-       	((AI)enemy).setTarget(player);
+        for(int i = 0; i < 3; i++)
+        {
+			Spaceship enemy = shipyard.spawnShip("raptor.ship", new Vector(i*50, i*50), this, true);
+	       	entities.add(enemy);
+			hud.addTracking(enemy);		
+			((AI)enemy).setTarget((Spaceship)entities.get(i));
+        }
+       	//Debug other ship
+        for(int i = 0; i < 3; i++)
+        {
+			Spaceship enemy = shipyard.spawnShip("juggernaught.ship", new Vector(i*50, i*50), this, true);
+	       	entities.add(enemy);
+			hud.addTracking(enemy);		
+			((AI)enemy).setTarget((Spaceship)entities.get(i));
+        }
 
 		//Generate random planets
 		Random rand = new Random();
@@ -84,9 +99,6 @@ public class Game {
 		viewPort.configureInputHandler(keys);
 		particleEngine.setRenderCamera(viewPort);
 
-		// Initialize the HUD and bind it to the player's ship
-		hud = new UI(player);
-		hud.addTracking(enemy);		
 	}
 	
 	public GameWindow.gameState update(){
