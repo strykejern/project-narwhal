@@ -5,18 +5,19 @@ import gameEngine.GameWindow.gameState;
 import gameEngine.Video.VideoQuality;
 
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
 
 public class MainMenu {
-	private Background background;
-	private Vector bgScroll = new Vector(), bgSpeed;
+	private ArrayList<Image2D> background;
+	private int currentBackground;
+	
 	private Input key;
 	
 	private Image2D header;
-	private float headerFade = 0;
 	
 	//Buttons used in the main menu
 	private HashMap<Integer, Button> buttonList;
@@ -27,6 +28,7 @@ public class MainMenu {
 	static final int BUTTON_MAIN_MENU = 4;
 	static final int BUTTON_GRAPHICS = 5;
 	static final int BUTTON_SOUND = 6;
+	static final int BUTTON_MUSIC = 7;
 	
 	
 	public MainMenu(Input key) {
@@ -34,12 +36,16 @@ public class MainMenu {
 		this.key = key;
 			
 		//Menu music
-		//Music.play( new Sound("menu.ogg") );
+		Music.play( "menu.ogg" );
 		
-		//Initialize the background
-    	background = new Background(2, System.currentTimeMillis());
-    	bgSpeed = new Vector(rand.nextInt(4)-2, rand.nextInt(4)-2);
-    	    	
+		//Initialize background
+		loadBackgrounds();
+		
+		//Load game title
+		header = new Image2D("/data/title.png");
+		header.resize(Video.getScreenWidth()/2, Video.getScreenHeight()/8);
+		header.setAlpha(0.1f);
+
     	//Load buttons
     	buttonList = new HashMap<Integer, Button>();
     	Vector pos = new Vector( Video.getScreenWidth()/2, Video.getScreenHeight()/3 );
@@ -61,18 +67,47 @@ public class MainMenu {
     	String sndText = "Sound: On";
 		if( !Sound.enabled ) sndText = "Sound: Off";
 
+    	String musText = "Music: On";
+		if( !Music.enabled ) musText = "Music: Off";
+
 		pos = new Vector( Video.getScreenWidth()/2, Video.getScreenHeight()/3 );
     	startPos = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2 );
     	buttonList.put( BUTTON_GRAPHICS, new Button(pos, size, gfxText, BUTTON_GRAPHICS, startPos ) );
     	pos.y += size.y*1.1f;
     	buttonList.put( BUTTON_SOUND, new Button(pos, size, sndText, BUTTON_SOUND, startPos ) );
     	pos.y += size.y*1.1f;
-    	buttonList.put(BUTTON_MAIN_MENU, new Button(pos, size, "BACK", BUTTON_MAIN_MENU, startPos ) );
+    	buttonList.put( BUTTON_MUSIC, new Button(pos, size, musText, BUTTON_MUSIC, startPos ) );
+    	pos.y += size.y*1.1f;
+    	buttonList.put( BUTTON_MAIN_MENU, new Button(pos, size, "BACK", BUTTON_MAIN_MENU, startPos ) );
+    	
+    	//Hide the buttons
     	buttonList.get(BUTTON_GRAPHICS).hide();
     	buttonList.get(BUTTON_SOUND).hide();
+    	buttonList.get(BUTTON_MUSIC).hide();
     	buttonList.get(BUTTON_MAIN_MENU).hide();
 	}
 	
+	private void loadBackgrounds() {
+		String[] fileList = ResourceMananger.getFileList("/data/backgrounds/");
+		
+		//Ready array lists
+		background = new ArrayList<Image2D>();
+
+		//Load all particles into the hash map
+		for( String fileName : fileList )
+		{	
+			Image2D load = new Image2D(fileName);
+			load.setAlpha(0);
+			load.resize( Video.getScreenWidth(), Video.getScreenHeight() );
+			background.add( load );
+		}
+		
+		//Prepare the first image
+		Random rand = new Random();
+		currentBackground = rand.nextInt(background.size()-1);
+		background.get(currentBackground).setAlpha(1.00f);
+	}
+
 	//JJ> Main menu loop
 	public GameWindow.gameState update(boolean newGame) {
 		
@@ -106,6 +141,7 @@ public class MainMenu {
 						//Fade in the next buttons
 				    	buttonList.get(BUTTON_GRAPHICS).show();
 				    	buttonList.get(BUTTON_SOUND).show();
+				    	buttonList.get(BUTTON_MUSIC).show();
 				    	buttonList.get(BUTTON_MAIN_MENU).show();
 				    	
 				    	//Fade out the existing buttons
@@ -130,6 +166,7 @@ public class MainMenu {
 				    	//Fade out the current buttons
 				    	buttonList.get(BUTTON_GRAPHICS).hide();
 				    	buttonList.get(BUTTON_SOUND).hide();
+				    	buttonList.get(BUTTON_MUSIC).hide();
 				    	buttonList.get(BUTTON_MAIN_MENU).hide();
 						break;
 					}
@@ -143,7 +180,23 @@ public class MainMenu {
 							buttonList.get(BUTTON_SOUND).setText("SOUND: OFF");
 						break;
 					}
-					
+
+					case BUTTON_MUSIC:
+					{
+						Music.enabled = !Music.enabled;
+						if( Music.enabled )
+						{
+							Music.play("menu.ogg");
+							buttonList.get(BUTTON_MUSIC).setText("MUSIC: ON");
+						}
+						else
+						{
+							Music.stopMusic();
+							buttonList.get(BUTTON_MUSIC).setText("MUSIC: OFF");
+						}
+						break;
+					}
+
 					case BUTTON_GRAPHICS:
 					{
 						if( Video.getQualityMode() == VideoQuality.VIDEO_LOW )
@@ -167,24 +220,27 @@ public class MainMenu {
 		}
 		
 		//Slowly fade in the header
-		if(headerFade != 1)
+		if(header.getAlpha() != 1)
 		{
-			//Load the header image here so that it doesn't blink
-			if(header == null)
-			{
-				header = new Image2D("/data/title.png");
-				header.resize(Video.getScreenWidth()/2, Video.getScreenHeight()/8);
-				header.setAlpha(0.1f);
-			}
-			
-			//headerFade += 0.0075f;
-			//header.setAlpha(0.1f);
+			header.setAlpha( header.getAlpha() + 0.0075f );
 		}
-				
-		// Quick implement of universe bounds
-		if(bgScroll.x < 0 || bgScroll.x > background.getUniverseSize().x- Video.getScreenWidth()) 	   bgSpeed.negate();
-		else if(bgScroll.y < 0 || bgScroll.y > background.getUniverseSize().y- Video.getScreenHeight()) bgSpeed.negate();
-		bgScroll.add( bgSpeed );
+		
+		//Update background effects
+		int nextBackground = currentBackground + 1;
+		if( nextBackground >= background.size() ) nextBackground = 0;
+		Image2D currentBg = background.get(currentBackground);
+		Image2D nextBg = background.get(nextBackground);
+		
+		//Fade out the current one and fade in the new one
+		currentBg.setAlpha ( currentBg.getAlpha() - 0.00125f );
+		nextBg.setAlpha    ( nextBg.getAlpha() + 0.00125f );
+		
+		//We have reached a new background
+		if( currentBg.getAlpha() == 0 )
+		{
+			currentBg.horizontalFlip();		//This little trick makes images seem more random
+			currentBackground = nextBackground;
+		}
 		
 		return gameState.GAME_MENU;
 	}
@@ -192,7 +248,10 @@ public class MainMenu {
 	public void draw(Graphics2D g) {
 		
 		//Draw background
-		background.drawBackground( g, bgScroll, bgSpeed );
+		int nextBackground = currentBackground + 1;
+		if( nextBackground >= background.size() ) nextBackground = 0;
+		background.get(currentBackground).draw(g, 0, 0);
+		background.get(nextBackground).draw(g, 0, 0);
 		
 		//Draw header, but only if it is loaded
 		if( header != null ) header.draw(g, (Video.getScreenWidth()/2) - header.getWidth()/2, header.getHeight() );

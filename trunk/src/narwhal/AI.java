@@ -129,8 +129,7 @@ public class AI extends Spaceship {
 		}		
 
 		//Calculate distance from target
-		Vector vDistance = target.getPosCentre().minus(getPosCentre());
-		float fDistance = vDistance.length();
+		float fDistance = target.getPosCentre().minus(getPosCentre()).length();
 
 		//AI State - Intercept
 		if( state == aiState.INTERCEPT )

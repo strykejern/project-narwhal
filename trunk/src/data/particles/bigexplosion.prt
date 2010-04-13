@@ -17,7 +17,7 @@
 [ROTATE_ADD]: 0.1
 
 //Sound effect
-[SOUND_SPAWN]: NONE
+[SOUND_SPAWN]: bigexplode.wav
 [SOUND_END]: NONE
 
 //Ending conditions

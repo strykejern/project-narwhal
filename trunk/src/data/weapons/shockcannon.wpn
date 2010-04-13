@@ -4,5 +4,5 @@
 [COST]: 70
 [PARTICLE]: shock.prt
 [COOLDOWN]: 40
-[SHIELD_MUL]: 175%
-[LIFE_MUL]: 50%
+[SHIELD_MUL]: 150%
+[LIFE_MUL]: 60%

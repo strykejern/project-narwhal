@@ -1,0 +1,8 @@
+//Laser cannon Weapon
+[NAME]: Death Ray
+[DAMAGE]: 35
+[COST]: 40
+[PARTICLE]: deathray.prt
+[COOLDOWN]: 10
+[SHIELD_MUL]: 15%
+[LIFE_MUL]: 250%

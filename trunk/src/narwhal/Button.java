@@ -76,7 +76,7 @@ public class Button {
         if( key.mousePos.x > pos.x && key.mousePos.x < pos.x + size.x )
         	if( key.mousePos.y > pos.y && key.mousePos.y < pos.y + size.y )
         	{
-        		if( !mouseOver ) buttonHover.play();
+        		if( !mouseOver ) buttonHover.playFull(0.55f);
         		mouseOver = true;
         		return true;
         	}
@@ -86,7 +86,7 @@ public class Button {
 	}
 	
 	public void playClick(){
-		buttonClick.play();
+		buttonClick.playFull(0.75f);
 	}
 	
 	public void hide(){

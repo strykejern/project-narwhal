@@ -71,22 +71,31 @@ public class ParticleEngine {
 			prt.update();
 			
 			//Collision detection between particles and GameObjects
-			for(int j = 0; j < entities.size(); j++ )
-			{	
-				GameObject object  = entities.get(j);
-				if( prt.collidesWith(object) )
-				{
-					//Skip if no friendly fire
-					if( !prt.friendlyFire && (object instanceof Spaceship) && prt.team.equals(((Spaceship)object).team) ) continue;
-					
-					//Collision!
-					prt.delete();
-					
-					//Damage them
-					if( prt.weapon != null && object instanceof Spaceship )
+			if( prt.canCollide )
+			{
+				for(int j = 0; j < entities.size(); j++ )
+				{	
+					GameObject object  = entities.get(j);
+					if( prt.collidesWith(object) )
 					{
-						Spaceship them = (Spaceship)object;
-						them.damage( prt.weapon );
+						//Skip if no friendly fire
+						if( !prt.friendlyFire && (object instanceof Spaceship) && prt.team.equals(((Spaceship)object).team) ) continue;
+												
+						//Damage them
+						if( prt.weapon != null && object instanceof Spaceship )
+						{
+							Spaceship them = (Spaceship)object;
+
+							//Have we already hit them?
+							if( prt.collisionList.contains(them) ) continue;
+
+							//Do the collision
+							them.damage( prt.weapon );
+							prt.collisionList.add(them);
+						}
+						
+						//Die away if told to
+						if( prt.collisionEnd ) prt.delete();
 					}
 				}
 			}
@@ -137,7 +146,9 @@ public class ParticleEngine {
 		public final float sizeAdd;	
 		public final float speed;				//Movement
 		private final boolean attached;			//Attached to spawner?
+		
 		public final boolean collisionEnd;		//End particle if it collides?
+		public final boolean canCollide;
 		
 		public final String particleEnd;
 		public final Sound soundEnd;
@@ -162,6 +173,7 @@ public class ParticleEngine {
 			boolean attached = false;
 			boolean collisionEnd = true;
 			boolean friendlyFire = true;
+			boolean canCollide = false;
 			
 			try
 			{
@@ -207,6 +219,7 @@ public class ParticleEngine {
 					else if(line.startsWith("[PARTICLE_END]:")) particleEnd = parse(line);
 					else if(line.startsWith("[COLLISION_END]:")) collisionEnd = Boolean.parseBoolean(parse(line));
 					else if(line.startsWith("[FRIENDLY_FIRE]:")) friendlyFire = Boolean.parseBoolean(parse(line));
+					else if(line.startsWith("[CAN_COLLIDE]:"))  canCollide = Boolean.parseBoolean(parse(line));
 					else Log.warning("Loading particle file ( "+ fileName +") unrecognized line - " + line);
 				}
 				if(image == null) throw new Exception("Missing a '[IMAGE]:' line describing which image to load!");
@@ -233,6 +246,7 @@ public class ParticleEngine {
 			this.friendlyFire = friendlyFire;
 			this.collisionEnd = collisionEnd;
 			this.attached = attached;
+			this.canCollide = canCollide;
 			
 			Log.message("Loaded particle: " + fileName);
 		}
@@ -254,6 +268,7 @@ public class ParticleEngine {
 		//Object functions
 		private boolean requestDelete;		//Remove me?
 		private boolean onScreen;			//Was it on the screen this update?
+		public ArrayList<Spaceship> collisionList;	//List of all spaceship we have collided with
 		
 		private ImageIcon image;
 			
@@ -285,7 +300,7 @@ public class ParticleEngine {
 			
 			requestDelete = false;
 			onScreen = false;
-			
+
 			//Is this particle attached to a specific position?
 			if( template.attached && spawner != null )	
 			{
@@ -314,9 +329,10 @@ public class ParticleEngine {
 			time = template.time;
 			alpha = template.alpha;
 			alphaAdd = template.alphaAdd;
-			size = template.size;
 			sizeAdd = template.sizeAdd;
+			size = template.size;
 			particleEnd = template.particleEnd;
+			collisionEnd = template.collisionEnd;
 			
 			//Set team
 			friendlyFire = template.friendlyFire;
@@ -332,15 +348,16 @@ public class ParticleEngine {
 			soundEnd = template.soundEnd;
 			
 			//Play spawn sound
-			if( template.soundSpawn != null ) template.soundSpawn.play();
+			if( template.soundSpawn != null ) template.soundSpawn.play3D(pos, viewPort.getCameraPos());
 			
 			//Physics stuff
-			canCollide = template.collisionEnd;
+			canCollide = template.canCollide;
 			shape = Shape.CIRCLE;
 			anchored = false;
 			if(spawner == null) 	speed = new Vector();
 			else					speed = spawner.speed.clone();
 			setRadius( image.getIconWidth()/4 );
+			collisionList = new ArrayList<Spaceship>();
 		}
 		
 		/**
@@ -433,7 +450,7 @@ public class ParticleEngine {
 			onScreen = false;
 			
 			//Play end sound
-			if( soundEnd != null ) soundEnd.play();
+			if( soundEnd != null ) soundEnd.play3D( this.pos, viewPort.getCameraPos() );
 			
 			//Spawn any end particle
 			if(particleEnd != null) spawnParticle( particleEnd, this.pos, this.angle, null );

@@ -21,6 +21,7 @@ package narwhal;
 import gameEngine.GameWindow;
 import gameEngine.Image2D;
 import gameEngine.Input;
+import gameEngine.Log;
 import gameEngine.ResourceMananger;
 import gameEngine.Vector;
 import gameEngine.Video;
@@ -95,6 +96,12 @@ public class Shipyard {
 	 * @return The new Spaceship ready to fight!
 	 */
 	public Spaceship spawnShip(String name, Vector pos, Game world, aiType AI, String team) {
+		
+		if( !shipList.containsKey( name ) )
+		{
+			Log.warning("Trying to spawn an invalid ship - " + name);
+			return null;
+		}
 		
 		AI produced;
 		produced = new AI(shipList.get(name), team);

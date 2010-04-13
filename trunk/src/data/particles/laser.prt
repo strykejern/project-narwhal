@@ -21,6 +21,7 @@
 [SOUND_END]: NONE
 
 //Ending conditions
+[CAN_COLLIDE]: TRUE
 [COLLISION_END]: True
 [PARTICLE_END]: NONE
 

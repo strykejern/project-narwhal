@@ -80,8 +80,8 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
     	
     	//Full screen
     	{
-        	Video.setFullscreen();
-    		parentWindow.setUndecorated(true);								//Remove borders
+       // 	Video.setFullscreen();
+    	//	parentWindow.setUndecorated(true);								//Remove borders
         } 	
    
     	parentWindow.getContentPane().add(new GameWindow(parentWindow));
@@ -204,7 +204,14 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 						if( line.endsWith("OFF") ) Sound.enabled = false;
 						else Sound.enabled = true;
 					}
-					
+
+					//Music enabled
+					else if(line.startsWith("[MUSIC]:"))
+					{
+						if( line.endsWith("OFF") ) Music.enabled = false;
+						else Music.enabled = true;
+					}
+
 					//Full screen
 					else if(line.startsWith("[FULL_SCREEN]:"))
 					{
@@ -274,13 +281,18 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 				else save.write("NORMAL");
 				save.newLine();
 				
-					
 				//Sound enabled
 				save.write( "[SOUND]: " );
 				if( Sound.enabled ) save.write("ON");
 				else save.write("OFF");
 				save.newLine();
-					
+
+				//Sound enabled
+				save.write( "[MUSIC]: " );
+				if( Music.enabled ) save.write("ON");
+				else save.write("OFF");
+				save.newLine();
+
 				//Full screen
 				save.write("[FULL_SCREEN]: ");
 				if (Video.getDesktopResolution() == Video.getResolution())

@@ -5,5 +5,5 @@
 [SHIELD]: 75
 [ENERGY]: 500
 [EREGEN]: 0.7
-[SREGEN]: 0.1
-[WEAPON]: lasercannon.wpn
+[SREGEN]: 0.08
+[WEAPON]: shockcannon.wpn
