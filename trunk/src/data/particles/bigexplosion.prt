@@ -1,0 +1,25 @@
+//Explosion particle
+[IMAGE]: bigexplode.png
+[TIME]: 80
+[SPEED]: 0
+[ATTACHED]: False
+
+//Size
+[SIZE]: 0.25
+[SIZE_ADD]: 0.04
+
+//Transparency
+[ALPHA]: 0.9
+[ALPHA_ADD]: -0.018
+
+//Rotation
+[ROTATE]: RANDOM
+[ROTATE_ADD]: 0.1
+
+//Sound effect
+[SOUND_SPAWN]: NONE
+[SOUND_END]: NONE
+
+//Ending conditions
+[COLLISION_END]: False
+[PARTICLE_END]: NONE
