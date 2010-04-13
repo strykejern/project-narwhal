@@ -20,6 +20,7 @@ public class AI extends Spaceship implements Cloneable {
 	private Spaceship target;
 	private aiLevel   level;
 	private aiState   state;
+	private long 	  aiTimer;
 	
 	//TODO: change this to AI type?
 	//Brute - Brute force attacks straight on, low retreat
@@ -68,12 +69,12 @@ public class AI extends Spaceship implements Cloneable {
 	public void update() {		
 		
 		//Don't do AI loop for players
-		if( state == aiState.DISABLED )
+		if( state == aiState.DISABLED || aiTimer > System.currentTimeMillis() )
 		{
 			super.update();
 			return;
 		}
-		
+				
 		//Calculate distance from target
 		Vector vDistance = target.getPosCentre().minus(getPosCentre());
 		float fDistance = Math.abs(vDistance.x + vDistance.y);
@@ -99,12 +100,23 @@ public class AI extends Spaceship implements Cloneable {
 			if(fDistance < 600) state = aiState.COMBAT;
 			
 			//Move towards target
-			keys.up = true;
-			keys.down = false;
+			if( fDistance < 1200 && speed.length() < maxSpeed/2 )
+			{
+				keys.up = false;
+				keys.down = true;
+			}
+			else
+			{
+				keys.up = true;
+				keys.down = false;
+			}
 			keys.mosButton1 = false;
 			
 			//Focus on target
 			keys.mousePos = target.getPosCentre();
+			
+			//Slow and steady follow
+			aiTimer = System.currentTimeMillis() + 375;
 		}
 		
 		//AI State - Combat
@@ -120,6 +132,9 @@ public class AI extends Spaceship implements Cloneable {
 			
 			//Focus on target
 			keys.mousePos = target.getPosCentre();
+			
+			//Combat intensive
+			aiTimer = System.currentTimeMillis() + 10;
 		}
 		
 		//AI State - Retreat
@@ -150,7 +165,10 @@ public class AI extends Spaceship implements Cloneable {
 			//Opposite direction of target
 			//not exactly, but it will do for now
 			keys.mousePos = target.getPosCentre().clone();
-			keys.mousePos.rotateTo(2-keys.mousePos.getAngle());
+			keys.mousePos.rotateTo(pos.minus(target.getPosCentre()).getAngle());
+			
+			//Slow reaction retreat
+			aiTimer = System.currentTimeMillis() + 650;
 		}
 		
 		super.update();
