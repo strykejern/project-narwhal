@@ -77,10 +77,16 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
     	
 		//Initialize the frame window where we draw stuff
     	JFrame parentWindow = new JFrame("Project Narwhal", Video.getGraphicsConf());		
+    	
+    	//Full screen
+    	{
+        	Video.setFullscreen();
+    		parentWindow.setUndecorated(true);								//Remove borders
+        } 	
+   
     	parentWindow.getContentPane().add(new GameWindow(parentWindow));
     	parentWindow.setSize(Video.getResolution());
 		parentWindow.setResizable(false);
-//		parentWindow.setUndecorated(true);								//Remove borders
         parentWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         parentWindow.setVisible( true );
        	parentWindow.setIgnoreRepaint( true );								//This ensures there is no flickering       	

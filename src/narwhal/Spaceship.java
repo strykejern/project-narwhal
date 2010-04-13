@@ -75,7 +75,7 @@ public class Spaceship extends GameObject {
 		autoBreaks = blueprint.autoBreaks;
 		turnRate = blueprint.turnRate;
 		
-		radarLevel = 1;
+		radarLevel = 4;
 	
 		//Set our team
 		this.team = team.toUpperCase();
