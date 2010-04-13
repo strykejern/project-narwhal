@@ -4,5 +4,5 @@
 [COST]: 35
 [PARTICLE]: laser.prt
 [COOLDOWN]: 20
-[SHIELD_MUL]: 110%
-[LIFE_MUL]: 90%
+[SHIELD_MUL]: 100%
+[LIFE_MUL]: 80%

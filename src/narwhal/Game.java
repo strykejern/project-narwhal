@@ -56,7 +56,7 @@ public class Game {
 		particleEngine = new ParticleEngine();
        	
        	//Game music
-       	//Music.play( new Sound("/data/space.ogg") );
+       	Music.play( "battle.ogg" );
 
 		//Initialize the player ship
 		Spaceship player = shipyard.spawnShip("raptor.ship", new Vector(200, 200), this, aiType.PLAYER, "GOOD");
@@ -77,6 +77,14 @@ public class Game {
         for(int i = 0; i < 3; i++)
         {
 			Spaceship enemy = shipyard.spawnShip("juggernaught.ship", new Vector(i*100, 0), this, aiType.BRUTE, "EVIL");
+	       	entities.add(enemy);
+			hud.addTracking(enemy);		
+        }
+
+       	//Spawn the weird Andromeda ships
+        for(int i = 0; i < 3; i++)
+        {
+			Spaceship enemy = shipyard.spawnShip("andromeda.ship", new Vector(0, i*100), this, aiType.CONTROLLER, "ANDROMEDA");
 	       	entities.add(enemy);
 			hud.addTracking(enemy);		
         }

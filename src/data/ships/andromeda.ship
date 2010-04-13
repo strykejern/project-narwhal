@@ -1,0 +1,9 @@
+[NAME]:   Andromeda
+[FILE]:   alien.png
+[SIZE]:   1.25
+[LIFE]:   50
+[SHIELD]: 120
+[ENERGY]: 300
+[EREGEN]: 1.5
+[SREGEN]: 0.15
+[WEAPON]: deathray.wpn

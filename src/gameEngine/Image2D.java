@@ -181,7 +181,6 @@ public class Image2D {
 	public void setAlpha(float transperancy) { 
 		//Clip the parameter to a valid value so that we do not get an error message
 		currentAlpha = Math.min( 1.00f, Math.max(0.00f, transperancy) );
-		noChange = false;
     }
 	
 	/**
@@ -247,6 +246,13 @@ public class Image2D {
 	}
 
 	/**
+	 * JJ> Returns the current alpha (transparency) for this image
+	 */
+	public float getAlpha() { 
+		return currentAlpha;
+	}
+	
+	/**
 	 * JJ> Returns the image to its original state when it was first loaded
 	 * @warning: All changes are permanently lost!
 	 */
@@ -299,10 +305,7 @@ public class Image2D {
 			Graphics2D r = processed.createGraphics();
 	        Video.getGraphicsSettings(r);
 	        r.drawImage(original, 0, 0, width, height, null);
-	
-	        // Set the Graphics composite to Alpha
-			if( currentAlpha < 1 ) r.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, currentAlpha));  
-			
+				
 			//Blur effect
 			if( blurEffect )
 			{
@@ -347,7 +350,14 @@ public class Image2D {
 		//Rotate
 		if(currentAngle != 0) xs.rotate(currentAngle, width/2, height/2);
 
+        //Set the Graphics composite to Alpha (if any)
+		Composite reset = g.getComposite();
+		if( currentAlpha < 1 ) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, currentAlpha));  
+
 		//Now do the actual drawing
 		g.drawImage(processed, xs, null);
+		
+		//Remove alpha
+		g.setComposite(reset);
 	}
 }

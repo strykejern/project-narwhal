@@ -41,12 +41,23 @@ public class Background {
 	private ImageIcon[] stars;
 	private Image[][] universe;
 	
+	//The resolution of the background
+	//private static final Vector BG_SIZE = new Vector(800, 640);
+	private static Vector BG_SIZE;
+	
 	/**
 	 * JJ> Draw the entire scene on a BufferedImage so that we do not need to redraw and recalculate every
 	 *     component every update. Instead we just draw the BufferedImage.
 	 */
 	public Background(int size, long seed){
 		Profiler.begin("Initializing background");
+		
+		//Set background resolution and detail depending on video quality
+		if( Video.getQualityMode() == VideoQuality.VIDEO_LOW )       BG_SIZE = new Vector(480, 360);
+		else if( Video.getQualityMode() == VideoQuality.VIDEO_HIGH ) BG_SIZE = new Vector(800, 600);
+		else 														 BG_SIZE = new Vector(640, 480);
+		
+		//Load resources
 		loadNebulas();
 		loadStars();
 		
@@ -81,8 +92,8 @@ public class Background {
 		for (int i = 0; i < numberOfStars; ++i)
 		{
 			Image starImage = stars[rand.nextInt(stars.length)].getImage();
-			int x = rand.nextInt(Video.getScreenWidth()  - starImage.getWidth(null) );
-			int y = rand.nextInt(Video.getScreenHeight() - starImage.getHeight(null));
+			int x = rand.nextInt(BG_SIZE.getX() - starImage.getWidth(null) );
+			int y = rand.nextInt(BG_SIZE.getY() - starImage.getHeight(null));
 			g.drawImage(starImage, x, y, null);
 		}		
 	}
@@ -94,7 +105,7 @@ public class Background {
 		nebulaList = new ArrayList<Image2D>();
 		for( String fileName : fileList )
 		{
-			Image2D load = new Image2D(fileName, Video.getScreenWidth(), Video.getScreenHeight());
+			Image2D load = new Image2D(fileName, BG_SIZE.getX(), BG_SIZE.getY());
 			nebulaList.add( load );
 		}
 	}
@@ -149,7 +160,7 @@ public class Background {
 					starGraph.fillOval(k, k, s-(2*k), s-(2*k));
 				}
 				
-				//TODO: bad! it seems 40*256 elements are added to this ArrayList
+				//TODO: bad! it seems 40*256=10240 elements are added to this ArrayList
 				tmpStars.add(new ImageIcon(star.getSnapshot()));
 			}
 			
@@ -217,12 +228,12 @@ public class Background {
 			{
 				try
 				{
-					Image buffer = Video.createVolatileImage(Video.getScreenWidth(), Video.getScreenHeight());
+					Image buffer = Video.createVolatileImage(BG_SIZE.getX(), BG_SIZE.getY());
 		    		Graphics2D g = (Graphics2D)buffer.getGraphics();
 		        	
 		            //I: Nebula (10% chance) or Black background (90%)
 	    			g.setColor(Color.BLACK);
-	    			g.fillRect(0, 0, Video.getScreenWidth(), Video.getScreenHeight());
+	    			g.fillRect(0, 0, BG_SIZE.getX(), BG_SIZE.getY());
 	    			if( rand.nextInt(100) <= 10 ) drawNebula(rand, g);
 	
 		    		//II: Stars
@@ -284,7 +295,7 @@ public class Background {
 				if(++y > Video.getScreenHeight()) break;
 				if(y < -Video.getScreenHeight()) continue;
 				
-				g.drawImage( universe[i][j], x, y, null );
+				g.drawImage( universe[i][j], x, y, Video.getScreenWidth(), Video.getScreenHeight(), null );
 				bg++;
 			}	
 
