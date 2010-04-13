@@ -30,7 +30,7 @@ public class Game {
 	private ArrayList<GameObject>	entities;		// Contains all gameObjects in the universe...
 	private ParticleEngine 	        particleEngine;	// Handles all particles
 	private Input 					keys;			// Class to read inputs from
-	private UI						hud;			// User interface
+	private HUD						hud;			// User interface
 	private Shipyard                shipyard;		// The factory that spawns ships for us
    	public final int universeSize;
 	
@@ -57,23 +57,24 @@ public class Game {
        	//Music.play( new Sound("/data/space.ogg") );
 
 		//Initialize the player ship
-		Spaceship player = shipyard.spawnShip("juggernaught.ship", new Vector(200, 200), this, false);
+		Spaceship player = shipyard.spawnShip("raptor.ship", new Vector(200, 200), this, false, "GOOD");
         entities.add(player);
 
 		// Initialize the HUD and bind it to the player's ship
-		hud = new UI(player);
+		hud = new HUD(player);
 
-       	//Debug other ship
-        for(int i = 0; i < 3; i++)
+       	//Spawn allies
+        for(int i = 0; i < 2; i++)
         {
-			Spaceship enemy = shipyard.spawnShip("raptor.ship", new Vector(i*100, i*100), this, true);
-	       	entities.add(enemy);
-			hud.addTracking(enemy);		
+			Spaceship ally = shipyard.spawnShip("raptor.ship", new Vector(i*100, i*100), this, true, "GOOD");
+	       	entities.add(ally);
+			hud.addTracking(ally);		
         }
-       	//Debug other ship
+        
+       	//Spawn enemies
         for(int i = 0; i < 3; i++)
         {
-			Spaceship enemy = shipyard.spawnShip("juggernaught.ship", new Vector(i*100, 0), this, true);
+			Spaceship enemy = shipyard.spawnShip("juggernaught.ship", new Vector(i*100, 0), this, true, "EVIL");
 	       	entities.add(enemy);
 			hud.addTracking(enemy);		
         }
