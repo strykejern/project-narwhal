@@ -53,6 +53,9 @@ public class Spaceship extends GameObject {
 	public float energyRegen;
 	public float energy;
 	
+	//Modules
+	public short radarLevel;
+	
 	public Spaceship( SpaceshipTemplate blueprint, String team ) {		
 
 		//Load the variables from the spaceship template and clone them
@@ -71,6 +74,8 @@ public class Spaceship extends GameObject {
 		acceleration = blueprint.acceleration;
 		autoBreaks = blueprint.autoBreaks;
 		turnRate = blueprint.turnRate;
+		
+		radarLevel = 1;
 	
 		//Set our team
 		this.team = team.toUpperCase();
