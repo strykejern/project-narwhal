@@ -22,12 +22,16 @@ import gameEngine.*;
 
 public class Spaceship extends GameObject {
 
-	public static final int KILLED = Integer.MIN_VALUE;
+	protected static final int KILLED = Integer.MIN_VALUE;
 	
 	//References
 	protected ParticleEngine  particleEngine;
 	protected int 		      universeSize;
-	
+
+	//General stuff
+	public String name;						//This ship's name that can be unique
+	public String team;						//This ship is on team with any who share the same team
+
 	//Engine
 	protected float maxSpeed;
 	private float acceleration;
@@ -48,9 +52,8 @@ public class Spaceship extends GameObject {
 	public float energyMax;
 	public float energyRegen;
 	public float energy;
-	public String name;
 	
-	public Spaceship( SpaceshipTemplate blueprint ) {		
+	public Spaceship( SpaceshipTemplate blueprint, String team ) {		
 
 		//Load the variables from the spaceship template and clone them
 		name = new String(blueprint.name);
@@ -68,7 +71,10 @@ public class Spaceship extends GameObject {
 		acceleration = blueprint.acceleration;
 		autoBreaks = blueprint.autoBreaks;
 		turnRate = blueprint.turnRate;
-		
+	
+		//Set our team
+		this.team = team.toUpperCase();
+
 		//Default values
 		pos 	  = new Vector();
 		direction = 0;
@@ -215,6 +221,9 @@ public class Spaceship extends GameObject {
 	
 	public void kill(){
 		
+		//Cant kill what is already dead
+		if( !active() ) return;
+		
 		//Spawn particle effect
 		particleEngine.spawnParticle( "bigexplosion.prt", getPosCentre(), direction, this );
 		for(int i = 0; i < 4; i++) particleEngine.spawnParticle( "explosion.prt", getPosCentre(), direction, this );
@@ -225,5 +234,9 @@ public class Spaceship extends GameObject {
 		//Free any resources
 		image.dispose();
 		particleEngine = null;
+	}
+	
+	public boolean active() {
+		return life != KILLED;
 	}
 }

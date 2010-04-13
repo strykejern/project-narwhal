@@ -1,6 +1,7 @@
 package narwhal;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import gameEngine.GameObject;
 import gameEngine.Input;
@@ -44,8 +45,8 @@ public class AI extends Spaceship implements Cloneable {
 		COMBAT				//Shoot at target, maybe move in circles around it?
 	}
 	
-	public AI(SpaceshipTemplate name) {
-		super(name);
+	public AI(SpaceshipTemplate name, String team) {
+		super(name, team);
 	}
 	
 	public void instantiate(Vector pos, Game world, boolean AI) {
@@ -68,9 +69,10 @@ public class AI extends Spaceship implements Cloneable {
 	}
 	
 	private boolean invalidTarget(){
-		if( target == null ) 		return true;
-		if( target.life == KILLED ) return true;
-		if( target.equals(this) ) 	return true;
+		if( target == null ) 				return true;
+		if( !target.active() ) 				return true;
+		if( target.equals(this) ) 			return true;
+		if( target.team.equals(this.team) ) return true;
 		return false;
 	}
 		
@@ -84,10 +86,13 @@ public class AI extends Spaceship implements Cloneable {
 		}
 		
 		//Find new target if needed
-//		if( invalidTarget() )
+//		if( invalidTarget() )				//TODO no need to get new target every update?
 		{
 			target = getClosestTarget();
 		}
+		
+		//Randomizer
+		Random rand = new Random();
 
 		//Calculate distance from target
 		Vector vDistance = target.getPosCentre().minus(getPosCentre());
@@ -114,7 +119,7 @@ public class AI extends Spaceship implements Cloneable {
 			if(fDistance < 600) state = aiState.COMBAT;
 			
 			//Move towards target, but slow down once we are close enough
-			if( fDistance < 1200 && speed.length() < maxSpeed/2 )
+			if( fDistance < 1200 && speed.length() > maxSpeed/2 )
 			{
 				keys.up = false;
 				keys.down = true;
@@ -130,7 +135,7 @@ public class AI extends Spaceship implements Cloneable {
 			keys.mousePos = target.getPosCentre();
 			
 			//Slow and steady follow
-			aiTimer = System.currentTimeMillis() + 375;
+			aiTimer = System.currentTimeMillis() + 200 + rand.nextInt(250);
 		}
 		
 		//AI State - Combat
@@ -148,7 +153,7 @@ public class AI extends Spaceship implements Cloneable {
 			keys.mousePos = target.getPosCentre();
 			
 			//Combat intensive
-			aiTimer = System.currentTimeMillis() + 10;
+			aiTimer = System.currentTimeMillis() + rand.nextInt(20);
 		}
 		
 		//AI State - Retreat
@@ -185,7 +190,7 @@ public class AI extends Spaceship implements Cloneable {
 			keys.mousePos.rotateTo(pos.minus(target.getPosCentre()).getAngle());
 			
 			//Slow reaction retreat
-			aiTimer = System.currentTimeMillis() + 650;
+			aiTimer = System.currentTimeMillis() + 500 + rand.nextInt(350);
 		}
 		
 		super.update();
@@ -203,7 +208,10 @@ public class AI extends Spaceship implements Cloneable {
 			Spaceship target = (Spaceship)entities.get(i);
 			
 			//Don't target ourself, that would be silly
-			if( target == this || target.life == KILLED ) continue;
+			if( target == this || !target.active() ) continue;
+			
+			//Don't target friendlies
+			if( target.team.equals(this.team) ) continue;
 			
 			//Calculate distance. If it is less than the last target, keep this one instead
 			float dist = target.getPosCentre().minus(getPosCentre()).length();
