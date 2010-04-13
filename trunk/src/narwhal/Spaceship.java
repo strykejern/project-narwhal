@@ -27,7 +27,7 @@ public class Spaceship extends GameObject {
 	protected int 		      universeSize;
 	
 	//Engine
-	private float maxSpeed;
+	protected float maxSpeed;
 	private float acceleration;
 	private float turnRate;
 	private boolean autoBreaks;

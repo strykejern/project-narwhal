@@ -50,6 +50,9 @@ public abstract class GameObject extends Physics{
 	}
 	
 	public void drawCollision(Graphics g, Vector offset) {
+		boolean debug = false;
+		
+		if(!debug) return;
 		
 		//Always draw the image bounds
 		int w = image.getWidth();
