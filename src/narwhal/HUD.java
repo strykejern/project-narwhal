@@ -18,6 +18,7 @@
 //********************************************************************************************
 package narwhal;
 
+import gameEngine.Camera;
 import gameEngine.Vector;
 import gameEngine.Video;
 
@@ -42,16 +43,21 @@ public class HUD {
 	//HUD data
 	private Spaceship observer;
 	private ArrayList<Spaceship> tracking;
-	
+	private Camera viewPort;
 	
 	/**
 	 * JJ> Constructs a new HUD object which is the overlay that shows the player how much
 	 * life, shield and energy he has left. Also does radar and displays weapon.
 	 * @param observer This should be the player's ship or whatever other ship you want to follow
 	 */
-	public HUD( Spaceship observer ){
+	public HUD( Spaceship observer){
 		this.observer = observer;
 		tracking = new ArrayList<Spaceship>();
+	}
+	
+	
+	public void setCamera(Camera viewPort) {
+		this.viewPort = viewPort;		
 	}
 	
 	public void draw(Graphics2D g) {
@@ -130,14 +136,18 @@ public class HUD {
 	}
 	
 	//JJ> Draws one tracking polygon for the specified spaceship
+	private final Vector SCREEN_MID = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2);
 	private void drawRadar(Spaceship target, Graphics2D g) {
-		Vector screenMid = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2);
-		Vector diff = target.getPosCentre().minus(observer.getPosCentre());
 		
 		//No need to draw if we can see them
-		if (diff.x > -screenMid.x && diff.x < screenMid.x && diff.y > -screenMid.y && diff.y < screenMid.y) return;
+		if( viewPort.isInFrame(target) )
+		{
+			drawRadarStatus(g, target);
+			return;
+		}
 		
 		//Calculate arrow position
+		Vector diff = target.getPosCentre().minus(observer.getPosCentre());
 		int dist = (int)diff.length();
 		diff.setLength(150);
 		
@@ -147,9 +157,9 @@ public class HUD {
 		Vector botRight = botLeft.clone();
 		botLeft.rotateBy((float)-(Math.PI/32.0));
 		botRight.rotateBy((float)(Math.PI/32.0));
-		tip = screenMid.plus(tip);
-		botLeft = screenMid.plus(botLeft);
-		botRight = screenMid.plus(botRight);
+		tip = SCREEN_MID.plus(tip);
+		botLeft = SCREEN_MID.plus(botLeft);
+		botRight = SCREEN_MID.plus(botRight);
 		
 		//Good radars make difference from enemies and allies
 		if( observer.radarLevel >= 2 )
@@ -164,8 +174,7 @@ public class HUD {
 		int[] xPoints = new int[]{ tip.getX(), botLeft.getX(), botRight.getX() };
 		int[] yPoints = new int[]{ tip.getY(), botLeft.getY(), botRight.getY() };
 		g.fillPolygon(xPoints, yPoints, 3);
-		
-		
+				
 		//Draw distance to target (Radar level 2 or higher)
 		if( observer.radarLevel >= 2 )
 		{
@@ -182,6 +191,55 @@ public class HUD {
 			}
 			g.drawString(Integer.toString(dist), rightMost.getX()+20, rightMost.getY());
 		}		
+	}
+	
+	final static Color RADAR_LIFE = new Color(255, 0, 0, 128); 
+	final static Color RADAR_SHIELD = new Color(0, 0, 255, 128); 
+	final static Color RADAR_ENERGY = new Color(164, 100, 0, 128); 
+	final static Color RADAR_BACK = new Color(102, 102, 102, 64); 
+	private void drawRadarStatus(Graphics2D g, Spaceship target) {
+		
+		if( observer.radarLevel < 2 ) return;
+				
+		int height = target.getImage().getHeight();
+		int width = target.getImage().getWidth();
+		
+		//Calculate position
+		Vector diff = target.getPosCentre().minus(viewPort.getCameraPos());
+		int drawX = diff.getX() - width/2;
+		int drawY = diff.getY() - height/2 - height/4;
+		
+		//Shield
+		g.setColor(RADAR_BACK);
+		g.fillRoundRect(drawX, drawY, width, height/8, 25, 25);
+		
+		g.setColor( RADAR_SHIELD );
+		width = Math.max( 0, (int)((width/target.shieldMax) * target.shield) );
+		g.fillRoundRect(drawX, drawY, width, height/8, 25, 25);
+
+		//Life and Energy is only drawn on radar level 4 or higher
+		if( observer.radarLevel < 3 ) return;
+
+		//Life
+		width = target.getImage().getWidth();
+		drawY -= height/8;
+		g.setColor(RADAR_BACK);
+		g.fillRoundRect(drawX, drawY, width, height/8, 25, 25);
+		
+		g.setColor( RADAR_LIFE );
+		width = Math.max( 0, (int)((width/target.lifeMax) * target.life) );
+		g.fillRoundRect(drawX, drawY, width, height/8, 25, 25);
+
+		//Energy
+		width = target.getImage().getWidth();
+		drawY -= height/8;
+		g.setColor(RADAR_BACK);
+		g.fillRoundRect(drawX, drawY, width, height/8, 25, 25);
+		
+		g.setColor( RADAR_ENERGY );
+		width = Math.max( 0, (int)((width/target.energyMax) * target.energy) );
+		g.fillRoundRect(drawX, drawY, width, height/8, 25, 25);
+		
 	}
 	
 	//Depecrated old status bars, keep here for reference sake

@@ -25,6 +25,7 @@ Mouse button 2 - fire secondary
 Both		   - Use special (if any, such as jammer or interphased drive)
 
 RADAR
+level 0 - nothing
 level 1 - Show direction of opponent
-level 2 - show distance and incoming missiles, opponent hp
-level 3 - show opponent energy and shield, extra aim helper
+level 2 - show distance and incoming missiles, opponent shield
+level 3 - show opponent energy and life, extra aim helper

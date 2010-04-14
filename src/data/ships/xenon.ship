@@ -5,12 +5,12 @@
 
 //Defense
 [LIFE]:   400
-[SHIELD]: 200
+[SHIELD]: 250
 [ENERGY]: 400
 
 //Regeneration
 [EREGEN]: 2.00
-[SREGEN]: 0.15
+[SREGEN]: 0.2
 
 //Weapons
 [PRIMARY]: plasmablaster.wpn
