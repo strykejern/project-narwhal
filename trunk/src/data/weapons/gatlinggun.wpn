@@ -1,8 +1,8 @@
 //Gatling Gun Weapon
 [NAME]: Gatling Gun
-[DAMAGE]: 4
+[DAMAGE]: 2
 [COST]: 6
 [PARTICLE]: bullet.prt
 [COOLDOWN]: 3
-[SHIELD_MUL]: 90%
+[SHIELD_MUL]: 85%
 [LIFE_MUL]: 110%

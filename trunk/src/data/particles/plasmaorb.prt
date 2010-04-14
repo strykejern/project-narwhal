@@ -1,0 +1,35 @@
+//Plasma bullet particle
+[IMAGE]: greenimplode.png
+[TIME]: 120
+[SPEED]: 10
+[ATTACHED]: FALSE
+[FRIENDLY_FIRE]: FALSE
+
+//Size
+[SIZE]: 0.4
+[SIZE_ADD]: -0.01
+
+//Transparency
+[ALPHA]: 0.75
+[ALPHA_ADD]: 0
+
+//Rotation
+[ROTATE]: RANDOM
+[ROTATE_ADD]: 0.2
+
+//Direction
+[FACING]: 0
+[FACING_ADD]: 0
+
+//Sound effect
+[SOUND_SPAWN]: NONE
+[SOUND_END]: NONE
+
+//Ending conditions
+[CAN_COLLIDE]: TRUE
+[COLLISION_END]: TRUE
+
+//Spawn other particles on end
+[PARTICLE_END]: NONE
+[MULTISPAWN_END]: 0
+[END_FACING_ADD]: 0

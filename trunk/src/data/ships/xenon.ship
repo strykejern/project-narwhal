@@ -13,8 +13,8 @@
 [SREGEN]: 0.2
 
 //Weapons
-[PRIMARY]: plasmablaster.wpn
-[SECONDARY]: lasercannon.wpn
+[PRIMARY]: multilaser.wpn
+[SECONDARY]: disruptor.wpn
 
 //Special mods
 [RADAR]: 3
