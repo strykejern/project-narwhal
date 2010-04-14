@@ -1,0 +1,35 @@
+//Spawns 3 lasers and goes away
+[IMAGE]: bullet.png
+[TIME]: 1
+[SPEED]: 0
+[ATTACHED]: TRUE
+[FRIENDLY_FIRE]: FALSE
+
+//Size
+[SIZE]: 0.01
+[SIZE_ADD]: 0
+
+//Transparency
+[ALPHA]: 0.01
+[ALPHA_ADD]: 0
+
+//Rotation
+[ROTATE]: 0
+[ROTATE_ADD]: 0
+
+//Direction
+[FACING]: -0.25
+[FACING_ADD]: 0
+
+//Sound effect
+[SOUND_SPAWN]: NONE
+[SOUND_END]: NONE
+
+//Ending conditions
+[CAN_COLLIDE]: TRUE
+[COLLISION_END]: TRUE
+
+//Spawn other particles on end
+[PARTICLE_END]: laser.prt
+[MULTISPAWN_END]: 3
+[END_FACING_ADD]: 0.2

@@ -80,7 +80,7 @@ public class ParticleEngine {
 					if( prt.collidesWith(object) )
 					{
 						//Skip if no friendly fire
-						if( !prt.friendlyFire && (object instanceof Spaceship) && prt.team.equals(((Spaceship)object).team) ) continue;
+						if( !prt.template.friendlyFire && (object instanceof Spaceship) && prt.team.equals(((Spaceship)object).team) ) continue;
 												
 						//Damage them
 						if( prt.weapon != null && object instanceof Spaceship )
@@ -96,7 +96,7 @@ public class ParticleEngine {
 						}
 						
 						//Die away if told to
-						if( prt.collisionEnd ) prt.delete();
+						if( prt.template.collisionEnd ) prt.delete();
 					}
 				}
 			}
@@ -104,7 +104,7 @@ public class ParticleEngine {
 		}
 	}
 	
-	public boolean spawnParticle(String name, Vector position , float rotation, Physics spawner, Weapon damage) {
+	public boolean spawnParticle(String name, Vector position , float facing, Physics spawner, Weapon damage) {
 		
 		//Limit number of particles
 		if( particleList.size() > MAX_PARTICLES ) return false;
@@ -118,7 +118,7 @@ public class ParticleEngine {
 		}
 		
 		//Nope everything went well, add it to the active list!
-		particleList.add( new Particle(position, type, rotation, spawner, damage) );
+		particleList.add( new Particle(position, type, facing, spawner, damage) );
 		return true;
 	}
 
@@ -155,7 +155,10 @@ public class ParticleEngine {
 		public final boolean collisionEnd;		//End particle if it collides?
 		public final boolean canCollide;
 		
-		public final String particleEnd;
+		public final String particleEnd;		//Spawn particle if this one ends?
+		public final int    multiEndSpawn;		//How many do we spawn?
+		public final float  endFacingAdd;		//How much facing do we add for each one
+		
 		public final Sound soundEnd;
 		public final Sound soundSpawn;
 
@@ -177,13 +180,16 @@ public class ParticleEngine {
 			float speed = 0;
 			Sound soundSpawn = null;
 			Sound soundEnd = null;
-			String particleEnd = null;
 			boolean attached = false;
 			boolean collisionEnd = true;
 			boolean friendlyFire = true;
 			boolean canCollide = false;
 			boolean scaleToSpawner = false;
-			
+			int    multiEndSpawn = 1;
+			float  endFacingAdd = 0;
+
+			String particleEnd = null;
+
 			try
 			{
 				BufferedReader parse = new BufferedReader(
@@ -211,11 +217,16 @@ public class ParticleEngine {
 						if( image.getIconWidth() <= 0 ) Log.warning("Failed loading the specified image! (" + "/data/particles/" + parse(line) + ")");
 					}
 					else if(line.startsWith("[TIME]:"))  		time = Integer.parseInt(parse(line));
+					else if(line.startsWith("[SPEED]:"))  		speed = Float.parseFloat(parse(line));
+					else if(line.startsWith("[ATTACHED]:"))  	attached = Boolean.parseBoolean(parse(line));
+
 					else if(line.startsWith("[SIZE]:"))  		size = Float.parseFloat(parse(line));
 					else if(line.startsWith("[SIZE_ADD]:")) 	sizeAdd = Float.parseFloat(parse(line));
 					else if(line.startsWith("[SCALE_TO_SPAWNER]:"))  scaleToSpawner = Boolean.parseBoolean(parse(line));
+					
 					else if(line.startsWith("[ALPHA]:"))  		alpha = Float.parseFloat(parse(line));
 					else if(line.startsWith("[ALPHA_ADD]:"))	alphaAdd = Float.parseFloat(parse(line));
+					
 					else if(line.startsWith("[ROTATE]:"))  		
 					{
 						if(line.indexOf("RANDOM") == -1) angle = Float.parseFloat(parse(line));
@@ -228,14 +239,18 @@ public class ParticleEngine {
 						else							 facing = RANDOM_ANGLE;
 					}
 					else if(line.startsWith("[FACING_ADD]:")) 	facingAdd = Float.parseFloat(parse(line));
-					else if(line.startsWith("[SPEED]:"))  		speed = Float.parseFloat(parse(line));
-					else if(line.startsWith("[ATTACHED]:"))  	attached = Boolean.parseBoolean(parse(line));
+					
 					else if(line.startsWith("[SOUND_SPAWN]:"))  soundSpawn = Sound.loadSound( parse(line) );
 					else if(line.startsWith("[SOUND_END]:"))	soundEnd = Sound.loadSound( parse(line) );
-					else if(line.startsWith("[PARTICLE_END]:")) particleEnd = parse(line);
+
+					else if(line.startsWith("[CAN_COLLIDE]:"))  canCollide = Boolean.parseBoolean(parse(line));
 					else if(line.startsWith("[COLLISION_END]:")) collisionEnd = Boolean.parseBoolean(parse(line));
 					else if(line.startsWith("[FRIENDLY_FIRE]:")) friendlyFire = Boolean.parseBoolean(parse(line));
-					else if(line.startsWith("[CAN_COLLIDE]:"))  canCollide = Boolean.parseBoolean(parse(line));
+
+					else if(line.startsWith("[PARTICLE_END]:")) particleEnd = parse(line);
+					else if(line.startsWith("[MULTISPAWN_END]:")) multiEndSpawn = Integer.parseInt(parse(line));
+					else if(line.startsWith("[END_FACING_ADD]:")) endFacingAdd = Float.parseFloat(parse(line));
+
 					else Log.warning("Loading particle file ( "+ fileName +") unrecognized line - " + line);
 				}
 				if(image == null) throw new Exception("Missing a '[IMAGE]:' line describing which image to load!");
@@ -250,25 +265,32 @@ public class ParticleEngine {
 			//Now set these values to the actual final values, these can now never be changed!
 			this.image = image;
 			this.time = time;
+			this.speed = attached ? 0 : speed;
+			this.attached = attached;
+			
 			this.alpha = alpha;
 			this.alphaAdd = alphaAdd;
+			
 			this.angle = angle;
 			this.angleAdd = angleAdd;
+			
 			this.facing = facing;
 			this.facingAdd = facingAdd;
+			
 			this.size = size;
 			this.sizeAdd = sizeAdd;	
 			this.scaleToSpawner = scaleToSpawner;
-			this.speed = attached ? 0 : speed;
+			
 			this.soundSpawn = soundSpawn;	
 			this.soundEnd = soundEnd;
-			this.particleEnd = particleEnd;
+			
 			this.friendlyFire = friendlyFire;
 			this.collisionEnd = collisionEnd;
-			this.attached = attached;
 			this.canCollide = canCollide;
 			
-			Log.message("Loaded particle: " + fileName);
+			this.particleEnd = particleEnd;
+			this.multiEndSpawn = multiEndSpawn;
+			this.endFacingAdd = endFacingAdd;			
 		}
 		
 		/**
@@ -289,16 +311,13 @@ public class ParticleEngine {
 		private boolean requestDelete;		//Remove me?
 		private boolean onScreen;			//Was it on the screen this update?
 		public ArrayList<Spaceship> collisionList;	//List of all spaceship we have collided with
+		private ParticleTemplate template;
 		
 		private ImageIcon image;
-			
-		private String particleEnd;			//What particle to spawn on end
-		private Sound soundEnd;				//What sound to play on end
-		private boolean collisionEnd;
+
 		private Physics attached;
 
 		private String team;				//Who's side is it on?
-		private boolean friendlyFire;		//Does it collide with friendlies?
 
 		public Weapon weapon;
 
@@ -319,12 +338,19 @@ public class ParticleEngine {
 		private float facingAdd;
 		
 		
-		private Particle( Vector spawnPos, ParticleTemplate template, float rotation, Physics spawner, Weapon damage ) {
+		private Particle( Vector spawnPos, ParticleTemplate template, float baseFacing, Physics spawner, Weapon damage ) {
 
-			float baseFacing = 0;
-			if( spawner != null ) baseFacing = spawner.direction;
+			//We keep the same angle as the spawner
+			float baseRotation = 0;
+			if( spawner != null )
+			{
+				if(spawner instanceof Particle)
+					baseRotation = ((Particle)spawner).angle;
+				else baseRotation = spawner.direction;
+			}
 			
 			//Default stuff
+			this.template = template;
 			requestDelete = false;
 			onScreen = false;
 
@@ -348,9 +374,9 @@ public class ParticleEngine {
 			{
 				Random rand = new Random();
 				float randAngle = rand.nextFloat() + rand.nextInt(4);
-				angle = randAngle + rotation;
+				angle = randAngle + baseRotation;
 			}
-			else angle = template.angle + rotation;
+			else angle = template.angle + baseRotation;
 			angleAdd = template.angleAdd;
 
 			//Randomize facing?
@@ -367,8 +393,6 @@ public class ParticleEngine {
 			time = template.time;
 			alpha = template.alpha;
 			alphaAdd = template.alphaAdd;
-			particleEnd = template.particleEnd;
-			collisionEnd = template.collisionEnd;
 			
 			//Scale this particle initial size to spawner's size
 			size = template.size;
@@ -382,16 +406,17 @@ public class ParticleEngine {
 			weapon = damage;
 
 			//Set team
-			friendlyFire = template.friendlyFire;
 			if( spawner instanceof Spaceship )
 			{
 				Spaceship owner = (Spaceship)spawner;
 				team = owner.team;
 			}
+			else if( spawner instanceof Particle )
+			{
+				Particle owner = (Particle)spawner;
+				team = owner.team;
+			}
 			else	team = "NEUTRAL";
-			
-			//Prepare end sound
-			soundEnd = template.soundEnd;
 			
 			//Play spawn sound
 			if( template.soundSpawn != null ) template.soundSpawn.play3D(pos, viewPort.getCameraPos());
@@ -505,10 +530,18 @@ public class ParticleEngine {
 			onScreen = false;
 			
 			//Play end sound
-			if( soundEnd != null ) soundEnd.play3D( this.pos, viewPort.getCameraPos() );
+			if( template.soundEnd != null )template. soundEnd.play3D( this.pos, viewPort.getCameraPos() );
 			
 			//Spawn any end particle
-			if(particleEnd != null) spawnParticle( particleEnd, this.pos, this.angle, null, null );
+			if( template.particleEnd != null )
+			{
+				float prtFacing = this.facing;
+				for(int i = 0; i < template.multiEndSpawn; i++)
+				{
+					spawnParticle( template.particleEnd, this.pos, prtFacing, this, weapon );
+					prtFacing += template.endFacingAdd;
+				}
+			}
 		}
 	}
 }

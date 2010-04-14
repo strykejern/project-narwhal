@@ -1,0 +1,35 @@
+//Spawns 8 other plasma orbs and goes away
+[IMAGE]: greenimplode.png
+[TIME]: 1
+[SPEED]: 0
+[ATTACHED]: TRUE
+[FRIENDLY_FIRE]: FALSE
+
+//Size
+[SIZE]: 0.01
+[SIZE_ADD]: 0
+
+//Transparency
+[ALPHA]: 0.01
+[ALPHA_ADD]: 0
+
+//Rotation
+[ROTATE]: 0
+[ROTATE_ADD]: 0
+
+//Direction
+[FACING]: 0
+[FACING_ADD]: 0
+
+//Sound effect
+[SOUND_SPAWN]: NONE
+[SOUND_END]: NONE
+
+//Ending conditions
+[CAN_COLLIDE]: FALSE
+[COLLISION_END]: FALSE
+
+//Spawn other particles on end
+[PARTICLE_END]: plasmaorb.prt
+[MULTISPAWN_END]: 16
+[END_FACING_ADD]: 0.392699081

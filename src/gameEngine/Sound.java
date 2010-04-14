@@ -105,7 +105,6 @@ public class Sound
 	 * @param fileName Path to the file to be loaded
 	 */
 	protected Sound( String fileName ) {
-		Log.message("Loading sound - " + fileName);
 		
 		//Figure out if we are loading a ogg file
 		boolean oggFile = false;		
