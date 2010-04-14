@@ -16,6 +16,10 @@
 [ROTATE]: RANDOM
 [ROTATE_ADD]: 0.05
 
+//Direction
+[FACING]: RANDOM
+[FACING_ADD]: 0.05
+
 //Sound effect
 [SOUND_SPAWN]: explode.wav
 [SOUND_END]: NONE

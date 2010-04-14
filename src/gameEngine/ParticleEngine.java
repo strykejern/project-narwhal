@@ -1,6 +1,7 @@
 package gameEngine;
 
 import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
@@ -103,7 +104,7 @@ public class ParticleEngine {
 		}
 	}
 	
-	public boolean spawnParticle(String name, Vector position , float rotation, GameObject spawner) {
+	public boolean spawnParticle(String name, Vector position , float rotation, Physics spawner, Weapon damage) {
 		
 		//Limit number of particles
 		if( particleList.size() > MAX_PARTICLES ) return false;
@@ -117,7 +118,7 @@ public class ParticleEngine {
 		}
 		
 		//Nope everything went well, add it to the active list!
-		particleList.add( new Particle(position, type, rotation, spawner) );
+		particleList.add( new Particle(position, type, rotation, spawner, damage) );
 		return true;
 	}
 
@@ -136,7 +137,7 @@ public class ParticleEngine {
 		static final float RANDOM_ANGLE = Float.MIN_VALUE;
 		
 		//Particle variables
-		private ImageIcon image;
+		private final ImageIcon image;
 		public final int time;					//How many frames it has to live
 		public final float alpha;				//Transparency
 		public final float alphaAdd;
@@ -144,8 +145,12 @@ public class ParticleEngine {
 		public final float angleAdd;
 		public final float size;					//Size
 		public final float sizeAdd;	
+		public final boolean scaleToSpawner;	//Is as big the spawner initially
 		public final float speed;				//Movement
 		private final boolean attached;			//Attached to spawner?
+		
+		private final float facing;
+		private final float facingAdd;
 		
 		public final boolean collisionEnd;		//End particle if it collides?
 		public final boolean canCollide;
@@ -159,11 +164,14 @@ public class ParticleEngine {
 		public ParticleTemplate( String fileName ) {		
 			
 			//Temp variables set to default
+			ImageIcon image = null;
 			int time = 1;
 			float alpha = 1;
 			float alphaAdd = 0;
 			float angle = 0;
 			float angleAdd = 0;
+			float facing = 0;
+			float facingAdd = 0;
 			float size = 1;
 			float sizeAdd = 0;	
 			float speed = 0;
@@ -174,6 +182,7 @@ public class ParticleEngine {
 			boolean collisionEnd = true;
 			boolean friendlyFire = true;
 			boolean canCollide = false;
+			boolean scaleToSpawner = false;
 			
 			try
 			{
@@ -204,6 +213,7 @@ public class ParticleEngine {
 					else if(line.startsWith("[TIME]:"))  		time = Integer.parseInt(parse(line));
 					else if(line.startsWith("[SIZE]:"))  		size = Float.parseFloat(parse(line));
 					else if(line.startsWith("[SIZE_ADD]:")) 	sizeAdd = Float.parseFloat(parse(line));
+					else if(line.startsWith("[SCALE_TO_SPAWNER]:"))  scaleToSpawner = Boolean.parseBoolean(parse(line));
 					else if(line.startsWith("[ALPHA]:"))  		alpha = Float.parseFloat(parse(line));
 					else if(line.startsWith("[ALPHA_ADD]:"))	alphaAdd = Float.parseFloat(parse(line));
 					else if(line.startsWith("[ROTATE]:"))  		
@@ -212,6 +222,12 @@ public class ParticleEngine {
 						else							 angle = RANDOM_ANGLE;
 					}
 					else if(line.startsWith("[ROTATE_ADD]:")) 	angleAdd = Float.parseFloat(parse(line));
+					else if(line.startsWith("[FACING]:"))  		
+					{
+						if(line.indexOf("RANDOM") == -1) facing = Float.parseFloat(parse(line));
+						else							 facing = RANDOM_ANGLE;
+					}
+					else if(line.startsWith("[FACING_ADD]:")) 	facingAdd = Float.parseFloat(parse(line));
 					else if(line.startsWith("[SPEED]:"))  		speed = Float.parseFloat(parse(line));
 					else if(line.startsWith("[ATTACHED]:"))  	attached = Boolean.parseBoolean(parse(line));
 					else if(line.startsWith("[SOUND_SPAWN]:"))  soundSpawn = Sound.loadSound( parse(line) );
@@ -232,13 +248,17 @@ public class ParticleEngine {
 			}
 			
 			//Now set these values to the actual final values, these can now never be changed!
+			this.image = image;
 			this.time = time;
 			this.alpha = alpha;
 			this.alphaAdd = alphaAdd;
 			this.angle = angle;
 			this.angleAdd = angleAdd;
+			this.facing = facing;
+			this.facingAdd = facingAdd;
 			this.size = size;
 			this.sizeAdd = sizeAdd;	
+			this.scaleToSpawner = scaleToSpawner;
 			this.speed = attached ? 0 : speed;
 			this.soundSpawn = soundSpawn;	
 			this.soundEnd = soundEnd;
@@ -290,14 +310,21 @@ public class ParticleEngine {
 		private float angle;				//Rotation
 		private float angleAdd;
 		
+		private float facing;				//Direction we are supposed to move
+		
 		private float size;					//Size
 		private float sizeAdd;
 		
 		private float velocity;				//Movement
+		private float facingAdd;
 		
 		
-		private Particle( Vector spawnPos, ParticleTemplate template, float rotation, Physics spawner ) {
+		private Particle( Vector spawnPos, ParticleTemplate template, float rotation, Physics spawner, Weapon damage ) {
+
+			float baseFacing = 0;
+			if( spawner != null ) baseFacing = spawner.direction;
 			
+			//Default stuff
 			requestDelete = false;
 			onScreen = false;
 
@@ -314,6 +341,7 @@ public class ParticleEngine {
 				pos = spawnPos.clone();
 				velocity = template.speed;
 			}
+			facing = baseFacing + template.facing;
 			
 			//Randomize angle?
 			if(template.angle == ParticleTemplate.RANDOM_ANGLE) 
@@ -324,23 +352,41 @@ public class ParticleEngine {
 			}
 			else angle = template.angle + rotation;
 			angleAdd = template.angleAdd;
+
+			//Randomize facing?
+			if(template.facing == ParticleTemplate.RANDOM_ANGLE) 
+			{
+				Random rand = new Random();
+				float randFacing = rand.nextFloat() + rand.nextInt(4);
+				facing = randFacing + baseFacing;
+			}
+			else facing = template.facing + baseFacing;
+			facingAdd = template.facingAdd;
 			
 			image = template.image;			
 			time = template.time;
 			alpha = template.alpha;
 			alphaAdd = template.alphaAdd;
-			sizeAdd = template.sizeAdd;
-			size = template.size;
 			particleEnd = template.particleEnd;
 			collisionEnd = template.collisionEnd;
 			
+			//Scale this particle initial size to spawner's size
+			size = template.size;
+			if( spawner != null && template.scaleToSpawner )
+			{
+				size *= ((float)spawner.radius*2) / ((float)image.getIconWidth());
+			}
+			sizeAdd = template.sizeAdd;
+
+			//It might deal damage
+			weapon = damage;
+
 			//Set team
 			friendlyFire = template.friendlyFire;
 			if( spawner instanceof Spaceship )
 			{
 				Spaceship owner = (Spaceship)spawner;
 				team = owner.team;
-				weapon = owner.primary;		//TODO: wrong reference
 			}
 			else	team = "NEUTRAL";
 			
@@ -384,6 +430,7 @@ public class ParticleEngine {
 			angle += angleAdd;
 			size  += sizeAdd;
 			angle %= 2 * Math.PI;
+			facing += facingAdd;
 
 			//Mark particles for removal when their time is up or when alpha has made it invisible
 			time--;
@@ -394,7 +441,7 @@ public class ParticleEngine {
 			}
 			
 			//Movement
-			Vector move = new Vector(velocity, angle, true);
+			Vector move = new Vector(velocity, facing, true);
 			move.add(speed);
 			pos.add(move);
 			
@@ -438,7 +485,15 @@ public class ParticleEngine {
 			xs.scale(size, size);
 			
 			//Now draw it to screen after doing all render operations
-			g.drawImage( image.getImage(), xs, null);			
+			g.drawImage( image.getImage(), xs, null);
+			
+			//Draw collision circle
+			if( GameWindow.debugMode )
+			{
+				g.setColor(Color.YELLOW);
+				Vector drawPos = pos.minus(new Vector(radius, radius)).minus(offset);
+				g.drawOval( drawPos.getX(), drawPos.getY(), (int)radius*2, (int)radius*2);
+			}
 		}
 
 		/**
@@ -453,7 +508,7 @@ public class ParticleEngine {
 			if( soundEnd != null ) soundEnd.play3D( this.pos, viewPort.getCameraPos() );
 			
 			//Spawn any end particle
-			if(particleEnd != null) spawnParticle( particleEnd, this.pos, this.angle, null );
+			if(particleEnd != null) spawnParticle( particleEnd, this.pos, this.angle, null, null );
 		}
 	}
 }

@@ -4,12 +4,12 @@
 [SIZE]:   1.25
 
 //Defense
-[LIFE]:   100
-[SHIELD]: 75
-[ENERGY]: 500
+[LIFE]:   120
+[SHIELD]: 125
+[ENERGY]: 550
 
 //Regeneration
-[EREGEN]: 0.7
+[EREGEN]: 0.35
 [SREGEN]: 0.08
 
 //Weapons
@@ -18,3 +18,9 @@
 
 //Special mods
 [RADAR]: 1
+
+//Engines
+[MAX_SPEED]: 15
+[TURN_RATE]: 0.1
+[ACCELERATION]: 0.25
+

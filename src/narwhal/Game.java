@@ -89,6 +89,11 @@ public class Game {
 			hud.addTracking(enemy);		
         }
 
+        //Spawn the boss ship
+		Spaceship enemy = shipyard.spawnShip("xenon.ship", new Vector(600, 600), this, aiType.CONTROLLER, "MASTER");
+       	entities.add(enemy);
+		hud.addTracking(enemy);		
+
 		//Generate random planets
 		Random rand = new Random();
 		for(int x = 0; x < universeSize; x++)

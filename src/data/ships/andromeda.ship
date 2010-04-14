@@ -18,3 +18,8 @@
 
 //Special mods
 [RADAR]: 3
+
+//Engines
+[MAX_SPEED]: 10
+[TURN_RATE]: 0.075
+[ACCELERATION]: 1
