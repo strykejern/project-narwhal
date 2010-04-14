@@ -112,6 +112,27 @@ public class Shipyard {
 		return produced;
 	}
 
+	private int describeWeapon(Graphics2D g, int x, int y, Weapon wpn){
+		
+		//No weapon
+		if( wpn == null )
+		{
+			g.drawString("WEAPON SYSTEM: N/A", x, y);
+			return y;
+		}
+		
+		g.drawString("WEAPON SYSTEM: " + wpn.name, x, y);
+		y += font.getHeight(g);
+		g.drawString("Damage: " + wpn.damage, x, y);
+		y += font.getHeight(g);
+		g.drawString("Hull Penentration: " + (int)(wpn.lifeMul*100) + "%", x, y);
+		y += font.getHeight(g);
+		g.drawString("Shield Penentration: " + (int)(wpn.shieldMul*100) + "%", x, y);
+		y += font.getHeight(g);
+		g.drawString("Energy Cost: " + wpn.cost, x, y);
+		return y;
+	}
+	
 	public void draw(Graphics2D g) {
 		final int OFFSET_X = Video.getScreenWidth()/32;
 		final int OFFSET_Y = Video.getScreenHeight()/16;
@@ -136,15 +157,10 @@ public class Shipyard {
 
 		//Weapon description
 		font.set(g, FontType.FONT_NORMAL);
-		g.drawString("WEAPON SYSTEMS: " + ship.primary.name, x, y);
 		y += font.getHeight(g);
-		g.drawString("Damage: " + ship.primary.damage, x, y);
+		y = describeWeapon(g, x, y, ship.primary);
 		y += font.getHeight(g);
-		g.drawString("Hull Penentration: " + (int)(ship.primary.lifeMul*100) + "%", x, y);
-		y += font.getHeight(g);
-		g.drawString("Shield Penentration: " + (int)(ship.primary.shieldMul*100) + "%", x, y);
-		y += font.getHeight(g);
-		g.drawString("Energy Cost: " + ship.primary.cost, x, y);
+		y = describeWeapon(g, x, y, ship.secondary);
 		y += font.getHeight(g)*3;
 		
 		//Ship description
@@ -155,8 +171,31 @@ public class Shipyard {
 		g.drawString("Shields: " + ship.shieldMax, x, y);
 		y += font.getHeight(g);
 		g.drawString("Energy: " + ship.energyMax, x, y);
+		y += font.getHeight(g)*3;
+
+		//Ship modifications
+		g.drawString("SPECIAL MODIFICATIONS: ", x, y);
 		y += font.getHeight(g);
-		
+		if( ship.radarLevel == 0)      g.drawString("Radar: None (Level 0)", x, y);
+		else if( ship.radarLevel == 1) g.drawString("Radar: Binary Scanner (Level 1)", x, y);
+		else if( ship.radarLevel == 2) g.drawString("Radar: Neutron Scanner (Level 2)", x, y);
+		else                           g.drawString("Radar: Quantum Bit Array (Level " + ship.radarLevel + ")", x, y);
+		if( ship.autoBreaks )
+		{
+			y += font.getHeight(g);
+			g.drawString("Subspace Engine", x, y);
+		}
+		if( ship.strafe )
+		{
+			y += font.getHeight(g);
+			g.drawString("Side Thrusters", x, y);
+		}
+		if( ship.fastTurn )
+		{
+			y += font.getHeight(g);
+			g.drawString("Internal Nullifier", x, y);
+		}
+
 		//Do last, draw all buttons
         Iterator<Button> iterator = buttonList.values().iterator();
         while( iterator.hasNext() ) iterator.next().draw(g);

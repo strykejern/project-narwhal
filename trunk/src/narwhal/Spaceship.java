@@ -35,7 +35,7 @@ public class Spaceship extends GameObject {
 	//Engine
 	protected float maxSpeed;
 	private float acceleration;
-	private float turnRate;
+	private boolean fastTurn;
 	private boolean autoBreaks;
 	private float slow = 1.00f;				//Slow factor, 0.5f means 50% of normal speed
 	
@@ -75,9 +75,9 @@ public class Spaceship extends GameObject {
 		maxSpeed = blueprint.maxSpeed;
 		acceleration = blueprint.acceleration;
 		autoBreaks = blueprint.autoBreaks;
-		turnRate = blueprint.turnRate;
+		fastTurn = blueprint.fastTurn;
 		
-		radarLevel = 4;
+		radarLevel = blueprint.radarLevel;
 	
 		//Set our team
 		this.team = team.toUpperCase();
@@ -108,8 +108,8 @@ public class Spaceship extends GameObject {
 		}
 		
 		//Fire!
-		if( keys.mosButton2 ) 	   activateWeapon(primary);
-		if( keys.mosButton1 )      activateWeapon(secondary);
+		if( keys.mosButton1 ) 	   activateWeapon(primary);
+		else if( keys.mosButton2 )      activateWeapon(secondary);
 		
 		//Key move
 		if 		(keys.up) 	speed.add(new Vector(acceleration*slow, direction, true));
@@ -131,7 +131,7 @@ public class Spaceship extends GameObject {
 		float heading = keys.mouseUniversePos().minus(getPosCentre()).getAngle() - direction;
 		if 		(heading > Math.PI)  heading = -((2f * (float)Math.PI) - heading);
 		else if (heading < -Math.PI) heading =  ((2f * (float)Math.PI) + heading);
-		direction += heading * turnRate;
+		direction += heading * (fastTurn ? 1 : 0.1f);
 		image.setDirection( direction );
 		
 		if (speed.length() > maxSpeed*slow) speed.setLength(maxSpeed);

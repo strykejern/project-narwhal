@@ -1,10 +1,20 @@
+//General data
 [NAME]:   Raptor
 [FILE]:   raptor.png
 [SIZE]:   1.00
+
+//Defense
 [LIFE]:   75
 [SHIELD]: 60
 [ENERGY]: 400
+
+//Regeneration
 [EREGEN]: 1.2
 [SREGEN]: 0.18
-[PRIMARY]: lasercannon.wpn
+
+//Weapons
+[PRIMARY]: gatlinggun.wpn
 [SECONDARY]: lasercannon.wpn
+
+//Special mods
+[RADAR]: 2

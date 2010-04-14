@@ -1,10 +1,20 @@
+//General data
 [NAME]:   Andromeda
 [FILE]:   alien.png
 [SIZE]:   1.25
+
+//Defense
 [LIFE]:   50
 [SHIELD]: 110
 [ENERGY]: 300
+
+//Regeneration
 [EREGEN]: 1.5
 [SREGEN]: 0.15
+
+//Weapons
 [PRIMARY]: deathray.wpn
 [SECONDARY]: lasercannon.wpn
+
+//Special mods
+[RADAR]: 3

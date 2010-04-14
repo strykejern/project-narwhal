@@ -16,8 +16,9 @@ public class SpaceshipTemplate {
 	//Engine
 	public final float maxSpeed = 15f;
 	public final float acceleration = 0.25f;
-	public final float turnRate = 0.1f;
+	public final boolean fastTurn = false;
 	public final boolean autoBreaks = false;
+	public final boolean strafe = true;
 	public final float slow = 1.00f;				//Slow factor, 0.5f means 50% of normal speed
 	
 	//Weapon systems
@@ -30,6 +31,7 @@ public class SpaceshipTemplate {
 	public final float shieldRegen;
 	public final float energyMax;
 	public final float energyRegen;
+	public final short radarLevel;
 	
 	public SpaceshipTemplate( String fileName ) {		
 		float sizeMul = 1.00f;
@@ -44,6 +46,7 @@ public class SpaceshipTemplate {
 		Weapon primary = null;
 		Weapon secondary = null;
 		String name = null;
+		short radarLevel = 1;
 		
 		try
 		{
@@ -60,7 +63,7 @@ public class SpaceshipTemplate {
 				if(line == null) break;
 				
 				//Ignore comments
-				if( line.startsWith("//") ) continue;
+				if( line.startsWith("//") || line.equals("") ) continue;
 				
 				//Translate line into data
 				if     (line.startsWith("[NAME]:"))    name = parse(line);
@@ -73,6 +76,7 @@ public class SpaceshipTemplate {
 				else if(line.startsWith("[PRIMARY]:"))  primary = new Weapon(parse(line));
 				else if(line.startsWith("[SECONDARY]:"))  secondary = new Weapon(parse(line));
 				else if(line.startsWith("[SREGEN]:"))  shieldRegen = Float.parseFloat(parse(line));
+				else if(line.startsWith("[RADAR]:"))   radarLevel = Short.parseShort(parse(line));
 				else Log.warning("Loading ship file ( "+ fileName +") unrecognized line - " + line);
 				/*TODO: secondary weapon, engine and mods*/
 			}
@@ -101,6 +105,7 @@ public class SpaceshipTemplate {
 		this.primary = primary;
 		this.secondary = secondary;
 		this.name = name;
+		this.radarLevel = radarLevel;
 	}
 
 	/**
