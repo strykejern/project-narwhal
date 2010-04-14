@@ -1,6 +1,6 @@
 //A circle of damaging orbs around the ship
 [NAME]: Disruptor Device
-[DAMAGE]: 50
+[DAMAGE]: 35
 [COST]: 150
 [PARTICLE]: orbcircle.prt
 [COOLDOWN]: 75

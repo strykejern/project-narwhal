@@ -39,8 +39,13 @@ public class HUD {
 	private final static Color ENEMY 		= new Color(255, 0 , 0, 75 );
 	private final static Color FRIEND    	= new Color(0, 255 , 0, 75 );
 	private final static Color NEUTRAL   	= new Color(0, 0 , 255, 75 );
+	private final static Color RADAR_LIFE   = new Color(255, 0, 0, 128); 
+	private final static Color RADAR_SHIELD = new Color(0, 0, 255, 128); 
+	private final static Color RADAR_ENERGY = new Color(164, 100, 0, 128); 
+	private final static Color RADAR_BACK   = new Color(102, 102, 102, 64); 
 
 	//HUD data
+	private final static Vector SCREEN_MID = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2);
 	private Spaceship observer;
 	private ArrayList<Spaceship> tracking;
 	private Camera viewPort;
@@ -54,7 +59,6 @@ public class HUD {
 		this.observer = observer;
 		tracking = new ArrayList<Spaceship>();
 	}
-	
 	
 	public void setCamera(Camera viewPort) {
 		this.viewPort = viewPort;		
@@ -136,12 +140,12 @@ public class HUD {
 	}
 	
 	//JJ> Draws one tracking polygon for the specified spaceship
-	private final Vector SCREEN_MID = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2);
 	private void drawRadar(Spaceship target, Graphics2D g) {
 		
 		//No need to draw if we can see them
 		if( viewPort.isInFrame(target) )
 		{
+			//But we might need to draw their life, shield and energy bars
 			drawRadarStatus(g, target);
 			return;
 		}
@@ -193,10 +197,6 @@ public class HUD {
 		}		
 	}
 	
-	final static Color RADAR_LIFE = new Color(255, 0, 0, 128); 
-	final static Color RADAR_SHIELD = new Color(0, 0, 255, 128); 
-	final static Color RADAR_ENERGY = new Color(164, 100, 0, 128); 
-	final static Color RADAR_BACK = new Color(102, 102, 102, 64); 
 	private void drawRadarStatus(Graphics2D g, Spaceship target) {
 		
 		if( observer.radarLevel < 2 ) return;

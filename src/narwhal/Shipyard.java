@@ -111,6 +111,10 @@ public class Shipyard {
 				
 		return produced;
 	}
+	
+	public String[] getShipList(){
+		return shipList.keySet().toArray( new String[0] );
+	}
 
 	private int describeWeapon(Graphics2D g, int x, int y, Weapon wpn){
 		

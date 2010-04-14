@@ -39,6 +39,7 @@ public class Game {
 	private Camera					viewPort;		// Handles viewpoints and drawing
 	
 	public Game(Input keys, int universeSize, Shipyard shipyard){       	
+        Random rand = new Random();
        	
 		// Size of the universe
 		this.universeSize = universeSize;
@@ -66,7 +67,7 @@ public class Game {
 		hud = new HUD(player);
 
        	//Spawn allies
-        for(int i = 0; i < 3; i++)
+        for(int i = 0; i < 4; i++)
         {
 			Spaceship ally = shipyard.spawnShip("raptor.ship", new Vector(i*100, i*100), this, aiType.CONTROLLER, "GOOD");
 	       	entities.add(ally);
@@ -74,29 +75,15 @@ public class Game {
         }
         
        	//Spawn enemies
-        for(int i = 0; i < 3; i++)
+    	for(int i = 0; i < 4; i++)
         {
-			Spaceship enemy = shipyard.spawnShip("juggernaught.ship", new Vector(i*100, 0), this, aiType.BRUTE, "EVIL");
-//	       	entities.add(enemy);
-	//		hud.addTracking(enemy);		
-
-			enemy = shipyard.spawnShip("andromeda.ship", new Vector(i*300, i*100), this, aiType.CONTROLLER, "EVIL");
-	     //  	entities.add(enemy);
-		//	hud.addTracking(enemy);		
-
-			enemy = shipyard.spawnShip("rombeda.ship", new Vector(i*200, i*100), this, aiType.CONTROLLER, "EVIL");
+    		Spaceship enemy = shipyard.spawnShip("juggernaught.ship", new Vector(i*500, i*500), this, aiType.BRUTE, "EVIL");
 	       	entities.add(enemy);
 			hud.addTracking(enemy);		
         }
 
 
-        //Spawn the boss ship
-		Spaceship enemy = shipyard.spawnShip("xenon.ship", new Vector(600, 600), this, aiType.CONTROLLER, "MASTER");
-       	entities.add(enemy);
-		hud.addTracking(enemy);		
-
 		//Generate random planets
-		Random rand = new Random();
 		for(int x = 0; x < universeSize; x++)
 			for(int y = 0; y < universeSize; y++)
 			{

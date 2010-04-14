@@ -14,7 +14,7 @@
 
 //Weapons
 [PRIMARY]: gatlinggun.wpn
-[SECONDARY]: lasercannon.wpn
+[SECONDARY]: protonmissile.wpn
 
 //Special mods
 [RADAR]: 2
