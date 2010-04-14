@@ -220,7 +220,7 @@ public class Spaceship extends GameObject {
 		
 		//Spawn in front of ship
 		Vector spawnPos = getPosCentre();
-		spawnPos.add(new Vector(radius*2, direction, true));
+		spawnPos.add(new Vector(radius, direction, true));
 
 		//Spawn particle effect
 		particleEngine.spawnParticle( wpn.particle, spawnPos, direction, this, wpn );
