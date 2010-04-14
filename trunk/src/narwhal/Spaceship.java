@@ -35,7 +35,7 @@ public class Spaceship extends GameObject {
 	//Engine
 	protected float maxSpeed;
 	private float acceleration;
-	private boolean fastTurn;
+	private float turnRate;
 	private boolean autoBreaks;
 	private float slow = 1.00f;				//Slow factor, 0.5f means 50% of normal speed
 	
@@ -75,7 +75,7 @@ public class Spaceship extends GameObject {
 		maxSpeed = blueprint.maxSpeed;
 		acceleration = blueprint.acceleration;
 		autoBreaks = blueprint.autoBreaks;
-		fastTurn = blueprint.fastTurn;
+		turnRate = blueprint.turnRate;
 		
 		radarLevel = blueprint.radarLevel;
 	
@@ -131,7 +131,7 @@ public class Spaceship extends GameObject {
 		float heading = keys.mouseUniversePos().minus(getPosCentre()).getAngle() - direction;
 		if 		(heading > Math.PI)  heading = -((2f * (float)Math.PI) - heading);
 		else if (heading < -Math.PI) heading =  ((2f * (float)Math.PI) + heading);
-		direction += heading * (fastTurn ? 1 : 0.1f);
+		direction += heading * turnRate;
 		image.setDirection( direction );
 		
 		if (speed.length() > maxSpeed*slow) speed.setLength(maxSpeed);
@@ -179,7 +179,7 @@ public class Spaceship extends GameObject {
 				shield = 0;
 				
 				//Spawn a explosion effect
-				particleEngine.spawnParticle( "explosion.prt", getPosCentre(), direction, this );
+				particleEngine.spawnParticle( "explosion.prt", getPosCentre(), direction, this, null );
 			}
 			else
 			{
@@ -187,7 +187,7 @@ public class Spaceship extends GameObject {
 				shield -= shieldDmg;
 				
 				//Spawn a shield effect
-				particleEngine.spawnParticle( "shield.prt", getPosCentre(), direction, this );
+				particleEngine.spawnParticle( "shield.prt", getPosCentre(), direction, this, null );
 				return;
 			}
 		}
@@ -223,7 +223,7 @@ public class Spaceship extends GameObject {
 		spawnPos.add(new Vector(radius*2, direction, true));
 
 		//Spawn particle effect
-		particleEngine.spawnParticle( wpn.particle, spawnPos, direction, this );
+		particleEngine.spawnParticle( wpn.particle, spawnPos, direction, this, wpn );
 	}
 	
 	public Image2D getImage(){
@@ -236,8 +236,8 @@ public class Spaceship extends GameObject {
 		if( !active() ) return;
 		
 		//Spawn particle effect
-		particleEngine.spawnParticle( "bigexplosion.prt", getPosCentre(), direction, this );
-		for(int i = 0; i < 4; i++) particleEngine.spawnParticle( "explosion.prt", getPosCentre(), direction, this );
+		particleEngine.spawnParticle( "bigexplosion.prt", getPosCentre(), direction, this, null );
+		for(int i = 0; i < 4; i++) particleEngine.spawnParticle( "explosion.prt", getPosCentre(), direction, this, null );
 		
 		//Mark as dead so that it gets removed in the next update
 		life = KILLED;

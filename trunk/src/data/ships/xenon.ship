@@ -1,0 +1,25 @@
+//General data
+[NAME]:   Xenon
+[FILE]:   bigship.png
+[SIZE]:   3
+
+//Defense
+[LIFE]:   400
+[SHIELD]: 200
+[ENERGY]: 400
+
+//Regeneration
+[EREGEN]: 2.00
+[SREGEN]: 0.15
+
+//Weapons
+[PRIMARY]: plasmablaster.wpn
+[SECONDARY]: lasercannon.wpn
+
+//Special mods
+[RADAR]: 3
+[NULLIFIER]: TRUE
+
+//Engines
+[MAX_SPEED]: 7.5
+[TURN_RATE]: 0.030

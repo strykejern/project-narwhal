@@ -78,7 +78,7 @@ public class AI extends Spaceship {
 	}
 		
 	public void update() {		
-
+		
 		//Don't do AI
 		if( state == aiState.DISABLED || aiTimer > System.currentTimeMillis() )
 		{

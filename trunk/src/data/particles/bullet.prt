@@ -13,8 +13,12 @@
 [ALPHA_ADD]: 0
 
 //Rotation
-[ROTATE]: 0
-[ROTATE_ADD]: 0
+[ROTATE]: RANDOM
+[ROTATE_ADD]: 0.1
+
+//Direction
+[FACING]: 0
+[FACING_ADD]: 0
 
 //Sound effect
 [SOUND_SPAWN]: gun.wav

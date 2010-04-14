@@ -2,11 +2,12 @@
 [IMAGE]: shield.png
 [TIME]: 100
 [SPEED]: 0
-[ATTACHED]: True
+[ATTACHED]: TRUE
 
 //Size
 [SIZE]: 1.25
 [SIZE_ADD]: 0
+[SCALE_TO_SPAWNER]: TRUE
 
 //Transparency
 [ALPHA]: 0.7

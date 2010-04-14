@@ -183,17 +183,12 @@ public class Shipyard {
 		if( ship.autoBreaks )
 		{
 			y += font.getHeight(g);
-			g.drawString("Subspace Engine", x, y);
+			g.drawString("Internal Nullifier", x, y);
 		}
 		if( ship.strafe )
 		{
 			y += font.getHeight(g);
 			g.drawString("Side Thrusters", x, y);
-		}
-		if( ship.fastTurn )
-		{
-			y += font.getHeight(g);
-			g.drawString("Internal Nullifier", x, y);
 		}
 
 		//Do last, draw all buttons

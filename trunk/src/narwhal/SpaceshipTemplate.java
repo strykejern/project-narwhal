@@ -14,10 +14,10 @@ public class SpaceshipTemplate {
 	public final Image2D image;
 
 	//Engine
-	public final float maxSpeed = 15f;
-	public final float acceleration = 0.25f;
-	public final boolean fastTurn = false;
-	public final boolean autoBreaks = false;
+	public final float maxSpeed;
+	public final float acceleration;
+	public final float turnRate;
+	public final boolean autoBreaks;
 	public final boolean strafe = true;
 	public final float slow = 1.00f;				//Slow factor, 0.5f means 50% of normal speed
 	
@@ -35,18 +35,26 @@ public class SpaceshipTemplate {
 	
 	public SpaceshipTemplate( String fileName ) {		
 		float sizeMul = 1.00f;
-		
+				
 		//Set defaults
+		String name = null;
+		Image2D image = null;
+
 		float lifeMax = 100;
 		float shieldMax = 200;
 		float energyMax = 500;
 		float shieldRegen = 0;
 		float energyRegen = 0;
-		Image2D image = null;
+		
 		Weapon primary = null;
 		Weapon secondary = null;
-		String name = null;
+		
 		short radarLevel = 1;
+		boolean autoBreaks = false;
+		
+		float turnRate = 0.1f;
+		float maxSpeed = 15f;
+		float acceleration = 0.25f;
 		
 		try
 		{
@@ -69,16 +77,24 @@ public class SpaceshipTemplate {
 				if     (line.startsWith("[NAME]:"))    name = parse(line);
 				else if(line.startsWith("[FILE]:"))    image = new Image2D("/data/ships/" + parse(line));
 				else if(line.startsWith("[SIZE]:"))    sizeMul = Float.parseFloat(parse(line));
+				
 				else if(line.startsWith("[LIFE]:"))    lifeMax = Float.parseFloat(parse(line));
 				else if(line.startsWith("[SHIELD]:"))  shieldMax = Float.parseFloat(parse(line));
+				else if(line.startsWith("[SREGEN]:"))  shieldRegen = Float.parseFloat(parse(line));
 				else if(line.startsWith("[ENERGY]:"))  energyMax = Float.parseFloat(parse(line));
 				else if(line.startsWith("[EREGEN]:"))  energyRegen = Float.parseFloat(parse(line));
+				
 				else if(line.startsWith("[PRIMARY]:"))  primary = new Weapon(parse(line));
 				else if(line.startsWith("[SECONDARY]:"))  secondary = new Weapon(parse(line));
-				else if(line.startsWith("[SREGEN]:"))  shieldRegen = Float.parseFloat(parse(line));
+				
 				else if(line.startsWith("[RADAR]:"))   radarLevel = Short.parseShort(parse(line));
+				else if(line.startsWith("[NULLIFIER]:")) autoBreaks = Boolean.parseBoolean(parse(line));
+				
+				else if(line.startsWith("[TURN_RATE]:")) turnRate = Float.parseFloat(parse(line));
+				else if(line.startsWith("[MAX_SPEED]:")) maxSpeed = Float.parseFloat(parse(line));
+				
+				else if(line.startsWith("[ACCELERATION]:")) acceleration = Float.parseFloat(parse(line));
 				else Log.warning("Loading ship file ( "+ fileName +") unrecognized line - " + line);
-				/*TODO: secondary weapon, engine and mods*/
 			}
 			if(image == null) throw new Exception("Missing a '[FILE]:' line describing which image to load!");
 		}
@@ -96,16 +112,24 @@ public class SpaceshipTemplate {
 		}
 		
 		//Now set the temp variables to final
+		this.name = name;
+		this.image = image;
+		
 		this.lifeMax = lifeMax;
 		this.shieldMax = shieldMax;
 		this.energyMax = energyMax;
 		this.shieldRegen = shieldRegen;
 		this.energyRegen = energyRegen;
-		this.image = image;
+		
 		this.primary = primary;
 		this.secondary = secondary;
-		this.name = name;
+		
 		this.radarLevel = radarLevel;
+		this.autoBreaks = autoBreaks;
+		
+		this.turnRate = turnRate;
+		this.maxSpeed = maxSpeed;
+		this.acceleration = acceleration;
 	}
 
 	/**

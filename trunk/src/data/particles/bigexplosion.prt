@@ -5,8 +5,9 @@
 [ATTACHED]: False
 
 //Size
-[SIZE]: 0.25
+[SIZE]: 0.3
 [SIZE_ADD]: 0.04
+[SCALE_TO_SPAWNER]: TRUE
 
 //Transparency
 [ALPHA]: 0.9
@@ -15,6 +16,10 @@
 //Rotation
 [ROTATE]: RANDOM
 [ROTATE_ADD]: 0.1
+
+//Direction
+[FACING]: 0
+[FACING_ADD]: 0
 
 //Sound effect
 [SOUND_SPAWN]: bigexplode.wav

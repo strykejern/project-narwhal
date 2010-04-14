@@ -49,10 +49,8 @@ public abstract class GameObject extends Physics{
 		image.draw(g, drawX(offset), drawY(offset));
 	}
 	
-	public void drawCollision(Graphics g, Vector offset) {
-		boolean debug = false;
-		
-		if(!debug) return;
+	public void drawCollision(Graphics g, Vector offset) {		
+		if( !GameWindow.debugMode ) return;
 		
 		//Always draw the image bounds
 		int w = image.getWidth();
@@ -67,7 +65,7 @@ public abstract class GameObject extends Physics{
 			h = size.getY();
 			Vector drawPos = getPosCentre().minus(new Vector(radius, radius)).minus(offset);
 			g.setColor(Color.RED);
-			g.drawOval(drawPos.getX(), drawPos.getY(), w, h);
+			g.drawOval(drawPos.getX(), drawPos.getY(), (int)radius*2, (int)radius*2);
 		}
 	}
 	

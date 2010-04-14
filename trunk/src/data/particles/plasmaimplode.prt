@@ -14,10 +14,14 @@
 
 //Rotation
 [ROTATE]: RANDOM
-[ROTATE_ADD]: 0.1
+[ROTATE_ADD]: 0.2
+
+//Direction
+[FACING]: 0
+[FACING_ADD]: 0
 
 //Sound effect
-[SOUND_SPAWN]: torpedo.wav
+[SOUND_SPAWN]: implode.wav
 [SOUND_END]: NONE
 
 //Ending conditions

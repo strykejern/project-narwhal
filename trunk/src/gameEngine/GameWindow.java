@@ -48,6 +48,7 @@ import narwhal.Shipyard;
 public class GameWindow extends JPanel implements Runnable, KeyListener, MouseListener {
 	private static final long serialVersionUID = 1L;
 	private static final int TARGET_FPS = 1000 / 60;		//60 times per second
+	public static boolean debugMode = false;
 	private JFrame frame;
 	private Input keys;
 	
