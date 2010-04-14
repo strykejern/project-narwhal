@@ -21,7 +21,8 @@ public class SpaceshipTemplate {
 	public final float slow = 1.00f;				//Slow factor, 0.5f means 50% of normal speed
 	
 	//Weapon systems
-	public final Weapon weapon;
+	public final Weapon primary;
+	public final Weapon secondary;
 	
 	//Defensive systems
 	public final float lifeMax;
@@ -40,7 +41,8 @@ public class SpaceshipTemplate {
 		float shieldRegen = 0;
 		float energyRegen = 0;
 		Image2D image = null;
-		Weapon weapon = null;
+		Weapon primary = null;
+		Weapon secondary = null;
 		String name = null;
 		
 		try
@@ -68,7 +70,8 @@ public class SpaceshipTemplate {
 				else if(line.startsWith("[SHIELD]:"))  shieldMax = Float.parseFloat(parse(line));
 				else if(line.startsWith("[ENERGY]:"))  energyMax = Float.parseFloat(parse(line));
 				else if(line.startsWith("[EREGEN]:"))  energyRegen = Float.parseFloat(parse(line));
-				else if(line.startsWith("[WEAPON]:"))  weapon = new Weapon(parse(line));
+				else if(line.startsWith("[PRIMARY]:"))  primary = new Weapon(parse(line));
+				else if(line.startsWith("[SECONDARY]:"))  secondary = new Weapon(parse(line));
 				else if(line.startsWith("[SREGEN]:"))  shieldRegen = Float.parseFloat(parse(line));
 				else Log.warning("Loading ship file ( "+ fileName +") unrecognized line - " + line);
 				/*TODO: secondary weapon, engine and mods*/
@@ -95,7 +98,8 @@ public class SpaceshipTemplate {
 		this.shieldRegen = shieldRegen;
 		this.energyRegen = energyRegen;
 		this.image = image;
-		this.weapon = weapon;
+		this.primary = primary;
+		this.secondary = secondary;
 		this.name = name;
 	}
 

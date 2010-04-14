@@ -1,0 +1,8 @@
+//Plasma cannon Weapon
+[NAME]: Plasma Cannon
+[DAMAGE]: 85
+[COST]: 110
+[PARTICLE]: plasma.prt
+[COOLDOWN]: 50
+[SHIELD_MUL]: 100%
+[LIFE_MUL]: 100%

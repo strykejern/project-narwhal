@@ -6,4 +6,5 @@
 [ENERGY]: 400
 [EREGEN]: 1.2
 [SREGEN]: 0.18
-[WEAPON]: lasercannon.wpn
+[PRIMARY]: lasercannon.wpn
+[SECONDARY]: lasercannon.wpn

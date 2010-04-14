@@ -40,7 +40,8 @@ public class Spaceship extends GameObject {
 	private float slow = 1.00f;				//Slow factor, 0.5f means 50% of normal speed
 	
 	//Weapon systems
-	public Weapon weapon;
+	public Weapon primary;
+	public Weapon secondary;
 	private int cooldown;					//Global ship cooldown
 	
 	//Defensive systems
@@ -68,7 +69,8 @@ public class Spaceship extends GameObject {
 		energy = energyMax = blueprint.energyMax;
 		energyRegen = blueprint.energyRegen;
 		
-		weapon = blueprint.weapon;
+		primary = blueprint.primary;
+		secondary = blueprint.secondary;
 
 		maxSpeed = blueprint.maxSpeed;
 		acceleration = blueprint.acceleration;
@@ -106,7 +108,8 @@ public class Spaceship extends GameObject {
 		}
 		
 		//Fire!
-		if( keys.mosButton1 ) activateWeapon(weapon);
+		if( keys.mosButton2 ) 	   activateWeapon(primary);
+		if( keys.mosButton1 )      activateWeapon(secondary);
 		
 		//Key move
 		if 		(keys.up) 	speed.add(new Vector(acceleration*slow, direction, true));
@@ -201,6 +204,9 @@ public class Spaceship extends GameObject {
 	}
 	
 	public void activateWeapon(Weapon wpn) {
+		
+		//Non-functional system?
+		if( wpn == null ) return;
 		
 		//Enough energy to activate weapon?
 		if( wpn.cost > energy ) return;

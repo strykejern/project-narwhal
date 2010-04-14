@@ -1,0 +1,28 @@
+//Plasma bullet particle
+[IMAGE]: greenimplode.png
+[TIME]: 40
+[SPEED]: 0
+[ATTACHED]: False
+
+//Size
+[SIZE]: 1.00
+[SIZE_ADD]: -0.02
+
+//Transparency
+[ALPHA]: 1.00
+[ALPHA_ADD]: -0.05
+
+//Rotation
+[ROTATE]: RANDOM
+[ROTATE_ADD]: 0.1
+
+//Sound effect
+[SOUND_SPAWN]: torpedo.wav
+[SOUND_END]: NONE
+
+//Ending conditions
+[CAN_COLLIDE]: FALSE
+[COLLISION_END]: FALSE
+[PARTICLE_END]: NONE
+
+[FRIENDLY_FIRE]: FALSE
