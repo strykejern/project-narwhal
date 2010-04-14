@@ -23,7 +23,7 @@
 
 //Sound effect
 [SOUND_SPAWN]: NONE
-[SOUND_END]: NONE
+[SOUND_END]: implode.wav
 
 //Ending conditions
 [CAN_COLLIDE]: FALSE
