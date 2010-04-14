@@ -1,6 +1,6 @@
 //Laser cannon Weapon
 [NAME]: Multi-Laser Array
-[DAMAGE]: 20
+[DAMAGE]: 30
 [COST]: 85
 [PARTICLE]: multilaser.prt
 [COOLDOWN]: 10

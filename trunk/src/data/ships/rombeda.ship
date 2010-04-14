@@ -1,0 +1,26 @@
+//General data
+[NAME]:   Rombeda
+[FILE]:   ufo.png
+[SIZE]:   1
+
+//Defense
+[LIFE]:   60
+[SHIELD]: 50
+[ENERGY]: 125
+
+//Regeneration
+[EREGEN]: 2.00
+[SREGEN]: 1.5
+
+//Weapons
+[PRIMARY]: shockcannon.wpn
+[SECONDARY]: multilaser.wpn
+
+//Special mods
+[RADAR]: 3
+[NULLIFIER]: TRUE
+
+//Engines
+[MAX_SPEED]: 20
+[TURN_RATE]: 1
+[ACCELERATION]: 1.25

@@ -66,7 +66,7 @@ public class Game {
 		hud = new HUD(player);
 
        	//Spawn allies
-        for(int i = 0; i < 2; i++)
+        for(int i = 0; i < 3; i++)
         {
 			Spaceship ally = shipyard.spawnShip("raptor.ship", new Vector(i*100, i*100), this, aiType.CONTROLLER, "GOOD");
 	       	entities.add(ally);
@@ -77,17 +77,18 @@ public class Game {
         for(int i = 0; i < 3; i++)
         {
 			Spaceship enemy = shipyard.spawnShip("juggernaught.ship", new Vector(i*100, 0), this, aiType.BRUTE, "EVIL");
+//	       	entities.add(enemy);
+	//		hud.addTracking(enemy);		
+
+			enemy = shipyard.spawnShip("andromeda.ship", new Vector(i*300, i*100), this, aiType.CONTROLLER, "EVIL");
+	     //  	entities.add(enemy);
+		//	hud.addTracking(enemy);		
+
+			enemy = shipyard.spawnShip("rombeda.ship", new Vector(i*200, i*100), this, aiType.CONTROLLER, "EVIL");
 	       	entities.add(enemy);
 			hud.addTracking(enemy);		
         }
 
-       	//Spawn the weird Andromeda ships
-        for(int i = 0; i < 3; i++)
-        {
-			Spaceship enemy = shipyard.spawnShip("andromeda.ship", new Vector(0, i*100), this, aiType.CONTROLLER, "ANDROMEDA");
-	       	entities.add(enemy);
-			hud.addTracking(enemy);		
-        }
 
         //Spawn the boss ship
 		Spaceship enemy = shipyard.spawnShip("xenon.ship", new Vector(600, 600), this, aiType.CONTROLLER, "MASTER");
