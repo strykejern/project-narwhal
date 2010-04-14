@@ -128,7 +128,7 @@ public class Game {
 			if(entity instanceof Spaceship)
 			{
 				Spaceship ship = ((Spaceship) entity);
-				if(ship.life == Spaceship.KILLED)
+				if( !ship.active() )
 				{
 					entities.remove(ship);
 					continue;
