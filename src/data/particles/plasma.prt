@@ -1,0 +1,28 @@
+//Plasma bullet particle
+[IMAGE]: plasma.png
+[TIME]: 75
+[SPEED]: 6
+[ATTACHED]: False
+
+//Size
+[SIZE]: 0.25
+[SIZE_ADD]: 0.012
+
+//Transparency
+[ALPHA]: 0.35
+[ALPHA_ADD]: 0.02
+
+//Rotation
+[ROTATE]: 0
+[ROTATE_ADD]: 0
+
+//Sound effect
+[SOUND_SPAWN]: torpedo.wav
+[SOUND_END]: NONE
+
+//Ending conditions
+[CAN_COLLIDE]: TRUE
+[COLLISION_END]: TRUE
+[PARTICLE_END]: plasmaimplode.prt
+
+[FRIENDLY_FIRE]: False

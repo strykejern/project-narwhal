@@ -136,15 +136,15 @@ public class Shipyard {
 
 		//Weapon description
 		font.set(g, FontType.FONT_NORMAL);
-		g.drawString("WEAPON SYSTEMS: " + ship.weapon.name, x, y);
+		g.drawString("WEAPON SYSTEMS: " + ship.primary.name, x, y);
 		y += font.getHeight(g);
-		g.drawString("Damage: " + ship.weapon.damage, x, y);
+		g.drawString("Damage: " + ship.primary.damage, x, y);
 		y += font.getHeight(g);
-		g.drawString("Hull Penentration: " + (int)(ship.weapon.lifeMul*100) + "%", x, y);
+		g.drawString("Hull Penentration: " + (int)(ship.primary.lifeMul*100) + "%", x, y);
 		y += font.getHeight(g);
-		g.drawString("Shield Penentration: " + (int)(ship.weapon.shieldMul*100) + "%", x, y);
+		g.drawString("Shield Penentration: " + (int)(ship.primary.shieldMul*100) + "%", x, y);
 		y += font.getHeight(g);
-		g.drawString("Energy Cost: " + ship.weapon.cost, x, y);
+		g.drawString("Energy Cost: " + ship.primary.cost, x, y);
 		y += font.getHeight(g)*3;
 		
 		//Ship description

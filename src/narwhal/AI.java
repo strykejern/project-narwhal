@@ -127,7 +127,10 @@ public class AI extends Spaceship {
 		{
 			target = getClosestTarget();
 		}		
-
+		
+		//Reset any controllers first
+		resetInput();
+		
 		//Calculate distance from target
 		float fDistance = target.getPosCentre().minus(getPosCentre()).length();
 
@@ -140,15 +143,12 @@ public class AI extends Spaceship {
 			//Move towards target, but slow down once we are close enough
 			if( fDistance < 1200 && speed.length() > maxSpeed*0.66f )
 			{
-				keys.up = false;
 				keys.down = true;
 			}
 			else
 			{
 				keys.up = true;
-				keys.down = false;
 			}
-			keys.mosButton1 = false;
 			
 			//Focus on target
 			keys.mousePos = target.getPosCentre();
@@ -164,9 +164,11 @@ public class AI extends Spaceship {
 			if(fDistance > 600) state = aiState.INTERCEPT;
 
 			//Stand still and shoot
-			keys.up = false;
 			keys.down = true;
-			keys.mosButton1 = true;
+			
+			//Pick either weapon, 50%
+			if( rand.nextBoolean() ) keys.mosButton1 = true;
+			else 					 keys.mosButton2 = true;
 			
 			//Focus on target
 			keys.mousePos = target.getPosCentre();
@@ -184,6 +186,9 @@ public class AI extends Spaceship {
 
 		//We change targets very often, depending on the situation
 		target = getClosestTarget();
+
+		//Reset any controllers first
+		resetInput();
 
 		//Calculate distance from target
 		Vector vDistance = target.getPosCentre().minus(getPosCentre());
@@ -209,15 +214,12 @@ public class AI extends Spaceship {
 			//Move towards target, but slow down once we are close enough
 			if( fDistance < 1200 && speed.length() > maxSpeed/2 )
 			{
-				keys.up = false;
 				keys.down = true;
 			}
 			else
 			{
 				keys.up = true;
-				keys.down = false;
 			}
-			keys.mosButton1 = false;
 			
 			//Focus on target
 			keys.mousePos = target.getPosCentre();
@@ -233,9 +235,11 @@ public class AI extends Spaceship {
 			if(fDistance > 600) state = aiState.INTERCEPT;
 
 			//Stand still and shoot
-			keys.up = false;
 			keys.down = true;
-			keys.mosButton1 = true;
+
+			//Pick either weapon, 50%
+			if( rand.nextBoolean() ) keys.mosButton1 = true;
+			else 					 keys.mosButton2 = true;
 			
 			//Focus on target
 			keys.mousePos = target.getPosCentre();
@@ -263,14 +267,11 @@ public class AI extends Spaceship {
 			if(fDistance < 500)
 			{
 				keys.up = true;
-				keys.down = false;
 			}
 			else
 			{
-				keys.up = false;
 				keys.down = true;
 			}
-			keys.mosButton1 = false;
 			
 			//Opposite direction of target
 			//not exactly, but it will do for now
@@ -280,6 +281,17 @@ public class AI extends Spaceship {
 			//Slow reaction retreat
 			aiTimer = System.currentTimeMillis() + 500 + rand.nextInt(350);
 		}		
+	}
+	
+	private void resetInput() {
+		keys.down = false;
+		keys.left = false;
+		keys.left = false;
+		keys.right = false;
+		keys.up = false;
+		keys.mosButton1 = false;
+		keys.mosButton2 = false;
+		keys.mosButton3 = false;
 	}
 	
 	/**

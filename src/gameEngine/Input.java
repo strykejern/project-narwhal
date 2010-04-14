@@ -49,9 +49,10 @@ public class Input {
 	}
 
 	public void update(MouseEvent key, boolean pressed){
-		if(key.getButton() == MouseEvent.BUTTON1) mosButton1 = pressed;
-		if(key.getButton() == MouseEvent.BUTTON2) mosButton2 = pressed;
-		if(key.getButton() == MouseEvent.BUTTON3) mosButton3 = pressed;
+		int code = key.getButton();
+		if(code == MouseEvent.BUTTON1) mosButton1 = pressed;
+		if(code == MouseEvent.BUTTON3) mosButton2 = pressed;
+		//if(key.getButton() == MouseEvent.BUTTON2) mosButton3 = pressed;		//mouse wheel pressed
 	}
 
 	public void update(Point mouse){

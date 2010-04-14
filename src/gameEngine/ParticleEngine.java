@@ -340,7 +340,7 @@ public class ParticleEngine {
 			{
 				Spaceship owner = (Spaceship)spawner;
 				team = owner.team;
-				weapon = owner.weapon;
+				weapon = owner.primary;		//TODO: wrong reference
 			}
 			else	team = "NEUTRAL";
 			
