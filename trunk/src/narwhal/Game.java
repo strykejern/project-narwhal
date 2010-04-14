@@ -112,6 +112,7 @@ public class Game {
 				player);
 		viewPort.configureInputHandler(keys);
 		particleEngine.setRenderCamera(viewPort);
+		hud.setCamera(viewPort);
 
 	}
 	
