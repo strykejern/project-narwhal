@@ -1,0 +1,28 @@
+//Simple bullet particle
+[IMAGE]: bullet.png
+[TIME]: 110
+[SPEED]: 16
+[ATTACHED]: False
+
+//Size
+[SIZE]: 0.3
+[SIZE_ADD]: -0.0075
+
+//Transparency
+[ALPHA]: 1.0
+[ALPHA_ADD]: 0
+
+//Rotation
+[ROTATE]: 0
+[ROTATE_ADD]: 0
+
+//Sound effect
+[SOUND_SPAWN]: gun.wav
+[SOUND_END]: NONE
+
+//Ending conditions
+[CAN_COLLIDE]: TRUE
+[COLLISION_END]: TRUE
+[PARTICLE_END]: NONE
+
+[FRIENDLY_FIRE]: FALSE

@@ -1,10 +1,20 @@
+//General data
 [NAME]:   Juggernaught
 [FILE]:   juggernaught.png
 [SIZE]:   1.25
+
+//Defense
 [LIFE]:   100
 [SHIELD]: 75
 [ENERGY]: 500
+
+//Regeneration
 [EREGEN]: 0.7
 [SREGEN]: 0.08
+
+//Weapons
 [PRIMARY]: shockcannon.wpn
-[SECONDARY]: plasmacannon.wpn
+[SECONDARY]: plasmablaster.wpn
+
+//Special mods
+[RADAR]: 1
