@@ -13,6 +13,7 @@ import java.util.Random;
 
 import javax.swing.ImageIcon;
 
+import narwhal.AI;
 import narwhal.Spaceship;
 import narwhal.Weapon;
 
@@ -54,7 +55,7 @@ public class ParticleEngine {
 		else viewPort.setParticleEngine(this);
 	}
 	
-	public void update(ArrayList<GameObject> entities) {
+	public void update( ArrayList<GameObject> entities ) {
 		
 		//Update particle effects
 		for( int i = 0; i < particleList.size(); i++ )
@@ -128,6 +129,11 @@ public class ParticleEngine {
 		for(int i = 0; i < particleList.size(); i++) particleList.get(i).draw(g);
 	}
 	
+	/**
+	 * JJ> This gets the number of particles currently in the list. It can also include
+	 *     particles that are deleted and inactive but not yet removed this update.
+	 * @return A Integer which holds the number of particles currently used.
+	 */
 	public int getParticleCount() {
 		return particleList.size();
 	}	
@@ -163,32 +169,42 @@ public class ParticleEngine {
 		public final Sound soundSpawn;
 
 		public final boolean friendlyFire;
+
+		public final float homing;
 		
 		public ParticleTemplate( String fileName ) {		
 			
 			//Temp variables set to default
 			ImageIcon image = null;
 			int time = 1;
+			
 			float alpha = 1;
 			float alphaAdd = 0;
+			
 			float angle = 0;
 			float angleAdd = 0;
+			
 			float facing = 0;
 			float facingAdd = 0;
+			
 			float size = 1;
-			float sizeAdd = 0;	
-			float speed = 0;
+			float sizeAdd = 0;
+			boolean scaleToSpawner = false;
+			
 			Sound soundSpawn = null;
 			Sound soundEnd = null;
+			
 			boolean attached = false;
+			boolean canCollide = false;
 			boolean collisionEnd = true;
 			boolean friendlyFire = true;
-			boolean canCollide = false;
-			boolean scaleToSpawner = false;
+			
+			float homing = 0;
+			float speed = 0;
+			
+			String particleEnd = null;
 			int    multiEndSpawn = 1;
 			float  endFacingAdd = 0;
-
-			String particleEnd = null;
 
 			try
 			{
@@ -251,6 +267,8 @@ public class ParticleEngine {
 					else if(line.startsWith("[MULTISPAWN_END]:")) multiEndSpawn = Integer.parseInt(parse(line));
 					else if(line.startsWith("[END_FACING_ADD]:")) endFacingAdd = Float.parseFloat(parse(line));
 
+					else if(line.startsWith("[HOMING]:")) homing = Float.parseFloat( parse(line) );
+
 					else Log.warning("Loading particle file ( "+ fileName +") unrecognized line - " + line);
 				}
 				if(image == null) throw new Exception("Missing a '[IMAGE]:' line describing which image to load!");
@@ -267,6 +285,7 @@ public class ParticleEngine {
 			this.time = time;
 			this.speed = attached ? 0 : speed;
 			this.attached = attached;
+			this.homing = homing;
 			
 			this.alpha = alpha;
 			this.alphaAdd = alphaAdd;
@@ -315,10 +334,10 @@ public class ParticleEngine {
 		
 		private ImageIcon image;
 
-		private Physics attached;
+		private Physics attached;			//Who is it attached to?
+		private Spaceship homing;			//Who are we following?
 
 		private String team;				//Who's side is it on?
-
 		public Weapon weapon;
 
 		//Particle properties
@@ -336,39 +355,73 @@ public class ParticleEngine {
 		
 		private float velocity;				//Movement
 		private float facingAdd;
-		
+				
 		
 		private Particle( Vector spawnPos, ParticleTemplate template, float baseFacing, Physics spawner, Weapon damage ) {
-
-			//We keep the same angle as the spawner
 			float baseRotation = 0;
-			if( spawner != null )
-			{
-				if(spawner instanceof Particle)
-					baseRotation = ((Particle)spawner).angle;
-				else baseRotation = spawner.direction;
-			}
 			
 			//Default stuff
 			this.template = template;
 			requestDelete = false;
 			onScreen = false;
 
-			//Is this particle attached to a specific position?
-			if( template.attached && spawner != null )	
+			//These values can safely be copied now
+			image = template.image;			
+			size = template.size;
+			time = template.time;
+			alpha = template.alpha;
+			alphaAdd = template.alphaAdd;
+			sizeAdd = template.sizeAdd;			
+			weapon = damage;
+			team = "NEUTRAL";
+
+			//Set some values if we have a spawner
+			if( spawner != null )
 			{
-				attached = spawner;
-				pos = spawner.pos;
-				velocity = 0;
+				//We keep the same angle as the spawner
+				if(spawner instanceof Particle)
+					baseRotation = ((Particle)spawner).angle;
+				else baseRotation = spawner.direction;
+				
+				//Get homing target if needed
+				if( template.homing != 0 && spawner instanceof AI )
+				{
+					homing = ((AI)spawner).getHomingTarget( template.homing );
+				}
+				
+				//Attached to the spawner?
+				if( template.attached )
+				{
+					attached = spawner;
+					pos = spawner.pos;
+					velocity = 0;
+				}
+				else
+				{
+					attached = null;
+					pos = spawnPos.clone();
+					velocity = template.speed;
+				}
+				
+				//Scale this particle initial size to spawner's size
+				if( template.scaleToSpawner )
+				{
+					size *= ((float)spawner.radius*2) / ((float)image.getIconWidth());
+				}
+				
+				//We share team with our spawner
+				if( spawner instanceof Spaceship )
+				{
+					Spaceship owner = (Spaceship)spawner;
+					team = owner.team;
+				}
+				else if( spawner instanceof Particle )
+				{
+					Particle owner = (Particle)spawner;
+					team = owner.team;
+				}
 			}
-			else
-			{
-				attached = null;
-				pos = spawnPos.clone();
-				velocity = template.speed;
-			}
-			facing = baseFacing + template.facing;
-			
+						
 			//Randomize angle?
 			if(template.angle == ParticleTemplate.RANDOM_ANGLE) 
 			{
@@ -388,39 +441,7 @@ public class ParticleEngine {
 			}
 			else facing = template.facing + baseFacing;
 			facingAdd = template.facingAdd;
-			
-			image = template.image;			
-			time = template.time;
-			alpha = template.alpha;
-			alphaAdd = template.alphaAdd;
-			
-			//Scale this particle initial size to spawner's size
-			size = template.size;
-			if( spawner != null && template.scaleToSpawner )
-			{
-				size *= ((float)spawner.radius*2) / ((float)image.getIconWidth());
-			}
-			sizeAdd = template.sizeAdd;
-
-			//It might deal damage
-			weapon = damage;
-
-			//Set team
-			if( spawner instanceof Spaceship )
-			{
-				Spaceship owner = (Spaceship)spawner;
-				team = owner.team;
-			}
-			else if( spawner instanceof Particle )
-			{
-				Particle owner = (Particle)spawner;
-				team = owner.team;
-			}
-			else	team = "NEUTRAL";
-			
-			//Play spawn sound
-			if( template.soundSpawn != null ) template.soundSpawn.play3D(pos, viewPort.getCameraPos());
-			
+									
 			//Physics stuff
 			canCollide = template.canCollide;
 			shape = Shape.CIRCLE;
@@ -429,6 +450,9 @@ public class ParticleEngine {
 			else					speed = spawner.speed.clone();
 			setRadius( image.getIconWidth()/4 );
 			collisionList = new ArrayList<Spaceship>();
+			
+			//Play spawn sound
+			if( template.soundSpawn != null ) template.soundSpawn.play3D(pos, viewPort.getCameraPos());
 		}
 		
 		/**
@@ -455,16 +479,30 @@ public class ParticleEngine {
 			angle += angleAdd;
 			size  += sizeAdd;
 			angle %= 2 * Math.PI;
-			facing += facingAdd;
 
 			//Mark particles for removal when their time is up or when alpha has made it invisible
 			time--;
-			if(time <= 0 || alpha <= 0 && size <= 0 )
+			if(time <= 0 || alpha <= 0 || size <= 0 )
 			{
 				this.delete();
 				return;
 			}
 			
+			
+			//Are we homing in on a target?
+			facing += facingAdd;
+			if( homing != null )
+			{
+				float heading = homing.getPosCentre().minus(pos).getAngle() - facing;
+				if 		(heading > Math.PI)  heading = -( ((float)Math.PI*2) - heading);
+				else if (heading < -Math.PI) heading = ( ((float)Math.PI*2) + heading);
+				facing += heading * (velocity/200);
+				
+				//TODO: now we always face towards the homed one
+				angle = facing;
+			}
+			facing %= 2 * Math.PI;
+				
 			//Movement
 			Vector move = new Vector(velocity, facing, true);
 			move.add(speed);

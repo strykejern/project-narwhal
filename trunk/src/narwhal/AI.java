@@ -125,7 +125,7 @@ public class AI extends Spaceship {
 		//Try to stick to a single target
 		if( invalidTarget() )
 		{
-			target = getClosestTarget();
+			target = getClosestTarget(Float.MAX_VALUE);
 		}		
 		
 		//Reset any controllers first
@@ -185,7 +185,7 @@ public class AI extends Spaceship {
 		Random rand = new Random();
 
 		//We change targets very often, depending on the situation
-		target = getClosestTarget();
+		target = getClosestTarget(Float.MAX_VALUE);
 
 		//Reset any controllers first
 		resetInput();
@@ -256,6 +256,7 @@ public class AI extends Spaceship {
 			//- if under attack from behind
 			//- need to regenerate energy
 			//- to prepare an ambush
+			//- flanked or surrounded
 						
 			//Stop retreating if we are ready (33% energy and 20% shield)
 			if( energy > energyMax/3 && shield > shieldMax/5) 
@@ -299,7 +300,7 @@ public class AI extends Spaceship {
 	 *     enemy target that is active and not invisible for us.
 	 * @return The closest alive enemy target to this Spaceship
 	 */
-	private Spaceship getClosestTarget() {
+	private Spaceship getClosestTarget(float maxDistance) {
 		Spaceship bestTarget = this;
 		float bestDistance = Float.MAX_VALUE;
 		
@@ -318,7 +319,7 @@ public class AI extends Spaceship {
 			
 			//Calculate distance. If it is less than the last target, keep this one instead
 			float dist = target.getPosCentre().minus(getPosCentre()).length();
-			if( dist < bestDistance ) 
+			if( dist < bestDistance && dist < maxDistance ) 
 			{	
 				bestTarget = target;
 				bestDistance = dist;
@@ -333,5 +334,25 @@ public class AI extends Spaceship {
 		}
 		
 		return bestTarget;
+	}
+
+	public Spaceship getHomingTarget( float distance ) {
+		//TODO: only if facing target!
+		
+		//Try the current target before finding a new one
+		if( target != null )
+		{
+			float dist = target.getPosCentre().minus(getPosCentre()).length();
+			if( !invalidTarget() && dist < distance ) return target;
+		}
+		
+		//Current target isn't good enough, find another one instead
+		Spaceship newTarget = getClosestTarget(distance);
+		
+		//No targets found!
+		if( newTarget == this ) return null;
+		
+		//Gotcha!
+		return newTarget;
 	}
 }

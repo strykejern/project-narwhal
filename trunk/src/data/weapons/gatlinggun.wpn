@@ -1,6 +1,6 @@
 //Gatling Gun Weapon
 [NAME]: Gatling Gun
-[DAMAGE]: 3.5
+[DAMAGE]: 4
 [COST]: 6
 [PARTICLE]: bullet.prt
 [COOLDOWN]: 3
