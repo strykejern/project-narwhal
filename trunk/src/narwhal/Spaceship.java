@@ -31,6 +31,7 @@ public class Spaceship extends GameObject {
 	//General stuff
 	public String name;						//This ship's name that can be unique
 	public String team;						//This ship is on team with any who share the same team
+	private int debrisCooldown;
 
 	//Engine
 	protected float maxSpeed;
@@ -42,7 +43,7 @@ public class Spaceship extends GameObject {
 	//Weapon systems
 	public Weapon primary;
 	public Weapon secondary;
-	private int cooldown;					//Global ship cooldown
+	protected int cooldown;					//Global ship cooldown
 	
 	//Defensive systems
 	public float lifeMax;
@@ -56,6 +57,7 @@ public class Spaceship extends GameObject {
 	
 	//Modules
 	public short radarLevel;
+	public SpaceshipTemplate interceptor;
 	
 	public Spaceship( SpaceshipTemplate blueprint, String team ) {		
 
@@ -78,6 +80,7 @@ public class Spaceship extends GameObject {
 		turnRate = blueprint.turnRate;
 		
 		radarLevel = blueprint.radarLevel;
+		interceptor = blueprint.interceptor;
 	
 		//Set our team
 		this.team = team.toUpperCase();
@@ -107,8 +110,11 @@ public class Spaceship extends GameObject {
 			if(energy < energyMax) energy += energyRegen;
 		}
 		
+		//Allow new parts to fall off
+		if(debrisCooldown > 0) debrisCooldown--;
+		
 		//Fire!
-		if( keys.mosButton1 ) 	   activateWeapon(primary);
+		if( keys.mosButton1 ) 	   		activateWeapon(primary);
 		else if( keys.mosButton2 )      activateWeapon(secondary);
 		
 		//Key move
@@ -180,6 +186,13 @@ public class Spaceship extends GameObject {
 				
 				//Spawn a explosion effect
 				particleEngine.spawnParticle( "explosion.prt", getPosCentre(), direction, this, null );
+
+				//Make some part of the ship fall off (25% chance)
+				if(debrisCooldown == 0) 
+				{
+					particleEngine.spawnParticle( "debris.prt", getPosCentre(), direction, this, null );
+					debrisCooldown = 100;
+				}
 			}
 			else
 			{
@@ -238,6 +251,7 @@ public class Spaceship extends GameObject {
 		//Spawn particle effect
 		particleEngine.spawnParticle( "bigexplosion.prt", getPosCentre(), direction, this, null );
 		for(int i = 0; i < 4; i++) particleEngine.spawnParticle( "explosion.prt", getPosCentre(), direction, this, null );
+		particleEngine.spawnParticle( "wreck.prt", getPosCentre(), direction, this, null );
 		
 		//Mark as dead so that it gets removed in the next update
 		life = KILLED;
@@ -249,5 +263,16 @@ public class Spaceship extends GameObject {
 	
 	public boolean active() {
 		return life != KILLED;
+	}
+		
+	protected void resetInput() {
+		keys.down = false;
+		keys.left = false;
+		keys.left = false;
+		keys.right = false;
+		keys.up = false;
+		keys.mosButton1 = false;
+		keys.mosButton2 = false;
+		keys.mosButton3 = false;
 	}
 }

@@ -67,21 +67,20 @@ public class Game {
 		hud = new HUD(player);
 
        	//Spawn allies
-        for(int i = 0; i < 4; i++)
+  /*      for(int i = 0; i < 2; i++)
         {
 			Spaceship ally = shipyard.spawnShip("raptor.ship", new Vector(i*100, i*100), this, aiType.CONTROLLER, "GOOD");
 	       	entities.add(ally);
 			hud.addTracking(ally);		
         }
-        
+        */
        	//Spawn enemies
-    	for(int i = 0; i < 4; i++)
+    	for(int i = 0; i < 1; i++)
         {
-    		Spaceship enemy = shipyard.spawnShip("juggernaught.ship", new Vector(i*500, i*500), this, aiType.BRUTE, "EVIL");
+    		Spaceship enemy = shipyard.spawnShip("xenon.ship", new Vector(i*500, i*500), this, aiType.CONTROLLER, "EVIL");
 	       	entities.add(enemy);
 			hud.addTracking(enemy);		
         }
-
 
 		//Generate random planets
 		for(int x = 0; x < universeSize; x++)
@@ -101,7 +100,6 @@ public class Game {
 		viewPort.configureInputHandler(keys);
 		particleEngine.setRenderCamera(viewPort);
 		hud.setCamera(viewPort);
-
 	}
 	
 	public GameWindow.gameState update(){
@@ -132,13 +130,23 @@ public class Game {
 		for(int i = 0; i < entities.size(); i++ )
 		{
 			GameObject us = entities.get(i);
-			//Only go through spaceships
-			//if( !( us instanceof Spaceship) ) continue;
 			
 			//Collision with other entities
 			for(int j = i + 1; j < entities.size(); j++)
 			{
 				GameObject them = entities.get(j);
+				
+				//Check if it is a interceptor that is docking first
+				if( them instanceof Interceptor )
+				{
+					Interceptor tiny = (Interceptor)them;
+					if( tiny.outOfFuel() && tiny.getMaster() == us )
+					{
+						tiny.dock();
+						continue;
+					}
+				}
+					
 				if( us.collidesWith(them) )
 				{
 					us.collision( them );
@@ -146,7 +154,7 @@ public class Game {
 			}
 		}
 		
-		particleEngine.update(entities);
+		particleEngine.update(entities, universeSize);
 		
 		return gameState.GAME_PLAYING;
 	}

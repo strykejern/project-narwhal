@@ -13,14 +13,12 @@ public class Music extends Sound {
 	 */
 	public static void play( String song ){
 		if(!enabled) return;
-		
-		//Load music into memory if that hasn't been done yet
-		if( soundList == null ) loadAllSounds();
+		Sound newSong = new Sound(song);
 		
 		//Dont play non-existing music
-		if( !soundList.containsKey(song) )
+		if( !newSong.valid )
 		{
-			Log.warning("Tried to play non-existing song track - " + song);
+			Log.warning("Tried to play invalid song track - " + song);
 			return;
 		}
 		
@@ -28,7 +26,7 @@ public class Music extends Sound {
 		stopMusic();
 		
 		//Set the new song
-		music = soundList.get(song);
+		music = newSong;
 		
 		//Play the next song
 		music.playLooped(musicVolume, 0);
@@ -46,7 +44,7 @@ public class Music extends Sound {
 	 * JJ> Duplicate of the Sound constructor. Java requires it.
 	 * @param fileName The name of the song to be loaded
 	 */
-	private Music(String fileName) {
+	public Music(String fileName) {
 		super(fileName);
 	}
 

@@ -194,6 +194,11 @@ public class Shipyard {
 			y += font.getHeight(g);
 			g.drawString("Side Thrusters", x, y);
 		}
+		if( ship.interceptor != null )
+		{
+			y += font.getHeight(g);
+			g.drawString("Interceptors (" + ship.interceptor.name +")", x, y);
+		}
 
 		//Do last, draw all buttons
         Iterator<Button> iterator = buttonList.values().iterator();
@@ -245,7 +250,15 @@ public class Shipyard {
 		for( String fileName : fileList )
 		{
 			if( !fileName.endsWith(".ship") ) continue;
-			shipList.put( fileName.substring(fileName.lastIndexOf('/')+1), new SpaceshipTemplate(fileName) );
+			
+			try
+			{
+				shipList.put( fileName.substring(fileName.lastIndexOf('/')+1), new SpaceshipTemplate(fileName) );
+			}
+			catch(Exception e)
+			{
+				Log.warning("Failed to load Spaceship - " + e);
+			}
 		}
 	}
 	

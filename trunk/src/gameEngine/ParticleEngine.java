@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.Random;
 import javax.swing.ImageIcon;
 
 import narwhal.AI;
+import narwhal.Planet;
 import narwhal.Spaceship;
 import narwhal.Weapon;
 
@@ -39,10 +41,18 @@ public class ParticleEngine {
 			//Only load files that end with .prt
 			if(!fileName.endsWith(".prt")) continue;
 			String hash = fileName.substring( fileName.lastIndexOf("/")+1);
-			ParticleTemplate load = new ParticleTemplate(fileName);
-			
+			ParticleTemplate load;
+
 			//Only load it if the image was loaded properly
-			if(load.image.getIconHeight() > 0) particleMap.put( hash, load );
+			try 
+			{
+				load = new ParticleTemplate(fileName);
+				particleMap.put( hash, load );
+			} 
+			catch (InvalidParticleException e) 
+			{
+				Log.warning("Loading particle: " + fileName + " - " + e);
+			}			
 		}
 	}
 	
@@ -55,7 +65,7 @@ public class ParticleEngine {
 		else viewPort.setParticleEngine(this);
 	}
 	
-	public void update( ArrayList<GameObject> entities ) {
+	public void update( ArrayList<GameObject> entities, int universeSize ) {
 		
 		//Update particle effects
 		for( int i = 0; i < particleList.size(); i++ )
@@ -78,6 +88,7 @@ public class ParticleEngine {
 				for(int j = 0; j < entities.size(); j++ )
 				{	
 					GameObject object  = entities.get(j);
+
 					if( prt.collidesWith(object) )
 					{
 						//Skip if no friendly fire
@@ -96,12 +107,37 @@ public class ParticleEngine {
 							prt.collisionList.add(them);
 						}
 						
+						//TODO: disabled particle on object collision until we have implemented Mass
+						//if( prt.template.physics ) prt.collision(object);
+						
 						//Die away if told to
-						if( prt.template.collisionEnd ) prt.delete();
+						if( prt.template.collisionEnd && ( !prt.template.subAtomicParticle 
+								|| object instanceof Planet ) ) 	prt.delete();
 					}
 				}
 			}
-
+			
+			//Particle on particle collision
+			if( prt.template.physics )
+			{
+				for( int j = i+1; j < particleList.size(); j++ )
+				{
+					Particle cPrt = particleList.get(j);
+					if( !cPrt.template.physics ) continue;
+					
+					if( prt.collidesWith(cPrt) ) prt.collision(cPrt);
+				}
+			}
+			
+			// Quick implement of universe bounds
+			float uniX = universeSize * Video.getScreenWidth();
+			float uniY = universeSize * Video.getScreenHeight();
+			
+			if 		(prt.pos.x < 0) 	prt.pos.x = uniX + prt.pos.x;
+			else if (prt.pos.x > uniX)  prt.pos.x %= uniX;
+			
+			if 		(prt.pos.y < 0) 	prt.pos.y = uniY + prt.pos.y;
+			else if (prt.pos.y > uniY)  prt.pos.y %= uniY;
 		}
 	}
 	
@@ -138,12 +174,13 @@ public class ParticleEngine {
 		return particleList.size();
 	}	
 		
+	/****************************************************************************************************/
 	private final class ParticleTemplate {
 		
 		static final float RANDOM_ANGLE = Float.MIN_VALUE;
 		
 		//Particle variables
-		private final ImageIcon image;
+		private final ArrayList<ImageIcon> image;
 		public final int time;					//How many frames it has to live
 		public final float alpha;				//Transparency
 		public final float alphaAdd;
@@ -160,6 +197,8 @@ public class ParticleEngine {
 		
 		public final boolean collisionEnd;		//End particle if it collides?
 		public final boolean canCollide;
+		public final boolean subAtomicParticle;	//Can it move through solid objects? (excluding planets)
+		public final boolean physics;	        //Does this particle use the laws of physics?
 		
 		public final String particleEnd;		//Spawn particle if this one ends?
 		public final int    multiEndSpawn;		//How many do we spawn?
@@ -172,10 +211,10 @@ public class ParticleEngine {
 
 		public final float homing;
 		
-		public ParticleTemplate( String fileName ) {		
+		public ParticleTemplate( String fileName ) throws InvalidParticleException {		
 			
 			//Temp variables set to default
-			ImageIcon image = null;
+			image = new ArrayList<ImageIcon>();
 			int time = 1;
 			
 			float alpha = 1;
@@ -198,6 +237,8 @@ public class ParticleEngine {
 			boolean canCollide = false;
 			boolean collisionEnd = true;
 			boolean friendlyFire = true;
+			boolean subAtomicParticle = false;
+			boolean physics = false;
 			
 			float homing = 0;
 			float speed = 0;
@@ -206,82 +247,97 @@ public class ParticleEngine {
 			int    multiEndSpawn = 1;
 			float  endFacingAdd = 0;
 
-			try
+			BufferedReader parse = new BufferedReader(
+					new InputStreamReader(
+					ResourceMananger.getInputStream(fileName)));
+			
+			//Parse the ship file
+			while(true)
 			{
-				BufferedReader parse = new BufferedReader(
-						new InputStreamReader(
-						ResourceMananger.getInputStream(fileName)));
-				
-				//Parse the ship file
-				while(true)
+				String line;
+				try 
 				{
-					String line = parse.readLine();
-					
-					//Reached end of file
-					if(line == null) break;
-					
-					//Ignore comments
-					if( line.startsWith("//") || line.equals("") ) continue;
-					
-					//Ignore NONE values
-					if(line.indexOf("NONE") != -1) continue;
-
-					//Translate line into data
-					if(line.startsWith("[IMAGE]:"))    	 		
-					{
-						image = new ImageIcon(ResourceMananger.getFilePath("/data/particles/" + parse(line)));
-						if( image.getIconWidth() <= 0 ) Log.warning("Failed loading the specified image! (" + "/data/particles/" + parse(line) + ")");
-					}
-					else if(line.startsWith("[TIME]:"))  		time = Integer.parseInt(parse(line));
-					else if(line.startsWith("[SPEED]:"))  		speed = Float.parseFloat(parse(line));
-					else if(line.startsWith("[ATTACHED]:"))  	attached = Boolean.parseBoolean(parse(line));
-
-					else if(line.startsWith("[SIZE]:"))  		size = Float.parseFloat(parse(line));
-					else if(line.startsWith("[SIZE_ADD]:")) 	sizeAdd = Float.parseFloat(parse(line));
-					else if(line.startsWith("[SCALE_TO_SPAWNER]:"))  scaleToSpawner = Boolean.parseBoolean(parse(line));
-					
-					else if(line.startsWith("[ALPHA]:"))  		alpha = Float.parseFloat(parse(line));
-					else if(line.startsWith("[ALPHA_ADD]:"))	alphaAdd = Float.parseFloat(parse(line));
-					
-					else if(line.startsWith("[ROTATE]:"))  		
-					{
-						if(line.indexOf("RANDOM") == -1) angle = Float.parseFloat(parse(line));
-						else							 angle = RANDOM_ANGLE;
-					}
-					else if(line.startsWith("[ROTATE_ADD]:")) 	angleAdd = Float.parseFloat(parse(line));
-					else if(line.startsWith("[FACING]:"))  		
-					{
-						if(line.indexOf("RANDOM") == -1) facing = Float.parseFloat(parse(line));
-						else							 facing = RANDOM_ANGLE;
-					}
-					else if(line.startsWith("[FACING_ADD]:")) 	facingAdd = Float.parseFloat(parse(line));
-					
-					else if(line.startsWith("[SOUND_SPAWN]:"))  soundSpawn = Sound.loadSound( parse(line) );
-					else if(line.startsWith("[SOUND_END]:"))	soundEnd = Sound.loadSound( parse(line) );
-
-					else if(line.startsWith("[CAN_COLLIDE]:"))  canCollide = Boolean.parseBoolean(parse(line));
-					else if(line.startsWith("[COLLISION_END]:")) collisionEnd = Boolean.parseBoolean(parse(line));
-					else if(line.startsWith("[FRIENDLY_FIRE]:")) friendlyFire = Boolean.parseBoolean(parse(line));
-
-					else if(line.startsWith("[PARTICLE_END]:")) particleEnd = parse(line);
-					else if(line.startsWith("[MULTISPAWN_END]:")) multiEndSpawn = Integer.parseInt(parse(line));
-					else if(line.startsWith("[END_FACING_ADD]:")) endFacingAdd = Float.parseFloat(parse(line));
-
-					else if(line.startsWith("[HOMING]:")) homing = Float.parseFloat( parse(line) );
-
-					else Log.warning("Loading particle file ( "+ fileName +") unrecognized line - " + line);
+					line = parse.readLine();
+				} 
+				catch (IOException e) 
+				{
+					throw new InvalidParticleException( e.toString() );
 				}
-				if(image == null) throw new Exception("Missing a '[IMAGE]:' line describing which image to load!");
-				else if( image.getIconWidth() <= 0 ) throw new Exception("Failed loading the specified image!");
+				
+				//Reached end of file
+				if(line == null) break;
+				
+				//Ignore comments
+				if( line.startsWith("//") || line.equals("") ) continue;
+				
+				//Ignore NONE values
+				if(line.indexOf("NONE") != -1) continue;
+
+				//Translate line into data
+				if(line.startsWith("[IMAGE]:"))    	 		
+				{
+					//Make sure the file actually exist first.
+					String path = "/data/particles/" + parse(line);
+					if( !ResourceMananger.fileExists( path ) )
+					{
+						Log.warning("Loading particle: " + fileName + " - The specified image does not exist: " + path);
+						continue;
+					}
+					
+					//Try loading it
+					ImageIcon load = new ImageIcon(ResourceMananger.getFilePath(path));	
+					if( load.getIconWidth() <= 0 )
+					{
+						Log.warning("Loading particle: " + fileName + " - Failed loading the specified image! (" + path + ")");
+						continue;
+					}
+					image.add(load);
+				}
+				else if(line.startsWith("[TIME]:"))  		time = Integer.parseInt(parse(line));
+				else if(line.startsWith("[SPEED]:"))  		speed = Float.parseFloat(parse(line));
+				else if(line.startsWith("[ATTACHED]:"))  	attached = Boolean.parseBoolean(parse(line));
+
+				else if(line.startsWith("[SIZE]:"))  		size = Float.parseFloat(parse(line));
+				else if(line.startsWith("[SIZE_ADD]:")) 	sizeAdd = Float.parseFloat(parse(line));
+				else if(line.startsWith("[SCALE_TO_SPAWNER]:"))  scaleToSpawner = Boolean.parseBoolean(parse(line));
+				
+				else if(line.startsWith("[ALPHA]:"))  		alpha = Float.parseFloat(parse(line));
+				else if(line.startsWith("[ALPHA_ADD]:"))	alphaAdd = Float.parseFloat(parse(line));
+				
+				else if(line.startsWith("[ROTATE]:"))  		
+				{
+					if(line.indexOf("RANDOM") == -1) angle = Float.parseFloat(parse(line));
+					else							 angle = RANDOM_ANGLE;
+				}
+				else if(line.startsWith("[ROTATE_ADD]:")) 	angleAdd = Float.parseFloat(parse(line));
+				
+				else if(line.startsWith("[FACING]:"))  		
+				{
+					if(line.indexOf("RANDOM") == -1) facing = Float.parseFloat(parse(line));
+					else							 facing = RANDOM_ANGLE;
+				}
+				else if(line.startsWith("[FACING_ADD]:")) 	facingAdd = Float.parseFloat(parse(line));
+				
+				else if(line.startsWith("[SOUND_SPAWN]:"))  soundSpawn = new Sound( parse(line) );
+				else if(line.startsWith("[SOUND_END]:"))	soundEnd = new Sound( parse(line) );
+
+				else if(line.startsWith("[CAN_COLLIDE]:"))  canCollide = Boolean.parseBoolean(parse(line));
+				else if(line.startsWith("[COLLISION_END]:")) collisionEnd = Boolean.parseBoolean(parse(line));
+				else if(line.startsWith("[FRIENDLY_FIRE]:")) friendlyFire = Boolean.parseBoolean(parse(line));
+				else if(line.startsWith("[SUBATOMIC]:"))     subAtomicParticle = Boolean.parseBoolean(parse(line));
+				else if(line.startsWith("[PHYSICS]:"))       physics = Boolean.parseBoolean(parse(line));
+
+				else if(line.startsWith("[PARTICLE_END]:")) particleEnd = parse(line);
+				else if(line.startsWith("[MULTISPAWN_END]:")) multiEndSpawn = Integer.parseInt(parse(line));
+				else if(line.startsWith("[END_FACING_ADD]:")) endFacingAdd = Float.parseFloat(parse(line));
+
+				else if(line.startsWith("[HOMING]:")) homing = Float.parseFloat( parse(line) );
+
+				else Log.warning("Loading particle file ( "+ fileName +") unrecognized line - " + line);
 			}
-			catch( Exception e )
-			{
-				//Something went wrong
-				Log.warning("Loading particle (" + fileName + ") - " + e);
-			}
+			if( image.size() == 0 ) throw new InvalidParticleException("Missing a '[IMAGE]:' line describing which image to load!");
 			
 			//Now set these values to the actual final values, these can now never be changed!
-			this.image = image;
 			this.time = time;
 			this.speed = attached ? 0 : speed;
 			this.attached = attached;
@@ -306,6 +362,8 @@ public class ParticleEngine {
 			this.friendlyFire = friendlyFire;
 			this.collisionEnd = collisionEnd;
 			this.canCollide = canCollide;
+			this.subAtomicParticle = subAtomicParticle;
+			this.physics = physics;
 			
 			this.particleEnd = particleEnd;
 			this.multiEndSpawn = multiEndSpawn;
@@ -323,7 +381,29 @@ public class ParticleEngine {
 			return line.substring(line.indexOf(':')+1).trim();
 		}
 	}
+	/****************************************************************************************************/
 	
+	/**
+	 * JJ> Custom exception class that descends from Java's Exception class.
+	 */
+	public class InvalidParticleException extends Exception
+	{
+		private static final long serialVersionUID = 1L;
+		  
+		  // Default constructor - initializes instance variable to unknown
+		  public InvalidParticleException()
+		  {	  
+		    super();
+		  }
+		  
+		  // Constructor receives some kind of message that is saved in an instance variable.
+		  public InvalidParticleException(String err)
+		  {
+		    super(err);
+		  }
+	}
+		  	  	
+	/****************************************************************************************************/
 	private class Particle extends Physics {
 		
 		//Object functions
@@ -358,6 +438,7 @@ public class ParticleEngine {
 				
 		
 		private Particle( Vector spawnPos, ParticleTemplate template, float baseFacing, Physics spawner, Weapon damage ) {
+			Random rand = new Random();
 			float baseRotation = 0;
 			
 			//Default stuff
@@ -365,8 +446,11 @@ public class ParticleEngine {
 			requestDelete = false;
 			onScreen = false;
 
+			//Randomize our particle image from the list of images our template
+			//has given us. This list could be 1 in size.
+			image = template.image.get( rand.nextInt( template.image.size() ) );
+
 			//These values can safely be copied now
-			image = template.image;			
 			size = template.size;
 			time = template.time;
 			alpha = template.alpha;
@@ -425,7 +509,6 @@ public class ParticleEngine {
 			//Randomize angle?
 			if(template.angle == ParticleTemplate.RANDOM_ANGLE) 
 			{
-				Random rand = new Random();
 				float randAngle = rand.nextFloat() + rand.nextInt(4);
 				angle = randAngle + baseRotation;
 			}
@@ -435,7 +518,6 @@ public class ParticleEngine {
 			//Randomize facing?
 			if(template.facing == ParticleTemplate.RANDOM_ANGLE) 
 			{
-				Random rand = new Random();
 				float randFacing = rand.nextFloat() + rand.nextInt(4);
 				facing = randFacing + baseFacing;
 			}
@@ -454,7 +536,7 @@ public class ParticleEngine {
 			//Play spawn sound
 			if( template.soundSpawn != null ) template.soundSpawn.play3D(pos, viewPort.getCameraPos());
 		}
-		
+				
 		/**
 		 * @return true if this particle is marked for removal
 		 */
@@ -498,7 +580,7 @@ public class ParticleEngine {
 				else if (heading < -Math.PI) heading = ( ((float)Math.PI*2) + heading);
 				facing += heading * (velocity/200);
 				
-				//TODO: now we always face towards the homed one
+				//TODO: now we always face towards the homed one, this might not be what we want
 				angle = facing;
 			}
 			facing %= 2 * Math.PI;
@@ -551,7 +633,7 @@ public class ParticleEngine {
 			g.drawImage( image.getImage(), xs, null);
 			
 			//Draw collision circle
-			if( GameWindow.debugMode )
+			if( Configuration.debugMode )
 			{
 				g.setColor(Color.YELLOW);
 				Vector drawPos = pos.minus(new Vector(radius, radius)).minus(offset);

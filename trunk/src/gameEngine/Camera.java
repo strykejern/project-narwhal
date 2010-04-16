@@ -57,8 +57,9 @@ public class Camera {
 		int count = 0; // For debug purposes
 		
 		// Draw all entities
-		for (GameObject entity : entities)
+		for( int i = 0; i < entities.size(); i++ )
 		{
+			GameObject entity = entities.get(i);
 			if ( isInFrame(entity) )
 			{
 				entity.draw(g, cameraPos);
