@@ -52,7 +52,7 @@ public class Input {
 		int code = key.getButton();
 		if(code == MouseEvent.BUTTON1) mosButton1 = pressed;
 		if(code == MouseEvent.BUTTON3) mosButton2 = pressed;
-		//if(key.getButton() == MouseEvent.BUTTON2) mosButton3 = pressed;		//mouse wheel pressed
+		if(code == MouseEvent.BUTTON2) mosButton3 = pressed;		//mouse wheel pressed
 	}
 
 	public void update(Point mouse){

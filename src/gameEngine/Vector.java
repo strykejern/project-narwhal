@@ -34,7 +34,7 @@ public class Vector {
         x = (float)Math.cos(angle) * length;
         y = (float)Math.sin(angle) * length;
 	}
-	
+
     public Vector clone() {
     	return new Vector(x,y);
     }
@@ -51,7 +51,12 @@ public class Vector {
     public Vector negated(){
     	return new Vector(-x, -y);
     }
-    
+
+	public void addDirection(float length, float angle) {
+        x += (float)Math.cos(angle) * length;
+        y += (float)Math.sin(angle) * length;
+	}
+
 	public void add(Vector v){
 		x += v.x;
 		y += v.y;
@@ -88,9 +93,9 @@ public class Vector {
 		return new Vector(this.x / val, this.y / val);
 	}
 	
-	public float length(){
+	public float length() {
 		if (x != 0.0f || y != 0.0f)
-			return (float)Math.sqrt((x*x)+(y*y));
+			return (float)Math.sqrt( (x*x)+(y*y) );
 		else
 			return 0.01f;
 	}

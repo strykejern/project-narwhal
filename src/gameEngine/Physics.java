@@ -18,8 +18,6 @@
 //********************************************************************************************
 package gameEngine;
 
-import narwhal.Spaceship;
-
 public abstract class Physics extends Collidable{
 	protected Vector speed;
 	public boolean anchored;

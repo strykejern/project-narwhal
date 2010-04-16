@@ -30,23 +30,26 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
 
+import javax.swing.JFrame;
+
 /**
  * JJ> A static helper Video class for handling graphical stuff.
  * @author Johan Jansen and Anders Eie
  *
  */
 public class Video {
-	private static Dimension resolution = new Dimension();
-	private static VideoQuality videoQuality = VideoQuality.VIDEO_NORMAL;							//Draw everything in HQ gfx?
+	private static Dimension resolution = new Dimension(800, 600);
+	private static VideoQuality videoQuality = VideoQuality.VIDEO_NORMAL;
 	private static RenderingHints quality = new RenderingHints(null);
+	public  static boolean fullScreen = false;
 	
 	// Create a new blank cursor.
 	public static final Cursor BLANK_CURSOR = Toolkit.getDefaultToolkit().createCustomCursor(
 			new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "blank cursor");
 
 	//Hardware graphic stuff
-	private static GraphicsEnvironment graphEnv;
-	private static GraphicsDevice graphDevice;
+	private static GraphicsEnvironment 	 graphEnv;
+	private static GraphicsDevice 		 graphDevice;
 	private static GraphicsConfiguration graphicConf;
 		
 	public static enum VideoQuality {
@@ -154,14 +157,7 @@ public class Video {
 	public static void getGraphicsSettings(Graphics2D g){
 		g.addRenderingHints( quality );
 	}
-	
-	/**
-	 * JJ> Returns the resolution of the Operating System 
-	 */
-	public static Dimension getDesktopResolution() {
-		return Toolkit.getDefaultToolkit().getScreenSize();
-	}
-	
+		
 	public static GraphicsConfiguration getGraphicsConf() {
 		return graphicConf;		
 	}
@@ -169,11 +165,7 @@ public class Video {
 	public static VideoQuality getQualityMode() {
 		return videoQuality;
 	}
-	
-	public static void setResolution(int width, int height) {
-		resolution.setSize(width, height);
-	}
-	
+		
 	public static Dimension getResolution() {
 		return  resolution;
 	}
@@ -185,12 +177,9 @@ public class Video {
 	public static void setResolution(Dimension res) {
 		resolution.setSize(res);
 	}
-	
-	/**
-	 * JJ> Changes the Resolution to the desktop resolution
-	 */
-	public static void setFullscreen() {
-		resolution.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+
+	public static void setResolution(int width, int height) {
+		resolution.setSize(width, height);
 	}
 	
 	public static int getScreenWidth()	{
@@ -199,5 +188,26 @@ public class Video {
 	
 	public static int getScreenHeight()	{
 		return resolution.height;
+	}
+	
+	public static JFrame createWindow(String name) {
+		JFrame window = new JFrame(name, graphicConf);
+
+    	window.getContentPane().add(new GameWindow(window));
+
+		//Set fullscreen?
+		if( fullScreen )
+		{
+			resolution.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+			window.setUndecorated(true);
+		}
+		window.setSize(resolution);
+		
+		window.setResizable(false);
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setVisible( true );
+		window.setIgnoreRepaint( true );								//This ensures there is no flickering       	
+
+		return window;
 	}
 }

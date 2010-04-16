@@ -26,7 +26,7 @@ public class AI extends Spaceship {
 	private aiType    type;
 	private aiState   state;
 	private long 	  aiTimer;
-	private ArrayList<GameObject>	entities;		// Contains all gameObjects in the universe...
+	ArrayList<GameObject>	entities;		// Contains all gameObjects in the universe...
 	
 	enum aiType{
 		PLAYER,		 //This one is player controlled
@@ -79,6 +79,9 @@ public class AI extends Spaceship {
 		
 	public void update() {		
 		
+		//TODO: move this elsewhere, spawn interceptor
+		if( keys.mosButton3 ) spawnInterceptor();
+			
 		//Don't do AI
 		if( state == aiState.DISABLED || aiTimer > System.currentTimeMillis() )
 		{
@@ -132,16 +135,16 @@ public class AI extends Spaceship {
 		resetInput();
 		
 		//Calculate distance from target
-		float fDistance = target.getPosCentre().minus(getPosCentre()).length();
+		float distance = getDistanceTo(target);
 
 		//AI State - Intercept
 		if( state == aiState.INTERCEPT )
 		{
 			//Start combat mode if close enough
-			if(fDistance < 600) state = aiState.COMBAT;
+			if( distance < 600 ) state = aiState.COMBAT;
 			
 			//Move towards target, but slow down once we are close enough
-			if( fDistance < 1200 && speed.length() > maxSpeed*0.66f )
+			if( distance < 1200 && speed.length() > maxSpeed*0.66f )
 			{
 				keys.down = true;
 			}
@@ -161,7 +164,7 @@ public class AI extends Spaceship {
 		else if( state == aiState.COMBAT )
 		{
 			//Intercept if target ran away
-			if(fDistance > 600) state = aiState.INTERCEPT;
+			if( distance > 600 ) state = aiState.INTERCEPT;
 
 			//Stand still and shoot
 			keys.down = true;
@@ -186,13 +189,12 @@ public class AI extends Spaceship {
 
 		//We change targets very often, depending on the situation
 		target = getClosestTarget(Float.MAX_VALUE);
-
+		
 		//Reset any controllers first
 		resetInput();
 
 		//Calculate distance from target
-		Vector vDistance = target.getPosCentre().minus(getPosCentre());
-		float fDistance = vDistance.length();
+		float distance = getDistanceTo(target);
 
 		//Consider retreating
 		//Retreat if shields are down
@@ -205,14 +207,17 @@ public class AI extends Spaceship {
 		//else if( energy < energyMax/10 && target.energy > energy ) state = aiState.RETREAT;
 		//TODO: disabled this because the AI got very chicken, needs more work
 		
+		//Spawn interceptors
+		if( state != aiState.RETREAT && life >= lifeMax/2 ) keys.mosButton3 = true;
+		
 		//AI State - Intercept
 		if( state == aiState.INTERCEPT )
 		{
 			//Start combat mode if close enough
-			if(fDistance < 600) state = aiState.COMBAT;
+			if( distance < 600) state = aiState.COMBAT;
 			
 			//Move towards target, but slow down once we are close enough
-			if( fDistance < 1200 && speed.length() > maxSpeed/2 )
+			if( distance < 1200 && speed.length() > maxSpeed/2 )
 			{
 				keys.down = true;
 			}
@@ -232,7 +237,7 @@ public class AI extends Spaceship {
 		else if( state == aiState.COMBAT )
 		{
 			//Intercept if target ran away
-			if(fDistance > 600) state = aiState.INTERCEPT;
+			if( distance > 600 ) state = aiState.INTERCEPT;
 
 			//Stand still and shoot
 			keys.down = true;
@@ -265,7 +270,7 @@ public class AI extends Spaceship {
 			}
 			
 			//Run away
-			if(fDistance < 500)
+			if( distance < 500)
 			{
 				keys.up = true;
 			}
@@ -275,7 +280,6 @@ public class AI extends Spaceship {
 			}
 			
 			//Opposite direction of target
-			//not exactly, but it will do for now
 			keys.mousePos = target.getPosCentre().clone();
 			keys.mousePos.rotateTo(pos.minus(target.getPosCentre()).getAngle());
 			
@@ -283,18 +287,7 @@ public class AI extends Spaceship {
 			aiTimer = System.currentTimeMillis() + 500 + rand.nextInt(350);
 		}		
 	}
-	
-	private void resetInput() {
-		keys.down = false;
-		keys.left = false;
-		keys.left = false;
-		keys.right = false;
-		keys.up = false;
-		keys.mosButton1 = false;
-		keys.mosButton2 = false;
-		keys.mosButton3 = false;
-	}
-	
+		
 	/**
 	 * JJ> This loops through every active Spaceship in the game to find a valid
 	 *     enemy target that is active and not invisible for us.
@@ -316,13 +309,16 @@ public class AI extends Spaceship {
 			
 			//Don't target friendlies
 			if( target.team.equals(this.team) ) continue;
-			
+						
 			//Calculate distance. If it is less than the last target, keep this one instead
-			float dist = target.getPosCentre().minus(getPosCentre()).length();
+			float dist = getDistanceTo(target);
 			if( dist < bestDistance && dist < maxDistance ) 
 			{	
 				bestTarget = target;
 				bestDistance = dist;
+				
+				//If we are looking at it and it's close, then it's good enough for us!
+				if( dist < 800 && facingTarget(target) ) break;
 			}
 		}
 		
@@ -337,13 +333,11 @@ public class AI extends Spaceship {
 	}
 
 	public Spaceship getHomingTarget( float distance ) {
-		//TODO: only if facing target!
-		
 		//Try the current target before finding a new one
-		if( target != null )
+		if( !invalidTarget() )
 		{
-			float dist = target.getPosCentre().minus(getPosCentre()).length();
-			if( !invalidTarget() && dist < distance ) return target;
+			//Only if looking at the target and it is close enough
+			if( facingTarget(target) && getDistanceTo(target) < distance ) return target;
 		}
 		
 		//Current target isn't good enough, find another one instead
@@ -354,5 +348,19 @@ public class AI extends Spaceship {
 		
 		//Gotcha!
 		return newTarget;
+	}
+	
+	public void spawnInterceptor(){
+		if( cooldown != 0 || interceptor == null ) return;
+		
+		//Not enough life to spawn interceptor?
+		if( life-interceptor.lifeMax < interceptor.lifeMax/10 ) return;
+		life -= interceptor.lifeMax;
+		cooldown = 80;
+		
+		//Spawn a interceptor ship at the side of this ship
+		Vector spawnPos = pos.clone();
+		pos.addDirection(radius + 50, direction + ((float)Math.PI/3));
+		entities.add( new Interceptor(spawnPos, interceptor, this) );		
 	}
 }

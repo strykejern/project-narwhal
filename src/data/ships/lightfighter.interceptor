@@ -1,0 +1,25 @@
+//General data
+[NAME]:   Light Interceptor
+[FILE]:   tinyfighter.png
+[SIZE]:   0.5
+
+//Defense
+[LIFE]:   15
+[SHIELD]: 30
+[ENERGY]: 15
+
+//Regeneration
+[EREGEN]: 0.8
+[SREGEN]: 0.5
+
+//Weapons
+[PRIMARY]: gatlinggun.wpn
+[SECONDARY]: NONE
+
+//Special modules
+[NULLIFIER]: TRUE
+
+//Engines
+[MAX_SPEED]: 17
+[TURN_RATE]: 0.25
+[ACCELERATION]: 0.25

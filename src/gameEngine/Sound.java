@@ -18,7 +18,6 @@
 //********************************************************************************************
 package gameEngine;
 
-import java.util.HashMap;
 import javax.sound.sampled.*;
 
 
@@ -33,34 +32,7 @@ public class Sound
 	//Global settings
 	public static boolean enabled = true;
 	protected static float soundVolume = 0.5f;
-	protected static HashMap<String, Sound> soundList;
-	protected static Mixer mixer;
-	
-	/**
-	 * JJ> Loads all sounds into memory, done only once to save time and memory
-	 */
-	protected static void loadAllSounds() {
-		soundList = new HashMap<String, Sound>();
-		String[] fileList = ResourceMananger.getFileList("/data/sounds/");
-		for(String file : fileList) 
-		{
-			soundList.put(file.substring(file.lastIndexOf('/')+1), new Sound(file) );
-		}
 		
-		//This gets the proper Mixer system that supports audio panning
-		Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
-		mixer = AudioSystem.getMixer(mixerInfo[4]);
-		try 
-		{
-			mixer.open();
-			Log.message("Audio system initialized - " + mixer.getMixerInfo().getDescription());
-		} 
-		catch (Exception e) 
-		{
-			Log.message("Could not initialize audio system - " + mixer.getMixerInfo().getDescription() + " - " + e);
-		}
-	}	
-	
 	/**
 	 * JJ> Attempt to set the global gain (volume ish) for the all sound effects. If the control is not supported
 	 *     this method has no effect.
@@ -71,50 +43,53 @@ public class Sound
 		//Clip the volume to between 0.00 and 1.00
 		soundVolume = Math.max(0.00f, Math.min(gain, 1.00f));
 	}
-
-	/**
-	 * JJ> This gets the specified sound that is loaded globally into memory
-	 *     Sounds loaded this way are only loaded once in memory and thus saves both
-	 *     memory and processing time.
-	 * @param fileName Which sound to get
-	 * @return The Sound if it was found or null otherwise.
-	 */
-	public static Sound loadSound( String fileName ) {
-
-		//First make sure sounds are loaded to memory
-		if( soundList == null ) loadAllSounds();
-		
-		//First make sure the file actually exists
-		if( soundList.get(fileName) == null )
-		{
-			Log.warning("Could not find file - " + fileName );
-			return null;
-		}
-				
-		return soundList.get(fileName);
-	}
-
 	
 	/** The sound itself as a audio stream */
-	private AudioInputStream stream;
 	private boolean looping = false;
 	private boolean silence = false;
+	protected boolean valid = false;
+	protected boolean oggFile = false;
+	protected String file;
 
 	/** JJ> Constructor that opens an input stream to the audio file and ready all data so that it can
 	 * 		be played.
 	 * @param fileName Path to the file to be loaded
 	 */
-	protected Sound( String fileName ) {
+	public Sound( String fileName ) {
 		
-		//Figure out if we are loading a ogg file
-		boolean oggFile = false;		
-		if( fileName.endsWith(".ogg") ) oggFile = true;
+		file = "/data/sounds/" + fileName;
+		if( !ResourceMananger.fileExists( file ) )
+		{
+			Log.warning("Sound file does not exist: " + file);
+			valid = false;
+		}
+		else
+		{
+			//Figure out if we are loading a ogg file
+			if( fileName.endsWith(".ogg") ) oggFile = true;		
+			valid = true;
+		}
+	}
 
+	private Mixer getMixer() {
+		
+		//This gets the proper Mixer system that supports audio panning
+		Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
+		
+		/*for( Mixer.Info mix : mixerInfo)
+		{
+			Log.message(mix.getName() + ": " + mix.getDescription());
+		}*/
+		return AudioSystem.getMixer(mixerInfo[0]);
+	}	
+
+	private AudioInputStream getAudioStream() {
+		
 		//Load the sound
 		try
-		{			
+		{
 			//Try to open a stream to it
-			AudioInputStream rawstream = AudioSystem.getAudioInputStream(ResourceMananger.getInputStream(fileName));
+			AudioInputStream rawstream = AudioSystem.getAudioInputStream(ResourceMananger.getInputStream(file));
 			AudioFormat baseFormat = rawstream.getFormat();
 	        
 			//Decode it if it is in OGG Vorbis format
@@ -132,12 +107,11 @@ public class Sound
 			}
 						
 	        //Get AudioInputStream that will be decoded by underlying VorbisSPI
-	        stream = AudioSystem.getAudioInputStream(baseFormat, rawstream);
-	        stream.mark( Integer.MAX_VALUE );						//Mark it so it can be reset			
+	        return AudioSystem.getAudioInputStream(baseFormat, rawstream);
 		}
 	    catch (Exception e) { Log.warning( "Loading audio file failed - " + e.toString() ); }
+	    return null;
 	}
-
 		
 	/**
 	 * JJ> Play the sound clip with full default volume and centered balance
@@ -151,7 +125,9 @@ public class Sound
 	 *     position relative to the camera position.
 	 */
 	public void play3D(Vector origin, Vector cameraPos) {
-				
+		
+		if( !enabled || !valid ) return;
+		
 		Vector screenCenter = cameraPos.plus( new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2) );
 		float maxDist = (Video.getScreenWidth() + Video.getScreenHeight())/8;
 		float dist = origin.minus(screenCenter).length();
@@ -173,7 +149,7 @@ public class Sound
 	 * JJ> Play the sound clip with all specified effects (volume, looping, etc.)
 	 */
 	protected void play( float volume, float panning ) {
-		if( !enabled || stream == null || volume == 0 ) return;
+		if( !enabled || !valid || volume == 0 ) return;
 				
 		//This sound is no longer silent
 		silence = false;
@@ -193,33 +169,19 @@ public class Sound
 				{
 					//Try to open the sound
 					SourceDataLine line;
-					
+					AudioInputStream stream = getAudioStream();
+					DataLine.Info info = new DataLine.Info(SourceDataLine.class, stream.getFormat(), ((int) stream.getFrameLength() * stream.getFormat().getFrameSize()));
 					try 
 					{
-						//Reset position to the start first
-						if ( stream.markSupported() )
-						stream.reset();
-
 						//Open the line to the stream
-						
-						DataLine.Info info = new DataLine.Info(SourceDataLine.class, stream.getFormat(), ((int) stream.getFrameLength() * stream.getFormat().getFrameSize()));
-						
-						/*if( mixer.isLineSupported(info) ) line = (SourceDataLine) mixer.getLine(info);
-						else*/ 				 			  line = (SourceDataLine) AudioSystem.getLine(info);
+						if( getMixer().isLineSupported(info) ) line = (SourceDataLine) getMixer().getLine(info);
+						else 				 			  	   line = (SourceDataLine) AudioSystem.getLine(info);
 						
 						line.open( stream.getFormat() );
 						line.start();
 						mixSoundEffects(line, fVolume, fPanning );
-					} 
-					catch (Exception e) 
-					{
-						Log.warning("Cannot play sound: " + e);
-						return;
-					}
 									
-					//This actually plays the sound
-					try 
-					{
+						//This actually plays the sound
 						int len = 0;
 						byte[] buffer = new byte[1024 * stream.getFormat().getFrameSize()];
 						
@@ -229,21 +191,29 @@ public class Sound
 							if( silence ) return;
 							line.write(buffer, 0, len);
 						}
-					} 
-					catch (Exception e) { Log.warning("Error playing sound: " + e); }
 					
-					//Done playing sound
-					line.drain();
-					line.stop();
-					line.close();
-					line.flush();
+						//Done playing sound
+						line.drain();
+						line.stop();
+						line.close();
+						line.flush();
+						
+						//Finished with this stream
+						stream.close();
+					} 
+					catch (Exception e) 
+					{ 
+						Log.warning("Error playing sound: " + e); 
+						return;
+					}
+					
 				} while( looping );
 				
 			}
 		};
 		
 		//Begin said thread
-		channel.setPriority(Thread.MIN_PRIORITY);
+		channel.setPriority( Thread.MIN_PRIORITY );
 		channel.setDaemon(true);
 		channel.start();		
 	}
@@ -264,23 +234,7 @@ public class Sound
 		looping = false;
 		silence = true;
 	}
-	
-	/**
-	 * JJ> Disposes this Sound freeing any resources it previously used. It will flush 
-	 *     any AudioStreams referenced to it as well.
-	 */
-	/*public void dispose() {
-		try
-		{
-			this.stop();
-			stream.close();	
-		}
-		catch( Exception e )
-		{
-			Log.warning("Disposing of sound: " + e);
-		}
-	}*/
-	
+		
 	/**
 	 * JJ> This adds sound mixer effects like volume and sound balance to a audio line
 	 * @param line Which audio line to adjust

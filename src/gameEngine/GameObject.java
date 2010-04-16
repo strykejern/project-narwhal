@@ -50,7 +50,7 @@ public abstract class GameObject extends Physics{
 	}
 	
 	public void drawCollision(Graphics g, Vector offset) {		
-		if( !GameWindow.debugMode ) return;
+		if( !Configuration.debugMode ) return;
 		
 		//Always draw the image bounds
 		int w = image.getWidth();
@@ -80,4 +80,41 @@ public abstract class GameObject extends Physics{
 	public Vector getPosCentre(){
 		return pos.plus(new Vector(image.getWidth()/2, image.getHeight()/2));
 	}
+	
+	/**
+	 * JJ> Determines whether the we are looking towards the specified spaceship in a 120 degree cone
+	 *     with no limit in distance
+	 * @param target Who are we supposed to be looking at?
+	 * @return Returns true if target is within the cone, false otherwise
+	 */
+	public boolean facingTarget( GameObject target ) {
+		return facingTarget(target, Float.MAX_VALUE);
+	}
+	
+	/**
+	 * JJ> Determines whether the we are looking towards the specified spaceship in a 120 degree cone
+	 * @param target Who are we supposed to be looking at?
+	 * @param distance The maximum distance from us to the target
+	 * @return Returns true if target is within the cone, false otherwise
+	 */
+	public boolean facingTarget( GameObject target, float distance ) {
+		Vector diff = target.getPosCentre().minus(getPosCentre());
+		if( this.direction - diff.getAngle() < Math.PI/3
+				&& diff.length() < distance) return true;
+		return false;
+	}
+	
+	/**
+	 * JJ> Gets the distance from this GameObject to the specified GameObject
+	 * @param target Which GameObject to find the distance to
+	 * @return A float describing the distance between the two objects
+	 */
+	public float getDistanceTo( GameObject target ) {
+		return target.getPosCentre().minus(getPosCentre()).length();
+	}
+	
+	public float getDirection() {
+		return direction;
+	}
+
 }
