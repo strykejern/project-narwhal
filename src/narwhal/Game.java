@@ -75,11 +75,11 @@ public class Game {
         }
         */
        	//Spawn enemies
-    	for(int i = 0; i < 1; i++)
+    	for(int i = 0; i < 0; i++)
         {
     		Spaceship enemy = shipyard.spawnShip("xenon.ship", new Vector(i*500, i*500), this, aiType.CONTROLLER, "EVIL");
 	       	entities.add(enemy);
-			hud.addTracking(enemy);		
+			hud.addTracking(enemy);
         }
 
 		//Generate random planets
@@ -140,7 +140,7 @@ public class Game {
 				if( them instanceof Interceptor )
 				{
 					Interceptor tiny = (Interceptor)them;
-					if( tiny.outOfFuel() && tiny.getMaster() == us )
+					if( tiny.outOfFuel() && tiny.getMaster() == us && us.collidesWith(them) )
 					{
 						tiny.dock();
 						continue;
@@ -180,6 +180,6 @@ public class Game {
 		//Debug info
 		g.setColor(Color.white);
 		g.drawString("Number of particles: " + particleEngine.getParticleCount(), 5, 50);
-		g.drawString("Number of threads: " + Thread.activeCount(), 5, 70);
+		g.drawString("Number of threads: " + Thread.activeCount() + " (" + Sound.getActiveSounds() + " sound)", 5, 70);
 	}
 }

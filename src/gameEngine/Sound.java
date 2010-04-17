@@ -18,6 +18,9 @@
 //********************************************************************************************
 package gameEngine;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import javax.sound.sampled.*;
 
 
@@ -32,7 +35,8 @@ public class Sound
 	//Global settings
 	public static boolean enabled = true;
 	protected static float soundVolume = 0.5f;
-		
+	public static int channelsPlaying = 0;
+	
 	/**
 	 * JJ> Attempt to set the global gain (volume ish) for the all sound effects. If the control is not supported
 	 *     this method has no effect.
@@ -49,7 +53,7 @@ public class Sound
 	private boolean silence = false;
 	protected boolean valid = false;
 	protected boolean oggFile = false;
-	protected String file;
+	protected String file;	
 
 	/** JJ> Constructor that opens an input stream to the audio file and ready all data so that it can
 	 * 		be played.
@@ -71,46 +75,42 @@ public class Sound
 		}
 	}
 
-	private Mixer getMixer() {
+	private AudioInputStream getAudioStream() throws UnsupportedAudioFileException, IOException {
 		
-		//This gets the proper Mixer system that supports audio panning
-		Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
-		
-		/*for( Mixer.Info mix : mixerInfo)
+		//Try to open a stream to it
+		InputStream in = ResourceMananger.getInputStream(file);
+		AudioInputStream rawstream = AudioSystem.getAudioInputStream(in);
+		AudioFormat format = rawstream.getFormat();
+        
+		//Decode it if it is in OGG Vorbis format
+		if( oggFile )
 		{
-			Log.message(mix.getName() + ": " + mix.getDescription());
-		}*/
-		return AudioSystem.getMixer(mixerInfo[0]);
-	}	
-
-	private AudioInputStream getAudioStream() {
-		
-		//Load the sound
-		try
-		{
-			//Try to open a stream to it
-			AudioInputStream rawstream = AudioSystem.getAudioInputStream(ResourceMananger.getInputStream(file));
-			AudioFormat baseFormat = rawstream.getFormat();
-	        
-			//Decode it if it is in OGG Vorbis format
-			if( oggFile )
-			{
-				//The ogg Vorbis format
-		        baseFormat = new AudioFormat(
-	                AudioFormat.Encoding.PCM_SIGNED,
-	                baseFormat.getSampleRate(),
-	                16,
-	                baseFormat.getChannels(),
-	                baseFormat.getChannels() * 2,
-	                baseFormat.getSampleRate(),
-	                false);
-			}
-						
-	        //Get AudioInputStream that will be decoded by underlying VorbisSPI
-	        return AudioSystem.getAudioInputStream(baseFormat, rawstream);
+			//The ogg Vorbis format
+	        format = new AudioFormat(
+                AudioFormat.Encoding.PCM_SIGNED,
+                format.getSampleRate(),
+                16,
+                2,
+                format.getChannels() * 2,
+                format.getSampleRate(),
+                false);
 		}
-	    catch (Exception e) { Log.warning( "Loading audio file failed - " + e.toString() ); }
-	    return null;
+		
+		//Convert sound from Mono to Stereo so that we can adjust panning
+		else if(format.getChannels() == 1 )
+		{
+	        format = new AudioFormat(
+                format.getEncoding(),
+                format.getSampleRate(),
+                format.getSampleSizeInBits(),
+                2,
+                format.getFrameSize(),
+                format.getFrameRate(),
+                format.isBigEndian());			
+		}
+					
+        //Get AudioInputStream that will be decoded by underlying SPI using the specified format
+        return AudioSystem.getAudioInputStream(format, rawstream);
 	}
 		
 	/**
@@ -136,7 +136,7 @@ public class Sound
 		float volume = ( maxDist / dist ) * soundVolume;
 				
 		//Too far way to hear sound?
-		if( volume < 0.075f ) return;
+		if( volume < 0.1f ) return;
 		
 		//Calculate if the sound is left or right oriented
 		float panning = (2.00f/Video.getScreenWidth()) * -(screenCenter.x - origin.x);
@@ -148,74 +148,91 @@ public class Sound
 	/**
 	 * JJ> Play the sound clip with all specified effects (volume, looping, etc.)
 	 */
-	protected void play( float volume, float panning ) {
+	protected void play( final float volume, final float panning ) {
 		if( !enabled || !valid || volume == 0 ) return;
-				
+
 		//This sound is no longer silent
 		silence = false;
 
-		//Calculate sound
-		final float fVolume = volume;
-		final float fPanning = panning;
-
 		//Create a new thread for this sound to be played within
-		Thread channel = new Thread()
-		{
-			public void run()
+		new SoundThread(volume, panning).start();
+		channelsPlaying++;
+	}
+	
+	public class SoundThread extends Thread {
+		float volume;
+		float panning;
+		
+		public SoundThread(float volume, float panning) {
+			super(file);
+			this.volume = volume;
+			this.panning = panning;
+			this.setPriority( Thread.MIN_PRIORITY );
+			this.setDaemon(true);
+		}
+		
+		public void run() {
+			try 
 			{
-				
 				//This might be do once or in infinity, depending on the loop variable
 				do
 				{
 					//Try to open the sound
 					SourceDataLine line;
-					AudioInputStream stream = getAudioStream();
+					AudioInputStream stream = getAudioStream();		
 					DataLine.Info info = new DataLine.Info(SourceDataLine.class, stream.getFormat(), ((int) stream.getFrameLength() * stream.getFormat().getFrameSize()));
-					try 
-					{
-						//Open the line to the stream
-						if( getMixer().isLineSupported(info) ) line = (SourceDataLine) getMixer().getLine(info);
-						else 				 			  	   line = (SourceDataLine) AudioSystem.getLine(info);
-						
-						line.open( stream.getFormat() );
-						line.start();
-						mixSoundEffects(line, fVolume, fPanning );
-									
-						//This actually plays the sound
-						int len = 0;
-						byte[] buffer = new byte[1024 * stream.getFormat().getFrameSize()];
-						
-						//Keep playing as long as there is data left and sound has not been stopped
-						while ( enabled && (len = stream.read(buffer, 0, buffer.length)) != -1 ) 
-						{
-							if( silence ) return;
-							line.write(buffer, 0, len);
-						}
 					
-						//Done playing sound
-						line.drain();
-						line.stop();
-						line.close();
-						line.flush();
+					//Open the line to the stream
+					line = (SourceDataLine) AudioSystem.getLine(info);
+					line.open( stream.getFormat() );
+					line.start();
+					mixSoundEffects(line, volume, panning );
+								
+					//This actually plays the sound
+					int len = 0;					
+					int bytesPerFrame = stream.getFormat().getFrameSize();
+					  
+				    // some audio formats may have unspecified frame size
+				    // in that case we may read any amount of bytes
+	  			    if (bytesPerFrame == AudioSystem.NOT_SPECIFIED) bytesPerFrame = 1;
 						
-						//Finished with this stream
-						stream.close();
-					} 
-					catch (Exception e) 
-					{ 
-						Log.warning("Error playing sound: " + e); 
-						return;
+				    // Set an arbitrary buffer size of 1024 frames.
+				    int numBytes = 1024 * bytesPerFrame; 
+				    byte[] audioBytes = new byte[numBytes];
+					
+					//Keep playing as long as there is data left and sound has not been stopped
+					while ( enabled && (len = stream.read(audioBytes) ) != -1 ) 
+					{
+						if( silence ) break;
+						line.write(audioBytes, 0, len);
 					}
 					
-				} while( looping );
+					//Done playing sound
+					line.drain();
+					line.stop();
+					//line.close();
+					//line.flush();
+					
+					//Finished with this stream
+					stream.close();
+				
+				} while( looping && !silence );
 				
 			}
-		};
-		
-		//Begin said thread
-		channel.setPriority( Thread.MIN_PRIORITY );
-		channel.setDaemon(true);
-		channel.start();		
+			catch (Exception e) 
+			{ 
+				Log.warning("Error playing sound: " + e);
+			}
+			finally
+			{
+				//This thread should be killed now
+				channelsPlaying--;
+			}			
+		}	
+	}
+	
+	public static int getActiveSounds() {
+		return channelsPlaying;
 	}
 
 	/**
@@ -239,31 +256,26 @@ public class Sound
 	 * JJ> This adds sound mixer effects like volume and sound balance to a audio line
 	 * @param line Which audio line to adjust
 	 */
-	private void mixSoundEffects(SourceDataLine line, float volume, float panning) {
+	private void mixSoundEffects(Line line, float volume, float panning) {
 		
 		//Clip them to some valid values
 		panning = Math.max(-1, Math.min(1, panning));
 		volume = Math.max(0, Math.min(1, volume));
 		
 		//Adjust sound balance
-		if( panning != 0 )
+		if( panning != 0 && line.isControlSupported(FloatControl.Type.PAN) )
 		{
-			try
-			{
-				FloatControl gainControl = (FloatControl)line.getControl(FloatControl.Type.PAN);
-				gainControl.setValue(panning);
-			}
-			catch (IllegalArgumentException e) { /*Ignore: we cant change the balance*/};
+			FloatControl gainControl = (FloatControl)line.getControl(FloatControl.Type.PAN);
+			gainControl.setValue(panning);
 		}
 		
 		//Set sound volume
-		try
+		if(line.isControlSupported(FloatControl.Type.MASTER_GAIN))
 		{
 			FloatControl gainControl = (FloatControl)line.getControl(FloatControl.Type.MASTER_GAIN);	
 			float gain = (float)(Math.log(volume)/Math.log(10.0f)*20.0f);
 			gain = Math.max(gainControl.getMinimum(), Math.min(gain, gainControl.getMaximum()));
 			gainControl.setValue(gain);	
 		}
-		catch (IllegalArgumentException e) {/*Ignore: we cant change the volume*/ };
 	}
 }
