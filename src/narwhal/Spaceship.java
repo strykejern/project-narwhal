@@ -110,8 +110,10 @@ public class Spaceship extends GameObject {
 		if(debrisCooldown > 0) debrisCooldown--;
 		
 		//Fire!
-		if( keys.mosButton1 ) 	   		activateWeapon(primary);
-		else if( keys.mosButton2 )      activateWeapon(secondary);
+		if( keys.mosButton1 && keys.mosButton2 ) spawnInterceptor();
+		else if( keys.mosButton1 ) 	   			 activateWeapon(primary);
+		else if( keys.mosButton2 )      		 activateWeapon(secondary);
+		
 		
 		//Key move
 		if 		(keys.up) 	speed.add(new Vector(acceleration*slow, direction, true));
@@ -249,5 +251,23 @@ public class Spaceship extends GameObject {
 	 */
 	public void remove() {
 		super.destroy();
+	}
+	
+	/**
+	 * JJ> Spawns a small interceptor ship if valid. A interceptor is a lesser ship that bigger
+	 *     ships can carry around with their own independent AI if launched. Costs life to use.
+	 */
+	public void spawnInterceptor(){
+		if( cooldown != 0 || interceptor == null ) return;
+		
+		//Not enough life to spawn interceptor?
+		if( getLife()-interceptor.lifeMax < getMaxLife()/10 ) return;
+		setLife( getLife() - interceptor.lifeMax );
+		cooldown = 80;
+		
+		//Spawn a interceptor ship at the side of this ship
+		Vector spawnPos = pos.clone();
+		pos.addDirection(radius + 50, direction + ((float)Math.PI/3));
+		world.getEntityList().add( new Interceptor(spawnPos, interceptor, this) );		
 	}
 }

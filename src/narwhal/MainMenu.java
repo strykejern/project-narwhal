@@ -16,6 +16,7 @@ public class MainMenu {
 	private int currentBackground;
 	
 	private Input key;
+	private boolean inGameMenu;
 	
 	private Image2D header;
 	
@@ -29,11 +30,13 @@ public class MainMenu {
 	static final int BUTTON_GRAPHICS = 5;
 	static final int BUTTON_SOUND = 6;
 	static final int BUTTON_MUSIC = 7;
+	static final int BUTTON_RESTART_GAME = 8;
 	
 	
 	public MainMenu(Input key) {
 		Random rand = new Random();
 		this.key = key;
+		inGameMenu = false;
 			
 		//Menu music
 		Music.play( "menu.ogg" );
@@ -58,6 +61,8 @@ public class MainMenu {
     	buttonList.put( BUTTON_OPTIONS, new Button(pos, size, "OPTIONS", BUTTON_OPTIONS, startPos ) );
     	pos.y += size.y*1.1f;
     	buttonList.put( BUTTON_EXIT, new Button(pos, size, "EXIT GAME", BUTTON_EXIT, startPos ) );
+    	pos.y += size.y*1.1f;
+    	buttonList.put( BUTTON_RESTART_GAME, new Button(pos, size, "RESTART GAME", BUTTON_RESTART_GAME, startPos ) );
 
     	//Options Menu
     	String gfxText = "Graphics: Normal";
@@ -85,6 +90,7 @@ public class MainMenu {
     	buttonList.get(BUTTON_SOUND).hide();
     	buttonList.get(BUTTON_MUSIC).hide();
     	buttonList.get(BUTTON_MAIN_MENU).hide();
+    	buttonList.get(BUTTON_RESTART_GAME).hide();
 	}
 	
 	private void loadBackgrounds() {
@@ -108,12 +114,25 @@ public class MainMenu {
 		background.get(currentBackground).setAlpha(1.00f);
 	}
 
-	//JJ> Main menu loop
-	public GameWindow.gameState update(boolean newGame) {
+	public void setIngameMenu( boolean inGame ){
+		this.inGameMenu = inGame;
 		
-		if( newGame ) buttonList.get(BUTTON_START_GAME).setText("Start New Game");
-		else		  buttonList.get(BUTTON_START_GAME).setText("Resume Game");
-			
+		//Determine if this is a ingame menu or not
+		if( !inGame ) 
+		{
+			buttonList.get(BUTTON_START_GAME).setText("Start New Game");
+			buttonList.get(BUTTON_RESTART_GAME).hide();
+		}
+		else		  
+		{
+			buttonList.get(BUTTON_START_GAME).setText("Resume Game");
+			buttonList.get(BUTTON_RESTART_GAME).show();
+		}
+	}
+	
+	//JJ> Main menu loop
+	public GameWindow.gameState update() {
+		
         //Check if the player is holding over any mouse buttons
         Iterator<Button> iterator = buttonList.values().iterator();
         while( iterator.hasNext() )
@@ -132,8 +151,12 @@ public class MainMenu {
 				{
 					case BUTTON_START_GAME:
 					{
-						//return GameWindow.gameState.GAME_PLAYING;
-						return GameWindow.gameState.GAME_SELECT_SHIP;		//Ship selection
+						if(inGameMenu)  return GameWindow.gameState.GAME_PLAYING;			//Resume game
+						else	        
+						{
+					       	Music.play( "space.ogg" );
+							return GameWindow.gameState.GAME_START_NEW_GAME;
+						}
 					}
 					
 					case BUTTON_OPTIONS:
@@ -146,6 +169,7 @@ public class MainMenu {
 				    	
 				    	//Fade out the existing buttons
 				    	buttonList.get(BUTTON_START_GAME).hide();
+				    	buttonList.get(BUTTON_RESTART_GAME).hide();
 				    	buttonList.get(BUTTON_OPTIONS).hide();
 				    	buttonList.get(BUTTON_EXIT).hide();
 						break;
@@ -162,6 +186,7 @@ public class MainMenu {
 				    	buttonList.get(BUTTON_START_GAME).show();
 				    	buttonList.get(BUTTON_OPTIONS).show();
 				    	buttonList.get(BUTTON_EXIT).show();
+						if(inGameMenu) buttonList.get(BUTTON_RESTART_GAME).show();
 				    	
 				    	//Fade out the current buttons
 				    	buttonList.get(BUTTON_GRAPHICS).hide();
@@ -214,6 +239,14 @@ public class MainMenu {
 							button.setText("Graphics: Low");
 							Video.setVideoQuality( VideoQuality.VIDEO_LOW );
 						}
+						break;
+					}
+					
+					case BUTTON_RESTART_GAME:
+					{
+				       	setIngameMenu(false);
+				      	Music.play( "space.ogg" );
+				       	return GameWindow.gameState.GAME_START_NEW_GAME;
 					}
 				}
 			}

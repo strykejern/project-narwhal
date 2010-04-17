@@ -3,7 +3,7 @@ package gameEngine;
 public class Music extends Sound {
 	
 	public static boolean enabled = true;
-	private static float musicVolume = 0.5f;
+	private static float musicVolume = 0.1f;
 	private static Sound music;
 
 	/**
@@ -12,7 +12,7 @@ public class Music extends Sound {
 	 * @param song The Sound object to be looped.
 	 */
 	public static void play( String song ){
-		if(!enabled) return;
+		if(!enabled ) return;
 		Sound newSong = new Sound(song);
 		
 		//Dont play non-existing music

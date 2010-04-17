@@ -78,10 +78,7 @@ public class AI extends Spaceship {
 	}
 		
 	public void update() {		
-		
-		//TODO: move this elsewhere, spawn interceptor
-		if( keys.mosButton3 ) spawnInterceptor();
-			
+					
 		//Don't do AI
 		if( state == aiState.DISABLED || aiTimer > System.currentTimeMillis() )
 		{
@@ -208,7 +205,10 @@ public class AI extends Spaceship {
 		//TODO: disabled this because the AI got very chicken, needs more work
 		
 		//Spawn interceptors
-		if( state != aiState.RETREAT && getLife() >= getMaxLife()/2 ) keys.mosButton3 = true;
+		if( interceptor != null && state != aiState.RETREAT && getLife() >= getMaxLife()/2 )
+		{
+			keys.mosButton2 = keys.mosButton1 = true;
+		}
 		
 		//AI State - Intercept
 		if( state == aiState.INTERCEPT )
@@ -348,19 +348,5 @@ public class AI extends Spaceship {
 		
 		//Gotcha!
 		return newTarget;
-	}
-	
-	public void spawnInterceptor(){
-		if( cooldown != 0 || interceptor == null ) return;
-		
-		//Not enough life to spawn interceptor?
-		if( getLife()-interceptor.lifeMax < getMaxLife()/10 ) return;
-		setLife( getLife() - interceptor.lifeMax );
-		cooldown = 80;
-		
-		//Spawn a interceptor ship at the side of this ship
-		Vector spawnPos = pos.clone();
-		pos.addDirection(radius + 50, direction + ((float)Math.PI/3));
-		entities.add( new Interceptor(spawnPos, interceptor, this) );		
 	}
 }

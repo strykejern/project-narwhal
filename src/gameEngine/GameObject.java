@@ -38,6 +38,10 @@ public abstract class GameObject extends Physics{
 
 	public GameObject( Game world ){
 		super();
+		
+		//Assume that is inactive unless someone specifies otherwise with setMaxLife()
+		life = INACTIVE_OBJECT;
+
 		if(world == null)
 		{
 			Log.warning("INVALID GAME OBJECT SPAWN! (This is a bad error and might cause null pointer exception): " + this.getClass().getSimpleName());
