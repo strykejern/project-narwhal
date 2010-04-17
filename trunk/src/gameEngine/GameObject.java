@@ -22,26 +22,47 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
+import narwhal.Game;
+import narwhal.Weapon;
+
 public abstract class GameObject extends Physics{
+	protected static final int INACTIVE_OBJECT = Integer.MIN_VALUE;
+	protected static final int OBJECT_INVULNERABLE = Integer.MAX_VALUE;
+
 	protected Input keys;
 	protected Image2D image;
+	public Game world;
 	
-	public GameObject(){
+	private float lifeMax;
+	private float life;
+
+	public GameObject( Game world ){
 		super();
-	}
-	
-	protected void init(Vector pos, Vector speed, Vector size, Image2D image, Shape shape, float direction, int radius){
-		this.pos = pos;
-		this.speed = speed;
-		this.size = size;
-		this.image = image;
-		this.shape = shape;
-		this.direction = direction;
-		this.setRadius(radius);
-		this.canCollide = true;
+		if(world == null)
+		{
+			Log.warning("INVALID GAME OBJECT SPAWN! (This is a bad error and might cause null pointer exception): " + this.getClass().getSimpleName());
+		}
+		this.world = world;
 	}
 	
 	public void update() {
+		
+		if(world == null) 
+		{
+			Log.warning("INVALID OBJECT UPDATE");
+			return;
+		}
+		
+		// Quick implement of universe bounds
+		float uniX = world.universeSize * Video.getScreenWidth();
+		float uniY = world.universeSize * Video.getScreenHeight();
+		
+		if 		(pos.x < 0) 	pos.x = uniX + pos.x;
+		else if (pos.x > uniX)  pos.x %= uniX;
+		
+		if 		(pos.y < 0) 	pos.y = uniY + pos.y;
+		else if (pos.y > uniY)  pos.y %= uniY;
+
 		super.update();
 	}
 	
@@ -49,7 +70,7 @@ public abstract class GameObject extends Physics{
 		image.draw(g, drawX(offset), drawY(offset));
 	}
 	
-	public void drawCollision(Graphics g, Vector offset) {		
+	public void drawCollision(Graphics g, Vector offset) {
 		if( !Configuration.debugMode ) return;
 		
 		//Always draw the image bounds
@@ -79,6 +100,60 @@ public abstract class GameObject extends Physics{
 	
 	public Vector getPosCentre(){
 		return pos.plus(new Vector(image.getWidth()/2, image.getHeight()/2));
+	}
+	
+	public float getDirection() {
+		return direction;
+	}	
+	
+	public boolean active() {
+		return life != INACTIVE_OBJECT;
+	}
+	
+	public void destroy(){
+		
+		//Can't destroy what is already destroyed
+		if( !active() ) return;
+
+		//Mark as dead so that it gets removed in the next update
+		life = INACTIVE_OBJECT;
+		
+		//Free any resources
+		image.dispose();
+		world = null;
+	}
+
+	public float getLife() {
+		return life;
+	}
+
+	public float getMaxLife() {
+		return lifeMax;
+	}
+
+	public void setMaxLife( float set ) {
+		life = lifeMax = set;
+	}
+
+	public void setLife( float set ) {
+		life = set;
+		
+		//Upper limit
+		if( life >= lifeMax ) life = lifeMax;
+		
+		//If equal or below 0, destroy this one
+		if(life <= 0)
+		{
+			this.destroy();
+		}
+	}
+	
+	public void damage( Weapon weapon ) {
+		
+		//Cant be killed
+		if( lifeMax == OBJECT_INVULNERABLE ) return;
+		
+		setLife(life - weapon.damage*weapon.lifeMul);
 	}
 	
 	/**
@@ -113,8 +188,4 @@ public abstract class GameObject extends Physics{
 		return target.getPosCentre().minus(getPosCentre()).length();
 	}
 	
-	public float getDirection() {
-		return direction;
-	}
-
 }

@@ -33,7 +33,6 @@ public class Camera {
 	private ArrayList<GameObject> 	entities;
 	private GameObject 				follow;
 	private Background 				background;
-	private ParticleEngine		    particleEngine;
 	private int 					shakeCamera = 0;
 
 	public Camera(ArrayList<GameObject> entities, Background background, GameObject follow){
@@ -68,10 +67,7 @@ public class Camera {
 				count++;
 			}
 		}
-		
-		//Draw particles
-		if( particleEngine != null ) particleEngine.render(g);
-		
+				
 		//Debug info
 		g.setColor(Color.WHITE);
 		g.drawString("cameraPos X: " + cameraPos.getX() + " Y: " + cameraPos.getY(), 5, 20);
@@ -131,9 +127,5 @@ public class Camera {
 
 	public Vector getCameraPos() {
 		return cameraPos;
-	}
-
-	public void setParticleEngine(ParticleEngine particleEngine) {
-		this.particleEngine = particleEngine;
 	}
 }

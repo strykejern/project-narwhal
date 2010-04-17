@@ -43,11 +43,11 @@ public class AI extends Spaceship {
 		COMBAT				//Shoot at target, maybe move in circles around it?
 	}
 	
-	public AI(SpaceshipTemplate name, String team) {
-		super(name, team);
+	public AI(SpaceshipTemplate name, String team, Game world) {
+		super(name, team, world);
 	}
 	
-	public void instantiate(Vector pos, Game world, aiType AI) {
+	public void instantiate(Vector pos, aiType AI) {
 		this.pos 	    = pos;
 		
 		//Are we player or AI?
@@ -64,7 +64,7 @@ public class AI extends Spaceship {
 		}
 		
 		//Set references
-		universeSize   	= world.universeSize;
+		//TODO unessecary to do here, move to constructor or replace functions
 		particleEngine 	= world.getParticleEngine();		
 		entities 		= world.getEntityList();
 	}
@@ -208,7 +208,7 @@ public class AI extends Spaceship {
 		//TODO: disabled this because the AI got very chicken, needs more work
 		
 		//Spawn interceptors
-		if( state != aiState.RETREAT && life >= lifeMax/2 ) keys.mosButton3 = true;
+		if( state != aiState.RETREAT && getLife() >= getMaxLife()/2 ) keys.mosButton3 = true;
 		
 		//AI State - Intercept
 		if( state == aiState.INTERCEPT )
@@ -354,8 +354,8 @@ public class AI extends Spaceship {
 		if( cooldown != 0 || interceptor == null ) return;
 		
 		//Not enough life to spawn interceptor?
-		if( life-interceptor.lifeMax < interceptor.lifeMax/10 ) return;
-		life -= interceptor.lifeMax;
+		if( getLife()-interceptor.lifeMax < getMaxLife()/10 ) return;
+		setLife( getLife() - interceptor.lifeMax );
 		cooldown = 80;
 		
 		//Spawn a interceptor ship at the side of this ship

@@ -21,12 +21,9 @@ package narwhal;
 import gameEngine.*;
 
 public class Spaceship extends GameObject {
-
-	protected static final int KILLED = Integer.MIN_VALUE;
 	
 	//References
 	protected ParticleEngine  particleEngine;
-	protected int 		      universeSize;
 
 	//General stuff
 	public String name;						//This ship's name that can be unique
@@ -46,8 +43,6 @@ public class Spaceship extends GameObject {
 	protected int cooldown;					//Global ship cooldown
 	
 	//Defensive systems
-	public float lifeMax;
-	public float life;
 	public float shieldMax;
 	public float shieldRegen;
 	public float shield;
@@ -59,13 +54,14 @@ public class Spaceship extends GameObject {
 	public short radarLevel;
 	public SpaceshipTemplate interceptor;
 	
-	public Spaceship( SpaceshipTemplate blueprint, String team ) {		
+	public Spaceship( SpaceshipTemplate blueprint, String team, Game world ) {		
+		super(world);
 
 		//Load the variables from the spaceship template and clone them
 		name = new String(blueprint.name);
 		image = blueprint.image.clone();
 		
-		life = lifeMax = blueprint.lifeMax;
+		setMaxLife(blueprint.lifeMax);
 		shield = shieldMax = blueprint.shieldMax;
 		shieldRegen = blueprint.shieldRegen;
 		energy = energyMax = blueprint.energyMax;
@@ -141,34 +137,13 @@ public class Spaceship extends GameObject {
 		image.setDirection( direction );
 		
 		if (speed.length() > maxSpeed*slow) speed.setLength(maxSpeed);
-		
-		// Quick implement of universe bounds
-		float uniX = universeSize * Video.getScreenWidth();
-		float uniY = universeSize * Video.getScreenHeight();
-		
-		if 		(pos.x < 0) 	pos.x = uniX + pos.x;
-		else if (pos.x > uniX)  pos.x %= uniX;
-		
-		if 		(pos.y < 0) 	pos.y = uniY + pos.y;
-		else if (pos.y > uniY)  pos.y %= uniY;
-		
+				
 		super.update();
-	}
-
-	public void planetHit() {
-		float damage = lifeMax / 4;
-			
-		//Next, lose some life
-		life -= damage;
-		if(life <= 0)
-		{
-			this.kill();
-		}		
 	}
 	
 	public void damage(Weapon weapon) {
 		float damage = weapon.damage;
-		
+
 		//Apply energy damage first
 		energy -= weapon.energyDamage;
 		if(energy < 0) energy = 0;
@@ -206,11 +181,7 @@ public class Spaceship extends GameObject {
 		}
 		
 		//Next, lose some life
-		life -= damage*weapon.lifeMul;	
-		if(life <= 0)
-		{
-			this.kill();
-		}
+		setLife(getLife() - damage*weapon.lifeMul);
 		
 		//We lose 15% speed as well
 		speed.multiply(0.85f);	
@@ -243,7 +214,10 @@ public class Spaceship extends GameObject {
 		return image;
 	}
 	
-	public void kill(){
+	/**
+	 * JJ> Destroys this spaceship, creating a wreckage and explosion
+	 */
+	public void destroy(){
 		
 		//Cant kill what is already dead
 		if( !active() ) return;
@@ -253,18 +227,12 @@ public class Spaceship extends GameObject {
 		for(int i = 0; i < 4; i++) particleEngine.spawnParticle( "explosion.prt", getPosCentre(), direction, this, null );
 		particleEngine.spawnParticle( "wreck.prt", getPosCentre(), direction, this, null );
 		
-		//Mark as dead so that it gets removed in the next update
-		life = KILLED;
-		
-		//Free any resources
-		image.dispose();
-		particleEngine = null;
-	}
-	
-	public boolean active() {
-		return life != KILLED;
+		super.destroy();
 	}
 		
+	/**
+	 * JJ> Resets all input actions for this spaceship
+	 */
 	protected void resetInput() {
 		keys.down = false;
 		keys.left = false;
@@ -274,5 +242,12 @@ public class Spaceship extends GameObject {
 		keys.mosButton1 = false;
 		keys.mosButton2 = false;
 		keys.mosButton3 = false;
+	}
+
+	/**
+	 * JJ> Removes this Spaceship from game without destroying it with explosions and all
+	 */
+	public void remove() {
+		super.destroy();
 	}
 }

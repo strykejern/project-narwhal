@@ -4,8 +4,10 @@ import java.util.ArrayList;
 
 import gameEngine.GameObject;
 import gameEngine.Input;
+import gameEngine.Log;
 import gameEngine.Sound;
 import gameEngine.Vector;
+import gameEngine.Video;
 
 public class Interceptor extends Spaceship {
 	
@@ -27,7 +29,7 @@ public class Interceptor extends Spaceship {
     }
     
 	public Interceptor(Vector pos, SpaceshipTemplate blueprint, AI master) {
-		super(blueprint, master.team);	
+		super(blueprint, master.team, master.world);
 		this.pos 	    = pos;
 		keys 		    = new Input();
 		fuel 			= 1500;
@@ -37,12 +39,13 @@ public class Interceptor extends Spaceship {
 		state           = State.FOLLOW;
 		
 		//Set references
-		universeSize   	= master.universeSize;
+		if( master.world == null ) Log.warning("INVALID SPAWN");
+		this.world 		= master.world;
 		particleEngine 	= master.particleEngine;		
 		entities 		= master.entities;
 		
 		//Play sound
-		launch.playFull(1);		//TODO: use 3D sound, need camera reference
+		launch.play3D(pos, Video.getCameraPos());
 	}
 
 	public void update() {
@@ -54,7 +57,7 @@ public class Interceptor extends Spaceship {
 			state = State.REFUEL;
 			
 			//Die if we go way behind refuel schedule
-			if(fuel == -1500) this.kill();
+			if(fuel == -1500) this.destroy();
 		}
 		
 		//Only be active every so often
@@ -130,7 +133,7 @@ public class Interceptor extends Spaceship {
 		else if( state == State.ATTACK )
 		{
 			//Stop attacking if enemy ran away
-			if( invalidTarget() || getDistanceTo(target) > 900 ) state = State.FOLLOW;
+			if( invalidTarget() || getDistanceTo(target) > 1000 ) state = State.FOLLOW;
 			
 			//Stop attacking if master ran away
 			else if ( getDistanceTo(master) > 1200 ) state = State.FOLLOW;
@@ -140,7 +143,7 @@ public class Interceptor extends Spaceship {
 			keys.up = true;
 
 			//Shoot?
-			if( facingTarget(target) )
+			if( facingTarget(target, 700) )
 			{
 				keys.mosButton1 = true;
 			}
@@ -162,14 +165,14 @@ public class Interceptor extends Spaceship {
 	}
 
 	public void dock() {
-		master.life = Math.min( master.lifeMax, master.life + this.lifeMax );
-		this.life = KILLED;
-		this.image.dispose();
+		
+		//Give master the life back
+		master.setLife( Math.min(master.getMaxLife(), master.getLife() + this.getLife()) );
 		
 		//Play sound
-		dock.playFull(1);		//TODO: use 3D sound, need camera reference
-
-		return;
+		dock.play3D(this.pos, Video.getCameraPos());
+		
+		super.remove();
 	}
 	
 	public boolean outOfFuel() {
