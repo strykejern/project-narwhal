@@ -54,7 +54,8 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		GAME_MENU,
 		GAME_PLAYING, 
 		GAME_EXIT,
-		GAME_SELECT_SHIP
+		GAME_SELECT_SHIP,
+		GAME_START_NEW_GAME
 	}
 	
 	/**
@@ -106,11 +107,6 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			//Update mouse position within the frame
 			keys.update(frame.getMousePosition());
 			
-			//Start a new game if needed
-			if( theGame == null && state == gameState.GAME_PLAYING)
-			{
-		       	theGame = new Game(keys, 5, selectShip);
-			}
 
 			try
 			{
@@ -120,21 +116,28 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			
 			if(state == gameState.GAME_PLAYING)
 			{
+				if( theGame == null ) theGame = new Game(keys, 5, selectShip);
 				state = theGame.update();
 				frame.getContentPane().setCursor(Video.BLANK_CURSOR);	//TODO: bad change cursor every frame?
 			}
 			else if(state == gameState.GAME_MENU)
 			{
 		    	frame.getContentPane().setCursor( null );				//TODO: bad change cursor every frame?
-				state = theMenu.update(theGame == null);
+				state = theMenu.update();
 			}
 			else if(state == gameState.GAME_SELECT_SHIP)
 			{
 				if(selectShip == null) selectShip = new Shipyard(keys);
-				
 		    	frame.getContentPane().setCursor( null );				//TODO: bad change cursor every frame?
 		    	state = selectShip.update();
 			}
+			else if( state == gameState.GAME_START_NEW_GAME )
+			{
+		       	theMenu.setIngameMenu(true);
+		       	theGame = null;
+		       	state = gameState.GAME_SELECT_SHIP;
+			}
+
 			repaint();
 			
 			try 

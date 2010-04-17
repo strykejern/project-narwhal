@@ -15,18 +15,17 @@ public class Asteroid extends GameObject {
 		this.world = world;
 		
 		//Randomize image
-		image = new Image2D("data/asteroid.png");
+		image = new Image2D("data/asteroid" + rand.nextInt(4) + ".png");
 				
 		this.size = size;
 		if( size == 0 ) this.size = 1 + rand.nextFloat();
 		image.scale( this.size );
-		
-		setMaxLife( size*80 );
-		
+				
 		if(rand.nextBoolean()) image.verticalFlip();
 		if(rand.nextBoolean()) image.horizontalFlip();
 		
 		//Initiate this object
+		setMaxLife( size*150 );
 		super.pos = pos;
 		super.speed = new Vector(rand.nextInt(4)-2, rand.nextInt(4)-2);
 		
@@ -45,6 +44,7 @@ public class Asteroid extends GameObject {
 	}
 	
 	public void destroy() {
+		if( !active() ) return;
 		
 		//Spawn 3 new asteroids
 		if( size > 0.75 )

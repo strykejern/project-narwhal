@@ -45,7 +45,7 @@ public class Button {
     	if( buttonHover == null )
     		buttonHover = new Sound("hover.au");
     	if( buttonClick == null )
-        	buttonClick = new Sound("click.au");
+        	buttonClick = new Sound("click.wav");
 		
 		alpha = 0;
 		hidden = false;
@@ -76,7 +76,7 @@ public class Button {
         if( key.mousePos.x > pos.x && key.mousePos.x < pos.x + size.x )
         	if( key.mousePos.y > pos.y && key.mousePos.y < pos.y + size.y )
         	{
-        		if( !mouseOver ) buttonHover.playFull(0.55f);
+        		if( !mouseOver ) buttonHover.playFull(0.1f);
         		mouseOver = true;
         		return true;
         	}
@@ -86,7 +86,7 @@ public class Button {
 	}
 	
 	public void playClick(){
-		buttonClick.playFull(0.75f);
+		buttonClick.playFull(1);
 	}
 	
 	public void hide(){

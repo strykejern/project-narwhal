@@ -19,7 +19,7 @@ public class Interceptor extends Spaceship {
     private long timer;							//AI timer
     private Spaceship target;					//What's our target?
     private State state;						//What are we currently doing?
-    private AI master;							//Who's our boss?
+    private Spaceship master;					//Who's our boss?
     private int fuel;							//How many frames before we need to return to master?
     
     private enum State {
@@ -28,7 +28,7 @@ public class Interceptor extends Spaceship {
     	REFUEL
     }
     
-	public Interceptor(Vector pos, SpaceshipTemplate blueprint, AI master) {
+	public Interceptor(Vector pos, SpaceshipTemplate blueprint, Spaceship master) {
 		super(blueprint, master.team, master.world);
 		this.pos 	    = pos;
 		keys 		    = new Input();
@@ -42,7 +42,7 @@ public class Interceptor extends Spaceship {
 		if( master.world == null ) Log.warning("INVALID SPAWN");
 		this.world 		= master.world;
 		particleEngine 	= master.particleEngine;		
-		entities 		= master.entities;
+		entities 		= master.world.getEntityList();
 		
 		//Play sound
 		launch.play3D(pos, Video.getCameraPos());
