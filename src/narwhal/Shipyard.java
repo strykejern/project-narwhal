@@ -106,8 +106,8 @@ public class Shipyard {
 		}
 		
 		AI produced;
-		produced = new AI(shipList.get(name), team);
-		produced.instantiate(pos, world, AI);
+		produced = new AI(shipList.get(name), team, world);
+		produced.instantiate(pos, AI);
 				
 		return produced;
 	}
@@ -288,8 +288,8 @@ public class Shipyard {
 	 */
 	public Spaceship spawnSelectedShip(Vector pos, Game world, aiType AI, String team) {
 		
-		AI produced = new AI(ship, team);
-		produced.instantiate(pos, world, AI);
+		AI produced = new AI(ship, team, world);
+		produced.instantiate(pos, AI);
 				
 		return produced;
 		

@@ -42,6 +42,7 @@ public class Video {
 	private static VideoQuality videoQuality = VideoQuality.VIDEO_NORMAL;
 	private static RenderingHints quality = new RenderingHints(null);
 	public  static boolean fullScreen = false;
+	private static Camera viewPort = null;
 	
 	// Create a new blank cursor.
 	public static final Cursor BLANK_CURSOR = Toolkit.getDefaultToolkit().createCustomCursor(
@@ -209,5 +210,21 @@ public class Video {
 		window.setIgnoreRepaint( true );								//This ensures there is no flickering       	
 
 		return window;
+	}
+
+	public static void setCamera(Camera setViewPort) {
+		viewPort = setViewPort;
+	}
+	
+	public static Vector getCameraPos() {
+		return viewPort.getCameraPos();
+	}
+
+	public static boolean isInFrame(Vector pos, Vector tolerance) {
+		return viewPort.isInFrame(pos, tolerance);
+	}
+	
+	public static boolean isInFrame(GameObject object) {
+		return viewPort.isInFrame(object);
 	}
 }

@@ -34,7 +34,7 @@ public class Game {
 	private Input 					keys;			// Class to read inputs from
 	private HUD						hud;			// User interface
 	private Shipyard                shipyard;		// The factory that spawns ships for us
-   	public final int universeSize;
+   	public final int 				universeSize;
 	
 	private Camera					viewPort;		// Handles viewpoints and drawing
 	
@@ -75,21 +75,27 @@ public class Game {
         }
         */
        	//Spawn enemies
-    	for(int i = 0; i < 0; i++)
+    	for(int i = 0; i < 1; i++)
         {
     		Spaceship enemy = shipyard.spawnShip("xenon.ship", new Vector(i*500, i*500), this, aiType.CONTROLLER, "EVIL");
 	       	entities.add(enemy);
 			hud.addTracking(enemy);
         }
 
-		//Generate random planets
+		//Generate random planets and asteroids
 		for(int x = 0; x < universeSize; x++)
 			for(int y = 0; y < universeSize; y++)
 			{
+				//Asteroid
+				int offX = rand.nextInt(Video.getScreenWidth() );
+				int offY = rand.nextInt(Video.getScreenHeight() );
+				entities.add( new Asteroid(new Vector(x*Video.getScreenWidth() + offX, y*Video.getScreenHeight() + offY), this, 0) );
+				
+				//25% for planet
 				if( rand.nextInt(100) >= 25 ) continue;
-				int offX = rand.nextInt(Video.getScreenWidth() - Planet.getMaxSize());
-				int offY = rand.nextInt(Video.getScreenHeight() - Planet.getMaxSize());
-				entities.add( new Planet(new Vector(x*Video.getScreenWidth() + offX, y*Video.getScreenHeight() + offY), System.nanoTime()) );			
+				offX = rand.nextInt(Video.getScreenWidth() - Planet.getMaxSize());
+				offY = rand.nextInt(Video.getScreenHeight() - Planet.getMaxSize());
+				entities.add( new Planet(new Vector(x*Video.getScreenWidth() + offX, y*Video.getScreenHeight() + offY), System.nanoTime(), this) );			
 			}
 		
 		// Initialize the camera
@@ -98,8 +104,7 @@ public class Game {
 				new Background(universeSize, System.currentTimeMillis()), 
 				player);
 		viewPort.configureInputHandler(keys);
-		particleEngine.setRenderCamera(viewPort);
-		hud.setCamera(viewPort);
+		Video.setCamera(viewPort);
 	}
 	
 	public GameWindow.gameState update(){
@@ -111,15 +116,11 @@ public class Game {
 		{
 			GameObject entity = entities.get(i);
 			
-			//Remove destroyed spaceships from the list
-			if(entity instanceof Spaceship)
+			//Remove inactive objects from the list
+			if( !entity.active() )
 			{
-				Spaceship ship = ((Spaceship) entity);
-				if( !ship.active() )
-				{
-					entities.remove(ship);
-					continue;
-				}
+				entities.remove(entity);
+				continue;
 			}
 			
 			//Update
@@ -174,6 +175,7 @@ public class Game {
 	public void draw(Graphics2D g){
 
 		viewPort.drawView(g);
+		particleEngine.render(g);
 		keys.drawCrosshair(g);
 		hud.draw(g);
 				

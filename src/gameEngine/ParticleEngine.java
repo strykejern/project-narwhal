@@ -23,7 +23,6 @@ public class ParticleEngine {
 	private static final int MAX_PARTICLES = 512;
 	private HashMap<String, ParticleTemplate> particleMap;
 	private ArrayList<Particle> particleList;
-	private Camera viewPort;
 	
 	/**
 	 * JJ> Loads all particle images into a hash map for later use
@@ -55,16 +54,7 @@ public class ParticleEngine {
 			}			
 		}
 	}
-	
-	public void setRenderCamera(Camera viewPort) {
-		this.viewPort = viewPort;
 		
-		//Spit out a warning if needed
-		if( viewPort == null ) 
-			Log.warning("Particle engine has a null pointer to the Camera! No partilces will be drawn.");
-		else viewPort.setParticleEngine(this);
-	}
-	
 	public void update( ArrayList<GameObject> entities, int universeSize ) {
 		
 		//Update particle effects
@@ -95,16 +85,14 @@ public class ParticleEngine {
 						if( !prt.template.friendlyFire && (object instanceof Spaceship) && prt.team.equals(((Spaceship)object).team) ) continue;
 												
 						//Damage them
-						if( prt.weapon != null && object instanceof Spaceship )
+						if( prt.weapon != null )
 						{
-							Spaceship them = (Spaceship)object;
-
 							//Have we already hit them?
-							if( prt.collisionList.contains(them) ) continue;
+							if( prt.collisionList.contains(object) ) continue;
 
 							//Do the collision
-							them.damage( prt.weapon );
-							prt.collisionList.add(them);
+							object.damage( prt.weapon );
+							prt.collisionList.add(object);
 						}
 						
 						//TODO: disabled particle on object collision until we have implemented Mass
@@ -160,7 +148,6 @@ public class ParticleEngine {
 	}
 
 	public void render(Graphics2D g) {
-		
 		//Draw all particles
 		for(int i = 0; i < particleList.size(); i++) particleList.get(i).draw(g);
 	}
@@ -409,7 +396,7 @@ public class ParticleEngine {
 		//Object functions
 		private boolean requestDelete;		//Remove me?
 		private boolean onScreen;			//Was it on the screen this update?
-		public ArrayList<Spaceship> collisionList;	//List of all spaceship we have collided with
+		public ArrayList<GameObject> collisionList;	//List of all GameObject we have damaged
 		private ParticleTemplate template;
 		
 		private ImageIcon image;
@@ -531,10 +518,10 @@ public class ParticleEngine {
 			if(spawner == null) 	speed = new Vector();
 			else					speed = spawner.speed.clone();
 			setRadius( image.getIconWidth()/4 );
-			collisionList = new ArrayList<Spaceship>();
+			collisionList = new ArrayList<GameObject>();
 			
 			//Play spawn sound
-			if( template.soundSpawn != null ) template.soundSpawn.play3D(pos, viewPort.getCameraPos());
+			if( template.soundSpawn != null ) template.soundSpawn.play3D(pos, Video.getCameraPos());
 		}
 				
 		/**
@@ -591,7 +578,7 @@ public class ParticleEngine {
 			pos.add(move);
 			
 			//Figure out if we are inside the screen or not
-			if( viewPort != null ) onScreen = viewPort.isInFrame( this.pos, new Vector() );
+			onScreen = Video.isInFrame( this.pos, new Vector() );
 		}
 		
 		/**
@@ -601,7 +588,7 @@ public class ParticleEngine {
 		final public void draw(Graphics2D g) {
 
 			//Only draw if it is okay to draw
-			if( !onScreen || viewPort == null ) return;
+			if( !onScreen  ) return;
 			g = (Graphics2D)g.create();
 
 			//We make particles as fast as possible
@@ -616,7 +603,7 @@ public class ParticleEngine {
 			int h = (int) ( image.getIconHeight() * size);
 
 			//Calculate position
-			Vector offset = viewPort.getCameraPos();
+			Vector offset = Video.getCameraPos();
 			int xPos = pos.getX() - w/2 - offset.getX();
 			int yPos = pos.getY() - h/2 - offset.getY();
 			
@@ -650,7 +637,7 @@ public class ParticleEngine {
 			onScreen = false;
 			
 			//Play end sound
-			if( template.soundEnd != null )template. soundEnd.play3D( this.pos, viewPort.getCameraPos() );
+			if( template.soundEnd != null )template. soundEnd.play3D( this.pos, Video.getCameraPos() );
 			
 			//Spawn any end particle
 			if( template.particleEnd != null )
@@ -664,4 +651,5 @@ public class ParticleEngine {
 			}
 		}
 	}
+	
 }

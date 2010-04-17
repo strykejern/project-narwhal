@@ -36,11 +36,16 @@ public class Planet extends GameObject {
 		}
 	}
 	
-	public Planet(Vector spawnPos, long seed) {
+	public Planet(Vector spawnPos, long seed, Game world) {
+		super(world);
 		Random rand = new Random(seed);
+		this.world = world;
 		
 		//Initialize the planet images if needed
 		if( planetImages == null ) loadPlanets();
+		
+		//Make it unkillable
+		this.setMaxLife( OBJECT_INVULNERABLE );
 		
 		//Make it unique
 		Image2D myImage = planetImages.get( rand.nextInt(planetImages.size()) ).clone();

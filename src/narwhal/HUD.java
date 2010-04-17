@@ -18,7 +18,6 @@
 //********************************************************************************************
 package narwhal;
 
-import gameEngine.Camera;
 import gameEngine.Vector;
 import gameEngine.Video;
 
@@ -48,7 +47,6 @@ public class HUD {
 	private final static Vector SCREEN_MID = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2);
 	private Spaceship observer;
 	private ArrayList<Spaceship> tracking;
-	private Camera viewPort;
 	
 	/**
 	 * JJ> Constructs a new HUD object which is the overlay that shows the player how much
@@ -59,11 +57,7 @@ public class HUD {
 		this.observer = observer;
 		tracking = new ArrayList<Spaceship>();
 	}
-	
-	public void setCamera(Camera viewPort) {
-		this.viewPort = viewPort;		
-	}
-	
+		
 	public void draw(Graphics2D g) {
 		
 		//Don't draw HUD for players who lost
@@ -89,7 +83,7 @@ public class HUD {
 		
 		//Life
 		g.setColor(LIFE);
-		g.fillArc(hudPos.getX()+60, hudPos.getY()+60, 280, 280, 180, -(int) (90f*(observer.life/observer.lifeMax)));
+		g.fillArc(hudPos.getX()+60, hudPos.getY()+60, 280, 280, 180, -(int) (90f*(observer.getLife()/observer.getMaxLife())));
 		
 		g.setColor(BACKGROUND);
 		g.fillArc(hudPos.getX()+100, hudPos.getY()+100, 200, 200, 180, -90);
@@ -143,7 +137,7 @@ public class HUD {
 	private void drawRadar(Spaceship target, Graphics2D g) {
 		
 		//No need to draw if we can see them
-		if( viewPort.isInFrame(target) )
+		if( Video.isInFrame(target) )
 		{
 			//But we might need to draw their life, shield and energy bars
 			drawRadarStatus(g, target);
@@ -205,7 +199,7 @@ public class HUD {
 		int width = target.getImage().getWidth();
 		
 		//Calculate position
-		Vector diff = target.getPosCentre().minus(viewPort.getCameraPos());
+		Vector diff = target.getPosCentre().minus(Video.getCameraPos());
 		int drawX = diff.getX() - width/2;
 		int drawY = diff.getY() - height/2 - height/4;
 		
@@ -227,7 +221,7 @@ public class HUD {
 		g.fillRoundRect(drawX, drawY, width, height/8, 25, 25);
 		
 		g.setColor( RADAR_LIFE );
-		width = Math.max( 0, (int)((width/target.lifeMax) * target.life) );
+		width = Math.max( 0, (int)((width/target.getMaxLife()) * target.getLife()) );
 		g.fillRoundRect(drawX, drawY, width, height/8, 25, 25);
 
 		//Energy
