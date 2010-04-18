@@ -207,13 +207,16 @@ public class HUD {
 		int drawY = diff.getY() - height/2 - height/4;
 		
 		//Shield
-		g.setColor(RADAR_BACK);
-		g.fillRoundRect(drawX, drawY, width, height/8, 25, 25);
+		if(target.shieldMax != 0)
+		{
+			g.setColor(RADAR_BACK);
+			g.fillRoundRect(drawX, drawY, width, height/8, 25, 25);
+			
+			g.setColor( RADAR_SHIELD );
+			width = Math.max( 0, (int)((width/target.shieldMax) * target.shield) );
+			g.fillRoundRect(drawX, drawY, width, height/8, 25, 25);
+		}
 		
-		g.setColor( RADAR_SHIELD );
-		width = Math.max( 0, (int)((width/target.shieldMax) * target.shield) );
-		g.fillRoundRect(drawX, drawY, width, height/8, 25, 25);
-
 		//Life and Energy is only drawn on radar level 4 or higher
 		if( observer.radarLevel < 3 ) return;
 
