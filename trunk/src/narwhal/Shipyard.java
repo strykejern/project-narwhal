@@ -199,6 +199,11 @@ public class Shipyard {
 			y += font.getHeight(g);
 			g.drawString("Interceptors (" + ship.interceptor.name +")", x, y);
 		}
+		if( ship.canDisguise != null )
+		{
+			y += font.getHeight(g);
+			g.drawString("Stealth Disguise System", x, y);
+		}
 
 		//Do last, draw all buttons
         Iterator<Button> iterator = buttonList.values().iterator();

@@ -20,6 +20,7 @@
 //Special mods
 [RADAR]: 0
 [NULLIFIER]: TRUE
+[STRAFING]: TRUE
 
 //Engines
 [MAX_SPEED]: 17

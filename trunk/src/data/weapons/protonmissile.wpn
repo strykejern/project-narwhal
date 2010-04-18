@@ -1,8 +1,8 @@
 //Proton missile launcher
 [NAME]: Proton Missiles
-[DAMAGE]: 50
-[COST]: 200
+[DAMAGE]: 55
+[COST]: 150
 [PARTICLE]: protonmissile.prt
 [COOLDOWN]: 50
-[SHIELD_MUL]: 90%
+[SHIELD_MUL]: 100%
 [LIFE_MUL]: 100%

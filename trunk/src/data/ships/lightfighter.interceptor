@@ -18,6 +18,7 @@
 
 //Special modules
 [NULLIFIER]: TRUE
+[STRAFING]: FALSE
 
 //Engines
 [MAX_SPEED]: 17

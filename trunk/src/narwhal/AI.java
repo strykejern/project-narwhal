@@ -80,7 +80,11 @@ public class AI extends Spaceship {
 	}
 		
 	public void update() {		
-					
+		
+		//Avoid collisions with planets, this is done outside the normal AI loop so that it is
+		//calculated realtime. If this is a resource hog, then we can implement a throttler
+		findPath();
+		
 		//Don't do AI
 		if( state == aiState.DISABLED || aiTimer > System.currentTimeMillis() )
 		{
@@ -184,7 +188,7 @@ public class AI extends Spaceship {
 		{
 			//Move randomly in a direction
 			keys.mousePos = getPosCentre();
-			keys.mousePos.addDirection(200, rand.nextFloat() + direction - 1 );
+			keys.mousePos.addDirection(1200, rand.nextFloat() + direction - rand.nextFloat() );
 			
 			//We encountered a enemy, engage!
 			if(!invalidTarget()) state = aiState.INTERCEPT;
@@ -194,8 +198,8 @@ public class AI extends Spaceship {
 			else 									   keys.up = true;
 
 			//Slow reaction in patrol mode
-			aiTimer = System.currentTimeMillis() + rand.nextInt(250) + 200;
-		}		
+			aiTimer = System.currentTimeMillis() + rand.nextInt(300) + 450;
+		}	
 	}
 
 	/**
@@ -324,7 +328,7 @@ public class AI extends Spaceship {
 		{
 			//Move randomly in a direction
 			keys.mousePos = getPosCentre();
-			keys.mousePos.addDirection(200, rand.nextFloat() + direction - 1 );
+			keys.mousePos.addDirection(1200, rand.nextFloat() + direction - rand.nextFloat() );
 			
 			//We encountered a enemy, engage!
 			if(!invalidTarget()) state = aiState.INTERCEPT;
@@ -334,8 +338,8 @@ public class AI extends Spaceship {
 			else 									   keys.up = true;
 
 			//Slow reaction in patrol mode
-			aiTimer = System.currentTimeMillis() + rand.nextInt(250) + 200;
-		}
+			aiTimer = System.currentTimeMillis() + rand.nextInt(300) + 450;
+		}		
 	}
 		
 	/**
@@ -379,6 +383,41 @@ public class AI extends Spaceship {
 		if(target == this ) state = aiState.PATROL;
 		
 		return bestTarget;
+	}
+	
+	private void findPath() {
+		
+		//The stupid AI doesn't avoid planets
+		if( type == aiType.FOOL || type == aiType.PLAYER ) return;
+		
+		//Combat intensive action doesn't need pathfinding
+		if( state == aiState.DISABLED || state == aiState.COMBAT ) return;
+
+		//Go through every entity in the game
+		for(int i = 0; i < entities.size(); i++)
+		{
+			//Only check planets
+			if( !(entities.get(i) instanceof Planet) ) continue;						
+			Planet obstacle = (Planet)entities.get(i);
+			
+			//Skip inactive objects
+			if( !obstacle.active() ) continue;
+									
+			//We are within 500 units of a planet and heading towards it
+			if( facingTarget(obstacle, 600) )
+			{				
+				Vector diff = obstacle.getPosCentre().minus(getPosCentre());
+				keys.mousePos = obstacle.getPosCentre();
+				
+				//Steer to the right
+				if( this.direction > diff.getAngle() ) keys.mousePos.addDirection(900, direction+0.7f);
+
+				//Steer to the left
+				else								   keys.mousePos.addDirection(900, direction-0.7f);
+								
+				return;
+			}
+		}		
 	}
 
 	public Spaceship getHomingTarget( float distance ) {

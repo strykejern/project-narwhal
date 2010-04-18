@@ -18,8 +18,7 @@ public class SpaceshipTemplate {
 	public final float maxSpeed;
 	public final float acceleration;
 	public final float turnRate;
-	public final boolean strafe = true;
-	public final float slow = 1.00f;				//Slow factor, 0.5f means 50% of normal speed
+	public final boolean strafe;
 	
 	//Weapon systems
 	public final Weapon primary;
@@ -61,6 +60,7 @@ public class SpaceshipTemplate {
 		SpaceshipTemplate interceptor = null;
 		boolean organic = false;
 		Sound canDisguise = null;
+		boolean strafe = false;
 		
 		float turnRate = 0.1f;
 		float maxSpeed = 15f;
@@ -95,7 +95,7 @@ public class SpaceshipTemplate {
 			else if(line.startsWith("[PRIMARY]:"))  primary = new Weapon(parse(line));
 			else if(line.startsWith("[SECONDARY]:"))  secondary = new Weapon(parse(line));
 			
-			else if(line.startsWith("[RADAR]:"))   radarLevel = Short.parseShort(parse(line));
+			else if(line.startsWith("[RADAR]:"))     radarLevel = Short.parseShort(parse(line));
 			else if(line.startsWith("[NULLIFIER]:")) autoBreaks = Boolean.parseBoolean(parse(line));
 			else if(line.startsWith("[INTERCEPTOR]:")) 
 			{
@@ -107,12 +107,13 @@ public class SpaceshipTemplate {
 					Log.warning( fileName + " - loading interceptor - Not an interceptor ship: " + load);
 			}
 			else if(line.startsWith("[ORGANIC]:"))  organic = Boolean.parseBoolean(parse(line));
-			else if(line.startsWith("[DISGUISE]:"))  canDisguise = new Sound(parse(line));
+			else if(line.startsWith("[DISGUISE]:")) canDisguise = new Sound(parse(line));
+			else if(line.startsWith("[STRAFING]:"))   strafe = Boolean.parseBoolean(parse(line));
 			
 			else if(line.startsWith("[TURN_RATE]:")) turnRate = Float.parseFloat(parse(line));
 			else if(line.startsWith("[MAX_SPEED]:")) maxSpeed = Float.parseFloat(parse(line));
-			
 			else if(line.startsWith("[ACCELERATION]:")) acceleration = Float.parseFloat(parse(line));
+			
 			else Log.warning("Loading ship file ( "+ fileName +") unrecognized line - " + line);
 		}
 			
@@ -139,6 +140,7 @@ public class SpaceshipTemplate {
 		this.interceptor = interceptor;
 		this.organic = organic;
 		this.canDisguise = canDisguise;
+		this.strafe = strafe;
 		
 		this.turnRate = turnRate;
 		this.maxSpeed = maxSpeed;

@@ -22,7 +22,7 @@ import java.util.Random;
 
 import gameEngine.*;
 
-public class Spaceship extends GameObject {
+public abstract class Spaceship extends GameObject {
 	
 	//References
 	protected ParticleEngine  particleEngine;
@@ -54,10 +54,11 @@ public class Spaceship extends GameObject {
 	
 	//Modules
 	public short radarLevel;
-	public SpaceshipTemplate interceptor;
-	public boolean organic;
-	Image2D disguised;
-	Sound   canDisguise;
+	public Image2D disguised;
+	protected Sound   canDisguise;
+	protected boolean strafe;
+	protected SpaceshipTemplate interceptor;
+	protected boolean organic;
 
 	public Spaceship( SpaceshipTemplate blueprint, String team, Game world ) {		
 		super(world);
@@ -84,6 +85,7 @@ public class Spaceship extends GameObject {
 		interceptor 	= blueprint.interceptor;
 		organic 		= blueprint.organic;
 		canDisguise 	= blueprint.canDisguise;
+		strafe			= blueprint.strafe;
 	
 		//Set our team
 		this.team = team.toUpperCase();
@@ -135,10 +137,17 @@ public class Spaceship extends GameObject {
 			if (getSpeed().length() < 0.5f) getSpeed().setLength(0);
 			else getSpeed().divide(1.05f);
 		}
-		if (keys.left) getSpeed().add(new Vector(acceleration, direction-((float)Math.PI/2.0f), true));
-		else if (keys.right) getSpeed().add(new Vector(acceleration, direction+((float)Math.PI/2.0f), true));
-		direction %= 2 * Math.PI;
 		
+		
+		
+		//Strafing
+		if( strafe )
+		{
+			if (keys.left) 		 getSpeed().addDirection(acceleration, direction-((float)Math.PI/2.0f));
+			else if (keys.right) getSpeed().addDirection(acceleration, direction+((float)Math.PI/2.0f));
+		}
+		direction %= 2 * Math.PI;
+				
 		//mouse move
 		float heading = keys.mouseUniversePos().minus(getPosCentre()).getAngle() - direction;
 		if 		(heading > Math.PI)  heading = -((2f * (float)Math.PI) - heading);

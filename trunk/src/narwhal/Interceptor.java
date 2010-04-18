@@ -165,6 +165,7 @@ public class Interceptor extends Spaceship {
 		if( !target.active() ) 				return true;
 		if( target.equals(this) ) 			return true;
 		if( target.team.equals(this.team) ) return true;
+		if( target.disguised != null )      return true;
 		return false;
 	}
 
