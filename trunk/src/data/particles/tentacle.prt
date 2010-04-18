@@ -1,0 +1,35 @@
+//Deathly ray particle
+[IMAGE]: tentacle.png
+[TIME]: 100
+[SPEED]: 0
+[ATTACHED]: TRUE
+
+//Size
+[SIZE]: 0.1
+[SIZE_ADD]: 0.025
+
+//Transparency
+[ALPHA]: 0.75
+[ALPHA_ADD]: -0.0055
+
+//Rotation
+[ROTATE]: RANDOM
+[ROTATE_ADD]: 0.005
+
+//Facing
+[FACING]: 0
+[FACING_ADD]: 0
+
+//Sound effect
+[SOUND_SPAWN]: ray.wav
+[SOUND_END]: NONE
+
+//Ending conditions
+[CAN_COLLIDE]: TRUE
+[COLLISION_END]: FALSE
+[FRIENDLY_FIRE]: FALSE
+
+//Spawn other particles on end
+[PARTICLE_END]: NONE
+[MULTISPAWN_END]: 0
+[END_FACING_ADD]: 0

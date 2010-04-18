@@ -126,7 +126,7 @@ public class Sound
 	 */
 	public void play3D(Vector origin, Vector cameraPos) {
 		
-		if( !enabled || !valid ) return;
+		if( !enabled || !valid || channelsPlaying >= 128 ) return;
 		
 		Vector screenCenter = cameraPos.plus( new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2) );
 		float maxDist = (Video.getScreenWidth() + Video.getScreenHeight())/8;
@@ -149,7 +149,7 @@ public class Sound
 	 * JJ> Play the sound clip with all specified effects (volume, looping, etc.)
 	 */
 	protected void play( final float volume, final float panning ) {
-		if( !enabled || !valid || volume == 0 ) return;
+		if( !enabled || !valid || volume == 0 || channelsPlaying >= 128 ) return;
 
 		//This sound is no longer silent
 		silence = false;

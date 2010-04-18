@@ -1,8 +1,8 @@
 //Phasor Weapon
 [NAME]: Phasors
 [DAMAGE]: 35
-[COST]: 50
-[PARTICLE]: plasmaorb.prt
-[COOLDOWN]: 20
+[COST]: 40
+[PARTICLE]: phasor.prt
+[COOLDOWN]: 25
 [SHIELD_MUL]: 125%
 [LIFE_MUL]: 100%

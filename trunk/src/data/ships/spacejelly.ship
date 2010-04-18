@@ -1,0 +1,27 @@
+//General data
+[NAME]:   Space Jelly
+[FILE]:   jelly.png
+[SIZE]:   1.00
+[ORGANIC]: TRUE
+
+//Defense
+[LIFE]:   250
+[SHIELD]: 0
+[ENERGY]: 300
+
+//Regeneration
+[EREGEN]: 3
+[SREGEN]: 0
+
+//Weapons
+[PRIMARY]: phasor.wpn
+[SECONDARY]: tentacle.wpn
+
+//Special mods
+[RADAR]: 0
+[NULLIFIER]: TRUE
+
+//Engines
+[MAX_SPEED]: 17
+[TURN_RATE]: 0.025
+[ACCELERATION]: 0.5

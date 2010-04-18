@@ -18,6 +18,8 @@
 //********************************************************************************************
 package narwhal;
 
+import java.util.Random;
+
 import gameEngine.*;
 
 public class Spaceship extends GameObject {
@@ -53,7 +55,10 @@ public class Spaceship extends GameObject {
 	//Modules
 	public short radarLevel;
 	public SpaceshipTemplate interceptor;
-	
+	public boolean organic;
+	Image2D disguised;
+	Sound   canDisguise;
+
 	public Spaceship( SpaceshipTemplate blueprint, String team, Game world ) {		
 		super(world);
 
@@ -62,27 +67,30 @@ public class Spaceship extends GameObject {
 		image = blueprint.image.clone();
 		
 		setMaxLife(blueprint.lifeMax);
-		shield = shieldMax = blueprint.shieldMax;
-		shieldRegen = blueprint.shieldRegen;
-		energy = energyMax = blueprint.energyMax;
-		energyRegen = blueprint.energyRegen;
+		shield = shieldMax 	= blueprint.shieldMax;
+		shieldRegen 		= blueprint.shieldRegen;
+		energy = energyMax 	= blueprint.energyMax;
+		energyRegen 		= blueprint.energyRegen;
 		
-		primary = blueprint.primary;
-		secondary = blueprint.secondary;
+		primary 		= blueprint.primary;
+		secondary 		= blueprint.secondary;
 
-		maxSpeed = blueprint.maxSpeed;
-		acceleration = blueprint.acceleration;
-		autoBreaks = blueprint.autoBreaks;
-		turnRate = blueprint.turnRate;
+		maxSpeed 		= blueprint.maxSpeed;
+		acceleration 	= blueprint.acceleration;
+		autoBreaks 		= blueprint.autoBreaks;
+		turnRate 		= blueprint.turnRate;
 		
-		radarLevel = blueprint.radarLevel;
-		interceptor = blueprint.interceptor;
+		radarLevel 		= blueprint.radarLevel;
+		interceptor 	= blueprint.interceptor;
+		organic 		= blueprint.organic;
+		canDisguise 	= blueprint.canDisguise;
 	
 		//Set our team
 		this.team = team.toUpperCase();
 
 		//Default values
 		pos 	  = new Vector();
+		disguised = null;
 		direction = 0;
 		cooldown  = 0;
 				
@@ -90,10 +98,10 @@ public class Spaceship extends GameObject {
 		setRadius(image.getWidth()/2);
 
 		//Physics
-		speed = new Vector();
-		shape = Shape.CIRCLE;
-		canCollide = true;
-		anchored = false;
+		speed 		= new Vector();
+		shape 		= Shape.CIRCLE;
+		canCollide  = true;
+		anchored 	= false;
 	}
 	
 	public void update() {
@@ -104,31 +112,31 @@ public class Spaceship extends GameObject {
 		{
 			if(shield < shieldMax) shield += shieldRegen;
 			if(energy < energyMax) energy += energyRegen;
+			if( organic ) 		   setLife(getLife() + getLife()/2000);
+			
+			//Activate abilities
+			if( keys.mosButton1 && keys.mosButton2 ) activateSpecialMod();
+			else if( keys.mosButton1 ) 	   			 activateWeapon(primary);
+			else if( keys.mosButton2 )      		 activateWeapon(secondary);
 		}
 		
 		//Allow new parts to fall off
-		if(debrisCooldown > 0) debrisCooldown--;
-		
-		//Fire!
-		if( keys.mosButton1 && keys.mosButton2 ) spawnInterceptor();
-		else if( keys.mosButton1 ) 	   			 activateWeapon(primary);
-		else if( keys.mosButton2 )      		 activateWeapon(secondary);
-		
+		if(debrisCooldown > 0) debrisCooldown--;		
 		
 		//Key move
-		if 		(keys.up) 	speed.add(new Vector(acceleration*slow, direction, true));
+		if 		(keys.up) 	getSpeed().add(new Vector(acceleration*slow, direction, true));
 		else if (keys.down)
 		{
-			if (speed.length() < 0.2f) speed.setLength(0);
-			else speed.divide(1.01f);
+			if (getSpeed().length() < 0.2f) getSpeed().setLength(0);
+			else getSpeed().divide(1.01f);
 		}
 		else if( autoBreaks )
 		{
-			if (speed.length() < 0.5f) speed.setLength(0);
-			else speed.divide(1.05f);
+			if (getSpeed().length() < 0.5f) getSpeed().setLength(0);
+			else getSpeed().divide(1.05f);
 		}
-		if (keys.left) speed.add(new Vector(acceleration, direction-((float)Math.PI/2.0f), true));
-		else if (keys.right) speed.add(new Vector(acceleration, direction+((float)Math.PI/2.0f), true));
+		if (keys.left) getSpeed().add(new Vector(acceleration, direction-((float)Math.PI/2.0f), true));
+		else if (keys.right) getSpeed().add(new Vector(acceleration, direction+((float)Math.PI/2.0f), true));
 		direction %= 2 * Math.PI;
 		
 		//mouse move
@@ -136,9 +144,13 @@ public class Spaceship extends GameObject {
 		if 		(heading > Math.PI)  heading = -((2f * (float)Math.PI) - heading);
 		else if (heading < -Math.PI) heading =  ((2f * (float)Math.PI) + heading);
 		direction += heading * turnRate;
-		image.setDirection( direction );
 		
-		if (speed.length() > maxSpeed*slow) speed.setLength(maxSpeed);
+		//If disguised as a rock, rotate around our axis
+		if( disguised == null ) image.setDirection( direction );
+		else					image.rotate(speed.length()/400);
+			
+		//Limit to max speed
+		if (getSpeed().length() > maxSpeed*slow) getSpeed().setLength(maxSpeed);
 				
 		super.update();
 	}
@@ -160,16 +172,6 @@ public class Spaceship extends GameObject {
 			{
 				damage -= shield;
 				shield = 0;
-				
-				//Spawn a explosion effect
-				particleEngine.spawnParticle( "explosion.prt", getPosCentre(), direction, this, null );
-
-				//Make some part of the ship fall off (25% chance)
-				if(debrisCooldown == 0) 
-				{
-					particleEngine.spawnParticle( "debris.prt", getPosCentre(), direction, this, null );
-					debrisCooldown = 100;
-				}
 			}
 			else
 			{
@@ -185,8 +187,27 @@ public class Spaceship extends GameObject {
 		//Next, lose some life
 		setLife(getLife() - damage*weapon.lifeMul);
 		
+		//Organics don't explode
+		if( !organic )
+		{
+			//Spawn a explosion effect
+			particleEngine.spawnParticle( "explosion.prt", getPosCentre(), direction, this, null );
+
+			//Make some part of the ship fall off (25% chance)
+			if(debrisCooldown == 0) 
+			{
+				particleEngine.spawnParticle( "debris.prt", getPosCentre(), direction, this, null );
+				debrisCooldown = 100;
+			}
+		}
+		else if( debrisCooldown == 0 )
+		{
+			particleEngine.spawnParticle( "gib.prt", getPosCentre(), direction, this, null );
+			debrisCooldown = 100;
+		}
+		
 		//We lose 15% speed as well
-		speed.multiply(0.85f);	
+		getSpeed().multiply(0.85f);	
 	}
 	
 	public void activateWeapon(Weapon wpn) {
@@ -194,12 +215,15 @@ public class Spaceship extends GameObject {
 		//Non-functional system?
 		if( wpn == null ) return;
 		
+		//Ship is on cooldown
+		if( cooldown > 0 ) return;
+
 		//Enough energy to activate weapon?
 		if( wpn.cost > energy ) return;
 		
-		//Ship is on cooldown
-		if( cooldown > 0 ) return;
-		
+		//Disable disguise
+		if( disguised != null ) disguise();
+				
 		//It'll cost ya
 		cooldown += wpn.cooldown;
 		energy -= wpn.cost;
@@ -224,11 +248,15 @@ public class Spaceship extends GameObject {
 		//Cant kill what is already dead
 		if( !active() ) return;
 		
-		//Spawn particle effect
-		particleEngine.spawnParticle( "bigexplosion.prt", getPosCentre(), direction, this, null );
-		for(int i = 0; i < 4; i++) particleEngine.spawnParticle( "explosion.prt", getPosCentre(), direction, this, null );
-		particleEngine.spawnParticle( "wreck.prt", getPosCentre(), direction, this, null );
-		
+		//Spawn wreckage and explode if we are not organic
+		if( !organic )
+		{
+			particleEngine.spawnParticle( "bigexplosion.prt", getPosCentre(), direction, this, null );
+			for(int i = 0; i < 4; i++) particleEngine.spawnParticle( "explosion.prt", getPosCentre(), direction, this, null );
+			particleEngine.spawnParticle( "wreck.prt", getPosCentre(), direction, this, null );
+		}
+		else for(int i = 0; i < 4; i++) particleEngine.spawnParticle( "gib.prt", getPosCentre(), direction, this, null );
+
 		super.destroy();
 	}
 		
@@ -254,20 +282,81 @@ public class Spaceship extends GameObject {
 	}
 	
 	/**
+	 * JJ> Activates the first and best found special ability
+	 */
+	private void activateSpecialMod() {
+		if( interceptor != null ) spawnInterceptor();
+		else if( canDisguise != null ) disguise();
+	}
+
+	/**
 	 * JJ> Spawns a small interceptor ship if valid. A interceptor is a lesser ship that bigger
 	 *     ships can carry around with their own independent AI if launched. Costs life to use.
 	 */
-	public void spawnInterceptor(){
-		if( cooldown != 0 || interceptor == null ) return;
+	private void spawnInterceptor(){
+		
+		//Do we even have interceptors aboard?
+		if( interceptor == null ) return;
+		
+		//Don't spawn interceptors before we have properly initialized
+		if( world == null ) return;
+		
+		//Only if ready
+		if( cooldown > 0 ) return;
 		
 		//Not enough life to spawn interceptor?
 		if( getLife()-interceptor.lifeMax < getMaxLife()/10 ) return;
 		setLife( getLife() - interceptor.lifeMax );
 		cooldown = 80;
 		
-		//Spawn a interceptor ship at the side of this ship
-		Vector spawnPos = pos.clone();
-		pos.addDirection(radius + 50, direction + ((float)Math.PI/3));
+		//Spawn a interceptor ship behind of this ship
+		Random rand = new Random();
+		Vector spawnPos = getPosCentre();
+		float spawnDir = (direction + (float)Math.PI + rand.nextFloat() - 0.25f );
+		spawnDir %= Math.PI * 2;
+		
+		spawnPos.addDirection(radius + interceptor.image.getWidth(), spawnDir );
 		world.getEntityList().add( new Interceptor(spawnPos, interceptor, this) );		
 	}
+		
+	/**
+	 * JJ> Disguises this spaceship as an asteroid. This costs 100% of max Energy and is
+	 *     removed when activated again or when the pilot fires his weapons
+	 */
+	private void disguise() {
+		
+		//Only if ready
+		if( cooldown > 0 || canDisguise == null ) return;
+		
+		if( disguised == null )
+		{
+			//Enough energy to activate ability?
+			if( energyMax > energy ) return;
+			energy = 0;
+			cooldown = 100;
+			
+			//Save our previous form
+			disguised = image;
+			
+			//Load new asteroid form
+			image = new Image2D("data/asteroid2.png");
+			image.resize( size.getX(), size.getY() );
+			image.scale(0.8f);
+			
+			//Play transformation sound effect
+			canDisguise.play3D(pos, Video.getCameraPos());
+		}
+		else
+		{			
+			//Turn back into a spaceship
+			image.dispose();
+			image = disguised;
+			cooldown = 100;
+			disguised = null;
+			
+			//Play transformation sound effect
+			canDisguise.play3D(pos, Video.getCameraPos());
+		}	
+	}
+	
 }

@@ -1,0 +1,8 @@
+//Proton missile launcher
+[NAME]: Proton Missile Array
+[DAMAGE]: 50
+[COST]: 250
+[PARTICLE]: missilearray.prt
+[COOLDOWN]: 90
+[SHIELD_MUL]: 90%
+[LIFE_MUL]: 100%

@@ -406,6 +406,8 @@ public class ParticleEngine {
 
 		private String team;				//Who's side is it on?
 		public Weapon weapon;
+		
+		private Physics spawner;					//Who spawned us?
 
 		//Particle properties
 		private int time;					//How many frames it has to live
@@ -429,6 +431,7 @@ public class ParticleEngine {
 			float baseRotation = 0;
 			
 			//Default stuff
+			this.spawner = spawner;
 			this.template = template;
 			requestDelete = false;
 			onScreen = false;
@@ -459,7 +462,7 @@ public class ParticleEngine {
 				{
 					homing = ((AI)spawner).getHomingTarget( template.homing );
 				}
-				
+
 				//Attached to the spawner?
 				if( template.attached )
 				{
@@ -516,7 +519,7 @@ public class ParticleEngine {
 			shape = Shape.CIRCLE;
 			anchored = false;
 			if(spawner == null) 	speed = new Vector();
-			else					speed = spawner.speed.clone();
+			else					speed = spawner.getSpeed().clone();
 			setRadius( image.getIconWidth()/4 );
 			collisionList = new ArrayList<GameObject>();
 			
@@ -574,7 +577,7 @@ public class ParticleEngine {
 				
 			//Movement
 			Vector move = new Vector(velocity, facing, true);
-			move.add(speed);
+			move.add(getSpeed());
 			pos.add(move);
 			
 			//Figure out if we are inside the screen or not
@@ -645,7 +648,7 @@ public class ParticleEngine {
 				float prtFacing = this.facing;
 				for(int i = 0; i < template.multiEndSpawn; i++)
 				{
-					spawnParticle( template.particleEnd, this.pos, prtFacing, this, weapon );
+					spawnParticle( template.particleEnd, this.pos, prtFacing, this.spawner, weapon );
 					prtFacing += template.endFacingAdd;
 				}
 			}

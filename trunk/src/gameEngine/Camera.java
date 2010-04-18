@@ -51,7 +51,7 @@ public class Camera {
 		updateCameraVectors();
 		
 		// Draw background
-		background.drawBackground(g, cameraPos, follow.speed);
+		background.drawBackground(g, cameraPos, follow.getSpeed());
 		
 		int count = 0; // For debug purposes
 		

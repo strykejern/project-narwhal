@@ -1,0 +1,38 @@
+//Explosion particle
+[IMAGE]: gib1.png
+[IMAGE]: gib2.png
+[IMAGE]: gib3.png
+[TIME]: 3000
+[SPEED]: 2
+[ATTACHED]: FALSE
+
+//Size
+[SIZE]: 1.00
+[SIZE_ADD]: -0.001
+
+//Transparency
+[ALPHA]: 1.00
+[ALPHA_ADD]: 0
+
+//Rotation
+[ROTATE]: RANDOM
+[ROTATE_ADD]: 0.009
+
+//Direction
+[FACING]: RANDOM
+[FACING_ADD]: 0
+
+//Sound effect
+[SOUND_SPAWN]: flesh.wav
+[SOUND_END]: NONE
+
+//Ending conditions
+[CAN_COLLIDE]: TRUE
+[COLLISION_END]: FALSE
+[FRIENDLY_FIRE]: TRUE
+[PHYSICS]: TRUE
+
+//Spawn other particles on end
+[PARTICLE_END]: NONE
+[MULTISPAWN_END]: 0
+[END_FACING_ADD]: 0

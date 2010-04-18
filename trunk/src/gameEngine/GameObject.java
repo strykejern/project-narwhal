@@ -53,7 +53,8 @@ public abstract class GameObject extends Physics{
 		
 		if(world == null) 
 		{
-			Log.warning("INVALID OBJECT UPDATE");
+			Log.warning("INVALID OBJECT UPDATE, DELETING OBJECT: " + this.getClass().getSimpleName());
+			this.destroy();
 			return;
 		}
 		
