@@ -136,6 +136,9 @@ public class HUD {
 	//JJ> Draws one tracking polygon for the specified spaceship
 	private void drawRadar(Spaceship target, Graphics2D g) {
 		
+		//Dont track invisible or disguised enemies
+		if( target.disguised != null ) return;
+		
 		//No need to draw if we can see them
 		if( Video.isInFrame(target) )
 		{

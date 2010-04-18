@@ -20,13 +20,13 @@ package gameEngine;
 
 public abstract class Physics extends Collidable{
 	protected Vector speed;
-	public boolean anchored;
+	protected boolean anchored;
 	
 	public Physics() {		
 	}
 	
 	public void update(){
-		pos.add(speed);
+		pos.add(getSpeed());
 	}
 	
 	public void collision(Physics object){
@@ -42,25 +42,25 @@ public abstract class Physics extends Collidable{
 				if (this.anchored && !object.anchored)
 				{
 					colVec.negate();
-					object.speed.add(colVec);
+					object.getSpeed().add(colVec);
 					object.pos.add(colVec);
-					object.speed.multiply(0.85f);		//Lose 15% speed
+					object.getSpeed().multiply(0.85f);		//Lose 15% speed
 				}
 				else if (!this.anchored && object.anchored)
 				{
-					this.speed.add(colVec);
+					this.getSpeed().add(colVec);
 					this.pos.add(colVec);
-					this.speed.multiply(0.85f);		//Lose 15% speed				
+					this.getSpeed().multiply(0.85f);		//Lose 15% speed				
 				}
 				else if (!this.anchored && !object.anchored)
 				{
-					this.speed.add(colVec);
+					this.getSpeed().add(colVec);
 					this.pos.add(colVec);
-					this.speed.multiply(0.85f);		//Lose 15% speed	
+					this.getSpeed().multiply(0.85f);		//Lose 15% speed	
 					colVec.negate();
-					object.speed.add(colVec);
+					object.getSpeed().add(colVec);
 					object.pos.add(colVec);
-					object.speed.multiply(0.85f);		//Lose 15% speed
+					object.getSpeed().multiply(0.85f);		//Lose 15% speed
 				}
 			}
 			else if (object.shape == Shape.RECT)
@@ -80,5 +80,9 @@ public abstract class Physics extends Collidable{
 				// TODO: Implement
 			}
 		}
+	}
+
+	public Vector getSpeed() {
+		return speed;
 	}
 }

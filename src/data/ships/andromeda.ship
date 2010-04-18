@@ -18,6 +18,7 @@
 
 //Special mods
 [RADAR]: 3
+[DISGUISE]: transform.wav
 
 //Engines
 [MAX_SPEED]: 10

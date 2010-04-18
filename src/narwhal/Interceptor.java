@@ -32,6 +32,7 @@ public class Interceptor extends Spaceship {
 		super(blueprint, master.team, master.world);
 		this.pos 	    = pos;
 		keys 		    = new Input();
+		speed           = master.getSpeed().clone();
 		fuel 			= 1500;
 		
 		//Folow master
@@ -57,8 +58,15 @@ public class Interceptor extends Spaceship {
 			state = State.REFUEL;
 			
 			//Die if we go way behind refuel schedule
-			if(fuel == -1500) this.destroy();
+			if(fuel == -1500)
+			{
+				this.destroy();
+				return;
+			}
 		}
+		
+		//We need our master to survive
+		if( !master.active() ) this.destroy();
 		
 		//Only be active every so often
 		if( timer > System.currentTimeMillis() )
@@ -76,7 +84,7 @@ public class Interceptor extends Spaceship {
 			//Move at full speed towards master
 			keys.mousePos = master.getPosCentre();
 			keys.up = true;
-			if( getDistanceTo(master) < 400 && speed.length() > maxSpeed/2 ) speed.setLength(maxSpeed/2);
+			if( getDistanceTo(master) < 400 && getSpeed().length() > maxSpeed/2 ) getSpeed().setLength(maxSpeed/2);
 			timer = System.currentTimeMillis() + 50;
 		}
 		
@@ -122,7 +130,7 @@ public class Interceptor extends Spaceship {
 				if( getDistanceTo(master) > 450 ) keys.up = true;
 				else							  
 				{
-					if( speed.length() > maxSpeed*0.66f ) speed.setLength(maxSpeed*0.66f);
+					if( getSpeed().length() > maxSpeed*0.66f ) getSpeed().setLength(maxSpeed*0.66f);
 					keys.down = true;
 				}
 			}
@@ -165,6 +173,8 @@ public class Interceptor extends Spaceship {
 	}
 
 	public void dock() {
+		
+		if( !master.active() ) return;
 		
 		//Give master the life back
 		master.setLife( Math.min(master.getMaxLife(), master.getLife() + this.getLife()) );

@@ -39,7 +39,7 @@ public class Asteroid extends GameObject {
 	}
 	
 	public void update(){
-		image.rotate( speed.length()/100 );
+		image.rotate( getSpeed().length()/100 );
 		super.update();
 	}
 	

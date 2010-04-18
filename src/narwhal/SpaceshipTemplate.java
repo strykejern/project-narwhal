@@ -3,6 +3,7 @@ package narwhal;
 import gameEngine.Image2D;
 import gameEngine.Log;
 import gameEngine.ResourceMananger;
+import gameEngine.Sound;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -35,6 +36,8 @@ public class SpaceshipTemplate {
 	public final short radarLevel;
 	public final boolean autoBreaks;
 	public final SpaceshipTemplate interceptor;
+	public final boolean organic;
+	public final Sound canDisguise;
 	
 	
 	public SpaceshipTemplate( String fileName ) throws Exception {		
@@ -56,6 +59,8 @@ public class SpaceshipTemplate {
 		short radarLevel = 1;
 		boolean autoBreaks = false;
 		SpaceshipTemplate interceptor = null;
+		boolean organic = false;
+		Sound canDisguise = null;
 		
 		float turnRate = 0.1f;
 		float maxSpeed = 15f;
@@ -101,6 +106,8 @@ public class SpaceshipTemplate {
 				if( !load.endsWith( ".interceptor" ) )
 					Log.warning( fileName + " - loading interceptor - Not an interceptor ship: " + load);
 			}
+			else if(line.startsWith("[ORGANIC]:"))  organic = Boolean.parseBoolean(parse(line));
+			else if(line.startsWith("[DISGUISE]:"))  canDisguise = new Sound(parse(line));
 			
 			else if(line.startsWith("[TURN_RATE]:")) turnRate = Float.parseFloat(parse(line));
 			else if(line.startsWith("[MAX_SPEED]:")) maxSpeed = Float.parseFloat(parse(line));
@@ -130,6 +137,8 @@ public class SpaceshipTemplate {
 		this.radarLevel = radarLevel;
 		this.autoBreaks = autoBreaks;
 		this.interceptor = interceptor;
+		this.organic = organic;
+		this.canDisguise = canDisguise;
 		
 		this.turnRate = turnRate;
 		this.maxSpeed = maxSpeed;

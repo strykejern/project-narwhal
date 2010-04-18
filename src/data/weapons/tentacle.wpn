@@ -1,0 +1,8 @@
+//Tentacle attack
+[NAME]: Dimensional Fatigue
+[DAMAGE]: 25
+[COST]: 25
+[PARTICLE]: tentacle.prt
+[COOLDOWN]: 12
+[SHIELD_MUL]: 80%
+[LIFE_MUL]: 100%

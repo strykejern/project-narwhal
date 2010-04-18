@@ -40,7 +40,8 @@ public class AI extends Spaceship {
 		DISABLED,			//No AI, the player is controlling this one
 		RETREAT,			//Run away to fill energy and shields or to retreat from attack
 		INTERCEPT,			//Move in to target, maybe from behind or maybe the fastest route
-		COMBAT				//Shoot at target, maybe move in circles around it?
+		COMBAT,				//Shoot at target, maybe move in circles around it?
+		PATROL
 	}
 	
 	public AI(SpaceshipTemplate name, String team, Game world) {
@@ -74,6 +75,7 @@ public class AI extends Spaceship {
 		if( !target.active() ) 				return true;
 		if( target.equals(this) ) 			return true;
 		if( target.team.equals(this.team) ) return true;
+		if( target.disguised != null )		return true;
 		return false;
 	}
 		
@@ -125,7 +127,7 @@ public class AI extends Spaceship {
 		//Try to stick to a single target
 		if( invalidTarget() )
 		{
-			target = getClosestTarget(Float.MAX_VALUE);
+			target = getClosestTarget((radarLevel+1)*800);
 		}		
 		
 		//Reset any controllers first
@@ -138,10 +140,10 @@ public class AI extends Spaceship {
 		if( state == aiState.INTERCEPT )
 		{
 			//Start combat mode if close enough
-			if( distance < 600 ) state = aiState.COMBAT;
+			if( distance < 700 ) state = aiState.COMBAT;
 			
 			//Move towards target, but slow down once we are close enough
-			if( distance < 1200 && speed.length() > maxSpeed*0.66f )
+			if( distance < 1200 && getSpeed().length() > maxSpeed*0.66f )
 			{
 				keys.down = true;
 			}
@@ -177,15 +179,35 @@ public class AI extends Spaceship {
 			aiTimer = System.currentTimeMillis() + rand.nextInt(20);
 		}
 		
-		
+		//AI State - Patrol
+		else if( state == aiState.PATROL )
+		{
+			//Move randomly in a direction
+			keys.mousePos = getPosCentre();
+			keys.mousePos.addDirection(200, rand.nextFloat() + direction - 1 );
+			
+			//We encountered a enemy, engage!
+			if(!invalidTarget()) state = aiState.INTERCEPT;
+			
+			//Don't move more than 66% of max speed
+			if( getSpeed().length() > maxSpeed*0.66f ) keys.down = true;
+			else 									   keys.up = true;
+
+			//Slow reaction in patrol mode
+			aiTimer = System.currentTimeMillis() + rand.nextInt(250) + 200;
+		}		
 	}
 
+	/**
+	 * JJ> Tries to adapt tactics and use a lot of special powers. Does many good calculations. 
+	 *     A dangerous combination between the other AI types. Dodges enemy fire.
+	 */
 	private void doControllerAI() {
 		//Randomizer
 		Random rand = new Random();
 
 		//We change targets very often, depending on the situation
-		target = getClosestTarget(Float.MAX_VALUE);
+		target = getClosestTarget((radarLevel+1)*800);
 		
 		//Reset any controllers first
 		resetInput();
@@ -200,7 +222,7 @@ public class AI extends Spaceship {
 				&& target.energy > target.energyMax/10 ) 			state = aiState.RETREAT;
 
 		//Retreat if less than 10% energy left
-		//but only if our enemy has more energy than us (cheat!)
+		//but only if our enemy has more energy than us
 		//else if( energy < energyMax/10 && target.energy > energy ) state = aiState.RETREAT;
 		//TODO: disabled this because the AI got very chicken, needs more work
 		
@@ -209,15 +231,25 @@ public class AI extends Spaceship {
 		{
 			keys.mosButton2 = keys.mosButton1 = true;
 		}
-		
+
+		//Disguise as asteroid
+		if( canDisguise != null && disguised == null && state == aiState.INTERCEPT && energy >= energyMax )
+		{
+			keys.mosButton2 = keys.mosButton1 = true;
+		}
+
 		//AI State - Intercept
 		if( state == aiState.INTERCEPT )
 		{
 			//Start combat mode if close enough
-			if( distance < 600) state = aiState.COMBAT;
+			if( disguised == null )
+			{
+				if( distance < 600) state = aiState.COMBAT;
+			}
+			else if( distance < 250) state = aiState.COMBAT;
 			
 			//Move towards target, but slow down once we are close enough
-			if( distance < 1200 && speed.length() > maxSpeed/2 )
+			if( distance < 1200 && getSpeed().length() > maxSpeed/2 )
 			{
 				keys.down = true;
 			}
@@ -264,7 +296,7 @@ public class AI extends Spaceship {
 			//- flanked or surrounded
 						
 			//Stop retreating if we are ready (33% energy and 20% shield)
-			if( energy > energyMax/3 && shield > shieldMax/5) 
+			if( energy > energyMax/3 && (shieldMax == 0 || shield > shieldMax/5) ) 
 			{
 				state = aiState.INTERCEPT;
 			}
@@ -285,7 +317,25 @@ public class AI extends Spaceship {
 			
 			//Slow reaction retreat
 			aiTimer = System.currentTimeMillis() + 500 + rand.nextInt(350);
-		}		
+		}
+		
+		//AI State - Patrol
+		else if( state == aiState.PATROL )
+		{
+			//Move randomly in a direction
+			keys.mousePos = getPosCentre();
+			keys.mousePos.addDirection(200, rand.nextFloat() + direction - 1 );
+			
+			//We encountered a enemy, engage!
+			if(!invalidTarget()) state = aiState.INTERCEPT;
+			
+			//Don't move more than 66% of max speed
+			if( getSpeed().length() > maxSpeed*0.66f ) keys.down = true;
+			else 									   keys.up = true;
+
+			//Slow reaction in patrol mode
+			aiTimer = System.currentTimeMillis() + rand.nextInt(250) + 200;
+		}
 	}
 		
 	/**
@@ -307,6 +357,9 @@ public class AI extends Spaceship {
 			//Don't target ourself, that would be silly
 			if( target == this || !target.active() ) continue;
 			
+			//Don't target invisible or disguised enemies
+			if( target.disguised != null ) continue;
+			
 			//Don't target friendlies
 			if( target.team.equals(this.team) ) continue;
 						
@@ -322,12 +375,8 @@ public class AI extends Spaceship {
 			}
 		}
 		
-		//TODO: Debug?
-		if(target == this )
-		{
-			Log.message("Could not find a target! Disabling AI");
-			state = aiState.DISABLED;
-		}
+		//Return to patrol AI if no enemy was found
+		if(target == this ) state = aiState.PATROL;
 		
 		return bestTarget;
 	}
