@@ -5,7 +5,6 @@ import java.util.Random;
 
 import gameEngine.GameObject;
 import gameEngine.Input;
-import gameEngine.Log;
 import gameEngine.Vector;
 
 /**
@@ -115,8 +114,80 @@ public class AI extends Spaceship {
 	}
 	
 	private void doFoolAI() {
-		// TODO Auto-generated method stub
+		//Randomizer
+		Random rand = new Random();
+
+		//Try to stick to a single target
+		if( invalidTarget() )
+		{
+			target = getClosestTarget(1000);
+		}
 		
+		//Reset any controllers first
+		resetInput();
+		
+		//Calculate distance from target
+		float distance = getDistanceTo(target);
+
+		//AI State - Intercept
+		if( state == aiState.INTERCEPT )
+		{
+			
+			//Focus on target
+			keys.mousePos = target.getPosCentre();
+			keys.up = true;
+			
+			//Start combat mode if close enough
+			if( distance < 400 )
+			{
+				state = aiState.COMBAT;
+				if( getSpeed().length() > maxSpeed/2 ) getSpeed().setLength( maxSpeed/2 );
+			}
+			
+			//Slow and steady follow
+			aiTimer = System.currentTimeMillis() + 200 + rand.nextInt(250);
+		}
+		
+		//AI State - Combat
+		else if( state == aiState.COMBAT )
+		{
+			//Intercept if target ran away
+			if( distance > 600 ) state = aiState.INTERCEPT;
+
+			//Stand still and shoot
+			keys.down = true;
+			
+			//Pick a weapon, 75% for primary weapon
+			if( rand.nextBoolean() )
+			{
+				if( rand.nextInt(100) >= 25 ) keys.mosButton1 = true;
+				else 					      keys.mosButton2 = true;
+			}
+			
+			//Focus on target, but simulate a bad aim
+			keys.mousePos = target.getPosCentre().plus( new Vector(rand.nextInt(20)-10, rand.nextInt(20)-10) );
+			
+			//Combat intensive
+			aiTimer = System.currentTimeMillis() + rand.nextInt(50) + 100;
+		}
+		
+		//AI State - Patrol
+		else if( state == aiState.PATROL )
+		{
+			//Move randomly in a direction
+			keys.mousePos = getPosCentre();
+			keys.mousePos.addDirection(1200, rand.nextFloat() + direction - rand.nextFloat() );
+			
+			//We encountered a enemy, engage!
+			if( !invalidTarget() ) state = aiState.INTERCEPT;
+			
+			//Don't move more than 50% of max speed
+			if( getSpeed().length() > maxSpeed/2 ) keys.down = true;
+			else 								   keys.up = true;
+
+			//Slow reaction in patrol mode
+			aiTimer = System.currentTimeMillis() + rand.nextInt(300) + 450;
+		}	
 	}
 
 	private void doAmbusherAI() {
@@ -136,6 +207,12 @@ public class AI extends Spaceship {
 		
 		//Reset any controllers first
 		resetInput();
+		
+		//Spawn interceptors
+		if( interceptor != null && getLife() >= getMaxLife()/2 )
+		{
+			keys.mosButton2 = keys.mosButton1 = true;
+		}
 		
 		//Calculate distance from target
 		float distance = getDistanceTo(target);

@@ -42,7 +42,7 @@ public class Game {
         Random rand = new Random();
        	
 		// Size of the universe
-		this.universeSize = universeSize = 2;
+		this.universeSize = universeSize;
 
        	//Reference to the shipyard
        	this.shipyard = shipyard;
@@ -77,7 +77,7 @@ public class Game {
        	//Spawn enemies
     	for(int i = 0; i < 2; i++)
         {
-    		Spaceship enemy = shipyard.spawnShip("andromeda.ship", new Vector(i*500, i*500), this, aiType.CONTROLLER, "EVIL");
+    		Spaceship enemy = shipyard.spawnShip("spacejelly.ship", new Vector(i*500, i*500), this, aiType.FOOL, "EVIL");
 	       	entities.add(enemy);
 			hud.addTracking(enemy);
         }
