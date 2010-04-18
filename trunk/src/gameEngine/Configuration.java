@@ -41,7 +41,7 @@ public class Configuration {
 
 				//Sound enabled
 				save.write( "[MUSIC]: " );
-				if( Music.enabled ) save.write("ON");
+				if( Music.musicEnabled ) save.write("ON");
 				else 				save.write("OFF");
 				save.newLine();
 
@@ -111,8 +111,8 @@ public class Configuration {
 					//Music enabled
 					else if(line.startsWith("[MUSIC]:"))
 					{
-						if( line.endsWith("OFF") ) 	Music.enabled = false;
-						else 						Music.enabled = true;
+						if( line.endsWith("OFF") ) 	Music.musicEnabled = false;
+						else 						Music.musicEnabled = true;
 					}
 
 					//Full screen
