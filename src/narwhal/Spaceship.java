@@ -124,7 +124,10 @@ public abstract class Spaceship extends GameObject {
 		
 		//Allow new parts to fall off
 		if(debrisCooldown > 0) debrisCooldown--;		
-		
+
+		//Reduce the warp timer
+		if(warpTime > 0) warpTime--;		
+
 		//Key move
 		if 		(keys.up) 	getSpeed().add(new Vector(acceleration*slow, direction, true));
 		else if (keys.down)
@@ -296,6 +299,7 @@ public abstract class Spaceship extends GameObject {
 	private void activateSpecialMod() {
 		if( interceptor != null ) spawnInterceptor();
 		else if( canDisguise != null ) disguise();
+		else	warp();
 	}
 
 	/**
@@ -366,6 +370,22 @@ public abstract class Spaceship extends GameObject {
 			//Play transformation sound effect
 			canDisguise.play3D(pos, Video.getCameraPos());
 		}	
+	}
+	
+	private int warpTime = 0;
+	private void warp() {
+		if( energy <= 0 ) return;
+		speed.multiply(0);
+		pos.addDirection(maxSpeed*3, direction);
+		energy -= maxSpeed/3;
+		
+		if(warpTime == 0)
+		{
+			particleEngine.spawnParticle("burst.prt", pos, direction, this, null);
+			warpTime = 8;
+		}
+		
+		if(energy < maxSpeed) cooldown = 100;
 	}
 	
 }

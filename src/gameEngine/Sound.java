@@ -75,7 +75,7 @@ public class Sound
 		}
 	}
 
-	private AudioInputStream getAudioStream() throws UnsupportedAudioFileException, IOException {
+	public static AudioInputStream getAudioStream(String file) throws UnsupportedAudioFileException, IOException {
 		
 		//Try to open a stream to it
 		InputStream in = ResourceMananger.getInputStream(file);
@@ -83,7 +83,7 @@ public class Sound
 		AudioFormat format = rawstream.getFormat();
         
 		//Decode it if it is in OGG Vorbis format
-		if( oggFile )
+		if( file.endsWith(".ogg") )
 		{
 			//The ogg Vorbis format
 	        format = new AudioFormat(
@@ -148,7 +148,7 @@ public class Sound
 	/**
 	 * JJ> Play the sound clip with all specified effects (volume, looping, etc.)
 	 */
-	protected void play( final float volume, final float panning ) {
+	private void play( final float volume, final float panning ) {
 		if( !enabled || !valid || volume == 0 || channelsPlaying >= 128 ) return;
 
 		//This sound is no longer silent
@@ -159,7 +159,7 @@ public class Sound
 		channelsPlaying++;
 	}
 	
-	public class SoundThread extends Thread {
+	private class SoundThread extends Thread {
 		float volume;
 		float panning;
 		
@@ -179,7 +179,7 @@ public class Sound
 				{
 					//Try to open the sound
 					SourceDataLine line;
-					AudioInputStream stream = getAudioStream();		
+					AudioInputStream stream = Sound.getAudioStream(file);		
 					DataLine.Info info = new DataLine.Info(SourceDataLine.class, stream.getFormat(), ((int) stream.getFrameLength() * stream.getFormat().getFrameSize()));
 					
 					//Open the line to the stream

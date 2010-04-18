@@ -73,7 +73,7 @@ public class MainMenu {
 		if( !Sound.enabled ) sndText = "Sound: Off";
 
     	String musText = "Music: On";
-		if( !Music.enabled ) musText = "Music: Off";
+		if( !Music.musicEnabled ) musText = "Music: Off";
 
 		pos = new Vector( Video.getScreenWidth()/2, Video.getScreenHeight()/3 );
     	startPos = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2 );
@@ -208,8 +208,8 @@ public class MainMenu {
 
 					case BUTTON_MUSIC:
 					{
-						Music.enabled = !Music.enabled;
-						if( Music.enabled )
+						Music.musicEnabled = !Music.musicEnabled;
+						if( Music.musicEnabled )
 						{
 							Music.play("menu.ogg");
 							buttonList.get(BUTTON_MUSIC).setText("MUSIC: ON");
