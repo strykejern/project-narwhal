@@ -54,7 +54,7 @@ public class ParticleEngine {
 			}			
 		}
 	}
-		
+			
 	public void update( ArrayList<GameObject> entities, int universeSize ) {
 		
 		//Update particle effects

@@ -10,7 +10,7 @@
 
 //Regeneration
 [EREGEN]: 2.00
-[SREGEN]: 1.5
+[SREGEN]: 1.25
 
 //Weapons
 [PRIMARY]: shockcannon.wpn
@@ -19,6 +19,7 @@
 //Special mods
 [RADAR]: 3
 [NULLIFIER]: TRUE
+[STRAFING]: TRUE
 
 //Engines
 [MAX_SPEED]: 20

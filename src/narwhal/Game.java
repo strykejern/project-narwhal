@@ -42,7 +42,7 @@ public class Game {
         Random rand = new Random();
        	
 		// Size of the universe
-		this.universeSize = universeSize;
+		this.universeSize = universeSize = 2;
 
        	//Reference to the shipyard
        	this.shipyard = shipyard;
