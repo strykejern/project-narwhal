@@ -18,15 +18,38 @@
 //********************************************************************************************
 package gameEngine;
 
+import java.util.ArrayList;
+
 public abstract class Physics extends Collidable{
 	protected Vector speed;
 	protected boolean anchored;
+	
+	protected float mass = 0;
+	
+	private static final float G = 6.67428f * 0.00000000001f;
 	
 	public Physics() {		
 	}
 	
 	public void update(){
 		pos.add(getSpeed());
+	}
+	
+	public static void updateGravitation(ArrayList<GameObject> objects){
+		for (int i = 0; i < objects.size(); i++)
+			for (int k = i+1; k < objects.size(); k++)
+			{
+				Vector diff = objects.get(i).getPosCentre().minus(objects.get(k).getPosCentre());
+				float pull = G * (( objects.get(i).mass * objects.get(k).mass ) / ( diff.length() ));
+				
+				Vector kPull = diff.clone();
+				kPull.setLength(pull / objects.get(k).mass);
+				objects.get(k).speed.add(kPull);
+				
+				Vector iPull = diff.negated();
+				iPull.setLength(pull / objects.get(i).mass);
+				objects.get(i).speed.add(iPull);
+			}
 	}
 	
 	public void collision(Physics object){
