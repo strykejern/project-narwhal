@@ -1,0 +1,31 @@
+//Explosion particle
+[IMAGE]: blueexplode1.png
+[TIME]: 200
+[SPEED]: 1
+[ATTACHED]: FALSE
+
+//Size
+[SIZE]: 0.25
+[SIZE_ADD]: 0.005
+
+//Transparency
+[ALPHA]: 0.8
+[ALPHA_ADD]: -0.010
+
+//Rotation
+[ROTATE]: RANDOM
+[ROTATE_ADD]: 0.05
+
+//Direction
+[FACING]: RANDOM
+[FACING_ADD]: 0.05
+
+//Sound effect
+[SOUND_SPAWN]: explode.wav
+[SOUND_END]: NONE
+
+//Ending conditions
+[COLLISION_END]: False
+[PARTICLE_END]: NONE
+
+[FRIENDLY_FIRE]: False

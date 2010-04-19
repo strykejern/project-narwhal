@@ -26,7 +26,7 @@
 [FRIENDLY_FIRE]: FALSE
 
 //Spawn other particles on end
-[PARTICLE_END]: explosion.prt
+[PARTICLE_END]: blueexplosion.prt
 [MULTISPAWN_END]: 1
 [END_FACING_ADD]: 0
 

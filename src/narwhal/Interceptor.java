@@ -11,6 +11,8 @@ import gameEngine.Video;
 
 public class Interceptor extends Spaceship {
 	
+	private static final int FUEL_TIME = 1500;
+	
 	//Sound effects
 	private static Sound launch = new Sound("shiplaunch.wav");
 	private static Sound dock   = new Sound("shipdock.wav");	
@@ -33,7 +35,7 @@ public class Interceptor extends Spaceship {
 		this.pos 	    = pos;
 		keys 		    = new Input();
 		speed           = master.getSpeed().clone();
-		fuel 			= 1500;
+		fuel 			= FUEL_TIME;
 		
 		//Folow master
 		this.master 	= master;
@@ -53,12 +55,12 @@ public class Interceptor extends Spaceship {
 		
 		//We need to return to our master if fuel runs out
 		fuel--;
-		if(fuel <= 0)
+		if( outOfFuel() )
 		{
 			state = State.REFUEL;
 			
 			//Die if we go way behind refuel schedule
-			if(fuel == -1500)
+			if(fuel == -FUEL_TIME)
 			{
 				this.destroy();
 				return;
@@ -175,7 +177,7 @@ public class Interceptor extends Spaceship {
 
 	public void dock() {
 		
-		if( !master.active() ) return;
+		if( !master.active() || !this.active() ) return;
 		
 		//Give master the life back
 		master.setLife( Math.min(master.getMaxLife(), master.getLife() + this.getLife()) );

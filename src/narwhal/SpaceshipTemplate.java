@@ -39,6 +39,7 @@ public class SpaceshipTemplate {
 	public final boolean canWarp;
 	public final boolean canStrafe;
 	public final Weapon tetiaryWeapon;
+	public final boolean canCloak;
 	
 	
 	public SpaceshipTemplate( String fileName ) throws Exception {		
@@ -65,6 +66,7 @@ public class SpaceshipTemplate {
 		Sound canDisguise = null;
 		boolean canStrafe = false;
 		boolean canWarp = false;
+		boolean canCloak = false;
 		
 		float turnRate = 0.1f;
 		float maxSpeed = 15f;
@@ -115,6 +117,7 @@ public class SpaceshipTemplate {
 			else if(line.startsWith("[DISGUISE]:")) canDisguise = new Sound(parse(line));
 			else if(line.startsWith("[STRAFING]:")) canStrafe = Boolean.parseBoolean(parse(line));
 			else if(line.startsWith("[WARP]:"))     canWarp = Boolean.parseBoolean(parse(line));
+			else if(line.startsWith("[CLOAKING]:")) canCloak = Boolean.parseBoolean(parse(line));
 			
 			else if(line.startsWith("[TURN_RATE]:")) turnRate = Float.parseFloat(parse(line));
 			else if(line.startsWith("[MAX_SPEED]:")) maxSpeed = Float.parseFloat(parse(line));
@@ -149,6 +152,7 @@ public class SpaceshipTemplate {
 		this.canDisguise = canDisguise;
 		this.canWarp = canWarp;
 		this.canStrafe = canStrafe;
+		this.canCloak = canCloak;
 		
 		this.turnRate = turnRate;
 		this.maxSpeed = maxSpeed;

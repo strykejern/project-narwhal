@@ -319,11 +319,18 @@ public class AI extends Spaceship {
 			keys.mosButton2 = keys.mosButton1 = true;
 		}
 
+		//Cloak
+		if( canCloak && !cloaked && distance < 1500 )
+		{
+			if( (state == aiState.INTERCEPT && energy >= energyMax) || state == aiState.RETREAT ) 
+				keys.mosButton2 = keys.mosButton1 = true;
+		}
+
 		//AI State - Intercept
 		if( state == aiState.INTERCEPT )
 		{
 			//Start combat mode if close enough
-			if( disguised == null )
+			if( disguised == null && !cloaked )
 			{
 				if( distance < 600) state = aiState.COMBAT;
 			}
@@ -439,7 +446,7 @@ public class AI extends Spaceship {
 			if( target == this || !target.active() ) continue;
 			
 			//Don't target invisible or disguised enemies
-			if( target.disguised != null ) continue;
+			if( target.disguised != null || target.cloaked ) continue;
 			
 			//Don't target friendlies
 			if( target.team.equals(this.team) ) continue;
