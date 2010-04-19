@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 import narwhal.Asteroid;
 
-public abstract class Physics extends Collidable{
+public abstract class Physics extends Collidable {
 	protected Vector speed;
 	protected boolean anchored;
 	protected float mass = 0;

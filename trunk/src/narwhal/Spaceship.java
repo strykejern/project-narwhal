@@ -30,7 +30,9 @@ public abstract class Spaceship extends GameObject {
 	//General stuff
 	protected String name;						//This ship's name that can be unique
 	public String team;						//This ship is on team with any who share the same team
-	private int debrisCooldown;
+	private int debrisCooldown;				//Time for new wreckage spawn
+	public boolean cloaked;					//Cloaked if true
+	protected Image2D disguised;			//If disguised != null then we are disguised
 
 	//Engine
 	protected float maxSpeed;
@@ -54,13 +56,13 @@ public abstract class Spaceship extends GameObject {
 	
 	//Special Modules
 	protected short radarLevel;
-	protected Image2D disguised;
 	protected Sound   canDisguise;
 	protected boolean canStrafe;
 	protected SpaceshipTemplate interceptor;
 	protected boolean organic;
 	protected boolean canWarp;
 	protected Weapon tetiaryWeapon;
+	protected boolean canCloak;
 
 	public Spaceship( SpaceshipTemplate blueprint, String team, Game world ) {		
 		super(world);
@@ -90,6 +92,7 @@ public abstract class Spaceship extends GameObject {
 		canDisguise 	= blueprint.canDisguise;
 		canStrafe		= blueprint.canStrafe;
 		canWarp			= blueprint.canWarp;
+		canCloak		= blueprint.canCloak;
 	
 		//Set our team
 		this.team = team.toUpperCase();
@@ -117,9 +120,12 @@ public abstract class Spaceship extends GameObject {
 		if(cooldown > 0) 	   cooldown--;
 		else
 		{
-			if(shield < shieldMax) shield += shieldRegen;
-			if(energy < energyMax) energy += energyRegen;
-			if( organic ) 		   setLife(getLife() + getLife()/2000);
+			if( !cloaked )
+			{
+				if(shield < shieldMax) shield += shieldRegen;
+				if(energy < energyMax) energy += energyRegen;
+				if( organic ) 		   setLife(getLife() + getLife()/2000);
+			}
 			
 			//Activate abilities
 			if( keys.mosButton1 && keys.mosButton2 ) activateSpecialMod();
@@ -131,8 +137,15 @@ public abstract class Spaceship extends GameObject {
 		if(debrisCooldown > 0) debrisCooldown--;		
 
 		//Reduce the warp timer
-		if(warpTime > 0) warpTime--;		
-
+		if(warpTime > 0) warpTime--;
+		
+		//Sustain cloaking drain
+		if( cloaked )
+		{
+			energy -= 0.2f;
+			if( energy <= 0 ) cloak();
+		}
+		
 		//Key move
 		if 		(keys.up) 	getSpeed().add(new Vector(acceleration*slow, direction, true));
 		else if (keys.down)
@@ -247,7 +260,7 @@ public abstract class Spaceship extends GameObject {
 		
 		//Disable disguise
 		if( disguised != null ) disguise();
-				
+		
 		//It'll cost ya
 		cooldown += wpn.cooldown;
 		energy -= wpn.cost;
@@ -311,7 +324,8 @@ public abstract class Spaceship extends GameObject {
 	private void activateSpecialMod() {
 		if( interceptor != null ) spawnInterceptor();
 		else if( canDisguise != null ) disguise();
-		else if( canWarp) warp();
+		else if( canWarp ) warp();
+		else if( canCloak ) cloak();
 		else activateWeapon(tetiaryWeapon);
 	}
 
@@ -401,4 +415,11 @@ public abstract class Spaceship extends GameObject {
 		if(energy < maxSpeed) cooldown = 100;
 	}
 	
+	private void cloak() {
+		
+		cloaked ^= true;
+		cooldown = 50;
+		if( cloaked ) image.setAlpha( 0.075f );
+		else 		  image.setAlpha( 1 );
+	}
 }

@@ -77,7 +77,7 @@ public class Game {
        	//Spawn enemies
     	for(int i = 0; i < 2; i++)
         {
-    		Spaceship enemy = shipyard.spawnShip("spacejelly.ship", new Vector(i*500, i*500), this, aiType.CONTROLLER, "EVIL");
+    		Spaceship enemy = shipyard.spawnShip("raptor.ship", new Vector(i*500, i*500), this, aiType.CONTROLLER, "EVIL");
 	       	entities.add(enemy);
 			hud.addTracking(enemy);
         }

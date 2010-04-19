@@ -209,6 +209,11 @@ public class Shipyard {
 			y += font.getHeight(g);
 			g.drawString("Subspace Warp Engine", x, y);
 		}
+		if( ship.canCloak )
+		{
+			y += font.getHeight(g);
+			g.drawString("Cloaking Device", x, y);
+		}
 
 		//Do last, draw all buttons
         Iterator<Button> iterator = buttonList.values().iterator();

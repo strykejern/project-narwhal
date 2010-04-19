@@ -18,6 +18,7 @@
 
 //Special mods
 [RADAR]: 2
+[CLOAKING]: TRUE
 
 //Engines
 [MAX_SPEED]: 20
