@@ -38,6 +38,7 @@ public class SpaceshipTemplate {
 	public final Sound canDisguise;
 	public final boolean canWarp;
 	public final boolean canStrafe;
+	public final Weapon tetiaryWeapon;
 	
 	
 	public SpaceshipTemplate( String fileName ) throws Exception {		
@@ -55,6 +56,7 @@ public class SpaceshipTemplate {
 		
 		Weapon primary = null;
 		Weapon secondary = null;
+		Weapon tetiaryWeapon = null;
 		
 		short radarLevel = 1;
 		boolean autoBreaks = false;
@@ -96,6 +98,7 @@ public class SpaceshipTemplate {
 			
 			else if(line.startsWith("[PRIMARY]:"))  primary = new Weapon(parse(line));
 			else if(line.startsWith("[SECONDARY]:"))  secondary = new Weapon(parse(line));
+			else if(line.startsWith("[TETIARY]:"))  tetiaryWeapon = new Weapon(parse(line));
 			
 			else if(line.startsWith("[RADAR]:"))     radarLevel = Short.parseShort(parse(line));
 			else if(line.startsWith("[NULLIFIER]:")) autoBreaks = Boolean.parseBoolean(parse(line));
@@ -137,6 +140,7 @@ public class SpaceshipTemplate {
 		
 		this.primary = primary;
 		this.secondary = secondary;
+		this.tetiaryWeapon = tetiaryWeapon;
 		
 		this.radarLevel = radarLevel;
 		this.autoBreaks = autoBreaks;

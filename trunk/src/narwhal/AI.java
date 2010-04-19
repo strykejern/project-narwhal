@@ -514,4 +514,8 @@ public class AI extends Spaceship {
 		//Gotcha!
 		return newTarget;
 	}
+
+	public boolean isPlayer() {
+		return type == aiType.PLAYER;
+	}
 }

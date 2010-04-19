@@ -33,7 +33,7 @@ public class Camera {
 	private ArrayList<GameObject> 	entities;
 	private GameObject 				follow;
 	private Background 				background;
-	private int 					shakeCamera = 0;
+	private static int 				shakeCamera = 0;
 
 	public Camera(ArrayList<GameObject> entities, Background background, GameObject follow){
 		this.entities = entities;
@@ -41,6 +41,10 @@ public class Camera {
 		this.background = background;
 		this.cameraPos = new Vector();
 		universeSize = background.getUniverseSize();
+	}
+	
+	public static void shakeCamera(int shake){
+		shakeCamera += shake;
 	}
 	
 	public void configureInputHandler(Input in){
@@ -122,6 +126,7 @@ public class Camera {
 			int y = rand.nextInt(shakeCamera)-shakeCamera/2;
 			cameraPos.x += x;
 			cameraPos.y += y;
+			shakeCamera--;
 		}
 	}
 

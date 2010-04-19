@@ -15,6 +15,7 @@
 //Weapons
 [PRIMARY]: shockcannon.wpn
 [SECONDARY]: plasmablaster.wpn
+[TETIARY]: mine.wpn
 
 //Special mods
 [RADAR]: 1
