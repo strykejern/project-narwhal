@@ -154,8 +154,10 @@ public class Game {
 				}
 			}
 		}
+		Physics.updateGravitation(entities, particleEngine.getParticleList());
 		
 		particleEngine.update(entities, universeSize);
+		
 		
 		return gameState.GAME_PLAYING;
 	}

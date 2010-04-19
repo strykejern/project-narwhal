@@ -26,7 +26,8 @@ public abstract class Physics extends Collidable{
 	
 	protected float mass = 0;
 	
-	private static final float G = 6.67428f * 0.00000000001f;
+	private static final float G = 6.67428f * 0.000000001f;
+	//private static final float G = 0.00000000001f;
 	
 	public Physics() {		
 	}
@@ -35,21 +36,46 @@ public abstract class Physics extends Collidable{
 		pos.add(getSpeed());
 	}
 	
-	public static void updateGravitation(ArrayList<GameObject> objects){
+	public static void updateGravitation(ArrayList<GameObject> objects, ArrayList<Particle> particles){
 		for (int i = 0; i < objects.size(); i++)
+		{
 			for (int k = i+1; k < objects.size(); k++)
 			{
 				Vector diff = objects.get(i).getPosCentre().minus(objects.get(k).getPosCentre());
 				float pull = G * (( objects.get(i).mass * objects.get(k).mass ) / ( diff.length() ));
 				
-				Vector kPull = diff.clone();
-				kPull.setLength(pull / objects.get(k).mass);
-				objects.get(k).speed.add(kPull);
+				if (!objects.get(k).anchored)
+				{
+					diff.setLength(pull / objects.get(k).mass);
+					objects.get(k).speed.add(diff);
+				}
 				
-				Vector iPull = diff.negated();
-				iPull.setLength(pull / objects.get(i).mass);
-				objects.get(i).speed.add(iPull);
-			}
+				if (!objects.get(i).anchored)
+				{
+					diff.negate();
+					diff.setLength(pull / objects.get(i).mass);
+					objects.get(i).speed.add(diff);
+				}
+			}/*
+			for (Particle particle : particles)
+			{
+				Vector diff = objects.get(i).getPosCentre().minus(particle.getPosCentre());
+				float pull = G * (( objects.get(i).mass * particle.mass ) / ( diff.length() ));
+				
+				if (!objects.get(i).anchored)
+				{
+					diff.setLength(pull / particle.mass);
+					particle.speed.add(diff);
+				}
+				
+				if (!particle.anchored)
+				{
+					diff.negate();
+					diff.setLength(pull / objects.get(i).mass);
+					objects.get(i).speed.add(diff);
+				}
+			}*/
+		}
 	}
 	
 	public void collision(Physics object){
