@@ -103,12 +103,16 @@ public abstract class Physics extends Collidable{
 				}
 				else if (!this.anchored && !object.anchored)
 				{
-					this.getSpeed().add(colVec);
-					this.pos.add(colVec);
-					this.getSpeed().multiply(0.85f);		//Lose 15% speed	
+					float combinedMass = this.mass + object.mass;
+					float thisMultiplier = this.mass/combinedMass;
+					this.getSpeed().add(colVec.times(thisMultiplier));
+					this.pos.add(colVec.times(thisMultiplier));
+					this.getSpeed().multiply(0.85f);		//Lose 15% speed
+					
+					float objectMultiplier = object.mass/combinedMass;
 					colVec.negate();
-					object.getSpeed().add(colVec);
-					object.pos.add(colVec);
+					object.getSpeed().add(colVec.times(objectMultiplier));
+					object.pos.add(colVec.times(objectMultiplier));
 					object.getSpeed().multiply(0.85f);		//Lose 15% speed
 				}
 			}

@@ -65,7 +65,7 @@ public class Planet extends GameObject {
 		shape = Shape.CIRCLE;
 		anchored = true;
 		canCollide = true;
-		mass = (float)Math.PI * radius * radius * 200000;
+		mass = (float)Math.PI * radius * radius * 20000;
 	}
 	
 	public void update(){
