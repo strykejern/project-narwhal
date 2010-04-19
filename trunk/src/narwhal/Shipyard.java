@@ -214,6 +214,11 @@ public class Shipyard {
 			y += font.getHeight(g);
 			g.drawString("Cloaking Device", x, y);
 		}
+		if( ship.tetiaryWeapon != null )
+		{
+			y += font.getHeight(g);
+			g.drawString("Extra Armament ("+ ship.tetiaryWeapon.name +")", x, y);
+		}
 
 		//Do last, draw all buttons
         Iterator<Button> iterator = buttonList.values().iterator();
