@@ -144,6 +144,7 @@ public class Particle extends Physics {
 		anchored = false;
 		setRadius( image.getIconWidth()/4 );
 		collisionList = new ArrayList<GameObject>();
+		mass 		= ((float)Math.PI * radius * radius);
 		
 		//Don't collide with spawner
 		if( spawner instanceof Spaceship ) collisionList.add((Spaceship)spawner);

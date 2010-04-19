@@ -108,7 +108,7 @@ public abstract class Spaceship extends GameObject {
 		shape 		= Shape.CIRCLE;
 		canCollide  = true;
 		anchored 	= false;
-		mass = (float)Math.PI * radius * radius;
+		mass 		= (float)Math.PI * radius * radius;
 	}
 	
 	public void update() {

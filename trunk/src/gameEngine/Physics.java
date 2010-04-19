@@ -20,14 +20,14 @@ package gameEngine;
 
 import java.util.ArrayList;
 
+import narwhal.Asteroid;
+
 public abstract class Physics extends Collidable{
 	protected Vector speed;
 	protected boolean anchored;
-	
 	protected float mass = 0;
-	
+		
 	private static final float G = 6.67428f * 0.000000001f;
-	//private static final float G = 0.00000000001f;
 	
 	public Physics() {		
 	}
@@ -39,46 +39,61 @@ public abstract class Physics extends Collidable{
 	public static void updateGravitation(ArrayList<GameObject> objects, ArrayList<Particle> particles){
 		for (int i = 0; i < objects.size(); i++)
 		{
+			Physics us = objects.get(i);
+			
 			for (int k = i+1; k < objects.size(); k++)
 			{
-				Vector diff = objects.get(i).getPosCentre().minus(objects.get(k).getPosCentre());
+				Physics them = objects.get(k);
+				Vector diff = us.getPosCentre().minus(them.getPosCentre());
 				
 				//Skip gravity pulls if distance is to far
 				if( diff.length() > 1200 ) continue;
+
+				float pull = G * (( us.mass * them.mass ) / ( diff.length() ));
 				
-				float pull = G * (( objects.get(i).mass * objects.get(k).mass ) / ( diff.length() ));
-				
-				if (!objects.get(k).anchored)
+				if (!them.anchored)
 				{
-					diff.setLength(pull / objects.get(k).mass);
-					objects.get(k).speed.add(diff);
+					diff.setLength(pull / them.mass);
+					them.speed.add(diff);
+					
+					//Throw asteroids out in space again
+					if( us.anchored && them instanceof Asteroid )
+					{
+						them.getSpeed().setLength(them.speed.length()*1.00175f);
+					}
 				}
 				
-				if (!objects.get(i).anchored)
+				if (!us.anchored)
 				{
 					diff.negate();
-					diff.setLength(pull / objects.get(i).mass);
-					objects.get(i).speed.add(diff);
+					diff.setLength(pull / us.mass);
+					us.speed.add(diff);
 				}
-			}/*
-			for (Particle particle : particles)
+			}
+			
+			for (int k = i+1; k < particles.size(); k++)
 			{
-				Vector diff = objects.get(i).getPosCentre().minus(particle.getPosCentre());
-				float pull = G * (( objects.get(i).mass * particle.mass ) / ( diff.length() ));
+				Particle them = particles.get(k);
+				
+				//Only if they have physics activated
+				if( !them.getParticleTemplate().physics ) continue;
+								
+				//Skip gravity pulls if distance is to far
+				Vector diff = us.getPosCentre().minus(them.getPosCentre());
+				if( diff.length() > 1200 ) continue;
+
+				float pull = G * (( us.mass * them.mass ) / ( diff.length() ));
 				
 				if (!objects.get(i).anchored)
 				{
-					diff.setLength(pull / particle.mass);
-					particle.speed.add(diff);
+					diff.setLength(pull / them.mass);
+					us.speed.add(diff);
 				}
 				
-				if (!particle.anchored)
-				{
-					diff.negate();
-					diff.setLength(pull / objects.get(i).mass);
-					objects.get(i).speed.add(diff);
-				}
-			}*/
+				diff.negate();
+				diff.setLength(pull / objects.get(i).mass);
+				objects.get(i).speed.add(diff);
+			}
 		}
 	}
 	
