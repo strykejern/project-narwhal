@@ -36,6 +36,8 @@ public class Asteroid extends GameObject {
 		super.anchored = false;
 
 		meteorCount++;
+		
+		mass = (float)Math.PI * radius * radius;
 	}
 	
 	public void update(){

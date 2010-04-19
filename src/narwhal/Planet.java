@@ -64,6 +64,11 @@ public class Planet extends GameObject {
 		shape = Shape.CIRCLE;
 		anchored = true;
 		canCollide = true;
+		mass = (float)Math.PI * radius * radius * 200000;
+	}
+	
+	public void update(){
+		
 	}
 	
 	public static final int getMaxSize() {

@@ -177,5 +177,9 @@ public class ParticleEngine {
 		
 		//Free it from the particle list
 		particleList.remove(prt);
-	}	  	
+	}	  
+	
+	public ArrayList<Particle> getParticleList(){
+		return particleList;
+	}
 }
