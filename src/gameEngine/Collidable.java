@@ -26,7 +26,7 @@ public abstract class Collidable {
 	protected Vector size;
 	protected float radius;
 	protected boolean canCollide;
-	
+
 	public static enum Shape{
 		RECT,
 		TRIANGLE,

@@ -87,8 +87,7 @@ public class ParticleEngine {
 							prt.collisionList.add(object);
 						}
 						
-						//TODO: disabled particle on object collision until we have implemented Mass
-						//if( prt.getParticleTemplate().physics ) prt.collision(object);
+						if( prt.getParticleTemplate().physics ) object.collision(prt);
 						
 						//Die away if told to
 						if( template.collisionEnd && ( !template.subAtomicParticle 
