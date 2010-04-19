@@ -137,15 +137,17 @@ public class Particle extends Physics {
 		}
 		else facing = template.facing + baseFacing;
 		facingAdd = template.facingAdd;
-								
+
 		//Physics stuff
 		canCollide = template.canCollide;
 		shape = Shape.CIRCLE;
 		anchored = false;
-		if(spawner == null) 	speed = new Vector();
-		else					speed = spawner.getSpeed().clone();
 		setRadius( image.getIconWidth()/4 );
 		collisionList = new ArrayList<GameObject>();
+		
+		//TODO: change this somehow
+		if(spawner == null) 	speed = new Vector();
+		else					speed = spawner.getSpeed().clone();
 		
 		//Play spawn sound
 		if( template.soundSpawn != null ) template.soundSpawn.play3D(pos, Video.getCameraPos());

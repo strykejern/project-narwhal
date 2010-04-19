@@ -1,16 +1,19 @@
 //Explosion particle
-[IMAGE]: fire.png
+[IMAGE]: explode1.png
+[IMAGE]: explode2.png
+[IMAGE]: explode3.png
+[IMAGE]: explode4.png
 [TIME]: 200
 [SPEED]: 1
-[ATTACHED]: False
+[ATTACHED]: FALSE
 
 //Size
-[SIZE]: 0.5
+[SIZE]: 0.25
 [SIZE_ADD]: 0.005
 
 //Transparency
-[ALPHA]: 0.75
-[ALPHA_ADD]: -0.012
+[ALPHA]: 0.8
+[ALPHA_ADD]: -0.010
 
 //Rotation
 [ROTATE]: RANDOM

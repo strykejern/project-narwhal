@@ -1,6 +1,6 @@
 //Plasma cannon Weapon
 [NAME]: Plasma Blaster
-[DAMAGE]: 85
+[DAMAGE]: 90
 [COST]: 110
 [PARTICLE]: plasma.prt
 [COOLDOWN]: 50

@@ -56,9 +56,10 @@ public abstract class Spaceship extends GameObject {
 	public short radarLevel;
 	public Image2D disguised;
 	protected Sound   canDisguise;
-	protected boolean strafe;
+	protected boolean canStrafe;
 	protected SpaceshipTemplate interceptor;
 	protected boolean organic;
+	protected boolean canWarp;
 
 	public Spaceship( SpaceshipTemplate blueprint, String team, Game world ) {		
 		super(world);
@@ -85,7 +86,8 @@ public abstract class Spaceship extends GameObject {
 		interceptor 	= blueprint.interceptor;
 		organic 		= blueprint.organic;
 		canDisguise 	= blueprint.canDisguise;
-		strafe			= blueprint.strafe;
+		canStrafe		= blueprint.canStrafe;
+		canWarp			= blueprint.canWarp;
 	
 		//Set our team
 		this.team = team.toUpperCase();
@@ -140,12 +142,10 @@ public abstract class Spaceship extends GameObject {
 		{
 			if (getSpeed().length() < 0.5f) getSpeed().setLength(0);
 			else getSpeed().divide(1.05f);
-		}
-		
-		
+		}		
 		
 		//Strafing
-		if( strafe )
+		if( canStrafe )
 		{
 			if (keys.left) 		 getSpeed().addDirection(acceleration, direction-((float)Math.PI/2.0f));
 			else if (keys.right) getSpeed().addDirection(acceleration, direction+((float)Math.PI/2.0f));

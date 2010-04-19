@@ -31,6 +31,7 @@ public class MainMenu {
 	static final int BUTTON_SOUND = 6;
 	static final int BUTTON_MUSIC = 7;
 	static final int BUTTON_RESTART_GAME = 8;
+	static final int BUTTON_FULL_SCREEN = 9;
 	
 	
 	public MainMenu(Input key) {
@@ -75,6 +76,9 @@ public class MainMenu {
     	String musText = "Music: On";
 		if( !Music.musicEnabled ) musText = "Music: Off";
 
+    	String screenText = "Fullscreen: Yes";
+		if( !Video.fullScreen ) screenText = "Fullscreen: No";
+
 		pos = new Vector( Video.getScreenWidth()/2, Video.getScreenHeight()/3 );
     	startPos = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2 );
     	buttonList.put( BUTTON_GRAPHICS, new Button(pos, size, gfxText, BUTTON_GRAPHICS, startPos ) );
@@ -82,6 +86,8 @@ public class MainMenu {
     	buttonList.put( BUTTON_SOUND, new Button(pos, size, sndText, BUTTON_SOUND, startPos ) );
     	pos.y += size.y*1.1f;
     	buttonList.put( BUTTON_MUSIC, new Button(pos, size, musText, BUTTON_MUSIC, startPos ) );
+    	pos.y += size.y*1.1f;
+    	buttonList.put( BUTTON_FULL_SCREEN, new Button(pos, size, screenText, BUTTON_FULL_SCREEN, startPos ) );
     	pos.y += size.y*1.1f;
     	buttonList.put( BUTTON_MAIN_MENU, new Button(pos, size, "BACK", BUTTON_MAIN_MENU, startPos ) );
     	
@@ -91,6 +97,7 @@ public class MainMenu {
     	buttonList.get(BUTTON_MUSIC).hide();
     	buttonList.get(BUTTON_MAIN_MENU).hide();
     	buttonList.get(BUTTON_RESTART_GAME).hide();
+    	buttonList.get(BUTTON_FULL_SCREEN).hide();
 	}
 	
 	private void loadBackgrounds() {
@@ -165,6 +172,7 @@ public class MainMenu {
 				    	buttonList.get(BUTTON_GRAPHICS).show();
 				    	buttonList.get(BUTTON_SOUND).show();
 				    	buttonList.get(BUTTON_MUSIC).show();
+				    	buttonList.get(BUTTON_FULL_SCREEN).show();
 				    	buttonList.get(BUTTON_MAIN_MENU).show();
 				    	
 				    	//Fade out the existing buttons
@@ -192,6 +200,7 @@ public class MainMenu {
 				    	buttonList.get(BUTTON_GRAPHICS).hide();
 				    	buttonList.get(BUTTON_SOUND).hide();
 				    	buttonList.get(BUTTON_MUSIC).hide();
+				    	buttonList.get(BUTTON_FULL_SCREEN).hide();
 				    	buttonList.get(BUTTON_MAIN_MENU).hide();
 						break;
 					}
@@ -222,6 +231,14 @@ public class MainMenu {
 						break;
 					}
 
+					case BUTTON_FULL_SCREEN:
+					{
+						Video.fullScreen ^= true;			//Awesome fast method to invert a boolean
+						if( Video.fullScreen ) button.setText("Fullscreen: Yes");
+						else				   button.setText("Fullscreen: No");
+						break;
+					}
+					
 					case BUTTON_GRAPHICS:
 					{
 						if( Video.getQualityMode() == VideoQuality.VIDEO_LOW )
