@@ -42,6 +42,10 @@ public abstract class Physics extends Collidable{
 			for (int k = i+1; k < objects.size(); k++)
 			{
 				Vector diff = objects.get(i).getPosCentre().minus(objects.get(k).getPosCentre());
+				
+				//Skip gravity pulls if distance is to far
+				if( diff.length() > 1200 ) continue;
+				
 				float pull = G * (( objects.get(i).mass * objects.get(k).mass ) / ( diff.length() ));
 				
 				if (!objects.get(k).anchored)
@@ -93,13 +97,13 @@ public abstract class Physics extends Collidable{
 					colVec.negate();
 					object.getSpeed().add(colVec);
 					object.pos.add(colVec);
-					object.getSpeed().multiply(0.85f);		//Lose 15% speed
+					if(object.getSpeed().length() < 5) object.getSpeed().setLength(5);
 				}
 				else if (!this.anchored && object.anchored)
 				{
 					this.getSpeed().add(colVec);
 					this.pos.add(colVec);
-					this.getSpeed().multiply(0.85f);		//Lose 15% speed				
+					if(object.getSpeed().length() < 5) object.getSpeed().setLength(5);	
 				}
 				else if (!this.anchored && !object.anchored)
 				{
