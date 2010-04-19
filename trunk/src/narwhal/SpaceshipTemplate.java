@@ -18,7 +18,6 @@ public class SpaceshipTemplate {
 	public final float maxSpeed;
 	public final float acceleration;
 	public final float turnRate;
-	public final boolean strafe;
 	
 	//Weapon systems
 	public final Weapon primary;
@@ -37,6 +36,8 @@ public class SpaceshipTemplate {
 	public final SpaceshipTemplate interceptor;
 	public final boolean organic;
 	public final Sound canDisguise;
+	public final boolean canWarp;
+	public final boolean canStrafe;
 	
 	
 	public SpaceshipTemplate( String fileName ) throws Exception {		
@@ -60,7 +61,8 @@ public class SpaceshipTemplate {
 		SpaceshipTemplate interceptor = null;
 		boolean organic = false;
 		Sound canDisguise = null;
-		boolean strafe = false;
+		boolean canStrafe = false;
+		boolean canWarp = false;
 		
 		float turnRate = 0.1f;
 		float maxSpeed = 15f;
@@ -108,7 +110,8 @@ public class SpaceshipTemplate {
 			}
 			else if(line.startsWith("[ORGANIC]:"))  organic = Boolean.parseBoolean(parse(line));
 			else if(line.startsWith("[DISGUISE]:")) canDisguise = new Sound(parse(line));
-			else if(line.startsWith("[STRAFING]:"))   strafe = Boolean.parseBoolean(parse(line));
+			else if(line.startsWith("[STRAFING]:")) canStrafe = Boolean.parseBoolean(parse(line));
+			else if(line.startsWith("[WARP]:"))     canWarp = Boolean.parseBoolean(parse(line));
 			
 			else if(line.startsWith("[TURN_RATE]:")) turnRate = Float.parseFloat(parse(line));
 			else if(line.startsWith("[MAX_SPEED]:")) maxSpeed = Float.parseFloat(parse(line));
@@ -140,7 +143,8 @@ public class SpaceshipTemplate {
 		this.interceptor = interceptor;
 		this.organic = organic;
 		this.canDisguise = canDisguise;
-		this.strafe = strafe;
+		this.canWarp = canWarp;
+		this.canStrafe = canStrafe;
 		
 		this.turnRate = turnRate;
 		this.maxSpeed = maxSpeed;

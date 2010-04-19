@@ -1,12 +1,12 @@
 //Plasma bullet particle
 [IMAGE]: plasma.png
 [TIME]: 75
-[SPEED]: 6
+[SPEED]: 10
 [ATTACHED]: False
 
 //Size
 [SIZE]: 0.25
-[SIZE_ADD]: 0.012
+[SIZE_ADD]: 0.006
 
 //Transparency
 [ALPHA]: 0.35

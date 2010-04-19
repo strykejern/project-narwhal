@@ -25,7 +25,7 @@ public class Asteroid extends GameObject {
 		if(rand.nextBoolean()) image.horizontalFlip();
 		
 		//Initiate this object
-		setMaxLife( size*150 );
+		setMaxLife( 20 );
 		super.pos = pos;
 		super.speed = new Vector(rand.nextInt(4)-2, rand.nextInt(4)-2);
 		

@@ -189,7 +189,7 @@ public class Shipyard {
 			y += font.getHeight(g);
 			g.drawString("Internal Nullifier", x, y);
 		}
-		if( ship.strafe )
+		if( ship.canStrafe )
 		{
 			y += font.getHeight(g);
 			g.drawString("Side Thrusters", x, y);
@@ -203,6 +203,11 @@ public class Shipyard {
 		{
 			y += font.getHeight(g);
 			g.drawString("Stealth Disguise System", x, y);
+		}
+		if( ship.canWarp )
+		{
+			y += font.getHeight(g);
+			g.drawString("Subspace Warp Engine", x, y);
 		}
 
 		//Do last, draw all buttons
