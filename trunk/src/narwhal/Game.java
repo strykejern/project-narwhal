@@ -35,15 +35,22 @@ public class Game {
 	private HUD						hud;			// User interface
 	private Shipyard                shipyard;		// The factory that spawns ships for us
    	public final int 				universeSize;
-	
+	private GameMode				gameMode;
 	private Camera					viewPort;		// Handles viewpoints and drawing
 	
-	public Game(Input keys, int universeSize, Shipyard shipyard){       	
+	public enum GameMode {
+		SKIRMISH,				//Single versus battle
+		CAMPAIGN,				//A series of battles, upgrade ship
+		MULTIPLAYER				//Not implemented
+	}
+	
+	public Game(Input keys, int universeSize, Shipyard shipyard, GameMode gameMode){       	
         Random rand = new Random();
        	
 		// Size of the universe
 		this.universeSize = universeSize;
-
+		this.gameMode = gameMode;
+		
        	//Reference to the shipyard
        	this.shipyard = shipyard;
 

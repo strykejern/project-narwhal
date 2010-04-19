@@ -1,22 +1,22 @@
 Weapon Ideas
 EMP Rockets 			- Good vs. Shields and drains Energy, low Life damage
 Nuclear Rocket 			- Ongoing radiation damage if shields are penentrated
-Laser 					- Low damage, fast fire 
 Antimatter Torpedoes	- No homing, extreme high damage, big explosion (destroy planets?)
-Phasor					- Balls of energy, high damage, slow fire
-Lightning				- Rays of lightning, bad vs shield, high damage, low range, high cost
-Interceptor				- Fires mini AI controlled ship that fires minishots (costs Life)
-Minigun					- Regular boring bullets?
+*Laser 					- Low damage, fast fire 
+*Phasor					- Balls of energy, high damage, slow fire
+*Lightning				- Rays of lightning, bad vs shield, high damage, low range, high cost
+*Interceptor				- Fires mini AI controlled ship that fires minishots (costs Life)
+*Minigun					- Regular boring bullets?
 
 Ship Modules (Passive?)
-ECM Jammer				- 70% chance to evade rockets (disable homing?) Maybe disables enemy radar?
+ECM Jammer				- 70% chance to evade rockets (disable homing?) Maybe disables enemy radar? disable cloaking
 Shield Booster			- Faster Shield Regeneration
 Dynamo Reactor			- Can use shield as energy
-Automatic Repair System	- Regenerate Life
-Augumented Engines		- Faster movement
-Interphased Drive		- Faster Acceleration
-Warp Engine 			- Sudden boost in speed, costs energy
-Gravity Stabiliser		- Immune to Gravity and no damage from hitting planets
+*Augumented Engines		- Faster movement
+*Automatic Repair System- Regenerate Life
+*Interphased Drive		- Faster Acceleration
+*Warp Engine 			- Sudden boost in speed, costs energy
+*Gravity Stabiliser		- Immune to Gravity and no damage from hitting planets
 *Side Thrusters			- Allows strafing
 *Internal Nullifier		- Extreme fast turning rate
 
@@ -26,6 +26,6 @@ Both		   - Use special (if any, such as jammer or interphased drive)
 
 RADAR
 level 0 - nothing
-level 1 - Show direction of opponent
-level 2 - show distance and incoming missiles, opponent shield
+level 1 - Show direction of all spaceships
+level 2 - show distance and incoming missiles, opponent shield, red arrows for enemies
 level 3 - show opponent energy and life, extra aim helper

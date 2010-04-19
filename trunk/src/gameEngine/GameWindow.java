@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -32,6 +33,7 @@ import javax.swing.JPanel;
 import narwhal.Game;
 import narwhal.MainMenu;
 import narwhal.Shipyard;
+import narwhal.Game.GameMode;
 
 
 /**
@@ -55,7 +57,8 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		GAME_PLAYING, 
 		GAME_EXIT,
 		GAME_SELECT_SHIP,
-		GAME_START_NEW_GAME
+		GAME_START_NEW_GAME,
+		GAME_END_CURRENT
 	}
 	
 	/**
@@ -116,14 +119,14 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			
 			if(state == gameState.GAME_PLAYING)
 			{
-				if( theGame == null ) theGame = new Game(keys, 5, selectShip);
+				if( theGame == null ) theGame = new Game(keys, 5, selectShip, GameMode.SKIRMISH);
 				state = theGame.update();
 				frame.getContentPane().setCursor(Video.BLANK_CURSOR);	//TODO: bad change cursor every frame?
 			}
 			else if(state == gameState.GAME_MENU)
 			{
 		    	frame.getContentPane().setCursor( null );				//TODO: bad change cursor every frame?
-				state = theMenu.update();
+				state = theMenu.update( theGame != null );
 			}
 			else if(state == gameState.GAME_SELECT_SHIP)
 			{
@@ -133,9 +136,12 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			}
 			else if( state == gameState.GAME_START_NEW_GAME )
 			{
-		       	theMenu.setIngameMenu(true);
-		       	theGame = null;
 		       	state = gameState.GAME_SELECT_SHIP;
+			}
+			else if( state == gameState.GAME_END_CURRENT )
+			{
+		       	theGame = null;
+		       	state = gameState.GAME_MENU;
 			}
 
 			repaint();
@@ -176,12 +182,13 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		//Set quality mode
 		Video.getGraphicsSettings(g);
 				
-		if(state == gameState.GAME_PLAYING && theGame != null) theGame.draw(g);
-		else if(state == gameState.GAME_MENU) theMenu.draw(g);
-		else if(state == gameState.GAME_SELECT_SHIP && selectShip != null) selectShip.draw(g);
+		if(state == gameState.GAME_PLAYING && theGame != null) 				theGame.draw(g);
+		else if(state == gameState.GAME_MENU) 								theMenu.draw(g, theGame);
+		else if(state == gameState.GAME_SELECT_SHIP && selectShip != null) 	selectShip.draw(g);
 
 		//Done drawing this frame
 		g.dispose();
+		rawGraphics.dispose();
 		painting = false;
 	}
 	private boolean painting = false;

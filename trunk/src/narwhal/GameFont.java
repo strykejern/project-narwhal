@@ -58,12 +58,12 @@ public class GameFont {
 		
 	}
 
-	public int getWidth(String text, Graphics2D g) {
+	public static int getWidth(String text, Graphics2D g) {
 		FontMetrics metric = g.getFontMetrics();
 		return metric.stringWidth(text);
 	}
 	
-	public int getHeight(Graphics2D g) {
+	public static int getHeight(Graphics2D g) {
 		FontMetrics metric = g.getFontMetrics();
 		return metric.getHeight();
 	}

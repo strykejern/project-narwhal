@@ -25,6 +25,7 @@ import gameEngine.Video;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
 import narwhal.GameFont.FontType;
 
@@ -108,6 +109,10 @@ public class Button {
 		if( movePos.y < pos.y ) movePos.y += 4;
 		if( movePos.x > pos.x ) movePos.x -= 4;
 		if( movePos.y > pos.y ) movePos.y -= 4;
+	}
+	
+	public Rectangle getButtonArea() {
+		return new Rectangle(pos.getX(), pos.getY(), size.getX(), size.getY());
 	}
 	
 	public void draw(Graphics2D g){
