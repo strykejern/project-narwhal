@@ -1,0 +1,36 @@
+//Explosive Space Mine
+[IMAGE]: mine.png
+[TIME]: 1000
+[SPEED]: 0
+[ATTACHED]: FALSE
+
+//Size
+[SIZE]: 0.40
+[SIZE_ADD]: 0.0
+
+//Transparency
+[ALPHA]: 1.00
+[ALPHA_ADD]: 0
+
+//Rotation
+[ROTATE]: RANDOM
+[ROTATE_ADD]: 0.009
+
+//Direction
+[FACING]: 2
+[FACING_ADD]: 0
+
+//Sound effect
+[SOUND_SPAWN]: NONE
+[SOUND_END]: NONE
+
+//Ending conditions
+[CAN_COLLIDE]: TRUE
+[COLLISION_END]: TRUE
+[FRIENDLY_FIRE]: TRUE
+[PHYSICS]: TRUE
+
+//Spawn other particles on end
+[PARTICLE_END]: explosion.prt
+[MULTISPAWN_END]: 3
+[END_FACING_ADD]: 1.75

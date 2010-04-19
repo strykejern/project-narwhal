@@ -28,7 +28,7 @@ public abstract class Spaceship extends GameObject {
 	protected ParticleEngine  particleEngine;
 
 	//General stuff
-	public String name;						//This ship's name that can be unique
+	protected String name;						//This ship's name that can be unique
 	public String team;						//This ship is on team with any who share the same team
 	private int debrisCooldown;
 
@@ -40,26 +40,27 @@ public abstract class Spaceship extends GameObject {
 	private float slow = 1.00f;				//Slow factor, 0.5f means 50% of normal speed
 	
 	//Weapon systems
-	public Weapon primary;
-	public Weapon secondary;
+	protected Weapon primary;
+	protected Weapon secondary;
 	protected int cooldown;					//Global ship cooldown
 	
 	//Defensive systems
-	public float shieldMax;
-	public float shieldRegen;
-	public float shield;
-	public float energyMax;
-	public float energyRegen;
-	public float energy;
+	protected float shieldMax;
+	protected float shieldRegen;
+	protected float shield;
+	protected float energyMax;
+	protected float energyRegen;
+	protected float energy;
 	
-	//Modules
-	public short radarLevel;
-	public Image2D disguised;
+	//Special Modules
+	protected short radarLevel;
+	protected Image2D disguised;
 	protected Sound   canDisguise;
 	protected boolean canStrafe;
 	protected SpaceshipTemplate interceptor;
 	protected boolean organic;
 	protected boolean canWarp;
+	protected Weapon tetiaryWeapon;
 
 	public Spaceship( SpaceshipTemplate blueprint, String team, Game world ) {		
 		super(world);
@@ -76,6 +77,7 @@ public abstract class Spaceship extends GameObject {
 		
 		primary 		= blueprint.primary;
 		secondary 		= blueprint.secondary;
+		tetiaryWeapon 	= blueprint.tetiaryWeapon;
 
 		maxSpeed 		= blueprint.maxSpeed;
 		acceleration 	= blueprint.acceleration;
@@ -197,8 +199,17 @@ public abstract class Spaceship extends GameObject {
 			}
 		}
 		
+		float lifeDamage = damage*weapon.lifeMul;
+		if( lifeDamage <= 0 ) return;
+		
 		//Next, lose some life
-		setLife(getLife() - damage*weapon.lifeMul);
+		setLife(getLife() - lifeDamage);
+		
+		//Make the player camera shake
+		if( this instanceof AI && ((AI)this).isPlayer() )
+		{
+			Camera.shakeCamera((int)lifeDamage);
+		}
 		
 		//Organics don't explode
 		if( !organic )
@@ -300,7 +311,8 @@ public abstract class Spaceship extends GameObject {
 	private void activateSpecialMod() {
 		if( interceptor != null ) spawnInterceptor();
 		else if( canDisguise != null ) disguise();
-		else	warp();
+		else if( canWarp) warp();
+		else activateWeapon(tetiaryWeapon);
 	}
 
 	/**

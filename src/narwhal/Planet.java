@@ -49,7 +49,6 @@ public class Planet extends GameObject {
 		
 		//Make it unique
 		Image2D myImage = planetImages.get( rand.nextInt(planetImages.size()) ).clone();
-		//int planetSize = rand.nextInt(Video.getScreenWidth()/4) + Video.getScreenHeight()/4;
 		int planetSize = Video.getScreenWidth()/4 + rand.nextInt(Video.getScreenWidth()/4) + Video.getScreenHeight()/4;
 		if( rand.nextBoolean() ) myImage.horizontalFlip();
 		if( rand.nextBoolean() ) myImage.verticalFlip();
@@ -70,10 +69,6 @@ public class Planet extends GameObject {
 	
 	public void update(){
 		
-	}
-	
-	public static final int getMaxSize() {
-		return Video.getScreenWidth()/4 + Video.getScreenHeight()/4;
 	}
 
 }

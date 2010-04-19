@@ -145,6 +145,9 @@ public class Particle extends Physics {
 		setRadius( image.getIconWidth()/4 );
 		collisionList = new ArrayList<GameObject>();
 		
+		//Don't collide with spawner
+		if( spawner instanceof Spaceship ) collisionList.add((Spaceship)spawner);
+			
 		//TODO: change this somehow
 		if(spawner == null) 	speed = new Vector();
 		else					speed = spawner.getSpeed().clone();

@@ -1,0 +1,8 @@
+//Space mine
+[NAME]: Mine
+[DAMAGE]: 50
+[COST]: 70
+[PARTICLE]: mine.prt
+[COOLDOWN]: 50
+[SHIELD_MUL]: 100%
+[LIFE_MUL]: 100%

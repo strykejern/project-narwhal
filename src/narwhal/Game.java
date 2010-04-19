@@ -77,7 +77,7 @@ public class Game {
        	//Spawn enemies
     	for(int i = 0; i < 2; i++)
         {
-    		Spaceship enemy = shipyard.spawnShip("spacejelly.ship", new Vector(i*500, i*500), this, aiType.FOOL, "EVIL");
+    		Spaceship enemy = shipyard.spawnShip("spacejelly.ship", new Vector(i*500, i*500), this, aiType.CONTROLLER, "EVIL");
 	       	entities.add(enemy);
 			hud.addTracking(enemy);
         }
@@ -91,10 +91,10 @@ public class Game {
 				int offY = rand.nextInt(Video.getScreenHeight() );
 				entities.add( new Asteroid(new Vector(x*Video.getScreenWidth() + offX, y*Video.getScreenHeight() + offY), this, 0) );
 				
-				//25% for planet
-				if( rand.nextInt(100) >= 25 ) continue;
-				offX = rand.nextInt(Video.getScreenWidth() - Planet.getMaxSize());
-				offY = rand.nextInt(Video.getScreenHeight() - Planet.getMaxSize());
+				//12% for planet
+				if( rand.nextInt(100) >= 12 ) continue;
+				offX = Video.getScreenWidth()/2;
+				offY = Video.getScreenHeight()/2;
 				entities.add( new Planet(new Vector(x*Video.getScreenWidth() + offX, y*Video.getScreenHeight() + offY), System.nanoTime(), this) );			
 			}
 		
