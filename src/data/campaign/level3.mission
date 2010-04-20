@@ -1,0 +1,19 @@
+[MISSION]: Mission 3 - Retribution
+[DESCRIPTION]: Marvelous! Splendid! Stupendous! You have proven yourself worthy earthling. But the Juggernaught won't be repelled by this. Destroy their mothership and they will be driven back. Join us in a joint attack operation and we shall vanquish this evil!
+[MUSIC]: space.ogg
+[VOICE]: mission3.ogg
+[IMAGE]: data/campaign/rombeda.jpg
+[NEXT]: data/campaign/level4.mission
+
+
+//Spawning points for spaceships
+//      ShipName xSpawn ySpawn aiType Team 
+[SHIP]: data/ships/raptor.ship 1600 1200 PLAYER GOOD
+[SHIP]: rombeda.ship 1600 1100 CONTROLLER GOOD
+[SHIP]: rombeda.ship 1500 1200 CONTROLLER GOOD
+[SHIP]: rombeda.ship 1700 1400 CONTROLLER GOOD
+
+[SHIP]: juggernaught.ship 2250 2400 BRUTE EVIL
+[SHIP]: juggernaught.ship 2550 2500 FOOL EVIL
+[SHIP]: juggernaught.ship 2300 2300 BRUTE EVIL
+[SHIP]: pioneer.ship 2200 2100 CONTROLLER EVIL
