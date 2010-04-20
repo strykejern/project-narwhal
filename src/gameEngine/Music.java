@@ -42,7 +42,7 @@ public abstract class Music {
 		stopMusic();
 	
 		//Set the new song
-		music = new MusicThread("data/sounds/" + song);
+		music = new MusicThread("data/music/" + song);
 		music.start();		
 	}
 	
