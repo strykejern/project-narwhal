@@ -34,7 +34,7 @@ public class Game {
 	private Input 					keys;			// Class to read inputs from
 	private HUD						hud;			// User interface
 	private Shipyard                shipyard;		// The factory that spawns ships for us
-   	public final int 				universeSize;
+   	public int 						universeSize;
 	private Camera					viewPort;		// Handles viewpoints and drawing
 	private Spaceship				player;
 	private Background 				background;
@@ -56,7 +56,7 @@ public class Game {
 		hud = new HUD(player);
 
 		//Generate the universe
-		generateWorld( System.currentTimeMillis() );
+		generateWorld( System.currentTimeMillis(), 4 );
 
 		// Initialize the camera
 		viewPort = new Camera(
@@ -67,8 +67,11 @@ public class Game {
 		Video.setCamera(viewPort);
 	}
 	
-	private void generateWorld(long seed) {
+	private void generateWorld(long seed, int universeSize) {
         Random rand = new Random(seed);
+        
+		// Size of the universe
+		this.universeSize = universeSize;
         
 		//Initialize the player ship
 		entities.add(player);
@@ -108,11 +111,8 @@ public class Game {
 		background = new Background(universeSize, seed);
 	}
 	
-	public Game(Input keys, int universeSize, Shipyard shipyard){       	
-       	
-		// Size of the universe
-		this.universeSize = universeSize;
-		
+	public Game(Input keys, Shipyard shipyard){       	
+       			
        	//Reference to the shipyard
        	this.shipyard = shipyard;
 
@@ -204,5 +204,9 @@ public class Game {
 		g.setColor(Color.white);
 		g.drawString("Number of particles: " + particleEngine.getParticleCount(), 5, 50);
 		g.drawString("Number of threads: " + Thread.activeCount() + " (" + Sound.getActiveSounds() + " sound)", 5, 70);
+	}
+
+	public boolean isEnded() {
+		return !player.active();
 	}
 }

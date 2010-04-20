@@ -222,7 +222,6 @@ public class MainMenu {
 					{
 						if( gameActive ) 
 						{
-							Music.play("menu.ogg");
 							buttonList.get(BUTTON_RESUME_GAME).hide();
 							buttonList.get(BUTTON_START_GAME).show();
 							return GameState.GAME_END_CURRENT;

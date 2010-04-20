@@ -247,7 +247,7 @@ public class Sound
 	/**
 	 * JJ> Stops all instances of this sound
 	 */
-	protected void silence() {
+	public void silence() {
 		looping = false;
 		silence = true;
 	}

@@ -18,9 +18,13 @@ public class CampaignScreen {
 	Input key;
 	String mission;
 	ArrayList<String> description;
+	Sound narrator;
+	String nextMission;
+	public boolean active;
 	
 	public CampaignScreen(Input key) {
 		this.key = key;
+		active = false;
 		
 		Vector pos = new Vector(Video.getScreenWidth()-100, Video.getScreenHeight()-100);
 		begin = new Button(pos, new Vector(150, 100 ), "Begin", 0, pos);
@@ -63,12 +67,14 @@ public class CampaignScreen {
 					}
 					description.add(text.trim());
 				}
+				else if(line.startsWith("[VOICE]:")) narrator = new Sound( parse(line) );
 				else if(line.startsWith("[MUSIC]:")) Music.play( parse(line ) );
 				else if(line.startsWith("[IMAGE]:"))
 				{
 					background = new Image2D(parse(line));
 					background.resize(Video.getScreenWidth(), Video.getScreenHeight());
 				}
+				else if(line.startsWith("[NEXT]:")) nextMission = parse(line);
 				
 				//Could not figure it out
 				else	Log.warning("Loading mission " + fileName + " - unrecognized line: " + line);
@@ -78,6 +84,9 @@ public class CampaignScreen {
 		{
 			Log.warning("Loading mission " + fileName + " - " + e);
 		}
+		
+		narrator.playFull(0.75f);
+		active = true;
 	}
 	
 	public void draw(Graphics2D g){
@@ -103,18 +112,21 @@ public class CampaignScreen {
 	}
 
 	public GameState update() {
-		if(mission == null) loadMission("data/campaign/level1.mission");
-		
 		begin.update();
 
 		//The next button
 		if( begin.mouseOver(key) && key.mosButton1 ) 
 		{
 			key.mosButton1 = false;
+			narrator.silence();						//Shut up that voice
 			return GameState.GAME_START_CAMPAIGN;
 		}
 
 		return GameState.GAME_CAMPAIGN_SCREEN;
+	}
+	
+	public void next(){
+		loadMission(nextMission);
 	}
 	
 	/**

@@ -135,24 +135,19 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			}
 			else if( state == GameState.GAME_START_SKIRMISH )
 			{
-				if( theGame == null ) 
-				{
-					theGame = new Game(keys, 5, selectShip);
-				}
+				if( theGame == null ) theGame = new Game(keys, selectShip);
+				
 				selectShip.enableSelection();
 		       	state = GameState.GAME_SELECT_SHIP;
 			}
 			else if( state == GameState.GAME_START_CAMPAIGN )
 			{
-				if( theGame == null ) 
-				{
-					theGame = new Game(keys, 5, selectShip);
-				}
+				if( theGame == null ) theGame = new Game(keys, selectShip);
+				selectShip.disableSelection();
 				
 				try 
 				{
 					selectShip.setCurrentShip( new SpaceshipTemplate("data/campaign/nasa.ship") );
-					selectShip.disableSelection();
 				} 
 				catch (Exception e) 
 				{
@@ -164,15 +159,25 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			else if( state == GameState.GAME_END_CURRENT )
 			{
 		       	theGame = null;
+		       	campaign.active = false;
 		       	state = GameState.GAME_MENU;
+		       	Music.play("menu.ogg");
 			}
 			else if( state == GameState.GAME_CAMPAIGN_SCREEN )
 			{
-		       	state = campaign.update();
+				if( !campaign.active ) campaign.loadMission("data/campaign/level1.mission");
+				state = campaign.update();
+			}
+
+			//This is so that the player won't open the menu after the current game has ended
+			if( theGame != null && state == GameState.GAME_MENU && theGame.isEnded() )
+			{
+				screenFade = 1;
+				state = GameState.GAME_PLAYING;
 			}
 
 			repaint();
-			
+						
 			try 
 			{
 				tm += TARGET_FPS;
@@ -200,6 +205,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 	 * JJ> Paints every object of interest
 	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 	 */
+	float screenFade = 0;
 	public void paint(Graphics rawGraphics) {
 		painting = true;
 		
@@ -209,7 +215,32 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		//Set quality mode
 		Video.getGraphicsSettings(g);
 				
-		if(state == GameState.GAME_PLAYING) 								theGame.draw(g);
+		if(state == GameState.GAME_PLAYING)
+		{
+			theGame.draw(g);
+			
+			//Fade out the screen
+			if( theGame.isEnded() )
+			{
+				screenFade = Math.min(1, screenFade+0.002f);
+				g.setColor( new Color(0, 0, 0, screenFade) );
+				g.fillRect(0, 0, Video.getScreenWidth(), Video.getScreenHeight());
+				
+				if( screenFade == 1 || keys.escape )
+				{
+				
+					//Prepeare next level
+					if( campaign.active )
+					{
+						state = GameState.GAME_CAMPAIGN_SCREEN;
+						campaign.next();
+					}
+					
+					//Go back to the menu
+					else state = GameState.GAME_END_CURRENT;
+				}
+			}
+		}
 		else if(state == GameState.GAME_MENU) 								theMenu.draw(g, theGame);
 		else if(state == GameState.GAME_SELECT_SHIP) 						selectShip.draw(g);
 		else if(state == GameState.GAME_CAMPAIGN_SCREEN) 					campaign.draw(g);
