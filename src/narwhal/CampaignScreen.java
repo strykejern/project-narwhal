@@ -48,6 +48,7 @@ public class CampaignScreen {
 		//Clear stuff from previous levels
 		description.clear();
 		spawnList.clear();
+		narrator = null;
 		
 		//Parse the ship file
 		try 
@@ -114,14 +115,16 @@ public class CampaignScreen {
 				
 				//Could not figure it out
 				else	Log.warning("Loading mission " + fileName + " - unrecognized line: " + line);
-			}
+			}			
 		} 
-		catch (IOException e) 
+		catch (Exception e) 
 		{
 			Log.warning("Loading mission " + fileName + " - " + e);
 		}
 		
-		narrator.playFull(0.75f);
+		if( spawnList.size() == 0 ) begin.setText("Continue");
+		else						begin.setText("Start");
+		if( narrator != null ) narrator.playFull(0.75f);
 		active = true;
 	}
 	
@@ -155,7 +158,9 @@ public class CampaignScreen {
 		{
 			key.mosButton1 = false;
 			narrator.silence();						//Shut up that voice
-			return GameState.GAME_START_CAMPAIGN;
+			
+			if( spawnList.size() == 0  ) loadMission(nextMission);
+			else return GameState.GAME_START_CAMPAIGN;
 		}
 
 		return GameState.GAME_CAMPAIGN_SCREEN;

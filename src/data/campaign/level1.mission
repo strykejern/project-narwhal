@@ -8,7 +8,7 @@
 //Spawning points for spaceships
 //      ShipName xSpawn ySpawn aiType Team 
 [SHIP]: data/campaign/nasa.ship 600 800 PLAYER GOOD
-[SHIP]: juggernaught.ship 1200 1800 CONTROLLER EVIL
-[SHIP]: juggernaught.ship 1200 1900 CONTROLLER EVIL
-[SHIP]: juggernaught.ship 1200 1600 CONTROLLER EVIL
-[SHIP]: juggernaught.ship 1200 1700 CONTROLLER EVIL
+[SHIP]: juggernaught.ship 1200 1800 BRUTE EVIL
+[SHIP]: juggernaught.ship 1200 1900 BRUTE EVIL
+[SHIP]: juggernaught.ship 1200 1600 BRUTE EVIL
+[SHIP]: juggernaught.ship 1200 1700 BRUTE EVIL

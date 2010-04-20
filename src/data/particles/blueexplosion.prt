@@ -5,8 +5,8 @@
 [ATTACHED]: FALSE
 
 //Size
-[SIZE]: 0.25
-[SIZE_ADD]: 0.005
+[SIZE]: 0.6
+[SIZE_ADD]: 0.0035
 
 //Transparency
 [ALPHA]: 0.8
