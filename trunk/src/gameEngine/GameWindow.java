@@ -128,26 +128,22 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 				
 			if(state == GameState.GAME_PLAYING)		state = theGame.update();
 			else if(state == GameState.GAME_MENU)	state = theMenu.update( theGame != null );
-			else if(state == GameState.GAME_SELECT_SHIP)
-			{
-		    	state = selectShip.update();
-				if( state == GameState.GAME_PLAYING ) theGame.start();
-			}
+			else if(state == GameState.GAME_SELECT_SHIP) state = selectShip.update();
 			else if( state == GameState.GAME_START_SKIRMISH )
 			{
-				if( theGame == null ) theGame = new Game(keys, selectShip);
-				
+				theGame = new Game(keys, selectShip, null, 4);
 				selectShip.enableSelection();
+				selectShip.resetSelection();
 		       	state = GameState.GAME_SELECT_SHIP;
 			}
 			else if( state == GameState.GAME_START_CAMPAIGN )
 			{
-				if( theGame == null ) theGame = new Game(keys, selectShip);
+				theGame = new Game(keys, selectShip, campaign.getLevelSpawnList(), 4);
 				selectShip.disableSelection();
 				
 				try 
 				{
-					selectShip.setCurrentShip( new SpaceshipTemplate("data/campaign/nasa.ship") );
+					selectShip.setCurrentShip( new SpaceshipTemplate(campaign.getPlayerShipName()) );
 				} 
 				catch (Exception e) 
 				{

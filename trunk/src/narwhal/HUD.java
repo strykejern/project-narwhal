@@ -18,6 +18,7 @@
 //********************************************************************************************
 package narwhal;
 
+import gameEngine.GameObject;
 import gameEngine.Vector;
 import gameEngine.Video;
 
@@ -53,9 +54,11 @@ public class HUD {
 	 * life, shield and energy he has left. Also does radar and displays weapon.
 	 * @param observer This should be the player's ship or whatever other ship you want to follow
 	 */
-	public HUD( Spaceship observer){
+	public HUD( Spaceship observer, ArrayList<GameObject> tracking){
 		this.observer = observer;
-		tracking = new ArrayList<Spaceship>();
+		this.tracking = new ArrayList<Spaceship>();
+		for( GameObject track : tracking )
+			if( track instanceof Spaceship ) this.tracking.add((Spaceship)track);
 	}
 		
 	public void draw(Graphics2D g) {
@@ -127,10 +130,6 @@ public class HUD {
 				drawRadar(target, g);
 			}
 		}
-	}
-		
-	public void addTracking(Spaceship target){
-		tracking.add(target);
 	}
 	
 	//JJ> Draws one tracking polygon for the specified spaceship

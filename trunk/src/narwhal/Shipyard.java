@@ -323,5 +323,9 @@ public class Shipyard {
 		buttonList.get(BUTTON_START_GAME).show();
 		buttonList.get(BUTTON_NEXT_SHIP).hide();
 	}
+	
+	public void resetSelection(){
+		select = shipList.keySet().iterator();
+	}
 
 }

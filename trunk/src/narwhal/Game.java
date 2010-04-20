@@ -45,53 +45,41 @@ public class Game {
 		MULTIPLAYER				//Not implemented
 	}*/
 	
-	public void start() {
-       	//Game music
-       	Music.play( "battle.ogg" );
-       	
-       	//Prepeare the player ship
-		player = shipyard.spawnSelectedShip(new Vector(200, 200), this, aiType.PLAYER, "GOOD");
-
-		//Initialize the HUD and bind it to the player's ship
-		hud = new HUD(player);
-
-		//Generate the universe
-		generateWorld( System.currentTimeMillis(), 4 );
-
-		// Initialize the camera
-		viewPort = new Camera(
-				entities, 
-				background, 
-				player);
-		viewPort.configureInputHandler(keys);
-		Video.setCamera(viewPort);
-	}
-	
-	private void generateWorld(long seed, int universeSize) {
+	private void generateWorld( long seed, int universeSize, ArrayList<SpawnPoint> spawnList ) {
         Random rand = new Random(seed);
         
 		// Size of the universe
 		this.universeSize = universeSize;
-        
-		//Initialize the player ship
-		entities.add(player);
-        
-       	//Spawn allies
-        for(int i = 0; i < 0; i++)
-        {
-			Spaceship ally = shipyard.spawnShip("raptor.ship", new Vector(i*100, i*100), this, aiType.CONTROLLER, "GOOD");
-	       	entities.add(ally);
-			hud.addTracking(ally);		
-        }
-        
-       	//Spawn enemies
-    	for(int i = 0; i < 4; i++)
-        {
-    		Spaceship enemy = shipyard.spawnShip("juggernaught.ship", new Vector(universeSize*Video.getScreenWidth()/2,universeSize*Video.getScreenHeight()/2), this, aiType.CONTROLLER, "EVIL");
-	       	entities.add(enemy);
-			hud.addTracking(enemy);
-        }
 
+		//Spawn every object
+		for(SpawnPoint spawn : spawnList) {
+						
+			//Randomize spawn position if needed
+			if(spawn.pos == null) spawn.pos = new Vector(rand.nextInt(Video.getScreenWidth()*universeSize), rand.nextInt(Video.getScreenHeight()*universeSize));
+			
+			//Players are handled a little different than AI
+			if( spawn.ai == aiType.PLAYER )
+			{
+       			try 
+       			{
+       				shipyard.setCurrentShip(new SpaceshipTemplate(spawn.name));
+					player = shipyard.spawnSelectedShip(spawn.pos, this, aiType.PLAYER, spawn.team);
+					entities.add(player);
+				} 
+       			catch (Exception e) 
+				{
+					Log.warning("Could not load player ship: " + spawn.name);
+				}
+	       		continue;
+			}
+
+			Spaceship entity = shipyard.spawnShip(spawn.name, spawn.pos, this, spawn.ai, spawn.team);
+	       	entities.add(entity);
+		}
+
+		//Initialize the HUD and bind it to the player's ship
+		hud = new HUD(player, entities);
+		
 		//Generate random planets and asteroids
 		for(int x = 0; x < universeSize; x++)
 			for(int y = 0; y < universeSize; y++)
@@ -111,7 +99,7 @@ public class Game {
 		background = new Background(universeSize, seed);
 	}
 	
-	public Game(Input keys, Shipyard shipyard){       	
+	public Game(Input keys, Shipyard shipyard, ArrayList<SpawnPoint> spawnList, int universeSize){       	
        			
        	//Reference to the shipyard
        	this.shipyard = shipyard;
@@ -123,7 +111,33 @@ public class Game {
        	entities = new ArrayList<GameObject>();
        	
 		//Prepare particle engine
-		particleEngine = new ParticleEngine();       	
+		particleEngine = new ParticleEngine();     
+		
+       	//Game music
+       	Music.play( "battle.ogg" );
+
+		//TODO remove this here
+		if(spawnList == null)
+		{
+			spawnList = new ArrayList<SpawnPoint>();
+			spawnList.add( new SpawnPoint("juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
+			spawnList.add( new SpawnPoint("juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
+			spawnList.add( new SpawnPoint("juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
+			spawnList.add( new SpawnPoint("juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
+			player = shipyard.spawnSelectedShip(new Vector(200, 200), this, aiType.PLAYER, "GOOD");
+			entities.add(player);
+		}
+
+		//Generate the universe
+		generateWorld( System.currentTimeMillis(), universeSize, spawnList );
+
+		// Initialize the camera
+		viewPort = new Camera(
+				entities, 
+				background, 
+				player);
+		viewPort.configureInputHandler(keys);
+		Video.setCamera(viewPort);
 	}
 	
 	public GameWindow.GameState update(){
