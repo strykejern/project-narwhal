@@ -1,0 +1,12 @@
+[MISSION]: Mission 2 - Filthy Humans
+[DESCRIPTION]: Do not be afraid earthling. For we are the Rombeda. The enemies of our enemies is our friend. We can see you have no ships to defend against the Juggernaught. We will give you one, now prove yourself by destroying one of their ships!
+[MUSIC]: space.ogg
+[VOICE]: mission2b.ogg
+[IMAGE]: data/campaign/rombeda.jpg
+[NEXT]: data/campaign/level3.mission
+
+
+//Spawning points for spaceships
+//      ShipName xSpawn ySpawn aiType Team 
+[SHIP]: data/ships/raptor.ship 1600 1200 PLAYER GOOD
+[SHIP]: juggernaught.ship 1200 1600 FOOL EVIL
