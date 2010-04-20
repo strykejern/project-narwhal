@@ -1,4 +1,23 @@
+//********************************************************************************************
+//*
+//*    This file is part of Project Narwhal.
+//*
+//*    Project Narwhal is free software: you can redistribute it and/or modify it
+//*    under the terms of the GNU General Public License as published by
+//*    the Free Software Foundation, either version 3 of the License, or
+//*    (at your option) any later version.
+//*
+//*    Project Narwhal is distributed in the hope that it will be useful, but
+//*    WITHOUT ANY WARRANTY; without even the implied warranty of
+//*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//*    General Public License for more details.
+//*
+//*    You should have received a copy of the GNU General Public License
+//*    along with Project Narwhal.  If not, see <http://www.gnu.org/licenses/>.
+//*
+//********************************************************************************************
 package gameEngine;
+
 
 import gameEngine.ParticleTemplate.InvalidParticleException;
 
@@ -10,6 +29,13 @@ import narwhal.Planet;
 import narwhal.Spaceship;
 import narwhal.Weapon;
 
+
+/**
+ * JJ> A useful class that keeps track of all particles for us. It handles particle 
+ *     drawing, updating, collisions, etc.
+ * @author Anders Eie and Johan Jansen
+ *
+ */
 public class ParticleEngine {
 	private static final int MAX_PARTICLES = 512;
 	private HashMap<String, ParticleTemplate> particleMap;
@@ -91,7 +117,11 @@ public class ParticleEngine {
 						
 						//Die away if told to
 						if( template.collisionEnd && ( !template.subAtomicParticle 
-								|| object instanceof Planet ) ) 	deleteParticle(prt);
+								|| object instanceof Planet ) )
+							{
+								deleteParticle(prt);
+								break;
+							}
 					}
 				}
 			}

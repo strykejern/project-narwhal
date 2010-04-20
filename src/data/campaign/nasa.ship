@@ -1,0 +1,25 @@
+//Special campaign ship
+[NAME]:   NASA Discovery Space Shuttle
+[FILE]:   nasa.png
+[SIZE]:   1.00
+
+//Defense
+[LIFE]:   100
+[SHIELD]: 0
+[ENERGY]: 100
+
+//Regeneration
+[EREGEN]: 0.5
+[SREGEN]: 0
+
+//Weapons
+[PRIMARY]: NONE
+[SECONDARY]: NONE
+
+//Special mods
+[RADAR]: 1
+
+//Engines
+[MAX_SPEED]: 10
+[TURN_RATE]: 0.10
+[ACCELERATION]: 0.2

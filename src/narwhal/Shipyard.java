@@ -25,7 +25,7 @@ import gameEngine.Log;
 import gameEngine.ResourceMananger;
 import gameEngine.Vector;
 import gameEngine.Video;
-import gameEngine.GameWindow.gameState;
+import gameEngine.GameWindow.GameState;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -48,7 +48,6 @@ public class Shipyard {
 	private Image2D right;
 	private SpaceshipTemplate ship;
 	private Iterator<String> select;
-	private GameFont font;
 	private Input key;
 	
 	//The blueprints of all ships
@@ -64,10 +63,7 @@ public class Shipyard {
 		//Load the list of ships and get the first ship in the list
 		parseShipList();
 		select = shipList.keySet().iterator();
-		setCurrentShip(select.next());		
-		
-		//Ready font
-		font = new GameFont();
+		setCurrentShip( shipList.get(select.next()) );		
 		
 		//Ready buttons
 		buttonList = new HashMap<Integer, Button>();
@@ -93,8 +89,7 @@ public class Shipyard {
 	 * @param name The String reference to the list of spaceships currently loaded ("raptor.ship" for example)
 	 * @param pos The Vector position in the world where it is spawned
 	 * @param keys What Input controller controls this ship? (could be AI)
-	 * @param universeSize A Vector that tells us how big is the world around us is
-	 * @param particleEngine Which ParticleEngine are we supposed to use to spawn particles
+	 * @param world What world is this spaceship spawning in, this should be a Game object
 	 * @return The new Spaceship ready to fight!
 	 */
 	public Spaceship spawnShip(String name, Vector pos, Game world, aiType AI, String team) {
@@ -107,6 +102,14 @@ public class Shipyard {
 		
 		AI produced;
 		produced = new AI(shipList.get(name), team, world);
+		produced.instantiate(pos, AI);
+				
+		return produced;
+	}
+
+	public Spaceship spawnShip(SpaceshipTemplate template, Vector pos, Game world, aiType AI, String team) {
+		AI produced;
+		produced = new AI(template, team, world);
 		produced.instantiate(pos, AI);
 				
 		return produced;
@@ -126,17 +129,17 @@ public class Shipyard {
 		}
 		
 		g.drawString("WEAPON SYSTEM: " + wpn.name, x, y);
-		y += font.getHeight(g);
+		y += GameFont.getHeight(g);
 		g.drawString("Damage: " + wpn.damage, x, y);
-		y += font.getHeight(g);
+		y += GameFont.getHeight(g);
 		g.drawString("Hull Penentration: " + (int)(wpn.lifeMul*100) + "%", x, y);
-		y += font.getHeight(g);
+		y += GameFont.getHeight(g);
 		g.drawString("Shield Penentration: " + (int)(wpn.shieldMul*100) + "%", x, y);
-		y += font.getHeight(g);
+		y += GameFont.getHeight(g);
 		g.drawString("Energy Cost: " + wpn.cost, x, y);
 		return y;
 	}
-	
+		
 	public void draw(Graphics2D g) {
 		final int OFFSET_X = Video.getScreenWidth()/32;
 		final int OFFSET_Y = Video.getScreenHeight()/16;
@@ -152,71 +155,70 @@ public class Shipyard {
 		//Ship description
 		int x = bg.getWidth() + OFFSET_X;
 		int y = OFFSET_Y;
-		g.setColor(Color.GREEN);	
 		
 		//Ship name
-		font.set(g, FontType.FONT_MENU);
+		GameFont.set(g, FontType.FONT_MENU, Color.GREEN, 14);
 		g.drawString(ship.name.toUpperCase(), x, y);
-		y += font.getHeight(g)*2;
+		y += GameFont.getHeight(g)*2;
 
 		//Weapon description
-		font.set(g, FontType.FONT_NORMAL);
-		y += font.getHeight(g);
+		GameFont.set(g, FontType.FONT_NORMAL, Color.GREEN, 14);
+		y += GameFont.getHeight(g);
 		y = describeWeapon(g, x, y, ship.primary);
-		y += font.getHeight(g);
+		y += GameFont.getHeight(g);
 		y = describeWeapon(g, x, y, ship.secondary);
-		y += font.getHeight(g)*3;
+		y += GameFont.getHeight(g)*3;
 		
 		//Ship description
 		g.drawString("SHIP PROPERTIES: ", x, y);
-		y += font.getHeight(g);
+		y += GameFont.getHeight(g);
 		g.drawString("Hull: " + ship.lifeMax, x, y);
-		y += font.getHeight(g);
+		y += GameFont.getHeight(g);
 		g.drawString("Shields: " + ship.shieldMax, x, y);
-		y += font.getHeight(g);
+		y += GameFont.getHeight(g);
 		g.drawString("Energy: " + ship.energyMax, x, y);
-		y += font.getHeight(g)*3;
+		y += GameFont.getHeight(g)*3;
 
 		//Ship modifications
 		g.drawString("SPECIAL MODIFICATIONS: ", x, y);
-		y += font.getHeight(g);
+		y += GameFont.getHeight(g);
 		if( ship.radarLevel == 0)      g.drawString("Radar: None (Level 0)", x, y);
 		else if( ship.radarLevel == 1) g.drawString("Radar: Binary Scanner (Level 1)", x, y);
 		else if( ship.radarLevel == 2) g.drawString("Radar: Neutron Scanner (Level 2)", x, y);
 		else                           g.drawString("Radar: Quantum Bit Array (Level " + ship.radarLevel + ")", x, y);
 		if( ship.autoBreaks )
 		{
-			y += font.getHeight(g);
+			y += GameFont.getHeight(g);
 			g.drawString("Internal Nullifier", x, y);
 		}
 		if( ship.canStrafe )
 		{
-			y += font.getHeight(g);
+			y += GameFont.getHeight(g);
 			g.drawString("Side Thrusters", x, y);
 		}
 		if( ship.interceptor != null )
 		{
-			y += font.getHeight(g);
+			y += GameFont.getHeight(g);
 			g.drawString("Interceptors (" + ship.interceptor.name +")", x, y);
 		}
 		if( ship.canDisguise != null )
 		{
-			y += font.getHeight(g);
+			y += GameFont.getHeight(g);
 			g.drawString("Stealth Disguise System", x, y);
 		}
 		if( ship.canWarp )
 		{
-			y += font.getHeight(g);
+			y += GameFont.getHeight(g);
 			g.drawString("Subspace Warp Engine", x, y);
 		}
 		if( ship.canCloak )
 		{
-			y += font.getHeight(g);
+			y += GameFont.getHeight(g);
 			g.drawString("Cloaking Device", x, y);
 		}
 		if( ship.tetiaryWeapon != null )
 		{
-			y += font.getHeight(g);
+			y += GameFont.getHeight(g);
 			g.drawString("Extra Armament ("+ ship.tetiaryWeapon.name +")", x, y);
 		}
 
@@ -225,7 +227,7 @@ public class Shipyard {
         while( iterator.hasNext() ) iterator.next().draw(g);
 	}
 
-	public gameState update() {
+	public GameState update() {
         
         //Check if the player is holding over any mouse buttons
         Iterator<Button> iterator = buttonList.values().iterator();
@@ -245,19 +247,19 @@ public class Shipyard {
 				{
 					case BUTTON_START_GAME:
 					{
-						return GameWindow.gameState.GAME_PLAYING;
+						return GameWindow.GameState.GAME_PLAYING;
 					}
 					case BUTTON_NEXT_SHIP:
 					{
 						if( !select.hasNext() ) select = shipList.keySet().iterator();
-						setCurrentShip(select.next());
+						setCurrentShip( shipList.get(select.next()) );
 						break;
 					}
 				}
 			}
         }
         
-		return gameState.GAME_SELECT_SHIP;
+		return GameState.GAME_SELECT_SHIP;
 	}
 	
 	/**
@@ -286,24 +288,21 @@ public class Shipyard {
 	 * JJ> Changes the current ship we are focusing on
 	 * @param index The index number in the ship list
 	 */
-	private void setCurrentShip( String name ) {
-				
-		//Change current ship
-		ship = shipList.get(name);
-		
+	public void setCurrentShip( SpaceshipTemplate ship ) {	
 		//Make it look computerized green
 		image = ship.image.clone();
 		image.setColorTint(0, 255, 0);
 		image.resize(Video.getScreenWidth()/4, Video.getScreenWidth()/4);
 		image.setDirection((float)-Math.PI/2);
+		
+		this.ship = ship;
 	}
 	
 	/**
 	 * JJ> Spawns the ship that is currently selected in the Shipyard menu
 	 * @param pos The Vector position in the world where it is spawned
 	 * @param keys What Input controller controls this ship? (could be AI)
-	 * @param universeSize A Vector that tells us how big is the world around us is
-	 * @param particleEngine Which ParticleEngine are we supposed to use to spawn particles
+	 * @param world What world is this spaceship spawning in, this should be a Game object
 	 * @return The new Spaceship ready to fight!
 	 */
 	public Spaceship spawnSelectedShip(Vector pos, Game world, aiType AI, String team) {
@@ -312,8 +311,17 @@ public class Shipyard {
 		produced.instantiate(pos, AI);
 				
 		return produced;
-		
 	}
 
+	public void enableSelection() {
+		buttonList.get(BUTTON_START_GAME).show();
+		buttonList.get(BUTTON_NEXT_SHIP).show();
+		setCurrentShip( shipList.get(select.next()) );		
+	}
+	
+	public void disableSelection() {
+		buttonList.get(BUTTON_START_GAME).show();
+		buttonList.get(BUTTON_NEXT_SHIP).hide();
+	}
 
 }

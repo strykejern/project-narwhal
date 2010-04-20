@@ -1,7 +1,7 @@
 package narwhal;
 
 import gameEngine.*;
-import gameEngine.GameWindow.gameState;
+import gameEngine.GameWindow.GameState;
 import gameEngine.Video.VideoQuality;
 
 import java.awt.Color;
@@ -130,7 +130,7 @@ public class MainMenu {
 	}
 	
 	//JJ> Main menu loop
-	public GameWindow.gameState update( boolean gameActive ) {
+	public GameWindow.GameState update( boolean gameActive ) {
 		
         //Check if the player is holding over any mouse buttons
         Iterator<Button> iterator = buttonList.values().iterator();
@@ -164,7 +164,7 @@ public class MainMenu {
 					
 					case BUTTON_RESUME_GAME:
 					{
-						return GameWindow.gameState.GAME_PLAYING;
+						return GameWindow.GameState.GAME_PLAYING;
 					}
 					
 					case BUTTON_START_SKIRMISH:
@@ -182,8 +182,24 @@ public class MainMenu {
 				    	//Play selection music
 				       	Music.play( "space.ogg" );
 				       	
-						return GameWindow.gameState.GAME_START_NEW_GAME;
+						return GameWindow.GameState.GAME_START_SKIRMISH;
 					}
+					
+					case BUTTON_START_CAMPAIGN:
+					{
+				    	//Hide the existing buttons
+				    	buttonList.get(BUTTON_START_CAMPAIGN).hide();
+				    	buttonList.get(BUTTON_START_SKIRMISH).hide();
+				    	buttonList.get(BUTTON_MAIN_MENU).hide();
+				    	
+						//Display new buttons
+				    	buttonList.get(BUTTON_RESUME_GAME).show();
+				    	buttonList.get(BUTTON_OPTIONS).show();
+				    	buttonList.get(BUTTON_EXIT).show();
+			       	
+						return GameWindow.GameState.GAME_CAMPAIGN_SCREEN;
+					}
+
 					
 					case BUTTON_OPTIONS:
 					{
@@ -209,9 +225,9 @@ public class MainMenu {
 							Music.play("menu.ogg");
 							buttonList.get(BUTTON_RESUME_GAME).hide();
 							buttonList.get(BUTTON_START_GAME).show();
-							return gameState.GAME_END_CURRENT;
+							return GameState.GAME_END_CURRENT;
 						}
-						return GameWindow.gameState.GAME_EXIT;
+						return GameWindow.GameState.GAME_EXIT;
 					}
 					
 					case BUTTON_MAIN_MENU:
@@ -313,7 +329,7 @@ public class MainMenu {
 			currentBackground = nextBackground;
 		}
 		
-		return gameState.GAME_MENU;
+		return GameState.GAME_MENU;
 	}
 		
 	public void draw(Graphics2D g, Game inGame) {
@@ -340,10 +356,10 @@ public class MainMenu {
         	button.draw(g);
         	
         	//Draw description hint text for specific buttons
-        	if( button.getID() == BUTTON_START_SKIRMISH && button.mouseOver )
+        	if( button.getID() == BUTTON_START_SKIRMISH && button.mouseOver(key) )
         		hint = "Play against the computer in a single Skirmish game.";
-        	else if( button.getID() == BUTTON_START_CAMPAIGN && button.mouseOver )
-        		hint = "Play against the AI in series of battle while upgrading your ship.";
+        	else if( button.getID() == BUTTON_START_CAMPAIGN && button.mouseOver(key) )
+        		hint = "Play against the AI in series of battles while upgrading your ship.";
         }
         
         //Draw any button hint
