@@ -1,0 +1,13 @@
+[MISSION]: Level 1 - First Encounter
+[DESCRIPTION]: In 2028 NASA launched the space shuttle program to mars. The mission was suddenly interrupted when 4 unidentified signals were detected by the radar, closing in with an alarming speed...
+[MUSIC]: space.ogg
+[IMAGE]: data/campaign/level1.jpg
+SIZE: 2
+
+SHIPS: 
+4 juggernaught.ship
+
+PLANETS:
+1
+
+FIRST LEVEL: TRUE

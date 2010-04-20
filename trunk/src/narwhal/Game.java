@@ -19,7 +19,7 @@
 package narwhal;
 
 import gameEngine.*;
-import gameEngine.GameWindow.gameState;
+import gameEngine.GameWindow.GameState;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -35,56 +35,56 @@ public class Game {
 	private HUD						hud;			// User interface
 	private Shipyard                shipyard;		// The factory that spawns ships for us
    	public final int 				universeSize;
-	private GameMode				gameMode;
 	private Camera					viewPort;		// Handles viewpoints and drawing
+	private Spaceship				player;
+	private Background 				background;
 	
-	public enum GameMode {
+/*	public enum GameMode {
 		SKIRMISH,				//Single versus battle
 		CAMPAIGN,				//A series of battles, upgrade ship
 		MULTIPLAYER				//Not implemented
-	}
+	}*/
 	
-	public Game(Input keys, int universeSize, Shipyard shipyard, GameMode gameMode){       	
-        Random rand = new Random();
-       	
-		// Size of the universe
-		this.universeSize = universeSize;
-		this.gameMode = gameMode;
-		
-       	//Reference to the shipyard
-       	this.shipyard = shipyard;
-
-       	//Reference to player input control
-		this.keys = keys;
-
-       	// Initialize the entity container
-       	entities = new ArrayList<GameObject>();
-       	
-		//Prepare particle engine
-		particleEngine = new ParticleEngine();
-       	
+	public void start() {
        	//Game music
        	Music.play( "battle.ogg" );
+       	
+       	//Prepeare the player ship
+		player = shipyard.spawnSelectedShip(new Vector(200, 200), this, aiType.PLAYER, "GOOD");
 
-		//Initialize the player ship
-		Spaceship player = shipyard.spawnSelectedShip(new Vector(200, 200), this, aiType.PLAYER, "GOOD");
-        entities.add(player);
-
-		// Initialize the HUD and bind it to the player's ship
+		//Initialize the HUD and bind it to the player's ship
 		hud = new HUD(player);
 
+		//Generate the universe
+		generateWorld( System.currentTimeMillis() );
+
+		// Initialize the camera
+		viewPort = new Camera(
+				entities, 
+				background, 
+				player);
+		viewPort.configureInputHandler(keys);
+		Video.setCamera(viewPort);
+	}
+	
+	private void generateWorld(long seed) {
+        Random rand = new Random(seed);
+        
+		//Initialize the player ship
+		entities.add(player);
+        
        	//Spawn allies
         for(int i = 0; i < 0; i++)
         {
-			Spaceship ally = shipyard.spawnShip("xenon.ship", new Vector(i*100, i*100), this, aiType.CONTROLLER, "GOOD");
+			Spaceship ally = shipyard.spawnShip("raptor.ship", new Vector(i*100, i*100), this, aiType.CONTROLLER, "GOOD");
 	       	entities.add(ally);
 			hud.addTracking(ally);		
         }
         
        	//Spawn enemies
-    	for(int i = 0; i < 2; i++)
+    	for(int i = 0; i < 4; i++)
         {
-    		Spaceship enemy = shipyard.spawnShip("raptor.ship", new Vector(i*500, i*500), this, aiType.CONTROLLER, "EVIL");
+    		Spaceship enemy = shipyard.spawnShip("juggernaught.ship", new Vector(universeSize*Video.getScreenWidth()/2,universeSize*Video.getScreenHeight()/2), this, aiType.CONTROLLER, "EVIL");
 	       	entities.add(enemy);
 			hud.addTracking(enemy);
         }
@@ -98,25 +98,37 @@ public class Game {
 				int offY = rand.nextInt(Video.getScreenHeight() );
 				entities.add( new Asteroid(new Vector(x*Video.getScreenWidth() + offX, y*Video.getScreenHeight() + offY), this, 0) );
 				
-				//12% for planet
+				//12% for planet		//TODO improve spawning code
 				if( rand.nextInt(100) >= 12 ) continue;
 				offX = Video.getScreenWidth()/2;
 				offY = Video.getScreenHeight()/2;
 				entities.add( new Planet(new Vector(x*Video.getScreenWidth() + offX, y*Video.getScreenHeight() + offY), System.nanoTime(), this) );			
 			}
-		
-		// Initialize the camera
-		viewPort = new Camera(
-				entities, 
-				new Background(universeSize, System.currentTimeMillis()), 
-				player);
-		viewPort.configureInputHandler(keys);
-		Video.setCamera(viewPort);
+
+		background = new Background(universeSize, seed);
 	}
 	
-	public GameWindow.gameState update(){
+	public Game(Input keys, int universeSize, Shipyard shipyard){       	
+       	
+		// Size of the universe
+		this.universeSize = universeSize;
 		
-		if(keys.escape) return gameState.GAME_MENU;
+       	//Reference to the shipyard
+       	this.shipyard = shipyard;
+
+       	//Reference to player input control
+		this.keys = keys;
+
+       	// Initialize the entity container
+       	entities = new ArrayList<GameObject>();
+       	
+		//Prepare particle engine
+		particleEngine = new ParticleEngine();       	
+	}
+	
+	public GameWindow.GameState update(){
+		
+		if(keys.escape) return GameState.GAME_MENU;
 				
 		// Update all entities
 		for (int i = 0; i < entities.size(); i++)
@@ -166,7 +178,7 @@ public class Game {
 		particleEngine.update(entities, universeSize);
 		
 		
-		return gameState.GAME_PLAYING;
+		return GameState.GAME_PLAYING;
 	}
 	
 	ParticleEngine getParticleEngine(){

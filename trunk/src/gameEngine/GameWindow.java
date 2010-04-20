@@ -25,15 +25,15 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import narwhal.CampaignScreen;
 import narwhal.Game;
 import narwhal.MainMenu;
 import narwhal.Shipyard;
-import narwhal.Game.GameMode;
+import narwhal.SpaceshipTemplate;
 
 
 /**
@@ -49,16 +49,19 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 	
 	private Game theGame;
 	private MainMenu theMenu;
-	private gameState state;
+	private GameState state;
 	private Shipyard selectShip;
+	private CampaignScreen campaign;
 	
-	public static enum gameState {
+	public static enum GameState {
 		GAME_MENU,
 		GAME_PLAYING, 
 		GAME_EXIT,
+		GAME_END_CURRENT,
+		GAME_START_SKIRMISH,
+		GAME_START_CAMPAIGN,
 		GAME_SELECT_SHIP,
-		GAME_START_NEW_GAME,
-		GAME_END_CURRENT
+		GAME_CAMPAIGN_SCREEN,
 	}
 	
 	/**
@@ -90,9 +93,11 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		keys = new Input();	
 		
        	//Start in the main menu
-       	state = gameState.GAME_MENU;
+       	state = GameState.GAME_MENU;
        	theMenu = new MainMenu(keys);
-		
+       	selectShip = new Shipyard(keys);
+       	campaign = new CampaignScreen(keys);
+       	
 		//Thread (do last so that everything above is properly loaded before the main loop begins)
        	Thread mainLoop = new Thread(this);
        	mainLoop.setPriority(Thread.MAX_PRIORITY);
@@ -105,43 +110,65 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		// Remember the starting time
     	long tm = System.currentTimeMillis();
     			 
-		while( state != gameState.GAME_EXIT )
+		while( state != GameState.GAME_EXIT )
     	{
 			//Update mouse position within the frame
-			keys.update(frame.getMousePosition());
-			
+			keys.update(frame.getMousePosition());			
 
 			try
 			{
 				while (painting) Thread.sleep(0, 5000);
 			}
 			catch (Exception e) { Log.warning(e); }
-			
-			if(state == gameState.GAME_PLAYING)
-			{
-				if( theGame == null ) theGame = new Game(keys, 5, selectShip, GameMode.SKIRMISH);
-				state = theGame.update();
+
+			if(state == GameState.GAME_PLAYING)
 				frame.getContentPane().setCursor(Video.BLANK_CURSOR);	//TODO: bad change cursor every frame?
-			}
-			else if(state == gameState.GAME_MENU)
+			else
+		    	frame.getContentPane().setCursor( null );
+				
+			if(state == GameState.GAME_PLAYING)		state = theGame.update();
+			else if(state == GameState.GAME_MENU)	state = theMenu.update( theGame != null );
+			else if(state == GameState.GAME_SELECT_SHIP)
 			{
-		    	frame.getContentPane().setCursor( null );				//TODO: bad change cursor every frame?
-				state = theMenu.update( theGame != null );
-			}
-			else if(state == gameState.GAME_SELECT_SHIP)
-			{
-				if(selectShip == null) selectShip = new Shipyard(keys);
-		    	frame.getContentPane().setCursor( null );				//TODO: bad change cursor every frame?
 		    	state = selectShip.update();
+				if( state == GameState.GAME_PLAYING ) theGame.start();
 			}
-			else if( state == gameState.GAME_START_NEW_GAME )
+			else if( state == GameState.GAME_START_SKIRMISH )
 			{
-		       	state = gameState.GAME_SELECT_SHIP;
+				if( theGame == null ) 
+				{
+					theGame = new Game(keys, 5, selectShip);
+				}
+				selectShip.enableSelection();
+		       	state = GameState.GAME_SELECT_SHIP;
 			}
-			else if( state == gameState.GAME_END_CURRENT )
+			else if( state == GameState.GAME_START_CAMPAIGN )
+			{
+				if( theGame == null ) 
+				{
+					theGame = new Game(keys, 5, selectShip);
+				}
+				
+				try 
+				{
+					selectShip.setCurrentShip( new SpaceshipTemplate("data/campaign/nasa.ship") );
+					selectShip.disableSelection();
+				} 
+				catch (Exception e) 
+				{
+					Log.error("Could not start campaign: " + e);
+				}
+				
+		       	state = GameState.GAME_SELECT_SHIP;
+			}
+			else if( state == GameState.GAME_END_CURRENT )
 			{
 		       	theGame = null;
-		       	state = gameState.GAME_MENU;
+		       	state = GameState.GAME_MENU;
+			}
+			else if( state == GameState.GAME_CAMPAIGN_SCREEN )
+			{
+		       	state = campaign.update();
 			}
 
 			repaint();
@@ -182,9 +209,10 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		//Set quality mode
 		Video.getGraphicsSettings(g);
 				
-		if(state == gameState.GAME_PLAYING && theGame != null) 				theGame.draw(g);
-		else if(state == gameState.GAME_MENU) 								theMenu.draw(g, theGame);
-		else if(state == gameState.GAME_SELECT_SHIP && selectShip != null) 	selectShip.draw(g);
+		if(state == GameState.GAME_PLAYING) 								theGame.draw(g);
+		else if(state == GameState.GAME_MENU) 								theMenu.draw(g, theGame);
+		else if(state == GameState.GAME_SELECT_SHIP) 						selectShip.draw(g);
+		else if(state == GameState.GAME_CAMPAIGN_SCREEN) 					campaign.draw(g);
 
 		//Done drawing this frame
 		g.dispose();

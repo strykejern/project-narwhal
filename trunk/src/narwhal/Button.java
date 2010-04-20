@@ -31,12 +31,11 @@ import narwhal.GameFont.FontType;
 
 public class Button {
 	static private Sound buttonHover, buttonClick;
-	GameFont font = new GameFont();
 	
 	private Vector pos, size, movePos;
 	private String text;
 	private boolean hidden;
-	public boolean mouseOver;
+	private boolean mouseOver;
 	private float alpha;
 	private int id;
 	
@@ -133,10 +132,9 @@ public class Button {
 		g.fillRoundRect(movePos.getX()+size.minus(v).getX()/2, movePos.getY()+size.minus(v).getY()/2, v.getX(), v.getY(), 25, 25);
 		
 		//Text	
-		font.set(g, FontType.FONT_MENU);
-		if( mouseOver ) g.setColor(new Color(1, 1, 1, solid) );
-		else		    g.setColor(new Color(0, 0, 0, solid) );
-		g.drawString(text, movePos.getX()+ (size.getX()/2) - (font.getWidth(text, g)/2), movePos.getY()+ size.getY()/1.75f);
+		GameFont.set(g, FontType.FONT_MENU, Color.BLACK, 15);
+		if( mouseOver ) g.setColor(new Color(0, 0, 0) );
+		g.drawString(text, movePos.getX()+ (size.getX()/2) - (GameFont.getWidth(text, g)/2), movePos.getY()+ size.getY()/1.75f);
 	}
 	
 }
