@@ -7,20 +7,25 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import narwhal.AI.aiType;
 import narwhal.GameFont.FontType;
 
 import gameEngine.*;
 import gameEngine.GameWindow.GameState;
 
 public class CampaignScreen {
-	Image2D background;
-	Button begin;
-	Input key;
-	String mission;
-	ArrayList<String> description;
-	Sound narrator;
-	String nextMission;
+	private Image2D background;
+	private Button begin;
+	private Input key;
+	private String mission;
+	private ArrayList<String> description;
+	private Sound narrator;
+	private String nextMission;
 	public boolean active;
+	
+	private int universeSize;
+	private ArrayList<SpawnPoint> spawnList;
+	private String playerShip;
 	
 	public CampaignScreen(Input key) {
 		this.key = key;
@@ -29,6 +34,9 @@ public class CampaignScreen {
 		Vector pos = new Vector(Video.getScreenWidth()-100, Video.getScreenHeight()-100);
 		begin = new Button(pos, new Vector(150, 100 ), "Begin", 0, pos);
 		
+		//Set default values
+		universeSize = 4;
+		spawnList = new ArrayList<SpawnPoint>();		
 		description = new ArrayList<String>();
 	}
 	
@@ -37,7 +45,9 @@ public class CampaignScreen {
 				new InputStreamReader(
 				ResourceMananger.getInputStream(fileName)));
 		
+		//Clear stuff from previous levels
 		description.clear();
+		spawnList.clear();
 		
 		//Parse the ship file
 		try 
@@ -75,6 +85,32 @@ public class CampaignScreen {
 					background.resize(Video.getScreenWidth(), Video.getScreenHeight());
 				}
 				else if(line.startsWith("[NEXT]:")) nextMission = parse(line);
+				else if(line.startsWith("[SHIP]:"))
+				{
+					String[] load = parse(line).split(" ");
+					
+					//Make sure we have all we need first
+					if(load.length != 5)
+					{
+						Log.warning("Could not spawn ship (" + fileName + ") missing data - " + parse(line));
+						continue;
+					}
+					
+					//Get AI type
+					aiType ai = aiType.FOOL;
+					if( load[3].equals("PLAYER") ) 			
+					{
+						ai = aiType.PLAYER;
+						playerShip = load[0];
+					}
+					else if( load[3].equals("CONTROLLER") ) ai = aiType.CONTROLLER;
+					else if( load[3].equals("BRUTE") ) 		ai = aiType.BRUTE;
+					else if( load[3].equals("AMBUSHER") ) 	ai = aiType.AMBUSH;
+
+					//Load it and add it to the list
+					Vector pos = new Vector(Integer.parseInt(load[1]), Integer.parseInt(load[2]) );
+					spawnList.add( new SpawnPoint(load[0], pos, ai, load[4] ) );	
+				}
 				
 				//Could not figure it out
 				else	Log.warning("Loading mission " + fileName + " - unrecognized line: " + line);
@@ -137,5 +173,13 @@ public class CampaignScreen {
 	 */
 	private String parse(String line) {
 		return line.substring(line.indexOf(':')+1).trim();
+	}
+	
+	public ArrayList<SpawnPoint> getLevelSpawnList(){
+		return spawnList;
+	}
+
+	public String getPlayerShipName(){
+		return playerShip;
 	}
 }

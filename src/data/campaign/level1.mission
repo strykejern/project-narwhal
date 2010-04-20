@@ -4,12 +4,11 @@
 [VOICE]: mission1.ogg
 [IMAGE]: data/campaign/level1.jpg
 [NEXT]: data/campaign/level2.mission
-SIZE: 2
 
-SHIPS: 
-4 juggernaught.ship
-
-PLANETS:
-1
-
-FIRST LEVEL: TRUE
+//Spawning points for spaceships
+//      ShipName xSpawn ySpawn aiType Team 
+[SHIP]: data/campaign/nasa.ship 600 800 PLAYER GOOD
+[SHIP]: juggernaught.ship 1200 1800 CONTROLLER EVIL
+[SHIP]: juggernaught.ship 1200 1900 CONTROLLER EVIL
+[SHIP]: juggernaught.ship 1200 1600 CONTROLLER EVIL
+[SHIP]: juggernaught.ship 1200 1700 CONTROLLER EVIL

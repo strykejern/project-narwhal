@@ -5,12 +5,8 @@
 [IMAGE]: data/campaign/juggernaught.jpg
 [NEXT]: data/campaign/level3.mission
 
-SIZE: 2
 
-SHIPS: 
-4 juggernaught.ship
-
-PLANETS:
-1
-
-FIRST LEVEL: TRUE
+//Spawning points for spaceships
+//      ShipName xSpawn ySpawn aiType Team 
+[SHIP]: data/ships/raptor.ship 1600 1200 PLAYER GOOD
+[SHIP]: juggernaught.ship 1200 1600 null EVIL
