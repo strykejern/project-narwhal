@@ -82,7 +82,6 @@ public class Configuration {
 		{
 			try 
 			{
-				int resX = 800, resY = 600;
 				BufferedReader parse = new BufferedReader( new FileReader(conf) );
 				
 				//Parse the config file
@@ -120,23 +119,8 @@ public class Configuration {
 					{
 						if( line.endsWith("TRUE") ) Video.fullScreen = true;
 					}
-					
-					//Resolution (overrides full screen
-					else if(line.startsWith("[SCREEN_WIDTH]:"))
-					{
-						line = line.substring(line.indexOf(":")+1);
-						resX = Integer.parseInt(line.trim());
-					}
-					else if(line.startsWith("[SCREEN_HEIGHT]:"))
-					{
-						line = line.substring(line.indexOf(":")+1);
-						resY = Integer.parseInt(line.trim());
-					}
 				}
-				
-				//Set screen dimensions
-				Video.setResolution(resX, resY);
-				
+								
 				//Close file
 				Log.message("Configuration file successfully parsed.");
 				parse.close();
@@ -158,7 +142,7 @@ public class Configuration {
 			Log.message("Could not read configuration settings. Reverting to default settings.");
 			Video.setVideoQuality( VideoQuality.VIDEO_NORMAL );
 			Sound.enabled = true;
-	        Video.setResolution(800, 600);
+			Video.fullScreen = false;
 		}
 	}
 }

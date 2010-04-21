@@ -19,7 +19,6 @@
 package gameEngine;
 
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
@@ -38,7 +37,7 @@ import javax.swing.JFrame;
  *
  */
 public class Video {
-	private static Dimension resolution = new Dimension(800, 600);
+	private static JFrame window;
 	private static VideoQuality videoQuality = VideoQuality.VIDEO_NORMAL;
 	private static RenderingHints quality = new RenderingHints(null);
 	public  static boolean fullScreen = false;
@@ -166,44 +165,32 @@ public class Video {
 	public static VideoQuality getQualityMode() {
 		return videoQuality;
 	}
-		
-	public static Dimension getResolution() {
-		return  resolution;
-	}
 	
 	public static Vector getResolutionVector(){
-		return new Vector(resolution.width, resolution.height);
-	}
-	
-	public static void setResolution(Dimension res) {
-		resolution.setSize(res);
-	}
-
-	public static void setResolution(int width, int height) {
-		resolution.setSize(width, height);
+		return new Vector(window.getWidth(), window.getHeight());
 	}
 	
 	public static int getScreenWidth()	{
-		return resolution.width;
+		return window.getWidth();
 	}
 	
 	public static int getScreenHeight()	{
-		return resolution.height;
+		return window.getHeight();
 	}
 	
 	public static JFrame createWindow(String name) {
-		JFrame window = new JFrame(name, graphicConf);
-
-    	window.getContentPane().add(new GameWindow(window));
+		if( window != null ) window.dispose();
+		window = new JFrame(name, graphicConf);
 
 		//Set fullscreen?
 		if( fullScreen )
 		{
-			resolution.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+			window.setSize(Toolkit.getDefaultToolkit().getScreenSize());
 			window.setUndecorated(true);
 		}
-		window.setSize(resolution);
+		else window.setSize(800, 600);
 		
+    	window.getContentPane().add(new GameWindow(window));
 		window.setResizable(false);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setVisible( true );
@@ -211,7 +198,7 @@ public class Video {
 
 		return window;
 	}
-
+	
 	public static void setCamera(Camera setViewPort) {
 		viewPort = setViewPort;
 	}
