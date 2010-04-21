@@ -131,15 +131,14 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			else if(state == GameState.GAME_SELECT_SHIP) state = selectShip.update();
 			else if( state == GameState.GAME_START_SKIRMISH )
 			{
-				theGame = new Game(keys, selectShip, null, 4);
 				selectShip.enableSelection();
-				selectShip.resetSelection();
+				theGame = new Game(keys, selectShip, null, 4);
 		       	state = GameState.GAME_SELECT_SHIP;
 			}
 			else if( state == GameState.GAME_START_CAMPAIGN )
 			{
-				theGame = new Game(keys, selectShip, campaign.getLevelSpawnList(), 4);
 				selectShip.disableSelection();
+				theGame = new Game( keys, selectShip, campaign.getLevelSpawnList(), campaign.getUniverseSize() );
 				
 				try 
 				{
@@ -156,17 +155,16 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			{
 		       	theGame = null;
 		       	campaign.active = false;
-		       	state = GameState.GAME_MENU;
-		       	Music.play("menu.ogg");
+		       	state = theMenu.showMainMenu(false);
 			}
 			else if( state == GameState.GAME_CAMPAIGN_SCREEN )
 			{
 				if( !campaign.active ) campaign.loadMission("data/campaign/level1.mission");
 				state = campaign.update();
 			}
-
+			
 			//This is so that the player won't open the menu after the current game has ended
-			if( theGame != null && state == GameState.GAME_MENU && theGame.isEnded() )
+			if( theGame != null && state == GameState.GAME_MENU && (theGame.isEnded() || theGame.victory()) )
 			{
 				screenFade = 1;
 				state = GameState.GAME_PLAYING;
@@ -201,7 +199,8 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 	 * JJ> Paints every object of interest
 	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
 	 */
-	float screenFade = 0;
+	private float screenFade = 0;
+	private boolean painting = false;
 	public void paint(Graphics rawGraphics) {
 		painting = true;
 		
@@ -216,7 +215,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			theGame.draw(g);
 			
 			//Fade out the screen
-			if( theGame.isEnded() )
+			if( theGame.isEnded() || theGame.victory() )
 			{
 				screenFade = Math.min(1, screenFade+0.002f);
 				g.setColor( new Color(0, 0, 0, screenFade) );
@@ -224,9 +223,10 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 				
 				if( screenFade == 1 || keys.escape )
 				{
-				
+					screenFade = 0;
+					
 					//Prepeare next level
-					if( campaign.active )
+					if( campaign.active && ( campaign.alwaysWin || theGame.victory() ) )
 					{
 						state = GameState.GAME_CAMPAIGN_SCREEN;
 						campaign.next();
@@ -246,7 +246,6 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		rawGraphics.dispose();
 		painting = false;
 	}
-	private boolean painting = false;
 	
 	//Functions handling input update
 	public void keyPressed(KeyEvent key) {

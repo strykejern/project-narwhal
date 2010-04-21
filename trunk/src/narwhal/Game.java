@@ -38,6 +38,7 @@ public class Game {
 	private Camera					viewPort;		// Handles viewpoints and drawing
 	private Spaceship				player;
 	private Background 				background;
+	private boolean					victory;
 	
 /*	public enum GameMode {
 		SKIRMISH,				//Single versus battle
@@ -52,29 +53,27 @@ public class Game {
 		this.universeSize = universeSize;
 
 		//Spawn every object
-		for(SpawnPoint spawn : spawnList) {
-						
+		for(SpawnPoint spawn : spawnList) try 
+		{
 			//Randomize spawn position if needed
 			if(spawn.pos == null) spawn.pos = new Vector(rand.nextInt(Video.getScreenWidth()*universeSize), rand.nextInt(Video.getScreenHeight()*universeSize));
 			
 			//Players are handled a little different than AI
 			if( spawn.ai == aiType.PLAYER )
 			{
-       			try 
-       			{
-       				shipyard.setCurrentShip(new SpaceshipTemplate(spawn.name));
-					player = shipyard.spawnSelectedShip(spawn.pos, this, aiType.PLAYER, spawn.team);
-					entities.add(player);
-				} 
-       			catch (Exception e) 
-				{
-					Log.warning("Could not load player ship: " + spawn.name);
-				}
+   				shipyard.setCurrentShip(new SpaceshipTemplate(spawn.name));
+				player = shipyard.spawnSelectedShip(spawn.pos, this, aiType.PLAYER, spawn.team);
+				entities.add(player);
 	       		continue;
 			}
-
-			Spaceship entity = shipyard.spawnShip(spawn.name, spawn.pos, this, spawn.ai, spawn.team);
+			
+			Spaceship entity;
+			entity = shipyard.spawnShip(new SpaceshipTemplate(spawn.name), spawn.pos, this, spawn.ai, spawn.team);
 	       	entities.add(entity);
+		} 
+		catch (Exception e) 
+		{
+			Log.warning("Failed to spawn ship: " + spawn.name);
 		}
 
 		//Initialize the HUD and bind it to the player's ship
@@ -96,10 +95,13 @@ public class Game {
 				entities.add( new Planet(new Vector(x*Video.getScreenWidth() + offX, y*Video.getScreenHeight() + offY), System.nanoTime(), this) );			
 			}
 
+		//Generate background
 		background = new Background(universeSize, seed);
 	}
 	
 	public Game(Input keys, Shipyard shipyard, ArrayList<SpawnPoint> spawnList, int universeSize){       	
+		
+		victory = false;
        			
        	//Reference to the shipyard
        	this.shipyard = shipyard;
@@ -120,10 +122,10 @@ public class Game {
 		if(spawnList == null)
 		{
 			spawnList = new ArrayList<SpawnPoint>();
-			spawnList.add( new SpawnPoint("juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
-			spawnList.add( new SpawnPoint("juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
-			spawnList.add( new SpawnPoint("juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
-			spawnList.add( new SpawnPoint("juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
+			spawnList.add( new SpawnPoint("data/ships/juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
+			spawnList.add( new SpawnPoint("data/ships/juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
+			spawnList.add( new SpawnPoint("data/ships/juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
+			spawnList.add( new SpawnPoint("data/ships/juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
 			player = shipyard.spawnSelectedShip(new Vector(200, 200), this, aiType.PLAYER, "GOOD");
 			entities.add(player);
 		}
@@ -143,8 +145,9 @@ public class Game {
 	public GameWindow.GameState update(){
 		
 		if(keys.escape) return GameState.GAME_MENU;
-				
+		
 		// Update all entities
+		victory = true;
 		for (int i = 0; i < entities.size(); i++)
 		{
 			GameObject entity = entities.get(i);
@@ -154,6 +157,10 @@ public class Game {
 			{
 				entities.remove(entity);
 				continue;
+			}
+			else if( victory && entity instanceof Spaceship )
+			{
+				victory = player.team == ((Spaceship)entity).team;
 			}
 			
 			//Update
@@ -222,5 +229,9 @@ public class Game {
 
 	public boolean isEnded() {
 		return !player.active();
+	}
+	
+	public boolean victory() {
+		return player.active() && victory;
 	}
 }

@@ -5,8 +5,10 @@
 [IMAGE]: data/campaign/rombeda.jpg
 [NEXT]: data/campaign/level3.mission
 
+//Level parameters
+[SIZE]: 3
 
 //Spawning points for spaceships
 //      ShipName xSpawn ySpawn aiType Team 
 [SHIP]: data/ships/raptor.ship 1600 1200 PLAYER GOOD
-[SHIP]: juggernaught.ship 1200 1600 FOOL EVIL
+[SHIP]: data/campaign/damagedjugger.ship 1200 1600 FOOL EVIL

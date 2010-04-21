@@ -129,9 +129,27 @@ public class MainMenu {
 		background.get(currentBackground).setAlpha(1.00f);
 	}
 	
+	public GameWindow.GameState showMainMenu( boolean gameActive ) {
+    	//Hide the buttons
+        Iterator<Button> iterator = buttonList.values().iterator();
+        while( iterator.hasNext() ) iterator.next().hide();
+    	
+        //But show the top main menu buttons
+    	if(!gameActive) 
+    	{
+    		buttonList.get(BUTTON_START_GAME).show();
+	       	Music.play("menu.ogg");
+    	}
+    	else buttonList.get(BUTTON_RESUME_GAME).show();
+    	buttonList.get(BUTTON_OPTIONS).show();
+    	buttonList.get(BUTTON_EXIT).show();
+    	
+    	return GameState.GAME_MENU;
+	}
+	
 	//JJ> Main menu loop
 	public GameWindow.GameState update( boolean gameActive ) {
-		
+				
         //Check if the player is holding over any mouse buttons
         Iterator<Button> iterator = buttonList.values().iterator();
         while( iterator.hasNext() )
@@ -279,6 +297,9 @@ public class MainMenu {
 						Video.fullScreen ^= true;			//Awesome fast method to invert a boolean
 						if( Video.fullScreen ) button.setText("Fullscreen: Yes");
 						else				   button.setText("Fullscreen: No");
+						
+				    	Video.createWindow("Narwhal");		
+
 						break;
 					}
 					
@@ -306,10 +327,7 @@ public class MainMenu {
 		}
 		
 		//Slowly fade in the header
-		if(header.getAlpha() != 1)
-		{
-			header.setAlpha( header.getAlpha() + 0.0075f );
-		}
+		if(header.getAlpha() != 1) 	header.setAlpha( header.getAlpha() + 0.0075f );
 		
 		//Update background effects
 		int nextBackground = currentBackground + 1;

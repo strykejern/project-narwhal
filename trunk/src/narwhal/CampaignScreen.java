@@ -3,7 +3,6 @@ package narwhal;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -17,16 +16,18 @@ public class CampaignScreen {
 	private Image2D background;
 	private Button begin;
 	private Input key;
+		
+	private ArrayList<SpawnPoint> spawnList;
+	private String playerShip;
+	
 	private String mission;
 	private ArrayList<String> description;
 	private Sound narrator;
 	private String nextMission;
 	public boolean active;
-	
+	public boolean alwaysWin;
 	private int universeSize;
-	private ArrayList<SpawnPoint> spawnList;
-	private String playerShip;
-	
+
 	public CampaignScreen(Input key) {
 		this.key = key;
 		active = false;
@@ -35,7 +36,6 @@ public class CampaignScreen {
 		begin = new Button(pos, new Vector(150, 100 ), "Begin", 0, pos);
 		
 		//Set default values
-		universeSize = 4;
 		spawnList = new ArrayList<SpawnPoint>();		
 		description = new ArrayList<String>();
 	}
@@ -49,6 +49,8 @@ public class CampaignScreen {
 		description.clear();
 		spawnList.clear();
 		narrator = null;
+		alwaysWin = false;
+		universeSize = 4;
 		
 		//Parse the ship file
 		try 
@@ -112,6 +114,8 @@ public class CampaignScreen {
 					Vector pos = new Vector(Integer.parseInt(load[1]), Integer.parseInt(load[2]) );
 					spawnList.add( new SpawnPoint(load[0], pos, ai, load[4] ) );	
 				}
+				else if(line.startsWith("[SIZE]:")) universeSize = Integer.parseInt( parse(line) );
+				else if(line.startsWith("[ALWAYS_WIN]:")) alwaysWin = Boolean.parseBoolean( parse(line) );
 				
 				//Could not figure it out
 				else	Log.warning("Loading mission " + fileName + " - unrecognized line: " + line);
@@ -124,7 +128,7 @@ public class CampaignScreen {
 		
 		if( spawnList.size() == 0 ) begin.setText("Continue");
 		else						begin.setText("Start");
-		if( narrator != null ) narrator.playFull(0.75f);
+		if( narrator != null ) 		narrator.playFull(1.25f);
 		active = true;
 	}
 	
@@ -133,18 +137,19 @@ public class CampaignScreen {
 		
 		background.draw(g, 0, 0);
 		begin.draw(g);
-		
-		int size = Video.getScreenWidth() / (Video.getScreenWidth()/60);
+		int size = Video.getScreenWidth() / 24;
 		GameFont.set(g, FontType.FONT_MENU, Color.YELLOW, size);
 		int y = GameFont.getHeight(g);
 		
+		//Mission name
 		g.drawString(mission, 20, y);
 		y += GameFont.getHeight(g) + 20;
 		
+		//Description text
+		size = Video.getScreenWidth() / 36;
+		GameFont.set(g, FontType.FONT_DESCRIBE, Color.YELLOW, size);
 		for( String text : description )
 		{
-			size = Video.getScreenWidth() / (Video.getScreenWidth()/30);
-			GameFont.set(g, FontType.FONT_DESCRIBE, Color.YELLOW, size);
 			g.drawString(text, 20, y);
 			y += GameFont.getHeight(g);
 		}
@@ -182,6 +187,10 @@ public class CampaignScreen {
 	
 	public ArrayList<SpawnPoint> getLevelSpawnList(){
 		return spawnList;
+	}
+
+	public int getUniverseSize(){
+		return universeSize;
 	}
 
 	public String getPlayerShipName(){

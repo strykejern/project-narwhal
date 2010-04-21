@@ -5,15 +5,17 @@
 [IMAGE]: data/campaign/rombeda.jpg
 [NEXT]: data/campaign/level4.mission
 
+//Level parameters
+[SIZE]: 5
 
 //Spawning points for spaceships
 //      ShipName xSpawn ySpawn aiType Team 
 [SHIP]: data/ships/raptor.ship 1600 1200 PLAYER GOOD
-[SHIP]: rombeda.ship 1600 1100 CONTROLLER GOOD
-[SHIP]: rombeda.ship 1500 1200 CONTROLLER GOOD
-[SHIP]: rombeda.ship 1700 1400 CONTROLLER GOOD
+[SHIP]: data/ships/rombeda.ship 1600 1100 CONTROLLER GOOD
+[SHIP]: data/ships/rombeda.ship 1500 1200 CONTROLLER GOOD
+[SHIP]: data/ships/rombeda.ship 1700 1400 CONTROLLER GOOD
 
-[SHIP]: juggernaught.ship 2250 2400 BRUTE EVIL
-[SHIP]: juggernaught.ship 2550 2500 FOOL EVIL
-[SHIP]: juggernaught.ship 2300 2300 BRUTE EVIL
-[SHIP]: pioneer.ship 2200 2100 CONTROLLER EVIL
+[SHIP]: data/ships/juggernaught.ship 4250 4400 BRUTE EVIL
+[SHIP]: data/ships/juggernaught.ship 4550 4500 FOOL EVIL
+[SHIP]: data/ships/juggernaught.ship 4300 4300 BRUTE EVIL
+[SHIP]: data/ships/pioneer.ship 4200 4100 CONTROLLER EVIL

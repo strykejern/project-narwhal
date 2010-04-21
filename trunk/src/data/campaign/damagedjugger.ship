@@ -1,0 +1,27 @@
+//General data
+[NAME]:   Juggernaught
+[FILE]:   damagedjugger.png
+[SIZE]:   1.25
+
+//Defense
+[LIFE]:   95
+[SHIELD]: 25
+[ENERGY]: 350
+
+//Regeneration
+[EREGEN]: 0.35
+[SREGEN]: 0.04
+
+//Weapons
+[PRIMARY]: shockcannon.wpn
+[SECONDARY]: NONE
+[TETIARY]: mine.wpn
+
+//Special mods
+[RADAR]: 1
+
+//Engines
+[MAX_SPEED]: 13
+[TURN_RATE]: 0.1
+[ACCELERATION]: 0.23
+

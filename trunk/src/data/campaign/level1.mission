@@ -2,13 +2,17 @@
 [DESCRIPTION]: In 2028 NASA launched the space shuttle program to mars. The mission was suddenly interrupted when 4 unidentified signals were detected by the radar, closing in with an alarming speed...
 [MUSIC]: space.ogg
 [VOICE]: mission1.ogg
-[IMAGE]: data/campaign/level1.jpg
+[IMAGE]: data/campaign/human.jpg
 [NEXT]: data/campaign/level2.mission
+
+//Player will win this battle, no matter what happens
+[ALWAYS_WIN]: TRUE
+[SIZE]: 2
 
 //Spawning points for spaceships
 //      ShipName xSpawn ySpawn aiType Team 
 [SHIP]: data/campaign/nasa.ship 600 800 PLAYER GOOD
-[SHIP]: juggernaught.ship 1200 1800 BRUTE EVIL
-[SHIP]: juggernaught.ship 1200 1900 BRUTE EVIL
-[SHIP]: juggernaught.ship 1200 1600 BRUTE EVIL
-[SHIP]: juggernaught.ship 1200 1700 BRUTE EVIL
+[SHIP]: data/ships/juggernaught.ship 1200 1800 BRUTE EVIL
+[SHIP]: data/ships/juggernaught.ship 1200 1900 BRUTE EVIL
+[SHIP]: data/ships/juggernaught.ship 1200 1600 BRUTE EVIL
+[SHIP]: data/ships/juggernaught.ship 1200 1700 BRUTE EVIL
