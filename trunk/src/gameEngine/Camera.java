@@ -100,8 +100,8 @@ public class Camera {
 		float drawX = pos.x - cameraPos.x;
 		float drawY = pos.y - cameraPos.y;
 		
-		if( drawX > Video.getScreenWidth() )  return false;
-		if( drawY > Video.getScreenHeight() ) return false;
+		if( drawX > GameEngine.getScreenWidth() )  return false;
+		if( drawY > GameEngine.getScreenHeight() ) return false;
 		if( drawX < -tolerance.x ) 			  return false;
 		if( drawY < -tolerance.y ) 			  return false;
 		
@@ -109,14 +109,14 @@ public class Camera {
 	}
 
 	private void updateCameraVectors(){
-		cameraPos.x = follow.pos.x - ((float)Video.getScreenWidth() / 2f) + follow.image.getWidth()/2;
-		cameraPos.y = follow.pos.y - ((float)Video.getScreenHeight() / 2f) + follow.image.getHeight()/2;
+		cameraPos.x = follow.pos.x - ((float)GameEngine.getScreenWidth() / 2f) + follow.image.getWidth()/2;
+		cameraPos.y = follow.pos.y - ((float)GameEngine.getScreenHeight() / 2f) + follow.image.getHeight()/2;
 		
 		if (cameraPos.x < 0) cameraPos.x = 0;
-		else if (cameraPos.x > universeSize.x - Video.getScreenWidth()) cameraPos.x = universeSize.x - Video.getScreenWidth();
+		else if (cameraPos.x > universeSize.x - GameEngine.getScreenWidth()) cameraPos.x = universeSize.x - GameEngine.getScreenWidth();
 		
 		if (cameraPos.y < 0) cameraPos.y = 0;
-		else if (cameraPos.y > universeSize.y - Video.getScreenHeight()) cameraPos.y = universeSize.y - Video.getScreenHeight();
+		else if (cameraPos.y > universeSize.y - GameEngine.getScreenHeight()) cameraPos.y = universeSize.y - GameEngine.getScreenHeight();
 		
 		//Twist and shout! Shake it baby!
 		if( shakeCamera != 0 )

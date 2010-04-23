@@ -18,8 +18,6 @@
 //********************************************************************************************
 package gameEngine;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -60,12 +58,7 @@ public class Input {
 		mousePos.x = mouse.x;
 		mousePos.y = mouse.y-15;
 	}
-	
-	public void drawCrosshair(Graphics g){
-		g.setColor(Color.green);
-		g.drawOval(mousePos.getX()-5, mousePos.getY()-5, 10, 10);
-	}
-	
+		
 	public Vector mouseUniversePos(){
 		return cameraPos.plus(mousePos);
 	}

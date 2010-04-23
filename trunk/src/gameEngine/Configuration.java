@@ -1,7 +1,7 @@
 package gameEngine;
 
-import gameEngine.Video.VideoQuality;
-
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -9,12 +9,86 @@ import java.io.FileReader;
 import java.io.FileWriter;
 
 public class Configuration {
-	public static boolean debugMode = false;
+	public boolean debugMode = false;
+	public boolean fullScreen = false;
+	private VideoQuality videoQuality;
+	private RenderingHints quality = new RenderingHints(null);
+	
+	public static enum VideoQuality {
+		VIDEO_LOW,
+		VIDEO_NORMAL,
+		VIDEO_HIGH
+	}
+
+	/**
+	 * JJ> Sets the graphics quality for all rendering processes.
+	 *     Can be either VIDEO_LOW, VIDEO_NORMAL or VIDEO_HIGH
+	 */
+	public void setVideoQuality( VideoQuality setQuality) {
+		videoQuality = setQuality;
+		
+		//Clear any previous settings
+		quality.clear();
+		
+		//Add the new graphic rendering hints
+		switch( setQuality )
+		{
+			case VIDEO_LOW:
+			{
+				quality.add( new RenderingHints( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF ) );
+				quality.add( new RenderingHints( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR ) );
+			   	quality.add( new RenderingHints( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED ) );
+				quality.add( new RenderingHints( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED ) );
+			   	quality.add( new RenderingHints( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE ) );
+			   	quality.add( new RenderingHints( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF ) );
+			   	quality.add( new RenderingHints( RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF ) );
+			   	quality.add( new RenderingHints( RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED ) );
+			   	break;
+			}
+			
+			case VIDEO_HIGH:
+			{
+				quality.add( new RenderingHints( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON ) );
+				quality.add( new RenderingHints( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR ) );		//Bicubic filtering is waay to costly to be useful!
+			   	quality.add( new RenderingHints( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY ) );
+				quality.add( new RenderingHints( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY ) );
+			   	quality.add( new RenderingHints( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE ) );
+			   	quality.add( new RenderingHints( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON ) );
+			   	quality.add( new RenderingHints( RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON ) );
+			   	quality.add( new RenderingHints( RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY ) );
+			   	break;
+			}
+			
+			default: case VIDEO_NORMAL:
+			{
+				quality.add( new RenderingHints( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_DEFAULT ) );
+				quality.add( new RenderingHints( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR ) );
+			   	quality.add( new RenderingHints( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_DEFAULT ) );
+				quality.add( new RenderingHints( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_DEFAULT ) );
+			   	quality.add( new RenderingHints( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DEFAULT ) );
+			   	quality.add( new RenderingHints( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT ) );
+			   	quality.add( new RenderingHints( RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_DEFAULT ) );
+			   	quality.add( new RenderingHints( RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_DEFAULT ) );
+				break;
+			}
+		}
+	}
+			
+	/**
+	 * JJ> Modifies the Graphics2D to use the current video settings
+	 */
+	public void getGraphicsSettings(Graphics2D g){
+		g.addRenderingHints( quality );
+	}
+	
+	public VideoQuality getQualityMode() {
+		return videoQuality;
+	}
 	
 	/**
 	 * JJ> Save current configuration settings
 	 */
-	public static void exportSettings(){
+	public void exportSettings(){
 		File conf = new File("config.ini");
 		
 		//Delete any existing file
@@ -28,8 +102,8 @@ public class Configuration {
 				
 				//Graphic quality
 				save.write( "[GRAPHICS]: " );
-				if( Video.getQualityMode() == VideoQuality.VIDEO_LOW ) 			save.write("LOW");
-				else if( Video.getQualityMode() == VideoQuality.VIDEO_HIGH ) 	save.write("HIGH");
+				if( getQualityMode() == VideoQuality.VIDEO_LOW ) 			save.write("LOW");
+				else if( getQualityMode() == VideoQuality.VIDEO_HIGH ) 	save.write("HIGH");
 				else 															save.write("NORMAL");
 				save.newLine();
 				
@@ -47,14 +121,8 @@ public class Configuration {
 
 				//Full screen
 				save.write("[FULL_SCREEN]: ");
-				if ( Video.fullScreen ) save.write("TRUE");
+				if ( fullScreen ) 		save.write("TRUE");
 				else 			  		save.write("FALSE");
-				save.newLine();
-					
-				//Resolution (overrides full screen
-				save.write( "[SCREEN_WIDTH]: " + Video.getScreenWidth() );
-				save.newLine();
-				save.write( "[SCREEN_HEIGHT]: " + Video.getScreenHeight() );
 				save.newLine();
 				
 				save.close();
@@ -73,8 +141,8 @@ public class Configuration {
 	/**
 	 * JJ> Load configuration settings
 	 */
-	public static void loadSettings() {
-		File conf = new File("config.ini");
+	public Configuration(String fileName) {
+		File conf = new File(fileName);
 		boolean useDefault = false;
 		
 		//See if a configuration file exists
@@ -95,9 +163,9 @@ public class Configuration {
 					//Graphic quality
 					if(line.startsWith("[GRAPHICS]:"))
 					{
-						if( line.endsWith("HIGH") ) 	Video.setVideoQuality(VideoQuality.VIDEO_HIGH);
-						else if( line.endsWith("LOW") ) Video.setVideoQuality(VideoQuality.VIDEO_LOW);
-						else 							Video.setVideoQuality(VideoQuality.VIDEO_NORMAL);
+						if( line.endsWith("HIGH") ) 	setVideoQuality(VideoQuality.VIDEO_HIGH);
+						else if( line.endsWith("LOW") ) setVideoQuality(VideoQuality.VIDEO_LOW);
+						else 							setVideoQuality(VideoQuality.VIDEO_NORMAL);
 					}
 					
 					//Sound enabled
@@ -117,7 +185,7 @@ public class Configuration {
 					//Full screen
 					else if(line.startsWith("[FULL_SCREEN]:"))
 					{
-						if( line.endsWith("TRUE") ) Video.fullScreen = true;
+						if( line.endsWith("TRUE") ) fullScreen = true;
 					}
 				}
 								
@@ -140,9 +208,9 @@ public class Configuration {
 		if( useDefault )
 		{
 			Log.message("Could not read configuration settings. Reverting to default settings.");
-			Video.setVideoQuality( VideoQuality.VIDEO_NORMAL );
+			setVideoQuality( VideoQuality.VIDEO_NORMAL );
 			Sound.enabled = true;
-			Video.fullScreen = false;
+			fullScreen = false;
 		}
 	}
 }

@@ -32,7 +32,7 @@ public class CampaignScreen {
 		this.key = key;
 		active = false;
 		
-		Vector pos = new Vector(Video.getScreenWidth()-100, Video.getScreenHeight()-100);
+		Vector pos = new Vector(GameEngine.getScreenWidth()-100, GameEngine.getScreenHeight()-100);
 		begin = new Button(pos, new Vector(150, 100 ), "Begin", 0, pos);
 		
 		//Set default values
@@ -85,7 +85,7 @@ public class CampaignScreen {
 				else if(line.startsWith("[IMAGE]:"))
 				{
 					background = new Image2D(parse(line));
-					background.resize(Video.getScreenWidth(), Video.getScreenHeight());
+					background.resize(GameEngine.getScreenWidth(), GameEngine.getScreenHeight());
 				}
 				else if(line.startsWith("[NEXT]:")) nextMission = parse(line);
 				else if(line.startsWith("[SHIP]:"))
@@ -137,7 +137,7 @@ public class CampaignScreen {
 		
 		background.draw(g, 0, 0);
 		begin.draw(g);
-		int size = Video.getScreenWidth() / 24;
+		int size = GameEngine.getScreenWidth() / 24;
 		GameFont.set(g, FontType.FONT_MENU, Color.YELLOW, size);
 		int y = GameFont.getHeight(g);
 		
@@ -146,7 +146,7 @@ public class CampaignScreen {
 		y += GameFont.getHeight(g) + 20;
 		
 		//Description text
-		size = Video.getScreenWidth() / 36;
+		size = GameEngine.getScreenWidth() / 36;
 		GameFont.set(g, FontType.FONT_DESCRIBE, Color.YELLOW, size);
 		for( String text : description )
 		{

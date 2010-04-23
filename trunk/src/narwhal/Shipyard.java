@@ -24,7 +24,7 @@ import gameEngine.Input;
 import gameEngine.Log;
 import gameEngine.ResourceMananger;
 import gameEngine.Vector;
-import gameEngine.Video;
+import gameEngine.GameEngine;
 import gameEngine.GameWindow.GameState;
 
 import java.awt.Color;
@@ -68,16 +68,16 @@ public class Shipyard {
 		//Ready buttons
 		buttonList = new HashMap<Integer, Button>();
     	Vector size = new Vector( 200, 50 );
-    	Vector pos = new Vector( Video.getScreenWidth()-size.x, Video.getScreenHeight()-size.y );
+    	Vector pos = new Vector( GameEngine.getScreenWidth()-size.x, GameEngine.getScreenHeight()-size.y );
 		buttonList.put(BUTTON_START_GAME, new Button(pos, size, "Start Game", BUTTON_START_GAME, pos));
 		pos.y -= size.y;
 		buttonList.put(BUTTON_NEXT_SHIP, new Button(pos, size.dividedBy(2), "Next", BUTTON_NEXT_SHIP, pos));
 		
 		//Ready background
 		bg = new Image2D("/data/shipyard.png");
-		bg.resize((int)(Video.getScreenWidth()*0.50f), Video.getScreenHeight());
+		bg.resize((int)(GameEngine.getScreenWidth()*0.50f), GameEngine.getScreenHeight());
 		right = new Image2D("/data/interface.png");
-		right.resize(Video.getScreenWidth() - bg.getWidth(), Video.getScreenHeight());
+		right.resize(GameEngine.getScreenWidth() - bg.getWidth(), GameEngine.getScreenHeight());
 		
 		//Input controller
 		this.key = key;
@@ -141,8 +141,8 @@ public class Shipyard {
 	}
 		
 	public void draw(Graphics2D g) {
-		final int OFFSET_X = Video.getScreenWidth()/32;
-		final int OFFSET_Y = Video.getScreenHeight()/16;
+		final int OFFSET_X = GameEngine.getScreenWidth()/32;
+		final int OFFSET_Y = GameEngine.getScreenHeight()/16;
 		
 		//Do first, draw background
 		bg.draw(g, 0, 0);
@@ -292,7 +292,7 @@ public class Shipyard {
 		//Make it look computerized green
 		image = ship.image.clone();
 		image.setColorTint(0, 255, 0);
-		image.resize(Video.getScreenWidth()/4, Video.getScreenWidth()/4);
+		image.resize(GameEngine.getScreenWidth()/4, GameEngine.getScreenWidth()/4);
 		image.setDirection((float)-Math.PI/2);
 		
 		this.ship = ship;

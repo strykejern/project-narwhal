@@ -1,8 +1,8 @@
 package narwhal;
 
 import gameEngine.*;
+import gameEngine.Configuration.VideoQuality;
 import gameEngine.GameWindow.GameState;
-import gameEngine.Video.VideoQuality;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -48,14 +48,14 @@ public class MainMenu {
 		
 		//Load game title
 		header = new Image2D("/data/title.png");
-		header.resize(Video.getScreenWidth()/2, Video.getScreenHeight()/8);
+		header.resize(GameEngine.getScreenWidth()/2, GameEngine.getScreenHeight()/8);
 		header.setAlpha(0.1f);
 
     	//Load buttons
     	buttonList = new HashMap<Integer, Button>();
-    	Vector pos = new Vector( Video.getScreenWidth()/2, Video.getScreenHeight()/3 );
+    	Vector pos = new Vector( GameEngine.getScreenWidth()/2, GameEngine.getScreenHeight()/3 );
     	Vector size = new Vector( 200, 50 );
-    	Vector startPos = new Vector( rand.nextInt(Video.getScreenWidth()), rand.nextInt(Video.getScreenHeight()) );
+    	Vector startPos = new Vector( rand.nextInt(GameEngine.getScreenWidth()), rand.nextInt(GameEngine.getScreenHeight()) );
     	
     	//Main Menu
     	buttonList.put( BUTTON_START_GAME, new Button(pos, size, "START GAME", BUTTON_START_GAME, startPos ) );
@@ -68,8 +68,8 @@ public class MainMenu {
 
     	//Options Menu
     	String gfxText = "Graphics: Normal";
-		if( Video.getQualityMode() == VideoQuality.VIDEO_LOW ) gfxText = "Graphics: Low";
-		else if( Video.getQualityMode() == VideoQuality.VIDEO_HIGH ) gfxText = "Graphics: High";
+		if( GameEngine.getConfig().getQualityMode() == VideoQuality.VIDEO_LOW ) gfxText = "Graphics: Low";
+		else if( GameEngine.getConfig().getQualityMode() == VideoQuality.VIDEO_HIGH ) gfxText = "Graphics: High";
 		
     	String sndText = "Sound: On";
 		if( !Sound.enabled ) sndText = "Sound: Off";
@@ -78,10 +78,10 @@ public class MainMenu {
 		if( !Music.musicEnabled ) musText = "Music: Off";
 
     	String screenText = "Fullscreen: Yes";
-		if( !Video.fullScreen ) screenText = "Fullscreen: No";
+		if( !GameEngine.getConfig().fullScreen ) screenText = "Fullscreen: No";
 
-		pos = new Vector( Video.getScreenWidth()/2, Video.getScreenHeight()/3 );
-    	startPos = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2 );
+		pos = new Vector( GameEngine.getScreenWidth()/2, GameEngine.getScreenHeight()/3 );
+    	startPos = new Vector(GameEngine.getScreenWidth()/2, GameEngine.getScreenHeight()/2 );
     	buttonList.put( BUTTON_GRAPHICS, new Button(pos, size, gfxText, BUTTON_GRAPHICS, startPos ) );
     	pos.y += size.y*1.1f;
     	buttonList.put( BUTTON_SOUND, new Button(pos, size, sndText, BUTTON_SOUND, startPos ) );
@@ -92,8 +92,8 @@ public class MainMenu {
     	pos.y += size.y*1.1f;
     	buttonList.put( BUTTON_MAIN_MENU, new Button(pos, size, "BACK", BUTTON_MAIN_MENU, startPos ) );
 
-		pos = new Vector( Video.getScreenWidth()/2, Video.getScreenHeight()/3 );
-    	startPos = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2 );
+		pos = new Vector( GameEngine.getScreenWidth()/2, GameEngine.getScreenHeight()/3 );
+    	startPos = new Vector(GameEngine.getScreenWidth()/2, GameEngine.getScreenHeight()/2 );
     	buttonList.put( BUTTON_START_SKIRMISH, new Button(pos, size, "SKIRMISH GAME", BUTTON_START_SKIRMISH, startPos ) );
     	pos.y += size.y*1.1f;
     	buttonList.put( BUTTON_START_CAMPAIGN, new Button(pos, size, "BEGIN CAMPAIGN", BUTTON_START_CAMPAIGN, startPos ) );
@@ -119,7 +119,7 @@ public class MainMenu {
 		{	
 			Image2D load = new Image2D(fileName);
 			load.setAlpha(0);
-			load.resize( Video.getScreenWidth(), Video.getScreenHeight() );
+			load.resize( GameEngine.getScreenWidth(), GameEngine.getScreenHeight() );
 			background.add( load );
 		}
 		
@@ -294,31 +294,32 @@ public class MainMenu {
 
 					case BUTTON_FULL_SCREEN:
 					{
-						Video.fullScreen ^= true;			//Awesome fast method to invert a boolean
-						if( Video.fullScreen ) button.setText("Fullscreen: Yes");
-						else				   button.setText("Fullscreen: No");
+						GameEngine.getConfig().fullScreen ^= true;			//Awesome fast method to invert a boolean
+						if( GameEngine.getConfig().fullScreen ) button.setText("Fullscreen: Yes");
+						else				   					button.setText("Fullscreen: No");
 						
-				    	Video.createWindow("Narwhal");		
+				    	GameEngine.startNewGame("Narwhal");		
 
 						break;
 					}
 					
 					case BUTTON_GRAPHICS:
 					{
-						if( Video.getQualityMode() == VideoQuality.VIDEO_LOW )
+						Configuration config = GameEngine.getConfig();
+						if( config.getQualityMode() == VideoQuality.VIDEO_LOW )
 						{
 							button.setText("Graphics: Normal");
-							Video.setVideoQuality( VideoQuality.VIDEO_NORMAL );
+							config.setVideoQuality( VideoQuality.VIDEO_NORMAL );
 						}
-						else if( Video.getQualityMode() == VideoQuality.VIDEO_NORMAL )
+						else if( config.getQualityMode() == VideoQuality.VIDEO_NORMAL )
 						{
 							button.setText("Graphics: High");
-							Video.setVideoQuality( VideoQuality.VIDEO_HIGH );
+							config.setVideoQuality( VideoQuality.VIDEO_HIGH );
 						}
-						else if( Video.getQualityMode() == VideoQuality.VIDEO_HIGH )
+						else if( config.getQualityMode() == VideoQuality.VIDEO_HIGH )
 						{
 							button.setText("Graphics: Low");
-							Video.setVideoQuality( VideoQuality.VIDEO_LOW );
+							config.setVideoQuality( VideoQuality.VIDEO_LOW );
 						}
 						break;
 					}
@@ -362,7 +363,7 @@ public class MainMenu {
 		else inGame.draw(g);
 		
 		//Draw header, but only if it is loaded
-		if( header != null ) header.draw(g, (Video.getScreenWidth()/2) - header.getWidth()/2, header.getHeight() );
+		if( header != null ) header.draw(g, (GameEngine.getScreenWidth()/2) - header.getWidth()/2, header.getHeight() );
 		
 		//Do last, draw buttons
 		String hint = null;
@@ -384,7 +385,7 @@ public class MainMenu {
         {
        		Rectangle txt = buttonList.get(BUTTON_START_CAMPAIGN).getButtonArea();
     		g.setColor(Color.WHITE);
-    		g.drawString(hint, Video.getScreenWidth()/2 - GameFont.getWidth(hint, g)/2, txt.height*2 + txt.y);
+    		g.drawString(hint, GameEngine.getScreenWidth()/2 - GameFont.getWidth(hint, g)/2, txt.height*2 + txt.y);
         }
 	}
 	

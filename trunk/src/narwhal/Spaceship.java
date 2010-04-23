@@ -384,7 +384,7 @@ public abstract class Spaceship extends GameObject {
 			image.scale(0.8f);
 			
 			//Play transformation sound effect
-			canDisguise.play3D(pos, Video.getCameraPos());
+			canDisguise.play3D(pos, GameEngine.getCameraPos());
 		}
 		else
 		{			
@@ -395,7 +395,7 @@ public abstract class Spaceship extends GameObject {
 			disguised = null;
 			
 			//Play transformation sound effect
-			canDisguise.play3D(pos, Video.getCameraPos());
+			canDisguise.play3D(pos, GameEngine.getCameraPos());
 		}	
 	}
 	
@@ -421,5 +421,9 @@ public abstract class Spaceship extends GameObject {
 		cooldown = 50;
 		if( cloaked ) image.setAlpha( 0.075f );
 		else 		  image.setAlpha( 1 );
+	}
+
+	public Input getInput() {
+		return keys;
 	}
 }

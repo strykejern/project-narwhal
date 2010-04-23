@@ -72,9 +72,9 @@ public class Image2D {
 		ImageIcon load = new ImageIcon(ResourceMananger.getFilePath(fileName));
 
 		//Load the image into a BufferedImage
-		processed = original = Video.createBufferedImage( load.getIconWidth(), load.getIconHeight() );
+		processed = original = GameEngine.createBufferedImage( load.getIconWidth(), load.getIconHeight() );
         Graphics2D g = original.createGraphics();
-        Video.getGraphicsSettings(g);
+        GameEngine.getGraphicsSettings(g);
         g.drawImage(load.getImage(), 0, 0, null ); 
         g.dispose();
         
@@ -96,9 +96,9 @@ public class Image2D {
 		ImageIcon load = new ImageIcon(ResourceMananger.getFilePath(fileName));
 		
 		//Load the image into a BufferedImage
-		original = Video.createBufferedImage(imgWidth, imgHeight);
+		original = GameEngine.createBufferedImage(imgWidth, imgHeight);
         Graphics2D g = original.createGraphics();
-        Video.getGraphicsSettings(g);
+        GameEngine.getGraphicsSettings(g);
         g.drawImage(load.getImage(), 0, 0, imgWidth, imgHeight, null ); 
         g.dispose();
         
@@ -115,9 +115,9 @@ public class Image2D {
 		height = clone.getHeight();
 		
 		//Make a copy of the current state of the Image2D
-		original = Video.createBufferedImage(width, height);
+		original = GameEngine.createBufferedImage(width, height);
 		Graphics2D g = original.createGraphics();
-        Video.getGraphicsSettings(g);
+        GameEngine.getGraphicsSettings(g);
         g.drawImage(clone.getSnapshot(), 0, 0, width, height, null ); 
         g.dispose();
 	}
@@ -300,10 +300,10 @@ public class Image2D {
 		if( !noChange )
 		{
 			//Create a buffer from the original image			
-			processed = Video.createBufferedImage(width, height);
+			processed = GameEngine.createBufferedImage(width, height);
 			
 			Graphics2D r = processed.createGraphics();
-	        Video.getGraphicsSettings(r);
+	        GameEngine.getGraphicsSettings(r);
 	        r.drawImage(original, 0, 0, width, height, null);
 				
 			//Blur effect

@@ -171,7 +171,7 @@ class Particle extends Physics {
 		else					speed = spawner.getSpeed().clone();
 		
 		//Play spawn sound
-		if( template.soundSpawn != null ) template.soundSpawn.play3D(pos, Video.getCameraPos());
+		if( template.soundSpawn != null ) template.soundSpawn.play3D(pos, GameEngine.getCameraPos());
 	}
 			
 	/**
@@ -225,7 +225,7 @@ class Particle extends Physics {
 		pos.add(move);
 		
 		//Figure out if we are inside the screen or not
-		onScreen = Video.isInFrame( this.pos, new Vector() );
+		onScreen = GameEngine.isInFrame( this.pos, new Vector() );
 	}
 	
 	/**
@@ -250,7 +250,7 @@ class Particle extends Physics {
 		int h = (int) ( image.getIconHeight() * size);
 
 		//Calculate position
-		Vector offset = Video.getCameraPos();
+		Vector offset = GameEngine.getCameraPos();
 		int xPos = pos.getX() - w/2 - offset.getX();
 		int yPos = pos.getY() - h/2 - offset.getY();
 		
@@ -267,7 +267,7 @@ class Particle extends Physics {
 		g.drawImage( image.getImage(), xs, null);
 		
 		//Draw collision circle
-		if( Configuration.debugMode )
+		if( GameEngine.getConfig().debugMode )
 		{
 			g.setColor(Color.YELLOW);
 			Vector drawPos = pos.minus(new Vector(radius, radius)).minus(offset);

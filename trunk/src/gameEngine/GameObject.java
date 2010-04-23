@@ -59,8 +59,8 @@ public abstract class GameObject extends Physics{
 		}
 		
 		// Quick implement of universe bounds
-		float uniX = world.universeSize * Video.getScreenWidth();
-		float uniY = world.universeSize * Video.getScreenHeight();
+		float uniX = world.universeSize * GameEngine.getScreenWidth();
+		float uniY = world.universeSize * GameEngine.getScreenHeight();
 		
 		if 		(pos.x < 0) 	pos.x = uniX + pos.x;
 		else if (pos.x > uniX)  pos.x %= uniX;
@@ -76,7 +76,7 @@ public abstract class GameObject extends Physics{
 	}
 	
 	public void drawCollision(Graphics g, Vector offset) {
-		if( !Configuration.debugMode ) return;
+		if( !GameEngine.getConfig().debugMode ) return;
 		
 		//Always draw the image bounds
 		int w = image.getWidth();
@@ -155,7 +155,7 @@ public abstract class GameObject extends Physics{
 	
 	public void damage( Weapon weapon ) {
 		
-		//Cant be killed
+		//Can't be killed
 		if( lifeMax == OBJECT_INVULNERABLE ) return;
 		
 		setLife(life - weapon.damage*weapon.lifeMul);

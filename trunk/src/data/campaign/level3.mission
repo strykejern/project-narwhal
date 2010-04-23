@@ -12,10 +12,6 @@
 //      ShipName xSpawn ySpawn aiType Team 
 [SHIP]: data/ships/raptor.ship 1600 1200 PLAYER GOOD
 [SHIP]: data/ships/rombeda.ship 1600 1100 CONTROLLER GOOD
-[SHIP]: data/ships/rombeda.ship 1500 1200 CONTROLLER GOOD
-[SHIP]: data/ships/rombeda.ship 1700 1400 CONTROLLER GOOD
 
 [SHIP]: data/ships/juggernaught.ship 4250 4400 BRUTE EVIL
 [SHIP]: data/ships/juggernaught.ship 4550 4500 FOOL EVIL
-[SHIP]: data/ships/juggernaught.ship 4300 4300 BRUTE EVIL
-[SHIP]: data/ships/pioneer.ship 4200 4100 CONTROLLER EVIL

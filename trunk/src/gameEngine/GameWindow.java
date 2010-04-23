@@ -63,23 +63,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		GAME_SELECT_SHIP,
 		GAME_CAMPAIGN_SCREEN,
 	}
-	
-	/**
-	 * JJ> The main game function, here is where everything starts
-	 * @param args
-	 */
-	public static void main(String[] args) {
-    	//Initialize the logging system, do this first so that error logging happens correctly.
-    	Log.initialize();
-    	    	
-    	//Load settings
-    	Configuration.loadSettings();
-        Video.initialize();
-    	
-		//Initialize the frame window where we draw stuff
-    	Video.createWindow("Project Narwhal");		
-  	}
-	
+		
 	public GameWindow(JFrame frame) {
     	
 		//The actual frame
@@ -122,7 +106,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			catch (Exception e) { Log.warning(e); }
 
 			if(state == GameState.GAME_PLAYING)
-				frame.getContentPane().setCursor(Video.BLANK_CURSOR);	//TODO: bad change cursor every frame?
+				frame.getContentPane().setCursor(GameEngine.BLANK_CURSOR);	//TODO: bad change cursor every frame?
 			else
 		    	frame.getContentPane().setCursor( null );
 				
@@ -159,7 +143,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			}
 			else if( state == GameState.GAME_CAMPAIGN_SCREEN )
 			{
-				if( !campaign.active ) campaign.loadMission("data/campaign/level1.mission");
+				if( !campaign.active ) campaign.loadMission("data/campaign/level4.mission");
 				state = campaign.update();
 			}
 			
@@ -180,21 +164,10 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			catch (Exception e) { Log.warning(e); }
 		}
 		
-		exit(0);
+		GameEngine.exitGame(0);
 	}
 	
-	
-	/**
-	 * JJ> Free resources, save data and exit properly
-	 * @param code The exit code used for terminating this process (0 for normal exit)
-	 */
-	private void exit(int code) {
-		Configuration.exportSettings();
-		Log.message("Exiting the game the good way. Exit code: " + code);
-	   	Log.close();		
-	   	System.exit(code);
-	}
-	
+		
 	/**
 	 * JJ> Paints every object of interest
 	 * @see javax.swing.JComponent#paint(java.awt.Graphics)
@@ -208,7 +181,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		Graphics2D g = (Graphics2D) rawGraphics;
 				
 		//Set quality mode
-		Video.getGraphicsSettings(g);
+		GameEngine.getGraphicsSettings(g);
 				
 		if(state == GameState.GAME_PLAYING)
 		{
@@ -219,7 +192,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			{
 				screenFade = Math.min(1, screenFade+0.002f);
 				g.setColor( new Color(0, 0, 0, screenFade) );
-				g.fillRect(0, 0, Video.getScreenWidth(), Video.getScreenHeight());
+				g.fillRect(0, 0, GameEngine.getScreenWidth(), GameEngine.getScreenHeight());
 				
 				if( screenFade == 1 || keys.escape )
 				{

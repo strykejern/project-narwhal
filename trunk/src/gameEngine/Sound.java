@@ -128,8 +128,8 @@ public class Sound
 		
 		if( !enabled || !valid || channelsPlaying >= 128 ) return;
 		
-		Vector screenCenter = cameraPos.plus( new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2) );
-		float maxDist = (Video.getScreenWidth() + Video.getScreenHeight())/8;
+		Vector screenCenter = cameraPos.plus( new Vector(GameEngine.getScreenWidth()/2, GameEngine.getScreenHeight()/2) );
+		float maxDist = (GameEngine.getScreenWidth() + GameEngine.getScreenHeight())/8;
 		float dist = origin.minus(screenCenter).length();
 
 		//Calculate how loud the sound is
@@ -139,7 +139,7 @@ public class Sound
 		if( volume < 0.1f ) return;
 		
 		//Calculate if the sound is left or right oriented
-		float panning = (2.00f/Video.getScreenWidth()) * -(screenCenter.x - origin.x);
+		float panning = (2.00f/GameEngine.getScreenWidth()) * -(screenCenter.x - origin.x);
 		
 		//Play the sound!
 		play( Math.min(volume, soundVolume), panning );
