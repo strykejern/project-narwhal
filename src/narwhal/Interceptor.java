@@ -7,7 +7,7 @@ import gameEngine.Input;
 import gameEngine.Log;
 import gameEngine.Sound;
 import gameEngine.Vector;
-import gameEngine.Video;
+import gameEngine.GameEngine;
 
 public class Interceptor extends Spaceship {
 	
@@ -48,7 +48,7 @@ public class Interceptor extends Spaceship {
 		entities 		= master.world.getEntityList();
 		
 		//Play sound
-		launch.play3D(pos, Video.getCameraPos());
+		launch.play3D(pos, GameEngine.getCameraPos());
 	}
 
 	public void update() {
@@ -183,7 +183,7 @@ public class Interceptor extends Spaceship {
 		master.setLife( Math.min(master.getMaxLife(), master.getLife() + this.getLife()) );
 		
 		//Play sound
-		dock.play3D(this.pos, Video.getCameraPos());
+		dock.play3D(this.pos, GameEngine.getCameraPos());
 		
 		super.remove();
 	}

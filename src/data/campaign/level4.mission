@@ -1,6 +1,21 @@
-[MISSION]: Mission 4 - The new Enemy
-[DESCRIPTION]: After the great victory against the juggernaught, the hostile aliens were forced to leave our solar system. The Rombeda allies left along, pursuing them in their everlasting war. Mankind was left alone for many years. Until, a new alien race visited Sol.
+[MISSION]: Mission 4 - Ultimate Showdown
+[DESCRIPTION]: Your cooperation has been invaluable earthling. We will now strike at their mothership and drive the Juggernaughts away from your solar system. We suggest you equip your ship with a ECM jammer that will jam the motherships deadly proton missiles.
 [MUSIC]: space.ogg
 [VOICE]: mission4.ogg
-[IMAGE]: data/campaign/earth.jpg
-[NEXT]: data/campaign/level4b.mission
+[IMAGE]: data/campaign/rombeda.jpg
+[NEXT]: data/campaign/level4.mission
+
+//Level parameters
+[SIZE]: 5
+
+//Spawning points for spaceships
+//      ShipName xSpawn ySpawn aiType Team 
+[SHIP]: data/ships/raptor.ship 1600 1200 PLAYER GOOD
+[SHIP]: data/ships/rombeda.ship 1600 1100 CONTROLLER GOOD
+[SHIP]: data/ships/rombeda.ship 1500 1200 CONTROLLER GOOD
+[SHIP]: data/ships/rombeda.ship 1700 1400 CONTROLLER GOOD
+
+[SHIP]: data/ships/juggernaught.ship 4250 4400 BRUTE EVIL
+[SHIP]: data/ships/juggernaught.ship 4550 4500 FOOL EVIL
+[SHIP]: data/ships/juggernaught.ship 4300 4300 BRUTE EVIL
+[SHIP]: data/ships/pioneer.ship 4200 4100 CONTROLLER EVIL

@@ -20,7 +20,7 @@ package narwhal;
 
 import gameEngine.GameObject;
 import gameEngine.Vector;
-import gameEngine.Video;
+import gameEngine.GameEngine;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -45,7 +45,7 @@ public class HUD {
 	private final static Color RADAR_BACK   = new Color(102, 102, 102, 64); 
 
 	//HUD data
-	private final static Vector SCREEN_MID = new Vector(Video.getScreenWidth()/2, Video.getScreenHeight()/2);
+	private final static Vector SCREEN_MID = new Vector(GameEngine.getScreenWidth()/2, GameEngine.getScreenHeight()/2);
 	private Spaceship observer;
 	private ArrayList<Spaceship> tracking;
 	
@@ -67,7 +67,7 @@ public class HUD {
 		if( !observer.active() ) return;
 		
 		//Calculate positions		
-		Vector hudPos = Video.getResolutionVector().minus(new Vector(200, 200));
+		Vector hudPos = GameEngine.getResolutionVector().minus(new Vector(200, 200));
 				
 		//Shield background
 		g.setColor(BACKGROUND);
@@ -93,9 +93,9 @@ public class HUD {
 		
 		//Draw separation lines in the bars
 		for (int i = 1; i < 22; ++i)
-			g.drawLine(Video.getScreenWidth(), Video.getScreenHeight(), Video.getScreenWidth()-(int)(Math.cos((Math.PI/44)*i)*200.0), Video.getScreenHeight()-(int)(Math.sin((Math.PI/44)*i)*200.0));
+			g.drawLine(GameEngine.getScreenWidth(), GameEngine.getScreenHeight(), GameEngine.getScreenWidth()-(int)(Math.cos((Math.PI/44)*i)*200.0), GameEngine.getScreenHeight()-(int)(Math.sin((Math.PI/44)*i)*200.0));
 		
-		hudPos.sub(new Vector(Video.getScreenWidth(), 0));
+		hudPos.sub(new Vector(GameEngine.getScreenWidth(), 0));
 		
 		//Energy background
 		g.setColor(BACKGROUND);
@@ -110,7 +110,7 @@ public class HUD {
 		
 		//Draw separation lines in the bars
 		for (int i = 1; i < 22; ++i)
-			g.drawLine(0, Video.getScreenHeight(), (int)(Math.cos((Math.PI/44)*i)*200.0), Video.getScreenHeight()-(int)(Math.sin((Math.PI/44)*i)*200.0));
+			g.drawLine(0, GameEngine.getScreenHeight(), (int)(Math.cos((Math.PI/44)*i)*200.0), GameEngine.getScreenHeight()-(int)(Math.sin((Math.PI/44)*i)*200.0));
 		
 		//Draw ships that are tracked
 		if(observer.radarLevel > 0)
@@ -130,6 +130,11 @@ public class HUD {
 				drawRadar(target, g);
 			}
 		}
+		
+		//Draw observer crosshair
+		g.setColor(Color.green);
+		g.drawOval( observer.getInput().mousePos.getX()-5, observer.getInput().mousePos.getY()-5, 10, 10);
+
 	}
 	
 	//JJ> Draws one tracking polygon for the specified spaceship
@@ -139,7 +144,7 @@ public class HUD {
 		if( target.disguised != null || target.cloaked ) return;
 		
 		//No need to draw if we can see them
-		if( Video.isInFrame(target) )
+		if( GameEngine.isInFrame(target) )
 		{
 			//But we might need to draw their life, shield and energy bars
 			drawRadarStatus(g, target);
@@ -201,7 +206,7 @@ public class HUD {
 		int width = target.getImage().getWidth();
 		
 		//Calculate position
-		Vector diff = target.getPosCentre().minus(Video.getCameraPos());
+		Vector diff = target.getPosCentre().minus(GameEngine.getCameraPos());
 		int drawX = diff.getX() - width/2;
 		int drawY = diff.getY() - height/2 - height/4;
 		
@@ -241,20 +246,4 @@ public class HUD {
 		
 	}
 	
-	//Depecrated old status bars, keep here for reference sake
-	@SuppressWarnings("unused")
-	private void drawOneBar(Graphics2D g, Vector pos, int current, int max, Color clr) {
-		int width = Video.getScreenWidth()/20;
-		int height = Video.getScreenHeight()/4;
-
-		//Draw full bar
-		g.setColor(new Color(102, 102, 102, 150));
-		g.fillRoundRect(pos.getX()-width, pos.getY()-height, width, height, 25, 25);
-		
-		//Draw remaining bar
-		g.setColor( clr );
-		height = Math.max( 0, (int)((height/(float)max) * current) );
-		g.fillRoundRect(pos.getX()-width, pos.getY()-height, width, height, 25, 25);
-	}
-
 }

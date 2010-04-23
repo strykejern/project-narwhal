@@ -19,7 +19,7 @@
 package narwhal;
 
 import gameEngine.*;
-import gameEngine.Video.VideoQuality;
+import gameEngine.Configuration.VideoQuality;
 
 import java.awt.*;
 import java.awt.image.VolatileImage;
@@ -53,9 +53,9 @@ public class Background {
 		Profiler.begin("Initializing background");
 		
 		//Set background resolution and detail depending on video quality
-		if( Video.getQualityMode() == VideoQuality.VIDEO_LOW )       BG_SIZE = new Vector(480, 360);
-		else if( Video.getQualityMode() == VideoQuality.VIDEO_HIGH ) BG_SIZE = new Vector(800, 600);
-		else 														 BG_SIZE = new Vector(640, 480);
+		if( GameEngine.getConfig().getQualityMode()      == VideoQuality.VIDEO_LOW )  BG_SIZE = new Vector(480, 360);
+		else if( GameEngine.getConfig().getQualityMode() == VideoQuality.VIDEO_HIGH ) BG_SIZE = new Vector(800, 600);
+		else 														                  BG_SIZE = new Vector(640, 480);
 		
 		//Load resources
 		loadNebulas();
@@ -141,7 +141,7 @@ public class Background {
 		ArrayList<ImageIcon> tmpStars = new ArrayList<ImageIcon>();
 		for (int s = 1; s < 40; ++s)
 		{
-			VolatileImage star = Video.createVolatileImage(s, s);
+			VolatileImage star = GameEngine.createVolatileImage(s, s);
 			Graphics2D starGraph = star.createGraphics();
 			for (int c = 0; c < 256; c += 16)
 			{
@@ -190,7 +190,7 @@ public class Background {
 	}
 	
 	public Vector getUniverseSize() {
-		return new Vector( universeSize * Video.getScreenWidth(), universeSize * Video.getScreenHeight() );
+		return new Vector( universeSize * GameEngine.getScreenWidth(), universeSize * GameEngine.getScreenHeight() );
 	}
 				
 	public void drawBounds(Graphics2D g, Vector pos){
@@ -198,8 +198,8 @@ public class Background {
 		
 		if(!debug) return;
 				
-		final int SCREEN_X = Video.getScreenWidth();			//Screen width
-		final int SCREEN_Y = Video.getScreenHeight();		//Screen height
+		final int SCREEN_X = GameEngine.getScreenWidth();			//Screen width
+		final int SCREEN_Y = GameEngine.getScreenHeight();		//Screen height
 		
 		//Make rectangles yellow
 		g.setColor(Color.YELLOW);
@@ -228,7 +228,7 @@ public class Background {
 			{
 				try
 				{
-					Image buffer = Video.createVolatileImage(BG_SIZE.getX(), BG_SIZE.getY());
+					Image buffer = GameEngine.createVolatileImage(BG_SIZE.getX(), BG_SIZE.getY());
 		    		Graphics2D g = (Graphics2D)buffer.getGraphics();
 		        	
 		            //I: Nebula (10% chance) or Black background (90%)
@@ -240,7 +240,7 @@ public class Background {
 		    		drawRandomStarfield(rand, g);
 		    				    		
 		    		universe[i][j] = buffer;
-		    		bgPos[i][j] = new Vector(i*Video.getScreenWidth(), j*Video.getScreenHeight());
+		    		bgPos[i][j] = new Vector(i*GameEngine.getScreenWidth(), j*GameEngine.getScreenHeight());
 
 		    		//All done! Free any resources we have used
 		    		g.dispose();
@@ -270,11 +270,11 @@ public class Background {
 		int bg = 0;
 		Composite reset = g.getComposite();
 		
-		if( Video.getQualityMode() == VideoQuality.VIDEO_LOW )
+		if( GameEngine.getConfig().getQualityMode() == VideoQuality.VIDEO_LOW )
 		{
 			//Without motion blur
 			g.setBackground(Color.BLACK);
-			g.clearRect(0, 0, Video.getScreenWidth(), Video.getScreenHeight());
+			g.clearRect(0, 0, GameEngine.getScreenWidth(), GameEngine.getScreenHeight());
 		}
 		else
 		{
@@ -291,11 +291,11 @@ public class Background {
 				int y = bgPos[i][j].getY()-position.getY();
 				
 				//Only draw whatever we need to draw
-				if(x < -Video.getScreenWidth() || x > Video.getScreenWidth()) break;
-				if(++y > Video.getScreenHeight()) break;
-				if(y < -Video.getScreenHeight()) continue;
+				if(x < -GameEngine.getScreenWidth() || x > GameEngine.getScreenWidth()) break;
+				if(++y > GameEngine.getScreenHeight()) break;
+				if(y < -GameEngine.getScreenHeight()) continue;
 				
-				g.drawImage( universe[i][j], x, y, Video.getScreenWidth(), Video.getScreenHeight(), null );
+				g.drawImage( universe[i][j], x, y, GameEngine.getScreenWidth(), GameEngine.getScreenHeight(), null );
 				bg++;
 			}	
 

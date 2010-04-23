@@ -140,8 +140,8 @@ public class ParticleEngine {
 			}
 			
 			// Quick implement of universe bounds
-			float uniX = universeSize * Video.getScreenWidth();
-			float uniY = universeSize * Video.getScreenHeight();
+			float uniX = universeSize * GameEngine.getScreenWidth();
+			float uniY = universeSize * GameEngine.getScreenHeight();
 			
 			if 		(prt.pos.x < 0) 	prt.pos.x = uniX + prt.pos.x;
 			else if (prt.pos.x > uniX)  prt.pos.x %= uniX;
@@ -191,7 +191,7 @@ public class ParticleEngine {
 		ParticleTemplate template = prt.getParticleTemplate();
 		
 		//Play end sound
-		if( template.soundEnd != null )template. soundEnd.play3D( prt.pos, Video.getCameraPos() );
+		if( template.soundEnd != null )template. soundEnd.play3D( prt.pos, GameEngine.getCameraPos() );
 		
 		//Spawn any end particle
 		if( template.particleEnd != null )

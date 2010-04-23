@@ -39,13 +39,7 @@ public class Game {
 	private Spaceship				player;
 	private Background 				background;
 	private boolean					victory;
-	
-/*	public enum GameMode {
-		SKIRMISH,				//Single versus battle
-		CAMPAIGN,				//A series of battles, upgrade ship
-		MULTIPLAYER				//Not implemented
-	}*/
-	
+		
 	private void generateWorld( long seed, int universeSize, ArrayList<SpawnPoint> spawnList ) {
         Random rand = new Random(seed);
         
@@ -56,7 +50,7 @@ public class Game {
 		for(SpawnPoint spawn : spawnList) try 
 		{
 			//Randomize spawn position if needed
-			if(spawn.pos == null) spawn.pos = new Vector(rand.nextInt(Video.getScreenWidth()*universeSize), rand.nextInt(Video.getScreenHeight()*universeSize));
+			if(spawn.pos == null) spawn.pos = new Vector(rand.nextInt(GameEngine.getScreenWidth()*universeSize), rand.nextInt(GameEngine.getScreenHeight()*universeSize));
 			
 			//Players are handled a little different than AI
 			if( spawn.ai == aiType.PLAYER )
@@ -84,15 +78,15 @@ public class Game {
 			for(int y = 0; y < universeSize; y++)
 			{
 				//Asteroid
-				int offX = rand.nextInt(Video.getScreenWidth() );
-				int offY = rand.nextInt(Video.getScreenHeight() );
-				entities.add( new Asteroid(new Vector(x*Video.getScreenWidth() + offX, y*Video.getScreenHeight() + offY), this, 0) );
+				int offX = rand.nextInt(GameEngine.getScreenWidth() );
+				int offY = rand.nextInt(GameEngine.getScreenHeight() );
+				entities.add( new Asteroid(new Vector(x*GameEngine.getScreenWidth() + offX, y*GameEngine.getScreenHeight() + offY), this, 0) );
 				
 				//12% for planet		//TODO improve spawning code
 				if( rand.nextInt(100) >= 12 ) continue;
-				offX = Video.getScreenWidth()/2;
-				offY = Video.getScreenHeight()/2;
-				entities.add( new Planet(new Vector(x*Video.getScreenWidth() + offX, y*Video.getScreenHeight() + offY), System.nanoTime(), this) );			
+				offX = GameEngine.getScreenWidth()/2;
+				offY = GameEngine.getScreenHeight()/2;
+				entities.add( new Planet(new Vector(x*GameEngine.getScreenWidth() + offX, y*GameEngine.getScreenHeight() + offY), System.nanoTime(), this) );			
 			}
 
 		//Generate background
@@ -139,7 +133,7 @@ public class Game {
 				background, 
 				player);
 		viewPort.configureInputHandler(keys);
-		Video.setCamera(viewPort);
+		GameEngine.setCamera(viewPort);
 	}
 	
 	public GameWindow.GameState update(){
@@ -218,7 +212,6 @@ public class Game {
 
 		viewPort.drawView(g);
 		particleEngine.render(g);
-		keys.drawCrosshair(g);
 		hud.draw(g);
 				
 		//Debug info

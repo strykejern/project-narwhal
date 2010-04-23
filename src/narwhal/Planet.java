@@ -49,7 +49,7 @@ public class Planet extends GameObject {
 		
 		//Make it unique
 		Image2D myImage = planetImages.get( rand.nextInt(planetImages.size()) ).clone();
-		int planetSize = Video.getScreenWidth()/4 + rand.nextInt(Video.getScreenWidth()/4) + Video.getScreenHeight()/4;
+		int planetSize = GameEngine.getScreenWidth()/4 + rand.nextInt(GameEngine.getScreenWidth()/4) + GameEngine.getScreenHeight()/4;
 		if( rand.nextBoolean() ) myImage.horizontalFlip();
 		if( rand.nextBoolean() ) myImage.verticalFlip();
 		myImage.rotate( (float)Math.toRadians(rand.nextInt(360)) );
