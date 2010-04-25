@@ -214,6 +214,13 @@ public class AI extends Spaceship {
 			keys.mosButton2 = keys.mosButton1 = true;
 		}
 		
+		//Use mines
+		if( tetiaryWeapon != null && tetiaryWeapon.name.equals("Mine") )
+		{
+			if( energy >= energyMax/2 ) 
+				keys.mosButton2 = keys.mosButton1 = true;
+		}
+		
 		//Calculate distance from target
 		float distance = getDistanceTo(target);
 
@@ -323,6 +330,13 @@ public class AI extends Spaceship {
 		if( canCloak && !cloaked && distance < 1500 )
 		{
 			if( (state == aiState.INTERCEPT && energy >= energyMax) || state == aiState.RETREAT ) 
+				keys.mosButton2 = keys.mosButton1 = true;
+		}
+		
+		//Use mines
+		if( tetiaryWeapon != null && tetiaryWeapon.name.equals("Mine") )
+		{
+			if( energy >= energyMax/2 ) 
 				keys.mosButton2 = keys.mosButton1 = true;
 		}
 

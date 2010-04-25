@@ -1,0 +1,20 @@
+[MISSION]: Mission 4 - The new Enemy
+[DESCRIPTION]: We are are Jello. This is our new home. You are but an obstacle in our great mission. Our masters will be pleased. Prepeare to be... annihilated.
+[MUSIC]: space.ogg
+[VOICE]: mission5b.ogg
+[IMAGE]: data/campaign/jellygod.jpg
+[NEXT]: data/campaign/level6.mission
+
+//Level parameters
+[SIZE]: 5
+[ALWAYS_WIN]: FALSE
+
+//Spawning points for spaceships
+//      ShipName xSpawn ySpawn aiType Team 
+[SHIP]: data/ships/raptor.ship 1600 1200 PLAYER GOOD
+[SHIP]: data/ships/raptor.ship 1600 1100 CONTROLLER GOOD
+
+[SHIP]: data/ships/spacejelly.ship 4250 4400 BRUTE EVIL
+[SHIP]: data/ships/spacejelly.ship 4550 4500 FOOL EVIL
+[SHIP]: data/ships/spacejelly.ship 4550 4500 FOOL EVIL
+[SHIP]: data/campaign/sporebase.ship 4550 4500 FOOL EVIL

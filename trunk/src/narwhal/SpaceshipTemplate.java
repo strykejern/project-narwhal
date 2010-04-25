@@ -40,6 +40,7 @@ public class SpaceshipTemplate {
 	public final boolean canStrafe;
 	public final Weapon tetiaryWeapon;
 	public final boolean canCloak;
+	public final boolean vital;
 	
 	
 	public SpaceshipTemplate( String fileName ) throws Exception {		
@@ -48,6 +49,7 @@ public class SpaceshipTemplate {
 		//Set defaults
 		String name = null;
 		Image2D image = null;
+		boolean vital = false;
 
 		float lifeMax = 100;
 		float shieldMax = 200;
@@ -91,6 +93,7 @@ public class SpaceshipTemplate {
 			if     (line.startsWith("[NAME]:"))    name = parse(line);
 			else if(line.startsWith("[FILE]:"))    image = new Image2D("/data/ships/" + parse(line));
 			else if(line.startsWith("[SIZE]:"))    sizeMul = Float.parseFloat(parse(line));
+			else if(line.startsWith("[VITAL]:"))   vital = Boolean.parseBoolean(parse(line));
 			
 			else if(line.startsWith("[LIFE]:"))    lifeMax = Float.parseFloat(parse(line));
 			else if(line.startsWith("[SHIELD]:"))  shieldMax = Float.parseFloat(parse(line));
@@ -131,6 +134,7 @@ public class SpaceshipTemplate {
 		image.resize(75, 75);
 		image.scale(sizeMul);
 		this.image = image;
+		this.vital = vital;
 		
 		//Now set the temp variables to final
 		this.name = name;

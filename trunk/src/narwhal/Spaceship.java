@@ -33,6 +33,7 @@ public abstract class Spaceship extends GameObject {
 	private int debrisCooldown;				//Time for new wreckage spawn
 	public boolean cloaked;					//Cloaked if true
 	protected Image2D disguised;			//If disguised != null then we are disguised
+	public final boolean vital;				//If this dies, everyone on the team dies
 
 	//Engine
 	protected float maxSpeed;
@@ -69,7 +70,8 @@ public abstract class Spaceship extends GameObject {
 
 		//Load the variables from the spaceship template and clone them
 		name = new String(blueprint.name);
-		image = blueprint.image.clone();
+		image = blueprint.image.clone();		
+		vital = blueprint.vital;
 		
 		setMaxLife(blueprint.lifeMax);
 		shield = shieldMax 	= blueprint.shieldMax;
@@ -295,6 +297,23 @@ public abstract class Spaceship extends GameObject {
 		else for(int i = 0; i < 4; i++) particleEngine.spawnParticle( "gib.prt", getPosCentre(), direction, this, null );
 
 		super.destroy();
+		
+		//This kills everyone on our team as well
+		if( vital )
+		{
+			for(int i = 0; i < world.getEntityList().size(); i++)
+			{
+				//Only destroy spaceship
+				GameObject object = world.getEntityList().get(i);
+				if( !(object instanceof Spaceship) ) continue;
+				
+				//Only destroy allies
+				Spaceship ally = (Spaceship) object;
+				if( !ally.team.equals(this.team) ) continue;
+				
+				ally.destroy();
+			}
+		}
 	}
 		
 	/**

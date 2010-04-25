@@ -143,7 +143,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			}
 			else if( state == GameState.GAME_CAMPAIGN_SCREEN )
 			{
-				if( !campaign.active ) campaign.loadMission("data/campaign/level4.mission");
+				if( !campaign.active ) campaign.loadMission("data/campaign/level1.mission");
 				state = campaign.update();
 			}
 			
@@ -179,7 +179,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		
 		//Convert to the Graphics2D object which allows us more functions
 		Graphics2D g = (Graphics2D) rawGraphics;
-				
+
 		//Set quality mode
 		GameEngine.getGraphicsSettings(g);
 				
@@ -190,7 +190,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			//Fade out the screen
 			if( theGame.isEnded() || theGame.victory() )
 			{
-				screenFade = Math.min(1, screenFade+0.002f);
+				screenFade = Math.min(1, screenFade+0.004f);
 				g.setColor( new Color(0, 0, 0, screenFade) );
 				g.fillRect(0, 0, GameEngine.getScreenWidth(), GameEngine.getScreenHeight());
 				
@@ -198,7 +198,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 				{
 					screenFade = 0;
 					
-					//Prepeare next level
+					//Prepare next level
 					if( campaign.active && ( campaign.alwaysWin || theGame.victory() ) )
 					{
 						state = GameState.GAME_CAMPAIGN_SCREEN;
