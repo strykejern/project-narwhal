@@ -35,7 +35,35 @@ public class Planet extends GameObject {
 			planetImages.add( load ) ;
 		}
 	}
-	
+
+	public Planet(Vector spawnPos, long seed, String name, Game world) {
+		super(world);
+		Random rand = new Random(seed);
+		this.world = world;
+				
+		//Make it unkillable
+		this.setMaxLife( OBJECT_INVULNERABLE );
+				
+		//Make it unique
+		Image2D myImage = new Image2D(name);
+		int planetSize = GameEngine.getScreenWidth()/4 + rand.nextInt(GameEngine.getScreenWidth()/4) + GameEngine.getScreenHeight()/4;
+		if( rand.nextBoolean() ) myImage.horizontalFlip();
+		if( rand.nextBoolean() ) myImage.verticalFlip();
+		myImage.rotate( (float)Math.toRadians(rand.nextInt(360)) );
+		myImage.resize(planetSize, planetSize);
+		
+		pos = spawnPos;
+		setRadius(planetSize/2);
+		image = myImage;
+		speed = new Vector();
+		
+		//Physics
+		shape = Shape.CIRCLE;
+		anchored = true;
+		canCollide = true;
+		mass = (float)Math.PI * radius * radius * 20000;
+	}
+
 	public Planet(Vector spawnPos, long seed, Game world) {
 		super(world);
 		Random rand = new Random(seed);

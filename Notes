@@ -1,3 +1,17 @@
+TODO:
+- Fix sounds in .JAR files
+- Fix skirmish mode
+- Ship upgrades
+- Implement ECM jammer
+- Andromeda campaign levels
+
+SECONDARY TODO:
+- Improve dynamic sound loading
+- Ambusher AI
+- Black holes
+- Wormholes
+- AI edge improvement
+
 Weapon Ideas
 EMP Rockets 			- Good vs. Shields and drains Energy, low Life damage
 Nuclear Rocket 			- Ongoing radiation damage if shields are penentrated

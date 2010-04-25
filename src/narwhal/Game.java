@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import narwhal.AI.aiType;
+import narwhal.SpawnPoint.Type;
 
 
 public class Game {
@@ -52,41 +53,48 @@ public class Game {
 			//Randomize spawn position if needed
 			if(spawn.pos == null) spawn.pos = new Vector(rand.nextInt(GameEngine.getScreenWidth()*universeSize), rand.nextInt(GameEngine.getScreenHeight()*universeSize));
 			
-			//Players are handled a little different than AI
-			if( spawn.ai == aiType.PLAYER )
+			
+			//Spaceship
+			if( spawn.type == Type.SPACESHIP )
 			{
-   				shipyard.setCurrentShip(new SpaceshipTemplate(spawn.name));
-				player = shipyard.spawnSelectedShip(spawn.pos, this, aiType.PLAYER, spawn.team);
-				entities.add(player);
-	       		continue;
+				//Players are handled a little different than AI
+				if( spawn.ai == aiType.PLAYER )
+				{
+	   				shipyard.setCurrentShip(new SpaceshipTemplate(spawn.name));
+					player = shipyard.spawnSelectedShip(spawn.pos, this, aiType.PLAYER, spawn.team);
+					entities.add(player);
+		       		continue;
+				}
+				
+				Spaceship entity;
+				entity = shipyard.spawnShip(new SpaceshipTemplate(spawn.name), spawn.pos, this, spawn.ai, spawn.team);
+		       	entities.add(entity);
 			}
 			
-			Spaceship entity;
-			entity = shipyard.spawnShip(new SpaceshipTemplate(spawn.name), spawn.pos, this, spawn.ai, spawn.team);
-	       	entities.add(entity);
+			//Planet
+			if( spawn.type == Type.PLANET )
+			{
+				Planet entity;
+				entity = new Planet(spawn.pos, seed, spawn.name, this);
+		       	entities.add(entity);
+			}
+			
 		} 
 		catch (Exception e) 
 		{
-			Log.warning("Failed to spawn ship: " + spawn.name);
+			Log.warning("Failed to spawn object: " + spawn.name);
 		}
 
 		//Initialize the HUD and bind it to the player's ship
 		hud = new HUD(player, entities);
 		
-		//Generate random planets and asteroids
+		//Generate random asteroids
 		for(int x = 0; x < universeSize; x++)
 			for(int y = 0; y < universeSize; y++)
 			{
-				//Asteroid
 				int offX = rand.nextInt(GameEngine.getScreenWidth() );
 				int offY = rand.nextInt(GameEngine.getScreenHeight() );
-				entities.add( new Asteroid(new Vector(x*GameEngine.getScreenWidth() + offX, y*GameEngine.getScreenHeight() + offY), this, 0) );
-				
-				//12% for planet		//TODO improve spawning code
-				if( rand.nextInt(100) >= 12 ) continue;
-				offX = GameEngine.getScreenWidth()/2;
-				offY = GameEngine.getScreenHeight()/2;
-				entities.add( new Planet(new Vector(x*GameEngine.getScreenWidth() + offX, y*GameEngine.getScreenHeight() + offY), System.nanoTime(), this) );			
+				entities.add( new Asteroid(new Vector(x*GameEngine.getScreenWidth() + offX, y*GameEngine.getScreenHeight() + offY), this, 0) );				
 			}
 
 		//Generate background
@@ -116,10 +124,10 @@ public class Game {
 		if(spawnList == null)
 		{
 			spawnList = new ArrayList<SpawnPoint>();
-			spawnList.add( new SpawnPoint("data/ships/juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
-			spawnList.add( new SpawnPoint("data/ships/juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
-			spawnList.add( new SpawnPoint("data/ships/juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
-			spawnList.add( new SpawnPoint("data/ships/juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
+			spawnList.add( new SpawnPoint(Type.SPACESHIP, "data/ships/juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
+			spawnList.add( new SpawnPoint(Type.SPACESHIP, "data/ships/juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
+			spawnList.add( new SpawnPoint(Type.SPACESHIP, "data/ships/juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
+			spawnList.add( new SpawnPoint(Type.SPACESHIP, "data/ships/juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
 			player = shipyard.spawnSelectedShip(new Vector(200, 200), this, aiType.PLAYER, "GOOD");
 			entities.add(player);
 		}
@@ -154,7 +162,7 @@ public class Game {
 			}
 			else if( victory && entity instanceof Spaceship )
 			{
-				victory = player.team == ((Spaceship)entity).team;
+				victory = player.team.equals( ((Spaceship)entity).team );
 			}
 			
 			//Update

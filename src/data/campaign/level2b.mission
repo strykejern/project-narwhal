@@ -7,8 +7,12 @@
 
 //Level parameters
 [SIZE]: 3
+[ALWAYS_WIN]: FALSE
 
 //Spawning points for spaceships
 //      ShipName xSpawn ySpawn aiType Team 
 [SHIP]: data/ships/raptor.ship 1600 1200 PLAYER GOOD
+
 [SHIP]: data/campaign/damagedjugger.ship 1200 1600 FOOL EVIL
+
+[PLANET]: data/planets/earth.png 1200 900

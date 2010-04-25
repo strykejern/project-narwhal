@@ -1,0 +1,27 @@
+//General data
+[NAME]:   Spore
+[FILE]:   sporebase.png
+[SIZE]:   2.00
+[ORGANIC]: TRUE
+[VITAL]: TRUE
+
+//Defense
+[LIFE]:   800
+[SHIELD]: 0
+[ENERGY]: 100
+
+//Regeneration
+[EREGEN]: 2
+[SREGEN]: 0
+
+//Weapons
+[PRIMARY]: tentacle.wpn
+[SECONDARY]: tentacle.wpn
+
+//Special mods
+[RADAR]: 0
+
+//Engines
+[MAX_SPEED]: 3.5
+[TURN_RATE]: 0.025
+[ACCELERATION]: 0.25

@@ -9,15 +9,23 @@ import narwhal.AI.aiType;
  *
  */
 public class SpawnPoint {
+	
+	public enum Type {
+		SPACESHIP,
+		PLANET,
+	}
+	
 	String name;
 	Vector pos;
 	aiType ai;
 	String team;
+	Type type;
 	
-	public SpawnPoint(String name, Vector pos, aiType ai, String team) {
+	public SpawnPoint( Type type, String name, Vector pos, aiType ai, String team) {
 		this.name = name;
 		this.pos = pos;
 		this.ai = ai;
 		this.team = team;
+		this.type = type;
 	}
 }

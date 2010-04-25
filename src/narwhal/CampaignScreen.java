@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import narwhal.AI.aiType;
 import narwhal.GameFont.FontType;
+import narwhal.SpawnPoint.Type;
 
 import gameEngine.*;
 import gameEngine.GameWindow.GameState;
@@ -41,6 +42,13 @@ public class CampaignScreen {
 	}
 	
 	public void loadMission(String fileName) {
+		
+		if( !ResourceMananger.fileExists(fileName) ) 
+		{
+			Log.error( "Could not load mission - " + fileName );
+			return;
+		}
+		
 		BufferedReader parse = new BufferedReader(
 				new InputStreamReader(
 				ResourceMananger.getInputStream(fileName)));
@@ -112,7 +120,22 @@ public class CampaignScreen {
 
 					//Load it and add it to the list
 					Vector pos = new Vector(Integer.parseInt(load[1]), Integer.parseInt(load[2]) );
-					spawnList.add( new SpawnPoint(load[0], pos, ai, load[4] ) );	
+					spawnList.add( new SpawnPoint(Type.SPACESHIP, load[0], pos, ai, load[4] ) );	
+				}
+				else if(line.startsWith("[PLANET]:"))
+				{
+					String[] load = parse(line).split(" ");
+					
+					//Make sure we have all we need first
+					if(load.length != 3)
+					{
+						Log.warning("Could not spawn ship (" + fileName + ") missing data - " + parse(line));
+						continue;
+					}
+					
+					//Load it and add it to the list
+					Vector pos = new Vector(Integer.parseInt(load[1]), Integer.parseInt(load[2]) );
+					spawnList.add( new SpawnPoint(Type.PLANET, load[0], pos, null, null ) );					
 				}
 				else if(line.startsWith("[SIZE]:")) universeSize = Integer.parseInt( parse(line) );
 				else if(line.startsWith("[ALWAYS_WIN]:")) alwaysWin = Boolean.parseBoolean( parse(line) );
