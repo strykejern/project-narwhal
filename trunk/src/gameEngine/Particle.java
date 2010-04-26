@@ -32,7 +32,7 @@ import narwhal.AI;
 import narwhal.Spaceship;
 import narwhal.Weapon;
 
-class Particle extends Physics {
+public class Particle extends Physics {
 	
 	//Object functions
 	private boolean requestDelete;		//Remove me?
@@ -44,11 +44,12 @@ class Particle extends Physics {
 
 	private Physics attached;			//Who is it attached to?
 	private Spaceship homing;			//Who are we following?
+	private boolean jammed;				//Jammed by ECM
 
-	public String team;						//Who's side is it on?
+	public String team;					//Who's side is it on?
 	public Weapon weapon;
 	
-	private Physics spawner;					//Who spawned us?
+	private Physics spawner;			//Who spawned us?
 
 	//Particle properties
 	private int time;					//How many frames it has to live
@@ -195,8 +196,16 @@ class Particle extends Physics {
 		alpha = Math.min( 1.00f, Math.max(0.00f, alpha+alphaAdd) );
 		angle += angleAdd;
 		size  += sizeAdd;
+		
+		//Jamming effect
+		if( jammed )
+		{
+			Random rand = new Random();
+			angle += rand.nextFloat() - 0.5f;
+		}
 		angle %= 2 * Math.PI;
 
+		
 		//Mark particles for removal when their time is up or when alpha has made it invisible
 		time--;
 		if(time <= 0 || alpha <= 0 || size <= 0 )
@@ -282,6 +291,10 @@ class Particle extends Physics {
 	public ParticleTemplate getParticleTemplate(){
 		return template;
 	}
+
+	public Vector getPos() {
+		return pos;
+	}
 	
 	/**
 	 * JJ> Gets who spawned this particle
@@ -291,4 +304,14 @@ class Particle extends Physics {
 	public Physics getSpawner(){
 		return spawner;
 	}
+
+	public void jamming() {
+		if( homing != null )
+		{
+			homing = null;
+			jammed = true;
+		}
+	}
+
+
 }

@@ -65,7 +65,6 @@ public class AI extends Spaceship {
 		
 		//Set references
 		//TODO unessecary to do here, move to constructor or replace functions
-		particleEngine 	= world.getParticleEngine();		
 		entities 		= world.getEntityList();
 	}
 	

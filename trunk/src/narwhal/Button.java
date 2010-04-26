@@ -36,8 +36,8 @@ public class Button {
 	private String text;
 	private boolean hidden;
 	private boolean mouseOver;
-	private float alpha;
 	private int id;
+	private Color color, darkColor;
 	
 	public Button(Vector pos, Vector size, String text, int id, Vector startPos) {
 		
@@ -47,7 +47,8 @@ public class Button {
     	if( buttonClick == null )
         	buttonClick = new Sound("click.wav");
 		
-		alpha = 0;
+		color = new Color(0.1f, 0.9f, 0.1f);
+		darkColor = new Color(0.0015f, 0.8f, 0.0015f, 0.5f);
 		hidden = false;
 		mouseOver = false;
 		movePos = startPos.clone();
@@ -116,25 +117,26 @@ public class Button {
 	
 	public void draw(Graphics2D g){
 		if( hidden ) return;
-		
-		//Calculate fade away (not implemented)
-		float trans = Math.min(1, Math.max(0, 0.5f-alpha));
-		float solid = Math.min(1, Math.max(0, 1.0f-alpha));
-		
+				
 		//Button borders
-		g.setColor(new Color(0.0015f, 0.8f, 0.0015f, trans) );
+		g.setColor( darkColor );
 		g.fillRoundRect(movePos.getX(), movePos.getY(), size.getX(), size.getY(), 25, 25);
 
 		//Button
 		Vector v = new Vector(size.times(0.95f).getX(), size.times(0.8f).getY());
-		if( mouseOver ) g.setColor(new Color(0.1f, 0.9f, 0.1f, solid) );
-		else		    g.setColor(new Color(0.1f, 0.9f, 0.1f, trans) );
+		if( mouseOver ) g.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 255 ) );
+		else		    g.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 128 ) );
 		g.fillRoundRect(movePos.getX()+size.minus(v).getX()/2, movePos.getY()+size.minus(v).getY()/2, v.getX(), v.getY(), 25, 25);
 		
 		//Text	
 		GameFont.set(g, FontType.FONT_MENU, Color.BLACK, 15);
 		if( mouseOver ) g.setColor(new Color(0, 0, 0) );
 		g.drawString(text, movePos.getX()+ (size.getX()/2) - (GameFont.getWidth(text, g)/2), movePos.getY()+ size.getY()/1.75f);
+	}
+
+	public void setColor(Color color, Color borderColor) {
+		this.color = color;
+		darkColor = borderColor;
 	}
 	
 }

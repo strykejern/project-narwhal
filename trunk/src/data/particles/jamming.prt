@@ -1,0 +1,31 @@
+//Explosion particle
+[IMAGE]: circleportal.png
+[TIME]: 100
+[SPEED]: 0
+[ATTACHED]: TRUE
+
+//Size
+[SIZE]: 0.01
+[SIZE_ADD]: 0.04
+[SCALE_TO_SPAWNER]: FALSE
+
+//Transparency
+[ALPHA]: 0.24
+[ALPHA_ADD]: -0.002
+
+//Rotation
+[ROTATE]: RANDOM
+[ROTATE_ADD]: 0.25
+
+//Direction
+[FACING]: 0
+[FACING_ADD]: 0
+
+//Sound effect
+[SOUND_SPAWN]: radar.ogg
+[SOUND_END]: NONE
+
+//Ending conditions
+[COLLISION_END]: FALSE
+[PARTICLE_END]: NONE
+[FRIENDLY_FIRE]: FALSE

@@ -25,6 +25,8 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.ImageIcon;
+
 import narwhal.Planet;
 import narwhal.Spaceship;
 import narwhal.Weapon;
@@ -207,6 +209,10 @@ public class ParticleEngine {
 		//Free it from the particle list
 		particleList.remove(prt);
 	}	  
+	
+	public ImageIcon getParticleIcon(String template) {
+		return particleMap.get(template).image.get(0);
+	}
 	
 	public ArrayList<Particle> getParticleList(){
 		return particleList;

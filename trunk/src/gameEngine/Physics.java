@@ -36,7 +36,9 @@ public abstract class Physics extends Collidable {
 		pos.add(getSpeed());
 	}
 	
-	public static void updateGravitation(ArrayList<GameObject> objects, ArrayList<Particle> particles){
+	public static void updateGravitation(ArrayList<GameObject> objects ){
+		ArrayList<Particle> particles = GameEngine.getParticleEngine().getParticleList();
+		
 		for (int i = 0; i < objects.size(); i++)
 		{
 			Physics us = objects.get(i);

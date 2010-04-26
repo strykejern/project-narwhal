@@ -1,5 +1,5 @@
 //Spawns 3 lasers and goes away
-[IMAGE]: bullet.png
+[IMAGE]: laser.png
 [TIME]: 1
 [SPEED]: 0
 [ATTACHED]: TRUE
