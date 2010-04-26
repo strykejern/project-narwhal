@@ -38,6 +38,7 @@ import javax.swing.JFrame;
 public abstract class GameEngine {
 	private static JFrame window;
 	private static Camera viewPort = null;
+	private static ParticleEngine particleEngine = null;
 	public static Configuration config;
 
 	// Create a new blank cursor.
@@ -59,6 +60,9 @@ public abstract class GameEngine {
     	    	
     	//Load settings
     	config = new Configuration("config.ini");
+    	
+		//Prepare particle engine
+		particleEngine = new ParticleEngine();     
     		
     	//Acquiring the current Graphics Device and Graphics Configuration
         //This ensures us proper hardware acceleration
@@ -150,7 +154,11 @@ public abstract class GameEngine {
 	public static boolean isInFrame(GameObject object) {
 		return viewPort.isInFrame(object);
 	}
-	
+
+	public static ParticleEngine getParticleEngine() {
+		return particleEngine;
+	}
+
 	/**
 	 * JJ> Free resources, save data and exit properly
 	 * @param code The exit code used for terminating this process (0 for normal exit)

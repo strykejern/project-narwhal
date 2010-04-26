@@ -31,7 +31,6 @@ import narwhal.SpawnPoint.Type;
 
 public class Game {
 	private ArrayList<GameObject>	entities;		// Contains all gameObjects in the universe...
-	private ParticleEngine 	        particleEngine;	// Handles all particles
 	private Input 					keys;			// Class to read inputs from
 	private HUD						hud;			// User interface
 	private Shipyard                shipyard;		// The factory that spawns ships for us
@@ -113,9 +112,6 @@ public class Game {
 
        	// Initialize the entity container
        	entities = new ArrayList<GameObject>();
-       	
-		//Prepare particle engine
-		particleEngine = new ParticleEngine();     
 		
        	//Game music
        	Music.play( "battle.ogg" );
@@ -196,18 +192,14 @@ public class Game {
 				}
 			}
 		}
-		Physics.updateGravitation(entities, particleEngine.getParticleList());
+		Physics.updateGravitation(entities);
 		
-		particleEngine.update(entities, universeSize);
+		GameEngine.getParticleEngine().update(entities, universeSize);
 		
 		
 		return GameState.GAME_PLAYING;
 	}
 	
-	ParticleEngine getParticleEngine(){
-		return particleEngine;
-	}
-
 	ArrayList<GameObject> getEntityList(){
 		return entities;
 	}
@@ -219,12 +211,12 @@ public class Game {
 	public void draw(Graphics2D g){
 
 		viewPort.drawView(g);
-		particleEngine.render(g);
+		GameEngine.getParticleEngine().render(g);
 		hud.draw(g);
 				
 		//Debug info
 		g.setColor(Color.white);
-		g.drawString("Number of particles: " + particleEngine.getParticleCount(), 5, 50);
+		g.drawString("Number of particles: " + GameEngine.getParticleEngine().getParticleCount(), 5, 50);
 		g.drawString("Number of threads: " + Thread.activeCount() + " (" + Sound.getActiveSounds() + " sound)", 5, 70);
 	}
 

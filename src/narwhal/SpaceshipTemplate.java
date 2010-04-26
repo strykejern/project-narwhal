@@ -41,7 +41,7 @@ public class SpaceshipTemplate {
 	public final Weapon tetiaryWeapon;
 	public final boolean canCloak;
 	public final boolean vital;
-	
+	public final boolean canJam;
 	
 	public SpaceshipTemplate( String fileName ) throws Exception {		
 		float sizeMul = 1.00f;
@@ -69,6 +69,7 @@ public class SpaceshipTemplate {
 		boolean canStrafe = false;
 		boolean canWarp = false;
 		boolean canCloak = false;
+		boolean canJam = false;
 		
 		float turnRate = 0.1f;
 		float maxSpeed = 15f;
@@ -121,6 +122,7 @@ public class SpaceshipTemplate {
 			else if(line.startsWith("[STRAFING]:")) canStrafe = Boolean.parseBoolean(parse(line));
 			else if(line.startsWith("[WARP]:"))     canWarp = Boolean.parseBoolean(parse(line));
 			else if(line.startsWith("[CLOAKING]:")) canCloak = Boolean.parseBoolean(parse(line));
+			else if(line.startsWith("[JAMMING]:"))  canJam = Boolean.parseBoolean(parse(line));
 			
 			else if(line.startsWith("[TURN_RATE]:")) turnRate = Float.parseFloat(parse(line));
 			else if(line.startsWith("[MAX_SPEED]:")) maxSpeed = Float.parseFloat(parse(line));
@@ -157,10 +159,43 @@ public class SpaceshipTemplate {
 		this.canWarp = canWarp;
 		this.canStrafe = canStrafe;
 		this.canCloak = canCloak;
+		this.canJam = canJam;
 		
 		this.turnRate = turnRate;
 		this.maxSpeed = maxSpeed;
 		this.acceleration = acceleration;
+	}
+	
+	public SpaceshipTemplate( SpaceshipTemplate base, Weapon primary, Weapon secondary, Weapon tetiary, short radar,
+							float life, float shield, float energy ) {
+		this.image = base.image;
+		this.vital = base.vital;
+		
+		this.name = base.name;
+		
+		this.lifeMax = life;
+		this.shieldMax = shield;
+		this.energyMax = energy;
+		this.shieldRegen = base.shieldRegen;
+		this.energyRegen = base.energyRegen;
+		
+		this.primary = primary;
+		this.secondary = secondary;
+		this.tetiaryWeapon = tetiary;
+		
+		this.radarLevel = radar;
+		this.autoBreaks = base.autoBreaks;
+		this.interceptor = base.interceptor;
+		this.organic = base.organic;
+		this.canDisguise = base.canDisguise;
+		this.canWarp = base.canWarp;
+		this.canStrafe = base.canStrafe;
+		this.canCloak = base.canCloak;
+		this.canJam = base.canJam;
+		
+		this.turnRate = base.turnRate;
+		this.maxSpeed = base.maxSpeed;
+		this.acceleration = base.acceleration;
 	}
 
 	/**

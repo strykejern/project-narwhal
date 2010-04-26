@@ -23,9 +23,6 @@ import java.util.Random;
 import gameEngine.*;
 
 public abstract class Spaceship extends GameObject {
-	
-	//References
-	protected ParticleEngine  particleEngine;
 
 	//General stuff
 	protected String name;						//This ship's name that can be unique
@@ -64,6 +61,7 @@ public abstract class Spaceship extends GameObject {
 	protected boolean canWarp;
 	protected Weapon tetiaryWeapon;
 	protected boolean canCloak;
+	protected boolean canJam;
 
 	public Spaceship( SpaceshipTemplate blueprint, String team, Game world ) {		
 		super(world);
@@ -95,6 +93,7 @@ public abstract class Spaceship extends GameObject {
 		canStrafe		= blueprint.canStrafe;
 		canWarp			= blueprint.canWarp;
 		canCloak		= blueprint.canCloak;
+		canJam 			= blueprint.canJam;
 	
 		//Set our team
 		this.team = team.toUpperCase();
@@ -209,7 +208,7 @@ public abstract class Spaceship extends GameObject {
 				shield -= shieldDmg;
 				
 				//Spawn a shield effect
-				particleEngine.spawnParticle( "shield.prt", getPosCentre(), direction, this, null );
+				GameEngine.getParticleEngine().spawnParticle( "shield.prt", getPosCentre(), direction, this, null );
 				return;
 			}
 		}
@@ -230,18 +229,18 @@ public abstract class Spaceship extends GameObject {
 		if( !organic )
 		{
 			//Spawn a explosion effect
-			particleEngine.spawnParticle( "explosion.prt", getPosCentre(), direction, this, null );
+			GameEngine.getParticleEngine().spawnParticle( "explosion.prt", getPosCentre(), direction, this, null );
 
 			//Make some part of the ship fall off (25% chance)
 			if(debrisCooldown == 0) 
 			{
-				particleEngine.spawnParticle( "debris.prt", getPosCentre(), direction, this, null );
+				GameEngine.getParticleEngine().spawnParticle( "debris.prt", getPosCentre(), direction, this, null );
 				debrisCooldown = 100;
 			}
 		}
 		else if( debrisCooldown == 0 )
 		{
-			particleEngine.spawnParticle( "gib.prt", getPosCentre(), direction, this, null );
+			GameEngine.getParticleEngine().spawnParticle( "gib.prt", getPosCentre(), direction, this, null );
 			debrisCooldown = 100;
 		}
 		
@@ -272,7 +271,7 @@ public abstract class Spaceship extends GameObject {
 		spawnPos.add(new Vector(radius, direction, true));
 
 		//Spawn particle effect
-		particleEngine.spawnParticle( wpn.particle, spawnPos, direction, this, wpn );
+		GameEngine.getParticleEngine().spawnParticle( wpn.particle, spawnPos, direction, this, wpn );
 	}
 	
 	public Image2D getImage(){
@@ -290,11 +289,11 @@ public abstract class Spaceship extends GameObject {
 		//Spawn wreckage and explode if we are not organic
 		if( !organic )
 		{
-			particleEngine.spawnParticle( "bigexplosion.prt", getPosCentre(), direction, this, null );
-			for(int i = 0; i < 4; i++) particleEngine.spawnParticle( "explosion.prt", getPosCentre(), direction, this, null );
-			particleEngine.spawnParticle( "wreck.prt", getPosCentre(), direction, this, null );
+			GameEngine.getParticleEngine().spawnParticle( "bigexplosion.prt", getPosCentre(), direction, this, null );
+			for(int i = 0; i < 4; i++) GameEngine.getParticleEngine().spawnParticle( "explosion.prt", getPosCentre(), direction, this, null );
+			GameEngine.getParticleEngine().spawnParticle( "wreck.prt", getPosCentre(), direction, this, null );
 		}
-		else for(int i = 0; i < 4; i++) particleEngine.spawnParticle( "gib.prt", getPosCentre(), direction, this, null );
+		else for(int i = 0; i < 4; i++) GameEngine.getParticleEngine().spawnParticle( "gib.prt", getPosCentre(), direction, this, null );
 
 		super.destroy();
 		
@@ -345,6 +344,7 @@ public abstract class Spaceship extends GameObject {
 		else if( canDisguise != null ) disguise();
 		else if( canWarp ) warp();
 		else if( canCloak ) cloak();
+		else if( canJam ) jamming();
 		else activateWeapon(tetiaryWeapon);
 	}
 
@@ -427,11 +427,53 @@ public abstract class Spaceship extends GameObject {
 		
 		if(warpTime == 0)
 		{
-			particleEngine.spawnParticle("burst.prt", pos, direction, this, null);
+			GameEngine.getParticleEngine().spawnParticle("burst.prt", pos, direction, this, null);
 			warpTime = 8;
 		}
 		
 		if(energy < maxSpeed) cooldown = 100;
+	}
+	
+	private void jamming(){
+		if( energy <= 100 || cooldown != 0 ) return;
+		energy -= 100;
+		cooldown += 100;
+
+		//Jamming effect
+		GameEngine.getParticleEngine().spawnParticle("jamming.prt", pos, direction, this, null);
+
+		//Iterate through every entity and disable cloaking
+		for(int i = 0; i < world.getEntityList().size(); i++)
+		{
+			GameObject object = world.getEntityList().get(i);
+			if( !(object instanceof Spaceship) ) continue;
+			
+			//Jamming distance
+			if( this.getDistanceTo(object) > 1200 ) continue;
+			
+			Spaceship target = (Spaceship)object;
+			if( !target.cloaked || target.team.equals(this.team) ) continue;
+			
+			//Remove cloaking
+			target.cooldown += 75;
+			target.cloak();
+			
+			//TODO: disable radar?
+		}
+		
+		//Disable homing particles
+		for(int i = 0; i < GameEngine.getParticleEngine().getParticleList().size(); i++)
+		{
+			Particle prt = GameEngine.getParticleEngine().getParticleList().get(i);
+			if( prt.requestsDelete() ) continue;
+
+			//Jamming distance
+			float dist = this.pos.minus(prt.getPos()).length();
+			if( dist > 1200 ) continue;
+
+			prt.jamming();
+ 		}
+	
 	}
 	
 	private void cloak() {

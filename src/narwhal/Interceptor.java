@@ -42,9 +42,7 @@ public class Interceptor extends Spaceship {
 		state           = State.FOLLOW;
 		
 		//Set references
-		if( master.world == null ) Log.warning("INVALID SPAWN");
 		this.world 		= master.world;
-		particleEngine 	= master.particleEngine;		
 		entities 		= master.world.getEntityList();
 		
 		//Play sound
