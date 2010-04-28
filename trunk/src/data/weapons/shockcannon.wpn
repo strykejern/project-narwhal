@@ -1,5 +1,6 @@
 //Shock cannon Weapon
 [NAME]: Shock Cannon
+[TECH]: 3
 [DAMAGE]: 40
 [COST]: 70
 [PARTICLE]: shock.prt

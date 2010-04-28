@@ -9,9 +9,14 @@
 [SIZE]: 5
 [ALWAYS_WIN]: FALSE
 
+//Give the player some new technologies to play with
+[ADD_TECH_WEAPON]: protonmissile.wpn
+[ADD_TECH_MODULE]: WARP
+[ADD_TECH_RADAR]: 2
+
 //Spawning points for spaceships
 //      ShipName xSpawn ySpawn aiType Team 
-[SHIP]: data/ships/raptor.ship 1600 1200 PLAYER GOOD
+[PLAYER]: 1600 1200 GOOD
 [SHIP]: data/ships/rombeda.ship 1600 1100 CONTROLLER GOOD
 
 [SHIP]: data/ships/juggernaught.ship 4250 4400 BRUTE EVIL

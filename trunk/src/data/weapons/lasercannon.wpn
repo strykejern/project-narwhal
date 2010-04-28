@@ -1,5 +1,6 @@
 //Laser cannon Weapon
 [NAME]: Laser Cannon
+[TECH]: 2
 [DAMAGE]: 25
 [COST]: 35
 [PARTICLE]: laser.prt

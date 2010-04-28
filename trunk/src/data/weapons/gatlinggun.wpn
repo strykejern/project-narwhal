@@ -1,5 +1,6 @@
 //Gatling Gun Weapon
 [NAME]: Gatling Gun
+[TECH]: 1
 [DAMAGE]: 4
 [COST]: 6
 [PARTICLE]: bullet.prt

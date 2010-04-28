@@ -1,5 +1,6 @@
 //Phasor Weapon
 [NAME]: Phasors
+[TECH]: 4
 [DAMAGE]: 35
 [COST]: 40
 [PARTICLE]: phasor.prt

@@ -8,10 +8,16 @@
 //Level parameters
 [SIZE]: 3
 [ALWAYS_WIN]: FALSE
+[SET_PLAYER_SHIP]: data/campaign/player.ship
+
+//Give the player some new technologies to play with
+[ADD_TECH_WEAPON]: lasercannon.wpn
+[ADD_TECH_WEAPON]: gatlinggun.wpn
+[ADD_TECH_MODULE]: STRAFING
 
 //Spawning points for spaceships
 //      ShipName xSpawn ySpawn aiType Team 
-[SHIP]: data/ships/raptor.ship 1600 1200 PLAYER GOOD
+[PLAYER]: 1600 1200 GOOD
 
 [SHIP]: data/campaign/damagedjugger.ship 1200 1600 FOOL EVIL
 

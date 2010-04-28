@@ -18,8 +18,8 @@
 //********************************************************************************************
 package gameEngine;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.sound.sampled.*;
 
@@ -77,8 +77,8 @@ public class Sound
 
 	public static AudioInputStream getAudioStream(String file) throws UnsupportedAudioFileException, IOException {
 		
-		//Try to open a stream to it
-		InputStream in = ResourceMananger.getInputStream(file);
+		//Try to open a stream to it, we use BufferedInputStream which works with JAR files
+		BufferedInputStream in = new BufferedInputStream(ResourceMananger.getInputStream(file));
 		AudioInputStream rawstream = AudioSystem.getAudioInputStream(in);
 		AudioFormat format = rawstream.getFormat();
         

@@ -26,7 +26,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 
-abstract class GameFont {
+public abstract class GameFont {
 	private static Font menuFont;
 	private static Font normalFont;
 	private static Font descriptionFont;

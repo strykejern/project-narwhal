@@ -9,9 +9,13 @@
 [SIZE]: 5
 [ALWAYS_WIN]: FALSE
 
+//Give the player some new technologies to play with
+[ADD_TECH_WEAPON]: multilaser.wpn
+[ADD_TECH_MODULE]: ECM
+
 //Spawning points for spaceships
 //      ShipName xSpawn ySpawn aiType Team 
-[SHIP]: data/ships/raptor.ship 1600 1200 PLAYER GOOD
+[PLAYER]: 1600 1200 GOOD
 [SHIP]: data/ships/rombeda.ship 1600 1100 CONTROLLER GOOD
 [SHIP]: data/ships/rombeda.ship 1500 1200 CONTROLLER GOOD
 [SHIP]: data/ships/rombeda.ship 1700 1400 CONTROLLER GOOD

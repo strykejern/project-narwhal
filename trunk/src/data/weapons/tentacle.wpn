@@ -1,5 +1,6 @@
 //Tentacle attack
 [NAME]: Dimensional Fatigue
+[TECH]: 5
 [DAMAGE]: 25
 [COST]: 25
 [PARTICLE]: tentacle.prt

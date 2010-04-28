@@ -45,24 +45,37 @@ import narwhal.GameFont.FontType;
  *
  */
 public class Shipyard {
-	private Image2D bg;
-	private Image2D image;
-	private Image2D right;
+	private Image2D radarBackground, spaceshipImage, computerBackground, techscreenBackground;
 	private SpaceshipTemplate ship;
 	private Iterator<String> select;
 	private Input key;
+	boolean campaignMode;
+	private boolean drawUpgradeScreen;
 	
 	//The blueprints of all ships
 	private HashMap<String, SpaceshipTemplate> shipList;
 	
-	//Avalible upgrades
-	private short maxRadarLevel;
+	//Available upgrades
+	private int techLevel;
+	public int maxTechLevel;
+	public short maxRadarLevel;
 	private ArrayList<Weapon> weaponList;
-	private boolean cloaking;
-	private boolean disguise;
-	private boolean tetiary;
-	private boolean warp;
-	private boolean jamming;
+	private ArrayList<SpecialModule> techList;
+	private Iterator<SpecialModule> currentTech;
+	private boolean strafing;
+	private boolean nullifier;
+
+	public enum SpecialModule{
+		NONE,
+		CLOAK,
+		DISGUISE,
+		TETIARY,
+		WARP,
+		ECM,
+		STRAFING,
+		NULLIFIER,
+		INTERCEPTOR,
+	}
 	
 	//Clickable buttons
 	private HashMap<Integer, Button> buttonList;
@@ -72,19 +85,23 @@ public class Shipyard {
 	static final int BUTTON_BACK = 3;
 	static final int BUTTON_PRIMARY = 4;
 	static final int BUTTON_SECONDARY = 5;
+	static final int BUTTON_RADAR = 6;
+	static final int BUTTON_SPECIAL = 7;
+	static final int BUTTON_STRAFING = 8;
+	static final int BUTTON_NULLFIER = 9;
 		
 	public Shipyard(Input key) {
 		
-		//Load the list of ships and get the first ship in the list
+		//Load the list of ships
 		parseShipList();
-		select = shipList.keySet().iterator();
-		setCurrentShip( shipList.get(select.next()) );		
 		
 		//Ready background
-		bg = new Image2D("/data/shipyard.png");
-		bg.resize((int)(GameEngine.getScreenWidth()*0.50f), GameEngine.getScreenHeight());
-		right = new Image2D("/data/interface.png");
-		right.resize(GameEngine.getScreenWidth() - bg.getWidth(), GameEngine.getScreenHeight());
+		techscreenBackground = new Image2D("/data/techscreen.png");
+		techscreenBackground.resize((int)(GameEngine.getScreenWidth()*0.50f), GameEngine.getScreenHeight());
+		radarBackground = new Image2D("/data/shipyard.png");
+		radarBackground.resize((int)(GameEngine.getScreenWidth()*0.50f), GameEngine.getScreenHeight());
+		computerBackground = new Image2D("/data/interface.png");
+		computerBackground.resize(GameEngine.getScreenWidth() - radarBackground.getWidth(), GameEngine.getScreenHeight());
 		
 		//Ready buttons
 		buttonList = new HashMap<Integer, Button>();
@@ -97,17 +114,29 @@ public class Shipyard {
 		buttonList.put(BUTTON_UPGRADE, new Button(pos, size, "UPGRADE", BUTTON_UPGRADE, pos));
 
 		//The upgrade buttons
-    	pos = new Vector( bg.getWidth()/2, bg.getHeight()/4 );
+    	pos = new Vector( radarBackground.getWidth()/2, radarBackground.getHeight()/5 );
     	size = new Vector( 240, 40 );
 		buttonList.put(BUTTON_PRIMARY, new Button(pos, size, "Primary Weapon", BUTTON_PRIMARY, pos));
-		pos.y -= size.y;
+		pos.y += size.y;
 		buttonList.put(BUTTON_SECONDARY, new Button(pos, size, "Secondary Weapon", BUTTON_SECONDARY, pos));
+		pos.y += size.y*2;
+		buttonList.put(BUTTON_RADAR, new Button(pos, size, "Radar Level", BUTTON_RADAR, pos));
+		pos.y += size.y;
+		buttonList.put(BUTTON_SPECIAL, new Button(pos, size, "Special Module", BUTTON_SPECIAL, pos));
+		pos.y += size.y;
+		buttonList.put(BUTTON_NULLFIER, new Button(pos, size, "Internal Nullfier", BUTTON_NULLFIER, pos));
+		pos.y += size.y;
+		buttonList.put(BUTTON_STRAFING, new Button(pos, size, "Side Thrusters", BUTTON_STRAFING, pos));
 
 		buttonList.get(BUTTON_PRIMARY).setColor( new Color(255, 76, 76), new Color(255, 44, 44, 128) );
 		buttonList.get(BUTTON_SECONDARY).setColor( new Color(255, 76, 76), new Color(255, 44, 44, 128) );
+		buttonList.get(BUTTON_RADAR).setColor( new Color(255, 76, 255), new Color(255, 44, 255, 128) );
+		buttonList.get(BUTTON_SPECIAL).setColor( new Color(255, 255, 76), new Color(255, 255, 44, 128) );
+		buttonList.get(BUTTON_NULLFIER).setColor( new Color(76, 90, 255), new Color(55, 55, 255, 128) );
+		buttonList.get(BUTTON_STRAFING).setColor( new Color(76, 90, 255), new Color(55, 55, 255, 128) );
 		
-		//Upgrades
-		resetUpgrades();
+		//Skirmish mode is default
+		setSkrimishMode();
 		
 		//Input controller
 		this.key = key;
@@ -115,17 +144,13 @@ public class Shipyard {
 	
 	public void resetUpgrades(){
 		weaponList = new ArrayList<Weapon>();
+		techList = new ArrayList<SpecialModule>();
 		maxRadarLevel = 1;
-		cloaking = false;
-		disguise = false;
-		tetiary = false;
-		warp = false;
-		jamming = false;
-		
-		weaponList.add( new Weapon("protonmissile.wpn") );
-		weaponList.add( new Weapon("deathray.wpn") );
-		weaponList.add( new Weapon("gatlinggun.wpn") );
-		weaponList.add( new Weapon("lasercannon.wpn") );
+		techList.add(SpecialModule.NONE);
+		currentTech = techList.iterator();
+		nullifier = false;
+		strafing = false;
+		maxTechLevel = 2;
 	}
 	
 	/**
@@ -196,20 +221,59 @@ public class Shipyard {
 		return y;
 	}
 		
+	
 	public void draw(Graphics2D g) {
 		final int OFFSET_X = GameEngine.getScreenWidth()/32;
 		final int OFFSET_Y = GameEngine.getScreenHeight()/16;
 		
 		//Do first, draw background
-		bg.draw(g, 0, 0);
-		right.draw(g, bg.getWidth(), 0);
+		computerBackground.draw(g, radarBackground.getWidth(), 0);
 		
-		//Draw the ship
-		image.rotate(0.01f);
-		image.draw(g, bg.getWidth()/2-image.getWidth()/2, bg.getHeight()/2-image.getHeight()/2);
+		//Draw the left side of the screen
+		if( !drawUpgradeScreen )
+		{
+			radarBackground.draw(g, 0, 0);
+			spaceshipImage.rotate(0.01f);
+			spaceshipImage.draw(g, radarBackground.getWidth()/2-spaceshipImage.getWidth()/2, radarBackground.getHeight()/2-spaceshipImage.getHeight()/2);
+		}
+		else 
+		{
+			techscreenBackground.draw(g, 0, 0);
+			
+			//Draw the tech level bar
+			calculateTechLevel();
+			int width = OFFSET_X*11;
+			final int barX = techscreenBackground.getWidth()/2-width/2;
+			final int barY = techscreenBackground.getHeight()-OFFSET_Y*2;
+						
+			//Empty bar
+			g.setColor(Color.DARK_GRAY);
+			g.fillRoundRect(barX, barY, width, OFFSET_Y, 15, 15);
+			
+			//Filled bar
+			if(techLevel > maxTechLevel)  g.setColor(Color.RED);
+			else						  g.setColor(Color.BLUE);
+			width = (width/maxTechLevel) * Math.min(techLevel, maxTechLevel);
+			g.fillRoundRect(barX, barY, width, OFFSET_Y, 15, 15);
+			
+			//Text
+			String text = "Tech Level: " + techLevel + "/" + maxTechLevel;
+			GameFont.set(g, FontType.FONT_DESCRIBE, Color.BLACK, 16);
+			g.drawString(text, techscreenBackground.getWidth()/2-GameFont.getWidth(text, g)/2, barY+OFFSET_Y/2);
+			
+			if(techLevel > maxTechLevel) 
+			{
+				g.setColor(Color.RED);
+				text = "TECH LEVEL TOO HIGH";
+				g.drawString(text, techscreenBackground.getWidth()/2-GameFont.getWidth(text, g)/2, barY);
+				buttonList.get(BUTTON_BACK).hide();
+			}
+			else buttonList.get(BUTTON_BACK).show();
+			
+		}
 		
 		//Ship description
-		int x = bg.getWidth() + OFFSET_X;
+		int x = radarBackground.getWidth() + OFFSET_X;
 		int y = OFFSET_Y;
 		
 		//Ship name
@@ -295,8 +359,15 @@ public class Shipyard {
 		}
 	}
 
-	public GameState update() {
+	public GameState update( boolean campaign ) {
         
+		if( campaign ^ campaignMode )
+		{
+			campaignMode ^= true;
+			if( campaignMode ) 		setCampaignMode();
+			else			   		setSkrimishMode();
+		}
+		
         //Check if the player is holding over any mouse buttons
         Iterator<Button> iterator = buttonList.values().iterator();
         while( iterator.hasNext() )
@@ -325,20 +396,32 @@ public class Shipyard {
 					}
 					case BUTTON_UPGRADE:
 					{
+						drawUpgradeScreen = true;
+				        Iterator<Button> hider = buttonList.values().iterator();
+				        while( hider.hasNext() ) hider.next().show();
+				        
+				        if( techList.size() == 1 ) buttonList.get(BUTTON_SPECIAL).hide();
+				        if( !nullifier ) 		   buttonList.get(BUTTON_NULLFIER).hide();
+				        if( !strafing ) 		   buttonList.get(BUTTON_STRAFING).hide();
+				        if( weaponList.size() == 0 )
+				        {
+				        	buttonList.get(BUTTON_PRIMARY).hide();
+				        	buttonList.get(BUTTON_SECONDARY).hide();
+				        }
+				        
+				        buttonList.get(BUTTON_NEXT_SHIP).hide();
 						buttonList.get(BUTTON_UPGRADE).hide();
 						buttonList.get(BUTTON_START_GAME).hide();
-						buttonList.get(BUTTON_BACK).show();
-						buttonList.get(BUTTON_PRIMARY).show();
-						buttonList.get(BUTTON_SECONDARY).show();
 						break;
 					}
 					case BUTTON_BACK:
 					{
+						drawUpgradeScreen = false;
+				        Iterator<Button> hider = buttonList.values().iterator();
+				        while( hider.hasNext() ) hider.next().hide();
+
 						buttonList.get(BUTTON_UPGRADE).show();
 						buttonList.get(BUTTON_START_GAME).show();
-						buttonList.get(BUTTON_BACK).hide();
-						buttonList.get(BUTTON_PRIMARY).hide();
-						buttonList.get(BUTTON_SECONDARY).hide();
 						break;
 					}
 					
@@ -369,11 +452,74 @@ public class Shipyard {
 						
 						break;
 					}
+					
+					case BUTTON_RADAR:
+					{
+						short radar = ship.radarLevel;
+						radar++;
+						if( radar > maxRadarLevel ) radar = 0;
+						ship = new SpaceshipTemplate(ship, ship.primary, ship.secondary, ship.tetiaryWeapon, radar, ship.lifeMax, ship.shieldMax, ship.energyMax);
+						break;
+					}
+					
+					case BUTTON_SPECIAL:
+					{
+						nextSpecialModule();
+						break;
+					}
+
+					case BUTTON_NULLFIER:
+					{
+						if( ship.autoBreaks )
+							ship = new SpaceshipTemplate(ship, ship.canJam, ship.canStrafe, ship.canWarp, ship.interceptor, false, ship.canCloak, ship.canDisguise);  
+						else
+							ship = new SpaceshipTemplate(ship, ship.canJam, ship.canStrafe, ship.canWarp, ship.interceptor, true, ship.canCloak, ship.canDisguise);  
+						break;
+					}
+
+					case BUTTON_STRAFING:
+					{
+						if( ship.canStrafe )
+							ship = new SpaceshipTemplate(ship, ship.canJam, false, ship.canWarp, ship.interceptor, ship.autoBreaks, ship.canCloak, ship.canDisguise);  
+						else
+							ship = new SpaceshipTemplate(ship, ship.canJam, true, ship.canWarp, ship.interceptor, ship.autoBreaks, ship.canCloak, ship.canDisguise);  
+						break;
+					}
 				}
 			}
         }
         
 		return GameState.GAME_SELECT_SHIP;
+	}
+	
+	private void calculateTechLevel() {
+		techLevel = ship.radarLevel*2;
+		if( ship.primary != null ) 			techLevel += ship.primary.techCost;
+		if( ship.secondary != null ) 		techLevel += ship.secondary.techCost;
+		if( ship.tetiaryWeapon != null ) 	techLevel += ship.tetiaryWeapon.techCost;
+		if( ship.autoBreaks ) 				techLevel += 6;
+		if( ship.canStrafe ) 				techLevel += 2;
+		if( ship.canCloak ) 				techLevel += 4;
+		if( ship.canJam ) 					techLevel += 2;
+		if( ship.canWarp ) 					techLevel += 3;
+		if( ship.canDisguise != null ) 		techLevel += 4;
+		if( ship.interceptor != null ) 		techLevel += 5;
+	}
+	
+	private void nextSpecialModule() {
+		
+		//Reset if we are at the end
+		if( !currentTech.hasNext() ) currentTech = techList.iterator();
+		
+		switch( currentTech.next() )
+		{
+			//Disable all special mods
+			default: case NONE: ship = new SpaceshipTemplate(ship, false, ship.canStrafe, false, null, ship.autoBreaks, false, null); break;
+			case WARP:			ship = new SpaceshipTemplate(ship, false, ship.canStrafe, true, null, ship.autoBreaks, false, null);  break;		
+			case CLOAK:			ship = new SpaceshipTemplate(ship, false, ship.canStrafe, false, null, ship.autoBreaks, true, null);  break;
+			case ECM:			ship = new SpaceshipTemplate(ship, true, ship.canStrafe, false, null, ship.autoBreaks, false, null);  break;
+			//TODO: interceptor, disguise
+		}
 	}
 	
 	/**
@@ -404,10 +550,10 @@ public class Shipyard {
 	 */
 	public void setCurrentShip( SpaceshipTemplate ship ) {	
 		//Make it look computerized green
-		image = ship.image.clone();
-		image.setColorTint(0, 255, 0);
-		image.resize(GameEngine.getScreenWidth()/4, GameEngine.getScreenWidth()/4);
-		image.setDirection((float)-Math.PI/2);
+		spaceshipImage = ship.image.clone();
+		spaceshipImage.setColorTint(0, 255, 0);
+		spaceshipImage.resize(GameEngine.getScreenWidth()/4, GameEngine.getScreenWidth()/4);
+		spaceshipImage.setDirection((float)-Math.PI/2);
 		
 		this.ship = ship;
 	}
@@ -427,7 +573,7 @@ public class Shipyard {
 		return produced;
 	}
 
-	public void enableSelection() {
+	private void setSkrimishMode() {
         Iterator<Button> iterator = buttonList.values().iterator();
         while( iterator.hasNext() ) iterator.next().hide();
 		
@@ -436,17 +582,48 @@ public class Shipyard {
 		buttonList.get(BUTTON_NEXT_SHIP).show();
 		
 		//Reset any previous selection
+		resetUpgrades();
 		select = shipList.keySet().iterator();
 		setCurrentShip( shipList.get(select.next()) );		
+		
+		campaignMode = false;
 	}
 	
-	public void disableSelection() {
+	private void setCampaignMode() {
         Iterator<Button> iterator = buttonList.values().iterator();
         while( iterator.hasNext() ) iterator.next().hide();
 
         //These are visible
 		buttonList.get(BUTTON_START_GAME).show();		
 		buttonList.get(BUTTON_UPGRADE).show();
+        
+		//Upgrades
+		resetUpgrades();
+		
+		campaignMode = true;
 	}
-	
+
+	public void addWeapon(Weapon weapon) {
+		weaponList.add(weapon);
+	}
+
+	public void addModule(SpecialModule module) {
+		
+		//These two tech stack with other techs
+		if( module == SpecialModule.STRAFING )
+		{
+			strafing = true; 
+			return;
+		}
+		if( module == SpecialModule.NULLIFIER )
+		{
+			nullifier = true; 
+			return;
+		}
+		
+		//Other tech
+		techList.add(module);
+		currentTech = techList.iterator();
+	}
+
 }

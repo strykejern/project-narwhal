@@ -1,4 +1,4 @@
-[MISSION]: Mission 4 - The new Enemy
+[MISSION]: Mission 5 - The new Enemy
 [DESCRIPTION]: We are are Jello. This is our new home. You are but an obstacle in our great mission. Our masters will be pleased. Prepeare to be... annihilated.
 [MUSIC]: space.ogg
 [VOICE]: mission5b.ogg
@@ -8,10 +8,16 @@
 //Level parameters
 [SIZE]: 5
 [ALWAYS_WIN]: FALSE
+[SET_PLAYER_SHIP]: data/campaign/player2.ship
+
+//Give the player some new technologies to play with
+[ADD_TECH_WEAPON]: shockcannon.wpn
+[ADD_TECH_RADAR]: 3
+[ADD_TECH_MODULE]: CLOAKING
 
 //Spawning points for spaceships
 //      ShipName xSpawn ySpawn aiType Team 
-[SHIP]: data/ships/raptor.ship 1600 1200 PLAYER GOOD
+[PLAYER]: 1600 1200 GOOD
 [SHIP]: data/ships/raptor.ship 1600 1100 CONTROLLER GOOD
 
 [SHIP]: data/ships/spacejelly.ship 4250 4400 BRUTE EVIL

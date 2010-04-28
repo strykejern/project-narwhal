@@ -1,6 +1,6 @@
 //General data
 [NAME]:   Spore
-[FILE]:   sporebase.png
+[FILE]:   data/campaign/sporebase.png
 [SIZE]:   2.00
 [ORGANIC]: TRUE
 [VITAL]: TRUE

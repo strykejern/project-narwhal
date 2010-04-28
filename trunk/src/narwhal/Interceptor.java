@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import gameEngine.GameObject;
 import gameEngine.Input;
-import gameEngine.Log;
 import gameEngine.Sound;
 import gameEngine.Vector;
 import gameEngine.GameEngine;

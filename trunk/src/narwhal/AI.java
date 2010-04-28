@@ -437,8 +437,43 @@ public class AI extends Spaceship {
 			//Slow reaction in patrol mode
 			aiTimer = System.currentTimeMillis() + rand.nextInt(300) + 450;
 		}		
-	}
+	}		
+	
+	private void findPath() {
 		
+		//The stupid AI doesn't avoid planets
+		if( type == aiType.FOOL || type == aiType.PLAYER ) return;
+		
+		//Combat intensive action doesn't need pathfinding
+		if( state == aiState.DISABLED || state == aiState.COMBAT ) return;
+
+		//Go through every entity in the game
+		for(int i = 0; i < entities.size(); i++)
+		{
+			//Only check planets
+			if( !(entities.get(i) instanceof Planet) ) continue;						
+			Planet obstacle = (Planet)entities.get(i);
+			
+			//Skip inactive objects
+			if( !obstacle.active() ) continue;
+									
+			//We are within 500 units of a planet and heading towards it
+			if( facingTarget(obstacle, 600) )
+			{				
+				Vector diff = obstacle.getPosCentre().minus(getPosCentre());
+				keys.mousePos = obstacle.getPosCentre();
+				
+				//Steer to the right
+				if( this.direction > diff.getAngle() ) keys.mousePos.addDirection(900, direction+0.7f);
+
+				//Steer to the left
+				else								   keys.mousePos.addDirection(900, direction-0.7f);
+								
+				return;
+			}
+		}		
+	}
+
 	/**
 	 * JJ> This loops through every active Spaceship in the game to find a valid
 	 *     enemy target that is active and not invisible for us.
@@ -480,41 +515,6 @@ public class AI extends Spaceship {
 		if(target == this ) state = aiState.PATROL;
 		
 		return bestTarget;
-	}
-	
-	private void findPath() {
-		
-		//The stupid AI doesn't avoid planets
-		if( type == aiType.FOOL || type == aiType.PLAYER ) return;
-		
-		//Combat intensive action doesn't need pathfinding
-		if( state == aiState.DISABLED || state == aiState.COMBAT ) return;
-
-		//Go through every entity in the game
-		for(int i = 0; i < entities.size(); i++)
-		{
-			//Only check planets
-			if( !(entities.get(i) instanceof Planet) ) continue;						
-			Planet obstacle = (Planet)entities.get(i);
-			
-			//Skip inactive objects
-			if( !obstacle.active() ) continue;
-									
-			//We are within 500 units of a planet and heading towards it
-			if( facingTarget(obstacle, 600) )
-			{				
-				Vector diff = obstacle.getPosCentre().minus(getPosCentre());
-				keys.mousePos = obstacle.getPosCentre();
-				
-				//Steer to the right
-				if( this.direction > diff.getAngle() ) keys.mousePos.addDirection(900, direction+0.7f);
-
-				//Steer to the left
-				else								   keys.mousePos.addDirection(900, direction-0.7f);
-								
-				return;
-			}
-		}		
 	}
 
 	public Spaceship getHomingTarget( float distance ) {

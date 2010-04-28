@@ -31,9 +31,10 @@ import javax.swing.JPanel;
 
 import narwhal.CampaignScreen;
 import narwhal.Game;
+import narwhal.GameFont;
 import narwhal.MainMenu;
 import narwhal.Shipyard;
-import narwhal.SpaceshipTemplate;
+import narwhal.GameFont.FontType;
 
 
 /**
@@ -58,8 +59,6 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		GAME_PLAYING, 
 		GAME_EXIT,
 		GAME_END_CURRENT,
-		GAME_START_SKIRMISH,
-		GAME_START_CAMPAIGN,
 		GAME_SELECT_SHIP,
 		GAME_CAMPAIGN_SCREEN,
 	}
@@ -80,7 +79,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
        	state = GameState.GAME_MENU;
        	theMenu = new MainMenu(keys);
        	selectShip = new Shipyard(keys);
-       	campaign = new CampaignScreen(keys);
+       	campaign = new CampaignScreen(keys, selectShip);
        	
 		//Thread (do last so that everything above is properly loaded before the main loop begins)
        	Thread mainLoop = new Thread(this);
@@ -105,36 +104,26 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			}
 			catch (Exception e) { Log.warning(e); }
 
+			//TODO: bad change cursor every frame?
 			if(state == GameState.GAME_PLAYING)
-				frame.getContentPane().setCursor(GameEngine.BLANK_CURSOR);	//TODO: bad change cursor every frame?
+				frame.getContentPane().setCursor(GameEngine.BLANK_CURSOR);	
 			else
 		    	frame.getContentPane().setCursor( null );
 				
-			if(state == GameState.GAME_PLAYING)		state = theGame.update();
-			else if(state == GameState.GAME_MENU)	state = theMenu.update( theGame != null );
-			else if(state == GameState.GAME_SELECT_SHIP) state = selectShip.update();
-			else if( state == GameState.GAME_START_SKIRMISH )
+			
+			if(state == GameState.GAME_PLAYING)		
 			{
-				selectShip.enableSelection();
-				theGame = new Game(keys, selectShip, null, 4);
-		       	state = GameState.GAME_SELECT_SHIP;
-			}
-			else if( state == GameState.GAME_START_CAMPAIGN )
-			{
-				selectShip.disableSelection();
-				theGame = new Game( keys, selectShip, campaign.getLevelSpawnList(), campaign.getUniverseSize() );
-				
-				try 
+				//Start a new game if needed
+				if(theGame == null)
 				{
-					selectShip.setCurrentShip( new SpaceshipTemplate(campaign.getPlayerShipName()) );
-				} 
-				catch (Exception e) 
-				{
-					Log.error("Could not start campaign: " + e);
+					if( campaign.active ) theGame = new Game( keys, selectShip, campaign.getLevelSpawnList(), campaign.getUniverseSize() );
+					else				  theGame = new Game( keys, selectShip, null, 4 );
 				}
 				
-		       	state = GameState.GAME_SELECT_SHIP;
+				state = theGame.update();				
 			}
+			else if( state == GameState.GAME_MENU)	      state = theMenu.update( theGame != null );
+			else if( state == GameState.GAME_SELECT_SHIP) state = selectShip.update( campaign.active );
 			else if( state == GameState.GAME_END_CURRENT )
 			{
 		       	theGame = null;
@@ -143,7 +132,13 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			}
 			else if( state == GameState.GAME_CAMPAIGN_SCREEN )
 			{
-				if( !campaign.active ) campaign.loadMission("data/campaign/level1.mission");
+				//Start new campaign
+				if( !campaign.active )
+				{
+					selectShip.resetUpgrades();
+					campaign.loadMission("data/campaign/level1.mission");
+				}
+				
 				state = campaign.update();
 			}
 			
@@ -154,7 +149,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 				state = GameState.GAME_PLAYING;
 			}
 
-			repaint();
+			if(!painting) repaint();
 						
 			try 
 			{
@@ -183,7 +178,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 		//Set quality mode
 		GameEngine.getGraphicsSettings(g);
 				
-		if(state == GameState.GAME_PLAYING)
+		if(state == GameState.GAME_PLAYING && theGame != null)
 		{
 			theGame.draw(g);
 			
@@ -194,6 +189,10 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 				g.setColor( new Color(0, 0, 0, screenFade) );
 				g.fillRect(0, 0, GameEngine.getScreenWidth(), GameEngine.getScreenHeight());
 				
+				GameFont.set(g, FontType.FONT_MENU, new Color(0.05f, 1.0f, 0.05f, 1-screenFade), 42);
+				if( theGame.victory() ) g.drawString("VICTORY", GameEngine.getScreenWidth()/2-GameFont.getWidth("VICTORY", g)/2, GameEngine.getScreenHeight()/2);
+				else					g.drawString("DEFEAT", GameEngine.getScreenWidth()/2-GameFont.getWidth("DEFEAT", g)/2, GameEngine.getScreenHeight()/2);
+				
 				if( screenFade == 1 || keys.escape )
 				{
 					screenFade = 0;
@@ -201,6 +200,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 					//Prepare next level
 					if( campaign.active && ( campaign.alwaysWin || theGame.victory() ) )
 					{
+						theGame = null;
 						state = GameState.GAME_CAMPAIGN_SCREEN;
 						campaign.next();
 					}
@@ -210,9 +210,9 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 				}
 			}
 		}
-		else if(state == GameState.GAME_MENU) 								theMenu.draw(g, theGame);
-		else if(state == GameState.GAME_SELECT_SHIP) 						selectShip.draw(g);
-		else if(state == GameState.GAME_CAMPAIGN_SCREEN) 					campaign.draw(g);
+		else if(state == GameState.GAME_MENU) 					theMenu.draw(g, theGame);
+		else if(state == GameState.GAME_SELECT_SHIP) 			selectShip.draw(g);
+		else if(state == GameState.GAME_CAMPAIGN_SCREEN) 		campaign.draw(g);
 
 		//Done drawing this frame
 		g.dispose();

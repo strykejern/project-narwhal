@@ -1,0 +1,25 @@
+//General data
+[NAME]:   Rombeda/Human Hybrid Mk II
+[FILE]:   data/campaign/terran2.png
+[SIZE]:   1.125
+
+//Defense
+[LIFE]:   100
+[SHIELD]: 90
+[ENERGY]: 350
+
+//Regeneration
+[EREGEN]: 1.25
+[SREGEN]: 0.2
+
+//Weapons
+[PRIMARY]: lasercannon.wpn
+[SECONDARY]: protonmissile.wpn
+
+//Special mods
+[RADAR]: 2
+
+//Engines
+[MAX_SPEED]: 17.5
+[TURN_RATE]: 0.15
+[ACCELERATION]: 0.4

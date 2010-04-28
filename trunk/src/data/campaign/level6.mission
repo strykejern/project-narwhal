@@ -1,0 +1,24 @@
+[MISSION]: Mission 6 - Spore
+[DESCRIPTION]: Jello senses you resist. Jello does not understand. Annihilation is inevitable. When our spore colony reaches earth, you shall all become Jello. Masters will be most pleased then. We will be a.... success.
+[MUSIC]: space.ogg
+[VOICE]: mission6.ogg
+[IMAGE]: data/campaign/jellygod.jpg
+[NEXT]: data/campaign/level7.mission
+
+//Level parameters
+[SIZE]: 5
+[ALWAYS_WIN]: FALSE
+
+//Spawning points for spaceships
+//      ShipName xSpawn ySpawn aiType Team 
+[PLAYER]: 1600 1200 GOOD
+[SHIP]: data/ships/raptor.ship 1600 1100 CONTROLLER GOOD
+[SHIP]: data/ships/raptor.ship 1650 1250 CONTROLLER GOOD
+[SHIP]: data/ships/raptor.ship 1650 1150 CONTROLLER GOOD
+
+[SHIP]: data/ships/spacejelly.ship 4250 4400 BRUTE EVIL
+[SHIP]: data/ships/spacejelly.ship 4550 4500 BRUTE EVIL
+[SHIP]: data/ships/spacejelly.ship 4550 4500 BRUTE EVIL
+[SHIP]: data/ships/spacejelly.ship 4550 4500 BRUTE EVIL
+[SHIP]: data/campaign/sporebase.ship 4550 4500 FOOL EVIL
+[SHIP]: data/campaign/sporebase.ship 4550 4500 FOOL EVIL
