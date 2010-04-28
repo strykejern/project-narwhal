@@ -19,4 +19,4 @@
 [SHIP]: data/ships/juggernaught.ship 1600 1600 BRUTE EVIL
 [SHIP]: data/ships/juggernaught.ship 1600 1700 BRUTE EVIL
 
-[PLANET]: data/planets/mars.png 1200 900
+[PLANET]: data/planets/mars.png 1200 900 550

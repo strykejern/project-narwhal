@@ -18,6 +18,7 @@
 //********************************************************************************************
 package narwhal;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import gameEngine.*;
@@ -31,6 +32,7 @@ public abstract class Spaceship extends GameObject {
 	public boolean cloaked;					//Cloaked if true
 	protected Image2D disguised;			//If disguised != null then we are disguised
 	public final boolean vital;				//If this dies, everyone on the team dies
+	public boolean homed;
 
 	//Engine
 	protected float maxSpeed;
@@ -116,7 +118,6 @@ public abstract class Spaceship extends GameObject {
 	}
 	
 	public void update() {
-				
 		//Do ship regeneration
 		if(cooldown > 0) 	   cooldown--;
 		else
@@ -133,6 +134,9 @@ public abstract class Spaceship extends GameObject {
 			else if( keys.mosButton1 ) 	   			 activateWeapon(primary);
 			else if( keys.mosButton2 )      		 activateWeapon(secondary);
 		}
+		
+		//Activate ECM jamming
+		if( homed && canJam ) jamming();
 		
 		//Allow new parts to fall off
 		if(debrisCooldown > 0) debrisCooldown--;		
@@ -180,7 +184,10 @@ public abstract class Spaceship extends GameObject {
 			
 		//Limit to max speed
 		if (getSpeed().length() > maxSpeed*slow) getSpeed().setLength(maxSpeed);
-				
+		
+		//Assume nothing is homing in on us
+		homed = false;
+		
 		super.update();
 	}
 	
@@ -434,7 +441,7 @@ public abstract class Spaceship extends GameObject {
 		if(energy < maxSpeed) cooldown = 100;
 	}
 	
-	public void jamming() {
+	private void jamming() {
 		if( energy < 100 || cooldown != 0 ) return;
 		energy -= 100;
 		cooldown += 100;
@@ -443,11 +450,19 @@ public abstract class Spaceship extends GameObject {
 		GameEngine.getParticleEngine().spawnParticle("jamming.prt", pos, direction, this, null);
 
 		//Disable enemy homing particles
-		for(int i = 0; i < GameEngine.getParticleEngine().getParticleList().size(); i++)
+		ArrayList<Particle> list = GameEngine.getParticleEngine().getParticleList();
+		for(int i = 0; i < list.size(); i++)
 		{
-			Particle prt = GameEngine.getParticleEngine().getParticleList().get(i);
-			if( prt.requestsDelete() || prt.jammed != prt.team.equals(this.team) ) continue;
-			prt.jammed ^= true;
+			Particle prt = list.get(i);
+			
+			//Only check homing particles
+			if( prt.getParticleTemplate().homing == 0 ) continue;
+			
+			//Max jamming distance
+			if( prt.getPos().minus(this.getPosCentre()).length() > 1500 ) continue;
+			
+			prt.team = "NEUTRAL";
+			prt.jammed = true;
  		}
 		
 		//Iterate through every entity and disable cloaking

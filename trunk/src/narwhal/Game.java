@@ -52,27 +52,26 @@ public class Game {
 			//Randomize spawn position if needed
 			if(spawn.pos == null) spawn.pos = new Vector(rand.nextInt(GameEngine.getScreenWidth()*universeSize), rand.nextInt(GameEngine.getScreenHeight()*universeSize));
 
-			//Spaceship
+			//AI Spaceship
 			if( spawn.type == Type.SPACESHIP )
 			{
-				//Players are handled a little different than AI
-				if( spawn.ai == aiType.PLAYER )
-				{
-					player = shipyard.spawnSelectedShip(spawn.pos, this, aiType.PLAYER, spawn.team);
-					entities.add(player);
-		       		continue;
-				}
-				
 				Spaceship entity;
 				entity = shipyard.spawnShip(new SpaceshipTemplate(spawn.name), spawn.pos, this, spawn.ai, spawn.team);
 		       	entities.add(entity);
+			}
+			
+			//Player Spaceship
+			else if( spawn.type == Type.PLAYER )
+			{
+				player = shipyard.spawnSelectedShip(spawn.pos, this, aiType.PLAYER, spawn.team);
+				entities.add(player);
 			}
 			
 			//Planet
 			else if( spawn.type == Type.PLANET )
 			{
 				Planet entity;
-				entity = new Planet(spawn.pos, seed, spawn.name, this);
+				entity = new Planet(spawn.pos, seed, spawn.name, spawn.size, this);
 		       	entities.add(entity);
 			}
 			
@@ -119,8 +118,19 @@ public class Game {
 		if(spawnList == null)
 		{
 			spawnList = new ArrayList<SpawnPoint>();
-			spawnList.add( new SpawnPoint(Type.SPACESHIP, "data/ships/raptor.ship", null, aiType.CONTROLLER, "EVIL") );
-			spawnList.add( new SpawnPoint(Type.SPACESHIP, "data/ships/pioneer.ship", null, aiType.CONTROLLER, "EVIL") );
+			
+			SpawnPoint spawn = new SpawnPoint(Type.SPACESHIP);
+			spawn.name = "data/ships/raptor.ship";
+			spawn.team = "EVIL";
+			spawn.ai = aiType.CONTROLLER;
+			spawnList.add( spawn );
+			
+			spawn = new SpawnPoint(Type.SPACESHIP);
+			spawn.name = "data/ships/raptor.ship";
+			spawn.team = "EVIL";
+			spawn.ai = aiType.CONTROLLER;
+			spawnList.add( spawn );
+			
 			player = shipyard.spawnSelectedShip(new Vector(200, 200), this, aiType.PLAYER, "GOOD");
 			entities.add(player);
 		}
