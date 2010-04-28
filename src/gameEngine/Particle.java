@@ -104,7 +104,6 @@ public class Particle extends Physics {
 			if( template.homing != 0 && spawner instanceof AI )
 			{
 				homing = ((AI)spawner).getHomingTarget( template.homing );
-				if( homing.hasECM() )	homing.jamming();		//Activate their ECM jammer
 			}
 
 			//Attached to the spawner?
@@ -208,25 +207,28 @@ public class Particle extends Physics {
 			return;
 		}
 		
-		//Jamming effect
-		if( jammed && homing != null )
-		{
-			Random rand = new Random();
-			facing += rand.nextFloat() - 0.5f;
-		}
-				
 		//Are we homing in on a target?
-		else if( homing != null )
-		{
-			float heading = homing.getPosCentre().minus(pos).getAngle() - facing;
-			if 		(heading > Math.PI)  heading = -( ((float)Math.PI*2) - heading);
-			else if (heading < -Math.PI) heading = ( ((float)Math.PI*2) + heading);
-			facing += heading * (velocity/200);
+		if( homing != null )
+		{			
+			//Jamming effect
+			if( jammed )
+			{
+				Random rand = new Random();
+				facing += rand.nextFloat()/4 - rand.nextFloat()/4;
+			}
+					
+			else
+			{
+				float heading = homing.getPosCentre().minus(pos).getAngle() - facing;
+				if 		(heading > Math.PI)  heading = -( ((float)Math.PI*2) - heading);
+				else if (heading < -Math.PI) heading = ( ((float)Math.PI*2) + heading);
+				facing += heading * (velocity/200);				
+				homing.homed = true;
+			}
 			
 			//TODO: now we always face towards the homed one, this might not be what we want
 			angle = facing;
 		}
-
 		facing += facingAdd;
 		facing %= 2 * Math.PI;
 			

@@ -36,17 +36,16 @@ public class Planet extends GameObject {
 		}
 	}
 
-	public Planet(Vector spawnPos, long seed, String name, Game world) {
+	public Planet(Vector spawnPos, long seed, String name, int planetSize, Game world) {
 		super(world);
 		Random rand = new Random(seed);
 		this.world = world;
-				
+
 		//Make it unkillable
 		this.setMaxLife( OBJECT_INVULNERABLE );
-				
+
 		//Make it unique
 		Image2D myImage = new Image2D(name);
-		int planetSize = GameEngine.getScreenWidth()/4 + rand.nextInt(GameEngine.getScreenWidth()/4) + GameEngine.getScreenHeight()/4;
 		if( rand.nextBoolean() ) myImage.horizontalFlip();
 		if( rand.nextBoolean() ) myImage.verticalFlip();
 		myImage.rotate( (float)Math.toRadians(rand.nextInt(360)) );

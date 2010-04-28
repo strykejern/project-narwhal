@@ -105,7 +105,7 @@ public class Background {
 		nebulaList = new ArrayList<Image2D>();
 		for( String fileName : fileList )
 		{
-			Image2D load = new Image2D(fileName, BG_SIZE.getX(), BG_SIZE.getY());
+			Image2D load = new Image2D(fileName, BG_SIZE.getX(), BG_SIZE.getY() );
 			nebulaList.add( load );
 		}
 	}

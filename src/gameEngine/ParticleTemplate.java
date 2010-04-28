@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 
-final class ParticleTemplate {
+public final class ParticleTemplate {
 	
 	static final float RANDOM_ANGLE = Float.MIN_VALUE;
 	

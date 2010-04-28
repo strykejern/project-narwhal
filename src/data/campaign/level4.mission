@@ -25,4 +25,4 @@
 [SHIP]: data/ships/juggernaught.ship 4300 4300 BRUTE EVIL
 [SHIP]: data/ships/pioneer.ship 4200 4100 CONTROLLER EVIL
 
-[PLANET]: data/planets/venus.png 1200 900
+[PLANET]: data/planets/venus.png 1200 900 450

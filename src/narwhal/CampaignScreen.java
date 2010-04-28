@@ -112,15 +112,20 @@ public class CampaignScreen {
 						continue;
 					}
 					
-					//Get AI type
-					aiType ai = aiType.FOOL;
-					if( load[3].equals("CONTROLLER") ) 		ai = aiType.CONTROLLER;
-					else if( load[3].equals("BRUTE") ) 		ai = aiType.BRUTE;
-					else if( load[3].equals("AMBUSHER") ) 	ai = aiType.AMBUSH;
-
 					//Load it and add it to the list
-					Vector pos = new Vector(Integer.parseInt(load[1]), Integer.parseInt(load[2]) );
-					spawnList.add( new SpawnPoint(Type.SPACESHIP, load[0], pos, ai, load[4] ) );	
+					SpawnPoint spawn = new SpawnPoint( Type.SPACESHIP );
+					
+					//Get AI type
+					if( load[3].equals("CONTROLLER") ) 		spawn.ai = aiType.CONTROLLER;
+					else if( load[3].equals("BRUTE") ) 		spawn.ai = aiType.BRUTE;
+					else if( load[3].equals("AMBUSHER") ) 	spawn.ai = aiType.AMBUSH;
+					else spawn.ai = aiType.FOOL;
+					
+					spawn.pos = new Vector(Integer.parseInt(load[1]), Integer.parseInt(load[2]) );
+					spawn.team = load[4];
+					spawn.name = load[0];
+					
+					spawnList.add( spawn );	
 				}
 				else if(line.startsWith("[PLAYER]:"))
 				{
@@ -134,23 +139,30 @@ public class CampaignScreen {
 					}
 					
 					//Load it and add it to the list
-					Vector pos = new Vector(Integer.parseInt(load[0]), Integer.parseInt(load[1]) );
-					spawnList.add( new SpawnPoint(Type.SPACESHIP, null, pos, aiType.PLAYER, load[2] ) );	
+					SpawnPoint spawn = new SpawnPoint(Type.PLAYER);
+					spawn.pos = new Vector(Integer.parseInt(load[0]), Integer.parseInt(load[1]) );
+					spawn.ai = aiType.PLAYER;
+					spawn.team = load[2];
+					spawnList.add( spawn );
 				}
 				else if(line.startsWith("[PLANET]:"))
 				{
 					String[] load = parse(line).split(" ");
 					
 					//Make sure we have all we need first
-					if(load.length != 3)
+					if(load.length != 4)
 					{
 						Log.warning("Could not spawn ship (" + fileName + ") missing data - " + parse(line));
 						continue;
 					}
 					
 					//Load it and add it to the list
-					Vector pos = new Vector(Integer.parseInt(load[1]), Integer.parseInt(load[2]) );
-					spawnList.add( new SpawnPoint(Type.PLANET, load[0], pos, null, null ) );					
+					SpawnPoint spawn = new SpawnPoint(Type.PLANET);
+					spawn.pos = new Vector(Integer.parseInt(load[1]), Integer.parseInt(load[2]) );
+					spawn.name = load[0];
+					spawn.size = Integer.parseInt(load[3]);
+					
+					spawnList.add( spawn );					
 				}
 				else if(line.startsWith("[SIZE]:")) universeSize = Integer.parseInt( parse(line) );
 				else if(line.startsWith("[ALWAYS_WIN]:")) alwaysWin = Boolean.parseBoolean( parse(line) );

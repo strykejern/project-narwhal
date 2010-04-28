@@ -26,6 +26,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
+import narwhal.GameFont.FontType;
+
 //Skeleton class for the UI
 public class HUD {
 
@@ -135,6 +137,12 @@ public class HUD {
 		g.setColor(Color.green);
 		g.drawOval( observer.getInput().mousePos.getX()-5, observer.getInput().mousePos.getY()-5, 10, 10);
 
+		//Is the observer homed in on?
+		if( observer.homed )
+		{
+			GameFont.set(g, FontType.FONT_DESCRIBE, Color.RED, 18);
+			g.drawString("LOCKED ON!", GameEngine.getScreenWidth()/2-GameFont.getWidth("LOCKED ON!", g)/2, GameFont.getHeight(g)+5);
+		}
 	}
 	
 	//JJ> Draws one tracking polygon for the specified spaceship

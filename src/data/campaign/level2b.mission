@@ -21,4 +21,4 @@
 
 [SHIP]: data/campaign/damagedjugger.ship 1200 1600 FOOL EVIL
 
-[PLANET]: data/planets/earth.png 1200 900
+[PLANET]: data/planets/earth.png 1200 900 480

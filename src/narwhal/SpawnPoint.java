@@ -13,6 +13,7 @@ public class SpawnPoint {
 	public enum Type {
 		SPACESHIP,
 		PLANET,
+		PLAYER,
 	}
 	
 	String name;
@@ -20,12 +21,9 @@ public class SpawnPoint {
 	aiType ai;
 	String team;
 	Type type;
+	int size;
 	
-	public SpawnPoint( Type type, String name, Vector pos, aiType ai, String team) {
-		this.name = name;
-		this.pos = pos;
-		this.ai = ai;
-		this.team = team;
+	public SpawnPoint(Type type) {
 		this.type = type;
 	}
 }
