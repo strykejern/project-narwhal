@@ -51,15 +51,13 @@ public class Game {
 		{
 			//Randomize spawn position if needed
 			if(spawn.pos == null) spawn.pos = new Vector(rand.nextInt(GameEngine.getScreenWidth()*universeSize), rand.nextInt(GameEngine.getScreenHeight()*universeSize));
-			
-			
+
 			//Spaceship
 			if( spawn.type == Type.SPACESHIP )
 			{
 				//Players are handled a little different than AI
 				if( spawn.ai == aiType.PLAYER )
 				{
-	   				shipyard.setCurrentShip(new SpaceshipTemplate(spawn.name));
 					player = shipyard.spawnSelectedShip(spawn.pos, this, aiType.PLAYER, spawn.team);
 					entities.add(player);
 		       		continue;
@@ -71,7 +69,7 @@ public class Game {
 			}
 			
 			//Planet
-			if( spawn.type == Type.PLANET )
+			else if( spawn.type == Type.PLANET )
 			{
 				Planet entity;
 				entity = new Planet(spawn.pos, seed, spawn.name, this);
@@ -81,7 +79,7 @@ public class Game {
 		} 
 		catch (Exception e) 
 		{
-			Log.warning("Failed to spawn object: " + spawn.name);
+			Log.warning("Failed to spawn object: " + spawn.name + " - " + e);
 		}
 
 		//Initialize the HUD and bind it to the player's ship
@@ -112,6 +110,7 @@ public class Game {
 
        	// Initialize the entity container
        	entities = new ArrayList<GameObject>();
+       	GameEngine.getParticleEngine().getParticleList().clear();
 		
        	//Game music
        	Music.play( "battle.ogg" );
@@ -120,10 +119,8 @@ public class Game {
 		if(spawnList == null)
 		{
 			spawnList = new ArrayList<SpawnPoint>();
-			spawnList.add( new SpawnPoint(Type.SPACESHIP, "data/ships/juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
-			spawnList.add( new SpawnPoint(Type.SPACESHIP, "data/ships/juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
-			spawnList.add( new SpawnPoint(Type.SPACESHIP, "data/ships/juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
-			spawnList.add( new SpawnPoint(Type.SPACESHIP, "data/ships/juggernaught.ship", null, aiType.CONTROLLER, "EVIL") );
+			spawnList.add( new SpawnPoint(Type.SPACESHIP, "data/ships/raptor.ship", null, aiType.CONTROLLER, "EVIL") );
+			spawnList.add( new SpawnPoint(Type.SPACESHIP, "data/ships/pioneer.ship", null, aiType.CONTROLLER, "EVIL") );
 			player = shipyard.spawnSelectedShip(new Vector(200, 200), this, aiType.PLAYER, "GOOD");
 			entities.add(player);
 		}

@@ -44,7 +44,7 @@ public class Particle extends Physics {
 
 	private Physics attached;			//Who is it attached to?
 	private Spaceship homing;			//Who are we following?
-	private boolean jammed;				//Jammed by ECM
+	public boolean jammed;				//Jammed by ECM
 
 	public String team;					//Who's side is it on?
 	public Weapon weapon;
@@ -77,6 +77,7 @@ public class Particle extends Physics {
 		this.template = template;
 		requestDelete = false;
 		onScreen = false;
+		jammed = false;
 
 		//Randomize our particle image from the list of images our template
 		//has given us. This list could be 1 in size.
@@ -103,6 +104,7 @@ public class Particle extends Physics {
 			if( template.homing != 0 && spawner instanceof AI )
 			{
 				homing = ((AI)spawner).getHomingTarget( template.homing );
+				if( homing.hasECM() )	homing.jamming();		//Activate their ECM jammer
 			}
 
 			//Attached to the spawner?
@@ -196,16 +198,8 @@ public class Particle extends Physics {
 		alpha = Math.min( 1.00f, Math.max(0.00f, alpha+alphaAdd) );
 		angle += angleAdd;
 		size  += sizeAdd;
-		
-		//Jamming effect
-		if( jammed )
-		{
-			Random rand = new Random();
-			angle += rand.nextFloat() - 0.5f;
-		}
 		angle %= 2 * Math.PI;
 
-		
 		//Mark particles for removal when their time is up or when alpha has made it invisible
 		time--;
 		if(time <= 0 || alpha <= 0 || size <= 0 )
@@ -214,9 +208,15 @@ public class Particle extends Physics {
 			return;
 		}
 		
+		//Jamming effect
+		if( jammed && homing != null )
+		{
+			Random rand = new Random();
+			facing += rand.nextFloat() - 0.5f;
+		}
+				
 		//Are we homing in on a target?
-		facing += facingAdd;
-		if( homing != null )
+		else if( homing != null )
 		{
 			float heading = homing.getPosCentre().minus(pos).getAngle() - facing;
 			if 		(heading > Math.PI)  heading = -( ((float)Math.PI*2) - heading);
@@ -226,6 +226,8 @@ public class Particle extends Physics {
 			//TODO: now we always face towards the homed one, this might not be what we want
 			angle = facing;
 		}
+
+		facing += facingAdd;
 		facing %= 2 * Math.PI;
 			
 		//Movement
@@ -304,14 +306,4 @@ public class Particle extends Physics {
 	public Physics getSpawner(){
 		return spawner;
 	}
-
-	public void jamming() {
-		if( homing != null )
-		{
-			homing = null;
-			jammed = true;
-		}
-	}
-
-
 }

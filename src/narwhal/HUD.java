@@ -131,7 +131,7 @@ public class HUD {
 			}
 		}
 		
-		//Draw observer crosshair
+		//Draw observer crosshair (this should be done through Mouse Icon really)
 		g.setColor(Color.green);
 		g.drawOval( observer.getInput().mousePos.getX()-5, observer.getInput().mousePos.getY()-5, 10, 10);
 

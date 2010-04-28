@@ -1,5 +1,6 @@
 //Space mine
 [NAME]: Mine
+[TECH]: 3
 [DAMAGE]: 50
 [COST]: 70
 [PARTICLE]: mine.prt

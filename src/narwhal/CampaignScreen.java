@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import narwhal.AI.aiType;
 import narwhal.GameFont.FontType;
+import narwhal.Shipyard.SpecialModule;
 import narwhal.SpawnPoint.Type;
 
 import gameEngine.*;
@@ -17,9 +18,9 @@ public class CampaignScreen {
 	private Image2D background;
 	private Button begin;
 	private Input key;
+	private Shipyard spawnShip;
 		
 	private ArrayList<SpawnPoint> spawnList;
-	private String playerShip;
 	
 	private String mission;
 	private ArrayList<String> description;
@@ -29,8 +30,9 @@ public class CampaignScreen {
 	public boolean alwaysWin;
 	private int universeSize;
 
-	public CampaignScreen(Input key) {
+	public CampaignScreen(Input key, Shipyard spawnShip) {
 		this.key = key;
+		this.spawnShip = spawnShip;
 		active = false;
 		
 		Vector pos = new Vector(GameEngine.getScreenWidth()-100, GameEngine.getScreenHeight()-100);
@@ -75,10 +77,12 @@ public class CampaignScreen {
 				if( line.startsWith("//") || line.equals("") || line.indexOf("NONE") != -1 ) continue;
 				
 				//Translate line into data
-				if     (line.startsWith("[MISSION]:"))    	  mission = parse(line);
+				if     (line.startsWith("[MISSION]:"))    	  	mission = parse(line);
 				else if(line.startsWith("[DESCRIPTION]:"))
 				{
 					String text = parse(line);
+					
+					//This splits the long string into multiple strings
 					while( text.length() > 36 )
 					{
 						int c = 36;
@@ -88,14 +92,15 @@ public class CampaignScreen {
 					}
 					description.add(text.trim());
 				}
-				else if(line.startsWith("[VOICE]:")) narrator = new Sound( parse(line) );
-				else if(line.startsWith("[MUSIC]:")) Music.play( parse(line ) );
+				else if(line.startsWith("[SET_PLAYER_SHIP]:")) 	spawnShip.setCurrentShip( new SpaceshipTemplate( parse(line) ) );
+				else if(line.startsWith("[VOICE]:")) 			narrator = new Sound( parse(line) );
+				else if(line.startsWith("[MUSIC]:")) 			Music.play( parse(line ) );
 				else if(line.startsWith("[IMAGE]:"))
 				{
 					background = new Image2D(parse(line));
 					background.resize(GameEngine.getScreenWidth(), GameEngine.getScreenHeight());
 				}
-				else if(line.startsWith("[NEXT]:")) nextMission = parse(line);
+				else if(line.startsWith("[NEXT]:")) 			nextMission = parse(line);
 				else if(line.startsWith("[SHIP]:"))
 				{
 					String[] load = parse(line).split(" ");
@@ -109,18 +114,28 @@ public class CampaignScreen {
 					
 					//Get AI type
 					aiType ai = aiType.FOOL;
-					if( load[3].equals("PLAYER") ) 			
-					{
-						ai = aiType.PLAYER;
-						playerShip = load[0];
-					}
-					else if( load[3].equals("CONTROLLER") ) ai = aiType.CONTROLLER;
+					if( load[3].equals("CONTROLLER") ) 		ai = aiType.CONTROLLER;
 					else if( load[3].equals("BRUTE") ) 		ai = aiType.BRUTE;
 					else if( load[3].equals("AMBUSHER") ) 	ai = aiType.AMBUSH;
 
 					//Load it and add it to the list
 					Vector pos = new Vector(Integer.parseInt(load[1]), Integer.parseInt(load[2]) );
 					spawnList.add( new SpawnPoint(Type.SPACESHIP, load[0], pos, ai, load[4] ) );	
+				}
+				else if(line.startsWith("[PLAYER]:"))
+				{
+					String[] load = parse(line).split(" ");
+					
+					//Make sure we have all we need first
+					if(load.length != 3)
+					{
+						Log.warning("Could not spawn player (" + fileName + ") missing data - " + parse(line));
+						continue;
+					}
+					
+					//Load it and add it to the list
+					Vector pos = new Vector(Integer.parseInt(load[0]), Integer.parseInt(load[1]) );
+					spawnList.add( new SpawnPoint(Type.SPACESHIP, null, pos, aiType.PLAYER, load[2] ) );	
 				}
 				else if(line.startsWith("[PLANET]:"))
 				{
@@ -139,7 +154,28 @@ public class CampaignScreen {
 				}
 				else if(line.startsWith("[SIZE]:")) universeSize = Integer.parseInt( parse(line) );
 				else if(line.startsWith("[ALWAYS_WIN]:")) alwaysWin = Boolean.parseBoolean( parse(line) );
-				
+
+				else if(line.startsWith("[ADD_TECH_WEAPON]:"))
+				{
+					String wpn = parse(line);
+					if( ResourceMananger.fileExists("data/weapons/" + wpn) )
+						spawnShip.addWeapon( new Weapon( wpn ) );
+					else Log.warning("Mission " + fileName + " - Invalid weapon: " + wpn);
+				}
+				else if(line.startsWith("[ADD_TECH_RADAR]:")) spawnShip.maxRadarLevel = Short.parseShort(parse(line));
+				else if(line.startsWith("[ADD_TECH_MODULE]:")) 
+				{
+					String module = parse(line);
+					if( module.equals("ECM") ) spawnShip.addModule( SpecialModule.ECM );
+					else if( module.equals("CLOAKING") ) spawnShip.addModule( SpecialModule.CLOAK );
+					else if( module.equals("DISGUISE") ) spawnShip.addModule( SpecialModule.DISGUISE );
+					else if( module.equals("STRAFING") ) spawnShip.addModule( SpecialModule.STRAFING );
+					else if( module.equals("WARP") ) spawnShip.addModule( SpecialModule.WARP );
+					else if( module.equals("NULLIFIER") ) spawnShip.addModule( SpecialModule.NULLIFIER );
+					else if( module.equals("TETIARY") ) spawnShip.addModule( SpecialModule.TETIARY );
+					else if( module.equals("INTERCEPTOR") ) spawnShip.addModule( SpecialModule.INTERCEPTOR );
+				}
+
 				//Could not figure it out
 				else	Log.warning("Loading mission " + fileName + " - unrecognized line: " + line);
 			}			
@@ -188,13 +224,14 @@ public class CampaignScreen {
 			narrator.silence();						//Shut up that voice
 			
 			if( spawnList.size() == 0  ) loadMission(nextMission);
-			else return GameState.GAME_START_CAMPAIGN;
+			else return GameState.GAME_SELECT_SHIP;
 		}
 
 		return GameState.GAME_CAMPAIGN_SCREEN;
 	}
 	
 	public void next(){
+		spawnShip.maxTechLevel += 2;
 		loadMission(nextMission);
 	}
 	
@@ -214,9 +251,5 @@ public class CampaignScreen {
 
 	public int getUniverseSize(){
 		return universeSize;
-	}
-
-	public String getPlayerShipName(){
-		return playerShip;
 	}
 }

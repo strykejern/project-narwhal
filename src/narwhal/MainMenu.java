@@ -200,7 +200,7 @@ public class MainMenu {
 				    	//Play selection music
 				       	Music.play( "space.ogg" );
 				       	
-						return GameWindow.GameState.GAME_START_SKIRMISH;
+						return GameWindow.GameState.GAME_SELECT_SHIP;
 					}
 					
 					case BUTTON_START_CAMPAIGN:
@@ -331,20 +331,23 @@ public class MainMenu {
 		if(header.getAlpha() != 1) 	header.setAlpha( header.getAlpha() + 0.0075f );
 		
 		//Update background effects
-		int nextBackground = currentBackground + 1;
-		if( nextBackground >= background.size() ) nextBackground = 0;
-		Image2D currentBg = background.get(currentBackground);
-		Image2D nextBg = background.get(nextBackground);
-		
-		//Fade out the current one and fade in the new one
-		currentBg.setAlpha ( currentBg.getAlpha() - 0.00125f );
-		nextBg.setAlpha    ( nextBg.getAlpha() + 0.00125f );
-		
-		//We have reached a new background
-		if( currentBg.getAlpha() == 0 )
+		if( !gameActive )
 		{
-			currentBg.horizontalFlip();		//This little trick makes images seem more random
-			currentBackground = nextBackground;
+			int nextBackground = currentBackground + 1;
+			if( nextBackground >= background.size() ) nextBackground = 0;
+			Image2D currentBg = background.get(currentBackground);
+			Image2D nextBg = background.get(nextBackground);
+			
+			//Fade out the current one and fade in the new one
+			currentBg.setAlpha ( currentBg.getAlpha() - 0.00125f );
+			nextBg.setAlpha    ( nextBg.getAlpha() + 0.00125f );
+			
+			//We have reached a new background
+			if( currentBg.getAlpha() == 0 )
+			{
+				currentBg.horizontalFlip();		//This little trick makes images seem more random
+				currentBackground = nextBackground;
+			}
 		}
 		
 		return GameState.GAME_MENU;

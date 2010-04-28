@@ -61,7 +61,7 @@ public abstract class Spaceship extends GameObject {
 	protected boolean canWarp;
 	protected Weapon tetiaryWeapon;
 	protected boolean canCloak;
-	protected boolean canJam;
+	private boolean canJam;
 
 	public Spaceship( SpaceshipTemplate blueprint, String team, Game world ) {		
 		super(world);
@@ -344,7 +344,7 @@ public abstract class Spaceship extends GameObject {
 		else if( canDisguise != null ) disguise();
 		else if( canWarp ) warp();
 		else if( canCloak ) cloak();
-		else if( canJam ) jamming();
+		else if( hasECM() ) jamming();
 		else activateWeapon(tetiaryWeapon);
 	}
 
@@ -434,14 +434,22 @@ public abstract class Spaceship extends GameObject {
 		if(energy < maxSpeed) cooldown = 100;
 	}
 	
-	private void jamming(){
-		if( energy <= 100 || cooldown != 0 ) return;
+	public void jamming() {
+		if( energy < 100 || cooldown != 0 ) return;
 		energy -= 100;
 		cooldown += 100;
 
 		//Jamming effect
 		GameEngine.getParticleEngine().spawnParticle("jamming.prt", pos, direction, this, null);
 
+		//Disable enemy homing particles
+		for(int i = 0; i < GameEngine.getParticleEngine().getParticleList().size(); i++)
+		{
+			Particle prt = GameEngine.getParticleEngine().getParticleList().get(i);
+			if( prt.requestsDelete() || prt.jammed != prt.team.equals(this.team) ) continue;
+			prt.jammed ^= true;
+ 		}
+		
 		//Iterate through every entity and disable cloaking
 		for(int i = 0; i < world.getEntityList().size(); i++)
 		{
@@ -449,7 +457,7 @@ public abstract class Spaceship extends GameObject {
 			if( !(object instanceof Spaceship) ) continue;
 			
 			//Jamming distance
-			if( this.getDistanceTo(object) > 1200 ) continue;
+			if( this.getDistanceTo(object) > 1500 ) continue;
 			
 			Spaceship target = (Spaceship)object;
 			if( !target.cloaked || target.team.equals(this.team) ) continue;
@@ -460,20 +468,6 @@ public abstract class Spaceship extends GameObject {
 			
 			//TODO: disable radar?
 		}
-		
-		//Disable homing particles
-		for(int i = 0; i < GameEngine.getParticleEngine().getParticleList().size(); i++)
-		{
-			Particle prt = GameEngine.getParticleEngine().getParticleList().get(i);
-			if( prt.requestsDelete() ) continue;
-
-			//Jamming distance
-			float dist = this.pos.minus(prt.getPos()).length();
-			if( dist > 1200 ) continue;
-
-			prt.jamming();
- 		}
-	
 	}
 	
 	private void cloak() {
@@ -486,5 +480,9 @@ public abstract class Spaceship extends GameObject {
 
 	public Input getInput() {
 		return keys;
+	}
+
+	public boolean hasECM() {
+		return canJam;
 	}
 }

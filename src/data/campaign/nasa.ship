@@ -1,6 +1,6 @@
 //Special campaign ship
 [NAME]:   NASA Discovery Space Shuttle
-[FILE]:   nasa.png
+[FILE]:   data/campaign/nasa.png
 [SIZE]:   1.00
 
 //Defense

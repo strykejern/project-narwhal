@@ -11,6 +11,7 @@ public class Weapon {
 	public float damage;
 	public int cost;
 	public int cooldown;
+	public int techCost;
 	public String particle;
 	public String name;
 	
@@ -42,6 +43,7 @@ public class Weapon {
 				else if(line.startsWith("[DAMAGE]:"))  		damage = Float.parseFloat(parse(line));
 				else if(line.startsWith("[COST]:")) 	    cost = Integer.parseInt(parse(line));
 				else if(line.startsWith("[PARTICLE]:"))  	particle = parse(line);
+				else if(line.startsWith("[TECH]:"))  	    techCost = Integer.parseInt(parse(line));
 				else if(line.startsWith("[COOLDOWN]:"))	    cooldown = Integer.parseInt(parse(line));
 				else if(line.startsWith("[SHIELD_MUL]:"))  	
 				{

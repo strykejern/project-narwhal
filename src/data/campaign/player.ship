@@ -1,0 +1,25 @@
+//General data
+[NAME]:   Rombeda/Human Hybrid
+[FILE]:   data/campaign/terran.png
+[SIZE]:   1.125
+
+//Defense
+[LIFE]:   75
+[SHIELD]: 60
+[ENERGY]: 325
+
+//Regeneration
+[EREGEN]: 1.2
+[SREGEN]: 0.18
+
+//Weapons
+[PRIMARY]: gatlinggun.wpn
+[SECONDARY]: NONE
+
+//Special mods
+[RADAR]: 1
+
+//Engines
+[MAX_SPEED]: 15
+[TURN_RATE]: 0.12
+[ACCELERATION]: 0.35

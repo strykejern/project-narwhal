@@ -1,5 +1,6 @@
-//Laser cannon Weapon
+//Deadly ray Weapon
 [NAME]: Death Ray
+[TECH]: 4
 [DAMAGE]: 35
 [COST]: 40
 [PARTICLE]: deathray.prt

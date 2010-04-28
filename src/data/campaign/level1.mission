@@ -7,11 +7,12 @@
 
 //Player will win this battle, no matter what happens
 [ALWAYS_WIN]: TRUE
+[SET_PLAYER_SHIP]: data/campaign/nasa.ship
 [SIZE]: 3
 
 //Spawning points for spaceships
 //      ShipName xSpawn ySpawn aiType Team 
-[SHIP]: data/campaign/nasa.ship 600 800 PLAYER GOOD
+[PLAYER]: 600 800 GOOD
 
 [SHIP]: data/ships/juggernaught.ship 1600 1800 BRUTE EVIL
 [SHIP]: data/ships/juggernaught.ship 1600 1900 BRUTE EVIL

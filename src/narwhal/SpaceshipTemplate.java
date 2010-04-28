@@ -75,6 +75,8 @@ public class SpaceshipTemplate {
 		float maxSpeed = 15f;
 		float acceleration = 0.25f;
 		
+		if( !ResourceMananger.fileExists(fileName) ) throw new Exception("File not found: " + fileName);
+		
 		BufferedReader parse = new BufferedReader(
 				new InputStreamReader(
 				ResourceMananger.getInputStream(fileName)));
@@ -92,7 +94,13 @@ public class SpaceshipTemplate {
 			
 			//Translate line into data
 			if     (line.startsWith("[NAME]:"))    name = parse(line);
-			else if(line.startsWith("[FILE]:"))    image = new Image2D("/data/ships/" + parse(line));
+			else if(line.startsWith("[FILE]:"))
+			{
+				//Figure out if the path is absolute or not
+				String path = parse(line);				
+				if(path.indexOf('/') != -1) image = new Image2D(path);
+				else image = new Image2D("/data/ships/" + path);
+			}
 			else if(line.startsWith("[SIZE]:"))    sizeMul = Float.parseFloat(parse(line));
 			else if(line.startsWith("[VITAL]:"))   vital = Boolean.parseBoolean(parse(line));
 			
@@ -197,6 +205,37 @@ public class SpaceshipTemplate {
 		this.maxSpeed = base.maxSpeed;
 		this.acceleration = base.acceleration;
 	}
+
+public SpaceshipTemplate( SpaceshipTemplate base, boolean ecm, boolean strafe, boolean warp, SpaceshipTemplate interceptor, boolean nullifier, boolean cloak, Sound disguise ) {
+
+	this.image = base.image;
+	this.vital = base.vital;
+	this.organic = base.organic;
+	this.name = base.name;
+	
+	this.lifeMax = base.lifeMax;
+	this.shieldMax = base.shieldMax;
+	this.energyMax = base.energyMax;
+	this.shieldRegen = base.shieldRegen;
+	this.energyRegen = base.energyRegen;
+	this.primary = base.primary;
+	this.secondary = base.secondary;
+	this.tetiaryWeapon = base.tetiaryWeapon;
+	this.radarLevel = base.radarLevel;
+	
+	this.turnRate = base.turnRate;
+	this.maxSpeed = base.maxSpeed;
+	this.acceleration = base.acceleration;
+
+	//These are the only changes that are actually made
+	this.autoBreaks = nullifier;
+	this.interceptor = interceptor;
+	this.canDisguise = disguise;
+	this.canWarp = warp;
+	this.canStrafe = strafe;
+	this.canCloak = cloak;
+	this.canJam = ecm;
+}
 
 	/**
 	 * JJ> This is simply to make parsing easier. Gets whatever is behind the colon and trims all
