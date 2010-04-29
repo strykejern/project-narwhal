@@ -4,8 +4,8 @@
 [SIZE]:   1.125
 
 //Defense
-[LIFE]:   75
-[SHIELD]: 60
+[LIFE]:   100
+[SHIELD]: 75
 [ENERGY]: 325
 
 //Regeneration

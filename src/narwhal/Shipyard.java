@@ -604,10 +604,12 @@ public class Shipyard {
 	}
 
 	public void addWeapon(Weapon weapon) {
+		if( weaponList.contains(weapon) ) return;
 		weaponList.add(weapon);
 	}
 
 	public void addModule(SpecialModule module) {
+		if( techList.contains(module) ) return;
 		
 		//These two tech stack with other techs
 		if( module == SpecialModule.STRAFING )

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import narwhal.AI.aiType;
+import narwhal.GameFont.FontType;
 import narwhal.SpawnPoint.Type;
 
 
@@ -114,7 +115,7 @@ public class Game {
        	//Game music
        	Music.play( "battle.ogg" );
 
-		//TODO remove this here
+		//TODO remove this here, make custom skirmish
 		if(spawnList == null)
 		{
 			spawnList = new ArrayList<SpawnPoint>();
@@ -149,10 +150,10 @@ public class Game {
 	
 	public GameWindow.GameState update(){
 		
-		if(keys.escape) return GameState.GAME_MENU;
+		if(keys.escape && (player.active() || !victory) ) return GameState.GAME_MENU;
 		
 		// Update all entities
-		victory = true;
+		boolean setVictory = true;
 		for (int i = 0; i < entities.size(); i++)
 		{
 			GameObject entity = entities.get(i);
@@ -163,14 +164,15 @@ public class Game {
 				entities.remove(entity);
 				continue;
 			}
-			else if( victory && entity instanceof Spaceship )
+			else if( setVictory && entity instanceof Spaceship )
 			{
-				victory = player.team.equals( ((Spaceship)entity).team );
+				setVictory = player.team.equals( ((Spaceship)entity).team );
 			}
 			
 			//Update
 			entity.update();
 		}
+		victory = setVictory;
 		
 		//Collision detection
 		for(int i = 0; i < entities.size(); i++ )
@@ -222,9 +224,12 @@ public class Game {
 		hud.draw(g);
 				
 		//Debug info
-		g.setColor(Color.white);
-		g.drawString("Number of particles: " + GameEngine.getParticleEngine().getParticleCount(), 5, 50);
-		g.drawString("Number of threads: " + Thread.activeCount() + " (" + Sound.getActiveSounds() + " sound)", 5, 70);
+		if( GameEngine.getConfig().debugMode )
+		{
+			GameFont.set(g, FontType.FONT_NORMAL, Color.WHITE, 14);
+			g.drawString("Number of particles: " + GameEngine.getParticleEngine().getParticleCount(), 5, 50);
+			g.drawString("Number of threads: " + Thread.activeCount() + " (" + Sound.getActiveSounds() + " sound)", 5, 70);
+		}
 	}
 
 	public boolean isEnded() {

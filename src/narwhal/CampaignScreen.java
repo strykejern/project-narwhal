@@ -25,15 +25,18 @@ public class CampaignScreen {
 	private String mission;
 	private ArrayList<String> description;
 	private Sound narrator;
-	private String nextMission;
 	public boolean active;
-	public boolean alwaysWin;
+	private boolean alwaysWin;
 	private int universeSize;
+
+	private String nextMission;
+	private boolean doNarrator;
 
 	public CampaignScreen(Input key, Shipyard spawnShip) {
 		this.key = key;
 		this.spawnShip = spawnShip;
 		active = false;
+		doNarrator = true;
 		
 		Vector pos = new Vector(GameEngine.getScreenWidth()-100, GameEngine.getScreenHeight()-100);
 		begin = new Button(pos, new Vector(150, 100 ), "Begin", 0, pos);
@@ -199,7 +202,6 @@ public class CampaignScreen {
 		
 		if( spawnList.size() == 0 ) begin.setText("Continue");
 		else						begin.setText("Start");
-		if( narrator != null ) 		narrator.playFull(1.25f);
 		active = true;
 	}
 	
@@ -225,9 +227,13 @@ public class CampaignScreen {
 			y += GameFont.getHeight(g);
 		}
 	}
-
 	public GameState update() {
 		begin.update();
+		if( narrator != null && doNarrator ) 
+		{
+			doNarrator = false;
+			narrator.playFull(1.25f);
+		}
 
 		//The next button
 		if( begin.mouseOver(key) && key.mosButton1 ) 
@@ -235,8 +241,12 @@ public class CampaignScreen {
 			key.mosButton1 = false;
 			narrator.silence();						//Shut up that voice
 			
-			if( spawnList.size() == 0  ) loadMission(nextMission);
-			else return GameState.GAME_SELECT_SHIP;
+			if( spawnList.size() == 0  ) 
+			{
+				loadMission(nextMission);
+				doNarrator = true;
+			}
+			else 						 return GameState.GAME_SELECT_SHIP;
 		}
 
 		return GameState.GAME_CAMPAIGN_SCREEN;
@@ -245,6 +255,7 @@ public class CampaignScreen {
 	public void next(){
 		spawnShip.maxTechLevel += 2;
 		loadMission(nextMission);
+		doNarrator = true;
 	}
 	
 	/**
@@ -263,5 +274,9 @@ public class CampaignScreen {
 
 	public int getUniverseSize(){
 		return universeSize;
+	}
+	
+	public boolean alwaysWin(){
+		return alwaysWin;
 	}
 }
