@@ -1,7 +1,7 @@
 [MISSION]: Mission 3 - Retribution
 [DESCRIPTION]: Marvelous! Splendid! Stupendous! You have proven yourself worthy earthling. But the Juggernaught won't be repelled by this. Destroy their mothership and they will be driven back. Join us in a joint attack operation and we shall vanquish this evil!
 [MUSIC]: space.ogg
-[VOICE]: mission3.ogg
+[VOICE]: data/campaign/mission3.ogg
 [IMAGE]: data/campaign/rombeda.jpg
 [NEXT]: data/campaign/level4.mission
 
@@ -12,6 +12,7 @@
 //Give the player some new technologies to play with
 [ADD_TECH_WEAPON]: protonmissile.wpn
 [ADD_TECH_MODULE]: WARP
+[ADD_TECH_MODULE]: TETIARY
 [ADD_TECH_RADAR]: 2
 
 //Spawning points for spaceships

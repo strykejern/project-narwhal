@@ -50,6 +50,13 @@ public class Interceptor extends Spaceship {
 
 	public void update() {
 		
+		//Destroyed if master isn't alive
+		if( !master.active() )
+		{
+			this.destroy();
+			return;
+		}
+		
 		//We need to return to our master if fuel runs out
 		fuel--;
 		if( outOfFuel() )

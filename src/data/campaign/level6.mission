@@ -1,24 +1,29 @@
 [MISSION]: Mission 6 - Spore
 [DESCRIPTION]: Jello senses you resist. Jello does not understand. Annihilation is inevitable. When our spore colony reaches earth, you shall all become Jello. Masters will be most pleased then. We will be a.... success.
 [MUSIC]: space.ogg
-[VOICE]: mission6.ogg
+[VOICE]: data/campaign/mission6.ogg
 [IMAGE]: data/campaign/jellygod.jpg
 [NEXT]: data/campaign/level7.mission
 
 //Level parameters
-[SIZE]: 5
+[SIZE]: 6
 [ALWAYS_WIN]: FALSE
+
+//Give the player some new technologies to play with
+[ADD_TECH_WEAPON]: plasmablaster.wpn
 
 //Spawning points for spaceships
 //      ShipName xSpawn ySpawn aiType Team 
 [PLAYER]: 1600 1200 GOOD
-[SHIP]: data/ships/terran.ship 1600 1100 CONTROLLER GOOD
-[SHIP]: data/ships/terran.ship 1650 1250 CONTROLLER GOOD
-[SHIP]: data/ships/terran.ship 1650 1150 CONTROLLER GOOD
+[SHIP]: data/campaign/terran.ship 1600 1100 CONTROLLER GOOD
+[SHIP]: data/campaign/terran.ship 1650 1250 CONTROLLER GOOD
+[SHIP]: data/campaign/terran.ship 1650 1150 CONTROLLER GOOD
 
 [SHIP]: data/ships/spacejelly.ship 4250 4400 BRUTE EVIL
-[SHIP]: data/ships/spacejelly.ship 4550 4500 BRUTE EVIL
-[SHIP]: data/ships/spacejelly.ship 4550 4500 BRUTE EVIL
-[SHIP]: data/ships/spacejelly.ship 4550 4500 BRUTE EVIL
+[SHIP]: data/ships/spacejelly.ship 4550 4100 BRUTE EVIL
+[SHIP]: data/ships/spacejelly.ship 4350 4200 BRUTE EVIL
+[SHIP]: data/ships/spacejelly.ship 4750 4300 BRUTE EVIL
+[SHIP]: data/ships/spacejelly.ship 4250 4500 BRUTE EVIL
+[SHIP]: data/ships/spacejelly.ship 4150 4600 BRUTE EVIL
 [SHIP]: data/campaign/sporebase.ship 4550 4500 FOOL EVIL
 [SHIP]: data/campaign/sporebase.ship 4550 4500 FOOL EVIL

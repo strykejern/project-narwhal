@@ -1,6 +1,6 @@
 [MISSION]: Mission 2 - Filthy Humans
 [DESCRIPTION]: Attention all earthlings! We are the Juggernaught. We have destroyed your puny human vessel. We cleanse. You are filth. Prepare to be cleansed.
 [MUSIC]: menu.ogg
-[VOICE]: mission2.ogg
+[VOICE]: data/campaign/mission2.ogg
 [IMAGE]: data/campaign/juggernaught.jpg
 [NEXT]: data/campaign/level2b.mission
