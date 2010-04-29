@@ -1,0 +1,23 @@
+[MISSION]: Mission 7 - Andromeda!
+[DESCRIPTION]: You have ruined our experiment. The Andromeda is not pleased. We are not like the other aliens you have encountered. Enjoy your genocide.
+[MUSIC]: andromeda.ogg
+[VOICE]: data/campaign/mission7.ogg
+[IMAGE]: data/campaign/andromeda.png
+[NEXT]: data/campaign/level8.mission
+
+//Level parameters
+[SIZE]: 4
+[ALWAYS_WIN]: FALSE
+
+//Give the player some new technologies to play with
+[ADD_TECH_MODULE]: NULLIFIER
+
+//Spawning points for spaceships
+//      ShipName xSpawn ySpawn aiType Team 
+[PLAYER]: 200 300 GOOD
+
+[SHIP]: data/ships/andromeda.ship 2250 1400 CONTROLLER EVIL
+[SHIP]: data/ships/andromeda.ship 2250 1000 CONTROLLER EVIL
+[SHIP]: data/ships/andromeda.ship 2250 1100 CONTROLLER EVIL
+
+[PLANET]: data/planets/blue.png 1000 1000 650

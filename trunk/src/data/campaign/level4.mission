@@ -1,7 +1,7 @@
 [MISSION]: Mission 4 - Ultimate Showdown
 [DESCRIPTION]: Your cooperation has been invaluable earthling. We will now strike at their mothership and drive the Juggernaughts away from your solar system. We suggest you equip your ship with a ECM jammer that will jam the motherships deadly proton missiles.
 [MUSIC]: space.ogg
-[VOICE]: mission4.ogg
+[VOICE]: data/campaign/mission4.ogg
 [IMAGE]: data/campaign/rombeda.jpg
 [NEXT]: data/campaign/level5.mission
 

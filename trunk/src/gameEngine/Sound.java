@@ -61,7 +61,10 @@ public class Sound
 	 */
 	public Sound( String fileName ) {
 		
-		file = "/data/sounds/" + fileName;
+		//Figure out if the path is absolute or not
+		if( fileName.indexOf('/') == -1 ) file = "/data/sounds/" + fileName;
+		else 							  file = fileName;
+		
 		if( !ResourceMananger.fileExists( file ) )
 		{
 			Log.warning("Sound file does not exist: " + file);

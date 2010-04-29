@@ -301,25 +301,25 @@ public abstract class Spaceship extends GameObject {
 			GameEngine.getParticleEngine().spawnParticle( "wreck.prt", getPosCentre(), direction, this, null );
 		}
 		else for(int i = 0; i < 4; i++) GameEngine.getParticleEngine().spawnParticle( "gib.prt", getPosCentre(), direction, this, null );
-
-		super.destroy();
 		
 		//This kills everyone on our team as well
 		if( vital )
 		{
-			for(int i = 0; i < world.getEntityList().size(); i++)
+			for(int i = 0; world != null && i < world.getEntityList().size(); i++)
 			{
 				//Only destroy spaceship
 				GameObject object = world.getEntityList().get(i);
-				if( !(object instanceof Spaceship) ) continue;
+				if( !object.active() || object == this || !(object instanceof Spaceship) ) continue;
 				
 				//Only destroy allies
 				Spaceship ally = (Spaceship) object;
 				if( !ally.team.equals(this.team) ) continue;
 				
-				ally.destroy();
+				ally.remove();
 			}
 		}
+
+		super.destroy();
 	}
 		
 	/**

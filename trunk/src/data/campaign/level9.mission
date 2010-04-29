@@ -1,0 +1,21 @@
+[MISSION]: Mission 9 - Final Showdown
+[DESCRIPTION]: We will not concede humans. This ultimate battle will decide both our fates. Everything will be decided in this battle. We will send everything. -Everything-.
+[MUSIC]: andromeda.ogg
+[VOICE]: data/campaign/mission9.ogg
+[IMAGE]: data/backgrounds/bg1.jpg
+[NEXT]: data/campaign/credits.mission
+
+//Level parameters
+[SIZE]: 4
+[ALWAYS_WIN]: FALSE
+
+//Give the player some new technologies to play with
+//TODO
+
+//Spawning points for spaceships
+//      ShipName xSpawn ySpawn aiType Team 
+[PLAYER]: 200 300 GOOD
+
+[SHIP]: data/ships/xenon.ship 2250 1400 CONTROLLER EVIL
+
+[PLANET]: data/planets/mineral.png 1000 1000 520

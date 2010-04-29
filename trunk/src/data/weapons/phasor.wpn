@@ -2,7 +2,7 @@
 [NAME]: Phasors
 [TECH]: 4
 [DAMAGE]: 35
-[COST]: 40
+[COST]: 45
 [PARTICLE]: phasor.prt
 [COOLDOWN]: 25
 [SHIELD_MUL]: 125%

@@ -199,7 +199,6 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 					{
 						if ( campaign.alwaysWin() || theGame.victory() )
 						{
-							Log.message("NEXT MISSION");
 							state = GameState.GAME_CAMPAIGN_SCREEN;
 							campaign.next();
 						}

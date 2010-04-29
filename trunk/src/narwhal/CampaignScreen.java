@@ -239,7 +239,7 @@ public class CampaignScreen {
 		if( begin.mouseOver(key) && key.mosButton1 ) 
 		{
 			key.mosButton1 = false;
-			narrator.silence();						//Shut up that voice
+			if(narrator != null) narrator.silence();						//Shut up that voice
 			
 			if( spawnList.size() == 0  ) 
 			{
