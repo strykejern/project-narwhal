@@ -12,9 +12,9 @@
 //Spawning points for spaceships
 //      ShipName xSpawn ySpawn aiType Team 
 [PLAYER]: 1600 1200 GOOD
-[SHIP]: data/ships/raptor.ship 1600 1100 CONTROLLER GOOD
-[SHIP]: data/ships/raptor.ship 1650 1250 CONTROLLER GOOD
-[SHIP]: data/ships/raptor.ship 1650 1150 CONTROLLER GOOD
+[SHIP]: data/ships/terran.ship 1600 1100 CONTROLLER GOOD
+[SHIP]: data/ships/terran.ship 1650 1250 CONTROLLER GOOD
+[SHIP]: data/ships/terran.ship 1650 1150 CONTROLLER GOOD
 
 [SHIP]: data/ships/spacejelly.ship 4250 4400 BRUTE EVIL
 [SHIP]: data/ships/spacejelly.ship 4550 4500 BRUTE EVIL

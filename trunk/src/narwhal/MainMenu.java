@@ -34,7 +34,7 @@ public class MainMenu {
 	static final int BUTTON_FULL_SCREEN = 9;
 	static final int BUTTON_START_SKIRMISH = 10;
 	static final int BUTTON_START_CAMPAIGN = 11;
-	
+	static final int BUTTON_RETRY = 12;
 	
 	public MainMenu(Input key) {
 		Random rand = new Random();
@@ -60,6 +60,7 @@ public class MainMenu {
     	//Main Menu
     	buttonList.put( BUTTON_START_GAME, new Button(pos, size, "START GAME", BUTTON_START_GAME, startPos ) );
     	buttonList.put( BUTTON_RESUME_GAME, new Button(pos, size, "RESUME GAME", BUTTON_RESUME_GAME, startPos ) );
+    	buttonList.put( BUTTON_RETRY, new Button(pos, size, "RETRY MISSION", BUTTON_RETRY, startPos ) );
     	pos.y += size.y*1.1f;
     	buttonList.put( BUTTON_OPTIONS, new Button(pos, size, "OPTIONS", BUTTON_OPTIONS, startPos ) );
     	pos.y += size.y*1.1f;
@@ -180,9 +181,14 @@ public class MainMenu {
 				    	break;
 					}
 					
+					case BUTTON_RETRY:
+					{
+						return GameState.GAME_SELECT_SHIP;
+					}
+					
 					case BUTTON_RESUME_GAME:
 					{
-						return GameWindow.GameState.GAME_PLAYING;
+						return GameState.GAME_PLAYING;
 					}
 					
 					case BUTTON_START_SKIRMISH:
@@ -390,6 +396,14 @@ public class MainMenu {
     		g.setColor(Color.WHITE);
     		g.drawString(hint, GameEngine.getScreenWidth()/2 - GameFont.getWidth(hint, g)/2, txt.height*2 + txt.y);
         }
+	}
+
+	public void showRetry() {
+        Iterator<Button> iterator = buttonList.values().iterator();
+        while( iterator.hasNext() ) iterator.next().hide();
+    	
+		buttonList.get(BUTTON_RETRY).show();
+		buttonList.get(BUTTON_EXIT).show();
 	}
 	
 }

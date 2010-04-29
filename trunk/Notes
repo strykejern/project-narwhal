@@ -1,6 +1,5 @@
 TODO:
 - Fix skirmish mode
-- Ship upgrades
 - Andromeda campaign levels
 
 SECONDARY TODO:
@@ -21,9 +20,9 @@ Antimatter Torpedoes	- No homing, extreme high damage, big explosion (destroy pl
 *Minigun				- Regular boring bullets?
 
 Ship Modules (Passive?)
-ECM Jammer				- 70% chance to evade rockets (disable homing?) Maybe disables enemy radar? disable cloaking
 Shield Booster			- Faster Shield Regeneration
 Dynamo Reactor			- Can use shield as energy
+*ECM Jammer				- 70% chance to evade rockets (disable homing?) Maybe disables enemy radar? disable cloaking
 *Augumented Engines		- Faster movement
 *Automatic Repair System- Regenerate Life
 *Interphased Drive		- Faster Acceleration

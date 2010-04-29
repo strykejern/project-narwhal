@@ -122,8 +122,11 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 				
 				state = theGame.update();				
 			}
-			else if( state == GameState.GAME_MENU)	      state = theMenu.update( theGame != null );
-			else if( state == GameState.GAME_SELECT_SHIP) state = selectShip.update( campaign.active );
+			else if( state == GameState.GAME_SELECT_SHIP) 
+			{
+				theGame = null;
+				state = selectShip.update( campaign.active );
+			}
 			else if( state == GameState.GAME_END_CURRENT )
 			{
 		       	theGame = null;
@@ -141,13 +144,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 				
 				state = campaign.update();
 			}
-			
-			//This is so that the player won't open the menu after the current game has ended
-			if( theGame != null && state == GameState.GAME_MENU && (theGame.isEnded() || theGame.victory()) )
-			{
-				screenFade = 1;
-				state = GameState.GAME_PLAYING;
-			}
+			else if( state == GameState.GAME_MENU)	      state = theMenu.update( theGame != null );
 
 			if(!painting) repaint();
 						
@@ -198,13 +195,21 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 					screenFade = 0;
 					
 					//Prepare next level
-					if( campaign.active && ( campaign.alwaysWin || theGame.victory() ) )
+					if( campaign.active )
 					{
+						if ( campaign.alwaysWin() || theGame.victory() )
+						{
+							Log.message("NEXT MISSION");
+							state = GameState.GAME_CAMPAIGN_SCREEN;
+							campaign.next();
+						}
+						else
+						{
+							state = GameState.GAME_MENU;
+							theMenu.showRetry();
+						}
 						theGame = null;
-						state = GameState.GAME_CAMPAIGN_SCREEN;
-						campaign.next();
 					}
-					
 					//Go back to the menu
 					else state = GameState.GAME_END_CURRENT;
 				}
