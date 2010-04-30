@@ -272,7 +272,6 @@ public class Shipyard {
 			y += GameFont.getHeight(g);
 			
 			//Draw every ship in the team
-			Log.message("Size: " + fleetList.size());
 			for( int i = 0; i < fleetList.size(); i++ )
 			{
 				//Only draw ships on this team
@@ -476,11 +475,18 @@ public class Shipyard {
 						}
 						else 
 						{
-							if( !campaignMode && doPlanets )
+							if( !campaignMode )
 							{
-								SpawnPoint planet = new SpawnPoint( Type.PLANET );
-								planet.pos = new Vector( universeSize*GameEngine.getScreenWidth()/2, universeSize*GameEngine.getScreenHeight()/2 );
-								skirmishFleet.add( planet );
+								if( doPlanets )
+								{
+									SpawnPoint planet = new SpawnPoint( Type.PLANET );
+									planet.pos = new Vector( universeSize*GameEngine.getScreenWidth()/2, universeSize*GameEngine.getScreenHeight()/2 );
+									skirmishFleet.add( planet );
+								}
+								buttonList.get(BUTTON_ADD_SHIP).hide();
+								buttonList.get(BUTTON_TEAM).hide();
+								buttonList.get(BUTTON_PLANETS).show();
+								buttonList.get(BUTTON_MAP_SIZE).show();
 							}
 							
 							fleetList.clear();							//Free some memory

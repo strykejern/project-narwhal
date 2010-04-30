@@ -1,0 +1,9 @@
+//Nuclear missile launcher
+[NAME]: Nuclear Missiles
+[TECH]: 3
+[DAMAGE]: 50
+[COST]: 90
+[PARTICLE]: nuke.prt
+[COOLDOWN]: 40
+[SHIELD_MUL]: 100%
+[LIFE_MUL]: 100%

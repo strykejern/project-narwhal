@@ -1,0 +1,34 @@
+//Homing EMP Missile particle
+[IMAGE]: emp.png
+[TIME]: 300
+[SPEED]: 15
+[ATTACHED]: FALSE
+
+//Size
+[SIZE]: 0.6
+[SIZE_ADD]: 0
+
+//Transparency
+[ALPHA]: 1.00
+[ALPHA_ADD]: 0
+
+//Rotation
+[ROTATE]: 0
+[ROTATE_ADD]: 0
+
+//Sound effect
+[SOUND_SPAWN]: missile.wav
+[SOUND_END]: NONE
+
+//Ending conditions
+[CAN_COLLIDE]: TRUE
+[COLLISION_END]: TRUE
+[FRIENDLY_FIRE]: FALSE
+
+//Spawn other particles on end
+[PARTICLE_END]: plasmaimplode.prt
+[MULTISPAWN_END]: 1
+[END_FACING_ADD]: 0
+
+//Homing distance
+[HOMING]: 2000

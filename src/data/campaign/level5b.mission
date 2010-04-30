@@ -13,6 +13,7 @@
 
 //Give the player some new technologies to play with
 [ADD_TECH_WEAPON]: shockcannon.wpn
+[ADD_TECH_WEAPON]: protonmissile.wpn
 [ADD_TECH_RADAR]: 3
 [ADD_TECH_MODULE]: CLOAKING
 

@@ -149,7 +149,7 @@ public class HUD {
 	private void drawRadar(Spaceship target, Graphics2D g) {
 		
 		//Dont track invisible or disguised enemies
-		if( target.disguised != null || target.cloaked ) return;
+		if( target == observer || target.disguised != null || target.cloaked ) return;
 		
 		//No need to draw if we can see them
 		if( GameEngine.isInFrame(target) )

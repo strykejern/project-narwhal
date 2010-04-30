@@ -10,7 +10,7 @@
 [ALWAYS_WIN]: FALSE
 
 //Give the player some new technologies to play with
-[ADD_TECH_WEAPON]: protonmissile.wpn
+[ADD_TECH_WEAPON]: nuclearmissile.wpn
 [ADD_TECH_MODULE]: WARP
 [ADD_TECH_MODULE]: TETIARY
 [ADD_TECH_RADAR]: 2
