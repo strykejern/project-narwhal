@@ -1,0 +1,10 @@
+//EMP missile launcher
+[NAME]: EMP Missiles
+[TECH]: 4
+[DAMAGE]: 40
+[ENERGY_DAMAGE]: 80
+[COST]: 100
+[PARTICLE]: emp.prt
+[COOLDOWN]: 60
+[SHIELD_MUL]: 200%
+[LIFE_MUL]: 10%

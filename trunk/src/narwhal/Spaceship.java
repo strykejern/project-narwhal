@@ -171,19 +171,19 @@ public abstract class Spaceship extends GameObject {
 			else if (keys.right) getSpeed().addDirection(acceleration, direction+((float)Math.PI/2.0f));
 		}
 		direction %= 2 * Math.PI;
-				
+		
 		//mouse move
 		float heading = keys.mouseUniversePos().minus(getPosCentre()).getAngle() - direction;
 		if 		(heading > Math.PI)  heading = -((2f * (float)Math.PI) - heading);
 		else if (heading < -Math.PI) heading =  ((2f * (float)Math.PI) + heading);
-		direction += heading * turnRate;
+		direction += heading * turnRate * slow;
 		
 		//If disguised as a rock, rotate around our axis
 		if( disguised == null ) image.setDirection( direction );
 		else					image.rotate(speed.length()/400);
 			
 		//Limit to max speed
-		if (getSpeed().length() > maxSpeed*slow) getSpeed().setLength(maxSpeed);
+		if (getSpeed().length() > maxSpeed*slow) getSpeed().setLength(maxSpeed*slow);
 		
 		//Assume nothing is homing in on us
 		homed = false;
@@ -199,8 +199,8 @@ public abstract class Spaceship extends GameObject {
 		if(energy < 0) energy = 0;
 		
 		//Slowing effect
-		slow += weapon.slow;
-		if( slow > 0.66f ) slow = 0.66f;
+		slow -= weapon.slow;
+		if( slow < 0.33f ) slow = 0.33f;
 		
 		//Next damage the shields
 		if(shield > 0)

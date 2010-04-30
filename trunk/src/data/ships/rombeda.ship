@@ -13,8 +13,8 @@
 [SREGEN]: 1.25
 
 //Weapons
-[PRIMARY]: shockcannon.wpn
-[SECONDARY]: multilaser.wpn
+[PRIMARY]: lasercannon.wpn
+[SECONDARY]: emp.wpn
 
 //Special mods
 [RADAR]: 3

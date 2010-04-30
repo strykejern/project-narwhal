@@ -29,11 +29,11 @@ public abstract class Physics extends Collidable {
 		
 	private static final float G = 6.67428f * 0.000000001f;
 	
-	public Physics() {		
+	public Physics() {
 	}
 	
 	public void update(){
-		pos.add(getSpeed());
+		pos.add( getSpeed() );
 	}
 	
 	public static void updateGravitation(ArrayList<GameObject> objects ){

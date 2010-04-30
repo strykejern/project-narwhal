@@ -48,7 +48,7 @@ public class Weapon {
 				else if(line.startsWith("[COOLDOWN]:"))	    cooldown = Integer.parseInt(parse(line));
 				else if(line.startsWith("[ENERGY_DAMAGE]:"))energyDamage = Float.parseFloat(parse(line));
 				else if(line.startsWith("[SLOW]:"))  		slow = Float.parseFloat(parse(line));
-				else if(line.startsWith("[SHIELD_MUL]:"))  	
+				else if(line.startsWith("[SHIELD_MUL]:"))
 				{
 					//Translate percent to float
 					String percent = parse(line);
