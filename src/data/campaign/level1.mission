@@ -14,9 +14,9 @@
 //      ShipName xSpawn ySpawn aiType Team 
 [PLAYER]: 600 800 GOOD
 
-[SHIP]: data/ships/juggernaught.ship 1600 1800 BRUTE EVIL
-[SHIP]: data/ships/juggernaught.ship 1600 1900 BRUTE EVIL
-[SHIP]: data/ships/juggernaught.ship 1600 1600 BRUTE EVIL
-[SHIP]: data/ships/juggernaught.ship 1600 1700 BRUTE EVIL
+[SHIP]: data/ships/juggernaught.ship 1600 1000 BRUTE EVIL
+[SHIP]: data/ships/juggernaught.ship 1500 1100 BRUTE EVIL
+[SHIP]: data/ships/juggernaught.ship 1700 1200 BRUTE EVIL
+[SHIP]: data/ships/juggernaught.ship 1600 1300 BRUTE EVIL
 
 [PLANET]: data/planets/mars.png 1200 900 550

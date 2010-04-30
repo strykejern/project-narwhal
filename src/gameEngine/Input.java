@@ -56,7 +56,10 @@ public class Input {
 	public void update(Point mouse){
 		if( mouse == null ) return;
 		mousePos.x = mouse.x;
-		mousePos.y = mouse.y-15;
+		mousePos.y = mouse.y;
+		
+		//Windowed mode adds some offsett
+		if( !GameEngine.getConfig().fullScreen ) mousePos.y -= 15;
 	}
 		
 	public Vector mouseUniversePos(){

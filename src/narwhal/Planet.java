@@ -40,43 +40,26 @@ public class Planet extends GameObject {
 		super(world);
 		Random rand = new Random(seed);
 		this.world = world;
+		
+		//Randomize size
+		if(planetSize == 0) planetSize = 325 + rand.nextInt(450);
 
 		//Make it unkillable
 		this.setMaxLife( OBJECT_INVULNERABLE );
 
-		//Make it unique
-		Image2D myImage = new Image2D(name);
-		if( rand.nextBoolean() ) myImage.horizontalFlip();
-		if( rand.nextBoolean() ) myImage.verticalFlip();
-		myImage.rotate( (float)Math.toRadians(rand.nextInt(360)) );
-		myImage.resize(planetSize, planetSize);
-		
-		pos = spawnPos;
-		setRadius(planetSize/2);
-		image = myImage;
-		speed = new Vector();
-		
-		//Physics
-		shape = Shape.CIRCLE;
-		anchored = true;
-		canCollide = true;
-		mass = (float)Math.PI * radius * radius * 20000;
-	}
-
-	public Planet(Vector spawnPos, long seed, Game world) {
-		super(world);
-		Random rand = new Random(seed);
-		this.world = world;
-		
-		//Initialize the planet images if needed
-		if( planetImages == null ) loadPlanets();
-		
-		//Make it unkillable
-		this.setMaxLife( OBJECT_INVULNERABLE );
+		//Figure out the planet image
+		Image2D myImage;
+		if(name != null)
+		{
+			myImage = new Image2D(name);
+		}
+		else 
+		{
+			if( planetImages == null ) loadPlanets();
+			myImage = planetImages.get( rand.nextInt(planetImages.size()) ).clone();
+		}
 		
 		//Make it unique
-		Image2D myImage = planetImages.get( rand.nextInt(planetImages.size()) ).clone();
-		int planetSize = GameEngine.getScreenWidth()/4 + rand.nextInt(GameEngine.getScreenWidth()/4) + GameEngine.getScreenHeight()/4;
 		if( rand.nextBoolean() ) myImage.horizontalFlip();
 		if( rand.nextBoolean() ) myImage.verticalFlip();
 		myImage.rotate( (float)Math.toRadians(rand.nextInt(360)) );
@@ -95,7 +78,7 @@ public class Planet extends GameObject {
 	}
 	
 	public void update(){
-		
+		//Do Nothing
 	}
 
 }

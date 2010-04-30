@@ -36,26 +36,35 @@ import java.util.Iterator;
 
 import narwhal.AI.aiType;
 import narwhal.GameFont.FontType;
+import narwhal.SpawnPoint.Type;
 
 /**
  * JJ> This class works like a factory of Spaceships. First it loads all blueprints of all
  *     Spaceship when this class is constructed. Then it can produce new Spaceships using those
  *     blueprints.
  * @author Anders Eie and Johan Jansen
+ * @Todo Should split this into a new Skirmish class, class is currently too big and unorganized
  *
  */
 public class Shipyard {
 	private Image2D radarBackground, spaceshipImage, computerBackground, techscreenBackground;
-	private SpaceshipTemplate ship;
+	private SpaceshipTemplate ship, selectedShip;
 	private Iterator<String> select;
 	private Input key;
-	boolean campaignMode;
+	boolean campaignMode, selectOthers;
 	private boolean drawUpgradeScreen;
+	
+	//Skirmish mode
+	private ArrayList<Image2D> fleetList;
+	private ArrayList<SpawnPoint> skirmishFleet;
+	private String skirmishTeam;
+	public int universeSize;
+	boolean doPlanets;
 	
 	//The blueprints of all ships
 	private HashMap<String, SpaceshipTemplate> shipList;
 	
-	//Available upgrades
+	//Available upgrades (Campaign only)
 	private int techLevel;
 	public int maxTechLevel;
 	public short maxRadarLevel;
@@ -80,7 +89,7 @@ public class Shipyard {
 	//Clickable buttons
 	private HashMap<Integer, Button> buttonList;
 	static final int BUTTON_START_GAME = 0;
-	static final int BUTTON_NEXT_SHIP = 1;
+	
 	static final int BUTTON_UPGRADE = 2;
 	static final int BUTTON_BACK = 3;
 	static final int BUTTON_PRIMARY = 4;
@@ -89,8 +98,18 @@ public class Shipyard {
 	static final int BUTTON_SPECIAL = 7;
 	static final int BUTTON_STRAFING = 8;
 	static final int BUTTON_NULLFIER = 9;
+	
+	static final int BUTTON_NEXT_SHIP = 1;
+	static final int BUTTON_ADD_SHIP = 10;
+	static final int BUTTON_TEAM     = 11;
+	static final int BUTTON_MAP_SIZE = 12;
+	static final int BUTTON_PLANETS  = 13;
 		
 	public Shipyard(Input key) {
+		
+		//Init arrays
+		fleetList = new ArrayList<Image2D>();
+		skirmishFleet = new ArrayList<SpawnPoint>();
 		
 		//Load the list of ships
 		parseShipList();
@@ -110,8 +129,18 @@ public class Shipyard {
 		buttonList.put(BUTTON_START_GAME, new Button(pos, size, "Start Game", BUTTON_START_GAME, pos));
 		buttonList.put(BUTTON_BACK, new Button(pos, size, "Back", BUTTON_BACK, pos));
 		pos.y -= size.y;
+		
+		//Skirmish buttons
 		buttonList.put(BUTTON_NEXT_SHIP, new Button(pos, size.dividedBy(2), "Next", BUTTON_NEXT_SHIP, pos));
+		buttonList.put(BUTTON_ADD_SHIP, new Button(pos.minus(new Vector(100, 0)), size.dividedBy(2), "ADD", BUTTON_ADD_SHIP, pos));
+		buttonList.put(BUTTON_TEAM, new Button(pos.plus(new Vector(100, 0)), size.dividedBy(2), "TEAM", BUTTON_TEAM, pos));
 		buttonList.put(BUTTON_UPGRADE, new Button(pos, size, "UPGRADE", BUTTON_UPGRADE, pos));
+		buttonList.put(BUTTON_MAP_SIZE, new Button(pos.minus(new Vector(100, 0)), size.dividedBy(2), "MAP", BUTTON_MAP_SIZE, pos));
+		buttonList.put(BUTTON_PLANETS, new Button(pos.plus(new Vector(100, 0)), size.dividedBy(2), "PLANETS", BUTTON_PLANETS, pos));
+
+		//Colorize those buttons
+		buttonList.get(BUTTON_PLANETS).setColor( new Color(10, 0, 200), new Color(5, 0, 255, 128) );
+		buttonList.get(BUTTON_MAP_SIZE).setColor( new Color(10, 0, 200), new Color(5, 0, 255, 128) );
 
 		//The upgrade buttons
     	pos = new Vector( radarBackground.getWidth()/2, radarBackground.getHeight()/5 );
@@ -128,6 +157,7 @@ public class Shipyard {
 		pos.y += size.y;
 		buttonList.put(BUTTON_STRAFING, new Button(pos, size, "Side Thrusters", BUTTON_STRAFING, pos));
 
+		//Colorize those buttons
 		buttonList.get(BUTTON_PRIMARY).setColor( new Color(255, 76, 76), new Color(255, 44, 44, 128) );
 		buttonList.get(BUTTON_SECONDARY).setColor( new Color(255, 76, 76), new Color(255, 44, 44, 128) );
 		buttonList.get(BUTTON_RADAR).setColor( new Color(255, 76, 255), new Color(255, 44, 255, 128) );
@@ -141,28 +171,8 @@ public class Shipyard {
 		//Input controller
 		this.key = key;
 	}
-	
-	public void resetUpgrades(){
-		weaponList = new ArrayList<Weapon>();
-		techList = new ArrayList<SpecialModule>();
-		maxRadarLevel = 1;
-		techList.add(SpecialModule.NONE);
-		currentTech = techList.iterator();
-		nullifier = false;
-		strafing = false;
-		maxTechLevel = 2;
-	}
-	
-	/**
-	 * JJ> This function gets a spaceship from the list of all spaceships that are current loaded into 
-	 *     memory by this Shipyard object and instantiates it into a Universe as a new unique object.
-	 * @param name The String reference to the list of spaceships currently loaded ("raptor.ship" for example)
-	 * @param pos The Vector position in the world where it is spawned
-	 * @param keys What Input controller controls this ship? (could be AI)
-	 * @param world What world is this spaceship spawning in, this should be a Game object
-	 * @return The new Spaceship ready to fight!
-	 */
-	public Spaceship spawnShip(String name, Vector pos, Game world, aiType AI, String team) {
+		
+/*	public Spaceship spawnShip(String name, Vector pos, Game world, aiType AI, String team) {
 		
 		if( !shipList.containsKey( name ) )
 		{
@@ -176,7 +186,17 @@ public class Shipyard {
 				
 		return produced;
 	}
+*/
 
+	/**
+	 * JJ> This function gets a spaceship from the list of all spaceships that are current loaded into 
+	 *     memory by this Shipyard object and instantiates it into a Universe as a new unique object.
+	 * @param name The String reference to the list of spaceships currently loaded ("raptor.ship" for example)
+	 * @param pos The Vector position in the world where it is spawned
+	 * @param keys What Input controller controls this ship? (could be AI)
+	 * @param world What world is this spaceship spawning in, this should be a Game object
+	 * @return The new Spaceship ready to fight!
+	 */
 	public Spaceship spawnShip(SpaceshipTemplate template, Vector pos, Game world, aiType AI, String team) {
 		AI produced;
 		produced = new AI(template, team, world);
@@ -185,10 +205,9 @@ public class Shipyard {
 		return produced;
 	}
 	
-	public String[] getShipList(){
-		return shipList.keySet().toArray( new String[0] );
-	}
-
+	/**
+	 * JJ> Describes a single weapon set in detail
+	 */
 	private int describeWeapon(Graphics2D g, int x, int y, Weapon wpn){
 		
 		//No weapon
@@ -200,11 +219,13 @@ public class Shipyard {
 		
 		//Draw weapon image
 		Image icon = GameEngine.getParticleEngine().getParticleIcon(wpn.particle).getImage();
+		
+		//Resize it so that it fits
 		if(icon.getWidth(null) < 175)
 		{
 			if(icon.getHeight(null) < 100)
-				 g.drawImage(icon, GameEngine.getScreenWidth()-icon.getWidth(null)-30, y, null);
-			else g.drawImage(icon, GameEngine.getScreenWidth()-icon.getWidth(null)-30, y, icon.getWidth(null), 80, null);
+				 g.drawImage(icon, GameEngine.getScreenWidth()-icon.getWidth(null)-50, y, null);
+			else g.drawImage(icon, GameEngine.getScreenWidth()-icon.getWidth(null)-50, y, icon.getWidth(null), 80, null);
 		}
 		else 
 			g.drawImage(icon, GameEngine.getScreenWidth()-200, y, 175, icon.getHeight(null), null);
@@ -226,17 +247,52 @@ public class Shipyard {
 		final int OFFSET_X = GameEngine.getScreenWidth()/32;
 		final int OFFSET_Y = GameEngine.getScreenHeight()/16;
 		
-		//Do first, draw background
+		//Do first, draw background right side of the screen
 		computerBackground.draw(g, radarBackground.getWidth(), 0);
 		
-		//Draw the left side of the screen
-		if( !drawUpgradeScreen )
+		//Then Draw the left side of the screen
+		//Select enemies and allies in skirmish mode
+		if( selectOthers )
 		{
-			radarBackground.draw(g, 0, 0);
-			spaceshipImage.rotate(0.01f);
-			spaceshipImage.draw(g, radarBackground.getWidth()/2-spaceshipImage.getWidth()/2, radarBackground.getHeight()/2-spaceshipImage.getHeight()/2);
+			int x = OFFSET_X, y = OFFSET_Y;
+			
+			computerBackground.draw(g, 0, 0);
+			
+			//Draw the team name
+			if( skirmishTeam.equals("GOOD") )
+			{
+				GameFont.set(g, FontType.FONT_CRYSTAL, Color.GREEN, 24);
+				g.drawString("Team: Good", x, y);
+			}
+			else
+			{
+				GameFont.set(g, FontType.FONT_CRYSTAL, Color.RED, 24);
+				g.drawString("Team: Evil", x, y);
+			}			
+			y += GameFont.getHeight(g);
+			
+			//Draw every ship in the team
+			Log.message("Size: " + fleetList.size());
+			for( int i = 0; i < fleetList.size(); i++ )
+			{
+				//Only draw ships on this team
+				SpawnPoint object = skirmishFleet.get(i);
+				if( object.team == null || !object.team.equals(skirmishTeam) ) continue;
+
+				//Draw the little ship icon
+				fleetList.get(i).draw(g, x, y);
+				x += fleetList.get(i).getWidth();
+				if( x > fleetList.get(i).getWidth()*7 )
+				{
+					x = OFFSET_X;
+					y += OFFSET_Y;
+					if( y > GameEngine.getScreenHeight() ) break;
+				}
+			}		
 		}
-		else 
+		
+		//Upgrade techs
+		else if( drawUpgradeScreen )
 		{
 			techscreenBackground.draw(g, 0, 0);
 			
@@ -270,6 +326,25 @@ public class Shipyard {
 			}
 			else buttonList.get(BUTTON_BACK).show();
 			
+		}
+		
+		//Select player ship
+		else 
+		{
+			int x = radarBackground.getWidth()/2; 
+			int y = radarBackground.getHeight()/2-spaceshipImage.getHeight()/2;
+			
+			radarBackground.draw(g, 0, 0);
+			spaceshipImage.rotate(0.01f);
+			spaceshipImage.draw(g, x-spaceshipImage.getWidth()/2, y);
+			
+			//Level details in skirmish mode
+			if( !campaignMode )
+			{
+				GameFont.set(g, FontType.FONT_DESCRIBE, Color.RED, 16);
+				g.drawString("Level Size: " + universeSize, x - GameFont.getWidth("Level Size:  ", g)/2, y + spaceshipImage.getHeight() + GameFont.getHeight(g)*2);
+				g.drawString("Planets: " + doPlanets, x - GameFont.getWidth("Planets: XXXX", g)/2, y + spaceshipImage.getHeight() + GameFont.getHeight(g)*3);
+			}
 		}
 		
 		//Ship description
@@ -309,7 +384,10 @@ public class Shipyard {
 	
 	
 	
-	public void describeSpecialMods( Graphics2D g, int x, int y ){
+	/**
+	 * JJ> Describes all the special modules the current selected ship has
+	 */
+	private void describeSpecialMods( Graphics2D g, int x, int y ){
 		
 		g.drawString("SPECIAL MODIFICATIONS: ", x, y);
 		y += GameFont.getHeight(g);
@@ -361,6 +439,7 @@ public class Shipyard {
 
 	public GameState update( boolean campaign ) {
         
+		//Change between campaign and skirmish mode and playin' with XOR
 		if( campaign ^ campaignMode )
 		{
 			campaignMode ^= true;
@@ -384,16 +463,66 @@ public class Shipyard {
 				//Determine button effect
 				switch( button.getID() )
 				{
+				
 					case BUTTON_START_GAME:
 					{
-						return GameWindow.GameState.GAME_PLAYING;
+						if( campaignMode ) selectedShip = ship;
+						
+						if( !campaignMode && !selectOthers )
+						{
+							selectOthers = true;
+							selectedShip = ship;
+							newSkirmishFleet();
+						}
+						else 
+						{
+							if( !campaignMode && doPlanets )
+							{
+								SpawnPoint planet = new SpawnPoint( Type.PLANET );
+								planet.pos = new Vector( universeSize*GameEngine.getScreenWidth()/2, universeSize*GameEngine.getScreenHeight()/2 );
+								skirmishFleet.add( planet );
+							}
+							
+							fleetList.clear();							//Free some memory
+							selectOthers = false;
+							return GameWindow.GameState.GAME_PLAYING;
+						}
+						break;
 					}
+					
 					case BUTTON_NEXT_SHIP:
 					{
 						if( !select.hasNext() ) select = shipList.keySet().iterator();
 						setCurrentShip( shipList.get(select.next()) );
 						break;
 					}
+					
+					case BUTTON_PLANETS:
+					{
+						doPlanets ^= true;
+						break;
+					}
+					
+					case BUTTON_MAP_SIZE:
+					{
+						universeSize++;
+						if(universeSize > 10) universeSize = 1;
+						break;
+					}
+					
+					case BUTTON_ADD_SHIP:
+					{
+						addShipToFleet();
+						break;
+					}
+
+					case BUTTON_TEAM:
+					{
+						if( skirmishTeam.equals("GOOD") ) skirmishTeam = "EVIL";
+						else							  skirmishTeam = "GOOD";
+						break;
+					}
+					
 					case BUTTON_UPGRADE:
 					{
 						drawUpgradeScreen = true;
@@ -414,6 +543,7 @@ public class Shipyard {
 						buttonList.get(BUTTON_START_GAME).hide();
 						break;
 					}
+					
 					case BUTTON_BACK:
 					{
 						drawUpgradeScreen = false;
@@ -492,36 +622,6 @@ public class Shipyard {
 		return GameState.GAME_SELECT_SHIP;
 	}
 	
-	private void calculateTechLevel() {
-		techLevel = ship.radarLevel*2;
-		if( ship.primary != null ) 			techLevel += ship.primary.techCost;
-		if( ship.secondary != null ) 		techLevel += ship.secondary.techCost;
-		if( ship.tetiaryWeapon != null ) 	techLevel += ship.tetiaryWeapon.techCost;
-		if( ship.autoBreaks ) 				techLevel += 6;
-		if( ship.canStrafe ) 				techLevel += 2;
-		if( ship.canCloak ) 				techLevel += 4;
-		if( ship.canJam ) 					techLevel += 2;
-		if( ship.canWarp ) 					techLevel += 3;
-		if( ship.canDisguise != null ) 		techLevel += 4;
-		if( ship.interceptor != null ) 		techLevel += 5;
-	}
-	
-	private void nextSpecialModule() {
-		
-		//Reset if we are at the end
-		if( !currentTech.hasNext() ) currentTech = techList.iterator();
-		
-		switch( currentTech.next() )
-		{
-			//Disable all special mods
-			default: case NONE: ship = new SpaceshipTemplate(ship, false, ship.canStrafe, false, null, ship.autoBreaks, false, null); break;
-			case WARP:			ship = new SpaceshipTemplate(ship, false, ship.canStrafe, true, null, ship.autoBreaks, false, null);  break;		
-			case CLOAK:			ship = new SpaceshipTemplate(ship, false, ship.canStrafe, false, null, ship.autoBreaks, true, null);  break;
-			case ECM:			ship = new SpaceshipTemplate(ship, true, ship.canStrafe, false, null, ship.autoBreaks, false, null);  break;
-			//TODO: interceptor, disguise
-		}
-	}
-	
 	/**
 	 * JJ> This loads all the *.ship files from the data folder and puts them into a list
 	 */
@@ -567,7 +667,7 @@ public class Shipyard {
 	 */
 	public Spaceship spawnSelectedShip(Vector pos, Game world, aiType AI, String team) {
 		
-		AI produced = new AI(ship, team, world);
+		AI produced = new AI(selectedShip, team, world);
 		produced.instantiate(pos, AI);
 				
 		return produced;
@@ -576,10 +676,16 @@ public class Shipyard {
 	private void setSkrimishMode() {
         Iterator<Button> iterator = buttonList.values().iterator();
         while( iterator.hasNext() ) iterator.next().hide();
-		
+
+		//Reset values
+		universeSize = 4;
+		doPlanets = true;
+
         //These are visible
         buttonList.get(BUTTON_START_GAME).show();
 		buttonList.get(BUTTON_NEXT_SHIP).show();
+		buttonList.get(BUTTON_MAP_SIZE).show();
+		buttonList.get(BUTTON_PLANETS).show();
 		
 		//Reset any previous selection
 		resetUpgrades();
@@ -599,8 +705,52 @@ public class Shipyard {
         
 		//Upgrades
 		resetUpgrades();
-		
 		campaignMode = true;
+	}
+
+	
+	private void calculateTechLevel() {
+		techLevel = ship.radarLevel*2;
+		if( ship.primary != null ) 			techLevel += ship.primary.techCost;
+		if( ship.secondary != null ) 		techLevel += ship.secondary.techCost;
+		if( ship.tetiaryWeapon != null ) 	techLevel += ship.tetiaryWeapon.techCost;
+		if( ship.autoBreaks ) 				techLevel += 6;
+		if( ship.canStrafe ) 				techLevel += 2;
+		if( ship.canCloak ) 				techLevel += 4;
+		if( ship.canJam ) 					techLevel += 2;
+		if( ship.canWarp ) 					techLevel += 3;
+		if( ship.canDisguise != null ) 		techLevel += 4;
+		if( ship.interceptor != null ) 		techLevel += 5;
+	}
+	
+	private void nextSpecialModule() {
+		
+		//Reset if we are at the end
+		if( !currentTech.hasNext() ) currentTech = techList.iterator();
+		
+		switch( currentTech.next() )
+		{
+			//Disable all special mods
+			default: case NONE: ship = new SpaceshipTemplate(ship, false, ship.canStrafe, false, null, ship.autoBreaks, false, null); break;
+			case WARP:			ship = new SpaceshipTemplate(ship, false, ship.canStrafe, true, null, ship.autoBreaks, false, null);  break;		
+			case CLOAK:			ship = new SpaceshipTemplate(ship, false, ship.canStrafe, false, null, ship.autoBreaks, true, null);  break;
+			case ECM:			ship = new SpaceshipTemplate(ship, true, ship.canStrafe, false, null, ship.autoBreaks, false, null);  break;
+			//TODO: interceptor, disguise
+		}
+	}
+	
+	/**
+	 * JJ> Removes all available upgrades
+	 */
+	public void resetUpgrades(){
+		weaponList = new ArrayList<Weapon>();
+		techList = new ArrayList<SpecialModule>();
+		maxRadarLevel = 1;
+		techList.add(SpecialModule.NONE);
+		currentTech = techList.iterator();
+		nullifier = false;
+		strafing = false;
+		maxTechLevel = 2;
 	}
 
 	public void addWeapon(Weapon weapon) {
@@ -627,5 +777,65 @@ public class Shipyard {
 		techList.add(module);
 		currentTech = techList.iterator();
 	}
+	
+	/**
+	 * JJ> Adds a single ship to the list of all ships
+	 */
+	private void addShipToFleet() {
+		
+		//Image
+		Image2D image = ship.image.clone();		
+		image.setDirection( -(float)(Math.PI/2) );
+		if(skirmishTeam.equals("GOOD")) image.setColorTint(0, 255, 0);
+		else							
+		{
+			buttonList.get(BUTTON_START_GAME).show();
+			image.setColorTint(255, 0, 0);
+		}
+		image.resize( GameEngine.getScreenWidth()/16, GameEngine.getScreenWidth()/16 );
+		fleetList.add( image );
+		
+		//Spawn object
+		SpawnPoint spawn = new SpawnPoint( Type.SPACESHIP );
+		spawn.ai = aiType.CONTROLLER;
+		spawn.name = ship.getFilePath();
+		spawn.team = skirmishTeam;
+		skirmishFleet.add( spawn );
+	}
+	
+	/**
+	 * JJ> Enables selection of enemy and ally ships
+	 */
+	private void newSkirmishFleet() {
+		
+		//Allow the player to add additional ships to this fleet
+		buttonList.get(BUTTON_ADD_SHIP).show();
+		buttonList.get(BUTTON_TEAM).show();
+		buttonList.get(BUTTON_START_GAME).hide();
+		buttonList.get(BUTTON_PLANETS).hide();
+		buttonList.get(BUTTON_MAP_SIZE).hide();
 
+		//Image
+		Image2D image = ship.image.clone();		
+		image.setDirection( -(float)(Math.PI/2) );
+		image.resize( GameEngine.getScreenWidth()/16, GameEngine.getScreenWidth()/16 );
+		fleetList.clear();
+		fleetList.add( image );
+		
+		//Spawn object
+		skirmishTeam = "EVIL";
+		SpawnPoint spawn = new SpawnPoint( Type.PLAYER );
+		spawn.name = selectedShip.getFilePath();
+		spawn.team = "GOOD";
+		skirmishFleet.clear();
+		skirmishFleet.add( spawn );
+	}
+
+	/**
+	 * JJ> Gets both the enemy and ally fleet including the player ship as an array
+	 * @return Both fleets plus the player
+	 */
+	public ArrayList<SpawnPoint> getSkirimishFleet(){
+		return skirmishFleet;
+	}
 }

@@ -19,6 +19,7 @@ public class CampaignScreen {
 	private Button begin;
 	private Input key;
 	private Shipyard spawnShip;
+	private FontType font;
 		
 	private ArrayList<SpawnPoint> spawnList;
 	
@@ -64,6 +65,7 @@ public class CampaignScreen {
 		narrator = null;
 		alwaysWin = false;
 		universeSize = 4;
+		font = FontType.FONT_DESCRIBE;
 		
 		//Parse the ship file
 		try 
@@ -170,6 +172,14 @@ public class CampaignScreen {
 				else if(line.startsWith("[SIZE]:")) universeSize = Integer.parseInt( parse(line) );
 				else if(line.startsWith("[ALWAYS_WIN]:")) alwaysWin = Boolean.parseBoolean( parse(line) );
 
+				else if(line.startsWith("[FONT]:")) 
+				{
+					String module = parse(line);
+					if( module.equals("CREEPY") ) 		font = FontType.FONT_CREEPY;
+					else if( module.equals("CRYSTAL") ) font = FontType.FONT_CRYSTAL;
+
+				}
+
 				else if(line.startsWith("[ADD_TECH_WEAPON]:"))
 				{
 					String wpn = parse(line);
@@ -220,7 +230,7 @@ public class CampaignScreen {
 		
 		//Description text
 		size = GameEngine.getScreenWidth() / 36;
-		GameFont.set(g, FontType.FONT_DESCRIBE, Color.YELLOW, size);
+		GameFont.set(g, font, Color.YELLOW, size);
 		for( String text : description )
 		{
 			g.drawString(text, 20, y);

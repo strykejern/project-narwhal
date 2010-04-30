@@ -198,6 +198,10 @@ public abstract class Spaceship extends GameObject {
 		energy -= weapon.energyDamage;
 		if(energy < 0) energy = 0;
 		
+		//Slowing effect
+		slow += weapon.slow;
+		if( slow > 0.66f ) slow = 0.66f;
+		
 		//Next damage the shields
 		if(shield > 0)
 		{

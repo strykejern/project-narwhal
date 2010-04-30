@@ -115,27 +115,6 @@ public class Game {
        	//Game music
        	Music.play( "battle.ogg" );
 
-		//TODO remove this here, make custom skirmish
-		if(spawnList == null)
-		{
-			spawnList = new ArrayList<SpawnPoint>();
-			
-			SpawnPoint spawn = new SpawnPoint(Type.SPACESHIP);
-			spawn.name = "data/ships/raptor.ship";
-			spawn.team = "EVIL";
-			spawn.ai = aiType.CONTROLLER;
-			spawnList.add( spawn );
-			
-			spawn = new SpawnPoint(Type.SPACESHIP);
-			spawn.name = "data/ships/raptor.ship";
-			spawn.team = "EVIL";
-			spawn.ai = aiType.CONTROLLER;
-			spawnList.add( spawn );
-			
-			player = shipyard.spawnSelectedShip(new Vector(200, 200), this, aiType.PLAYER, "GOOD");
-			entities.add(player);
-		}
-
 		//Generate the universe
 		generateWorld( System.currentTimeMillis(), universeSize, spawnList );
 
