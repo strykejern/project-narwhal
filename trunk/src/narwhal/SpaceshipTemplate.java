@@ -43,7 +43,8 @@ public class SpaceshipTemplate {
 	public final boolean vital;
 	public final boolean canJam;
 	
-	public SpaceshipTemplate( String fileName ) throws Exception {		
+	public SpaceshipTemplate( String fileName ) throws Exception {
+		filePath = fileName;
 		float sizeMul = 1.00f;
 				
 		//Set defaults
@@ -176,6 +177,7 @@ public class SpaceshipTemplate {
 	
 	public SpaceshipTemplate( SpaceshipTemplate base, Weapon primary, Weapon secondary, Weapon tetiary, short radar,
 							float life, float shield, float energy ) {
+		filePath = base.getFilePath();
 		this.image = base.image;
 		this.vital = base.vital;
 		
@@ -207,6 +209,7 @@ public class SpaceshipTemplate {
 	}
 
 public SpaceshipTemplate( SpaceshipTemplate base, boolean ecm, boolean strafe, boolean warp, SpaceshipTemplate interceptor, boolean nullifier, boolean cloak, Sound disguise ) {
+	filePath = base.getFilePath();
 
 	this.image = base.image;
 	this.vital = base.vital;
@@ -245,6 +248,11 @@ public SpaceshipTemplate( SpaceshipTemplate base, boolean ecm, boolean strafe, b
 	 */
 	private String parse(String line) {
 		return line.substring(line.indexOf(':')+1).trim();
+	}
+
+	final private String filePath;
+	public String getFilePath() {
+		return filePath;
 	}
 
 }

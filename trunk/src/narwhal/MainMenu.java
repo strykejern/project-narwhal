@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
+import narwhal.GameFont.FontType;
+
 
 public class MainMenu {
 	private ArrayList<Image2D> background;
@@ -396,6 +398,10 @@ public class MainMenu {
     		g.setColor(Color.WHITE);
     		g.drawString(hint, GameEngine.getScreenWidth()/2 - GameFont.getWidth(hint, g)/2, txt.height*2 + txt.y);
         }
+        
+        //Credits and game version
+        GameFont.set(g, FontType.FONT_DESCRIBE, Color.YELLOW, 16);
+        g.drawString("By: Anders Eie and Johan Jansen - Version 1.00", 0, GameEngine.getScreenHeight() -  GameFont.getHeight(g)-10);
 	}
 
 	public void showRetry() {

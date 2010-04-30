@@ -16,11 +16,11 @@ public class SpawnPoint {
 		PLAYER,
 	}
 	
+	final Type type;
 	String name;
 	Vector pos;
 	aiType ai;
 	String team;
-	Type type;
 	int size;
 	
 	public SpawnPoint(Type type) {

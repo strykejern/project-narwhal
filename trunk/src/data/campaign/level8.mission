@@ -1,8 +1,9 @@
 [MISSION]: Mission 8 - The Big Guns
 [DESCRIPTION]: Impressive. Meet our Xenon starship.
+[FONT]: CRYSTAL
 [MUSIC]: andromeda.ogg
 [VOICE]: data/campaign/mission8.ogg
-[IMAGE]: data/campaign/andromeda.png
+[IMAGE]: data/campaign/andromeda.jpg
 [NEXT]: data/campaign/level9.mission
 
 //Level parameters

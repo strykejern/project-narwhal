@@ -27,51 +27,48 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 
 public abstract class GameFont {
-	private static Font menuFont;
-	private static Font normalFont;
-	private static Font descriptionFont;
+	private static Font menuFont, creepyFont, normalFont, descriptionFont, crystalFont;
 	private static boolean initialized = false;
 	
 	public static enum FontType {
 		FONT_MENU,
+		FONT_CREEPY,
 		FONT_DESCRIBE,
-		FONT_NORMAL
+		FONT_NORMAL,
+		FONT_CRYSTAL,
 	}
 	
 	//JJ> Prepares our awesome font
 	private static void initializeFont() {
-		try 
-		{
-			//Make sure the file exists
-			if( !ResourceMananger.fileExists("/data/menu.ttf") ) throw new Exception("Missing font file! (/data/menu.ttf)");
-			
-			//Load our awesome font
-			menuFont = Font.createFont(Font.TRUETYPE_FONT, ResourceMananger.getInputStream("/data/menu.ttf") );
-		} 
-		catch (Exception e) 
-		{
-			//Use default font instead
-			Log.warning(e);
-			menuFont = new Font("Arial", Font.BOLD, 14);
-		}
 
-		try 
-		{
-			//Make sure the file exists
-			if( !ResourceMananger.fileExists("/data/description.ttf") ) throw new Exception("Missing font file! (/data/description.ttf)");
-			
-			descriptionFont = Font.createFont(Font.TRUETYPE_FONT, ResourceMananger.getInputStream("/data/description.ttf") );
-		} 
-		catch (Exception e) 
-		{
-			//Use default font instead
-			Log.warning(e);
-			descriptionFont = new Font("Arial", Font.BOLD, 14);
-		}
-
+		//Load special fonts
+		menuFont = loadFont("menu.ttf");
+		creepyFont = loadFont("creepy.ttf");
+		descriptionFont = loadFont("description.ttf");
+		crystalFont = loadFont("crystal.ttf");
+		
 		//Do the normal font as well
 		normalFont = new Font("Arial", Font.BOLD, 14);
 		initialized = true;
+	}
+	
+	private static Font loadFont( String name ){
+		name = "/data/" + name;
+		Font retval;
+		try
+		{
+			//Make sure the file exists
+			if( !ResourceMananger.fileExists(name) ) throw new Exception("Missing font file! (" + name + ")");
+			retval = Font.createFont(Font.TRUETYPE_FONT, ResourceMananger.getInputStream(name) );
+		} 
+		catch (Exception e) 
+		{
+			//Use default font instead
+			Log.warning(e);
+			retval = new Font("Arial", Font.BOLD, 14);
+		}
+		
+		return retval;
 	}
 	
 	public static void setSize(int size) {
@@ -86,24 +83,13 @@ public abstract class GameFont {
 		//Determine font type
 		switch( fnt )
 		{
-			case FONT_MENU: 
-				{
-					menuFont = menuFont.deriveFont(Font.BOLD, size);
-					g.setFont(menuFont); return;
-				}
+			case FONT_MENU: 	g.setFont(menuFont.deriveFont(Font.BOLD, size)); return;
+			case FONT_DESCRIBE: g.setFont( descriptionFont.deriveFont(Font.BOLD, size) ); return;
+			case FONT_CREEPY:   g.setFont( creepyFont.deriveFont(Font.PLAIN, size) ); return;
+			case FONT_CRYSTAL:  g.setFont( crystalFont.deriveFont(Font.PLAIN, size) ); return;
+			
 			default: 
-			case FONT_NORMAL: 
-				{
-					normalFont = normalFont.deriveFont(Font.BOLD, size);
-					g.setFont(normalFont); 
-					return;
-				}
-			case FONT_DESCRIBE: 
-			{
-				descriptionFont = descriptionFont.deriveFont(Font.BOLD, size);
-				g.setFont(descriptionFont); 
-				return;
-			}
+			case FONT_NORMAL:   g.setFont( normalFont.deriveFont(Font.BOLD, size) ); 			
 		}
 		
 	}

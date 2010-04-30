@@ -117,7 +117,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 				if(theGame == null)
 				{
 					if( campaign.active ) theGame = new Game( keys, selectShip, campaign.getLevelSpawnList(), campaign.getUniverseSize() );
-					else				  theGame = new Game( keys, selectShip, null, 4 );
+					else				  theGame = new Game( keys, selectShip, selectShip.getSkirimishFleet(), selectShip.universeSize );
 				}
 				
 				state = theGame.update();				

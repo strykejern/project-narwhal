@@ -1,8 +1,9 @@
 [MISSION]: Mission 7 - Andromeda!
 [DESCRIPTION]: You have ruined our experiment. The Andromeda is not pleased. We are not like the other aliens you have encountered. Enjoy your genocide.
+[FONT]: CRYSTAL
 [MUSIC]: andromeda.ogg
 [VOICE]: data/campaign/mission7.ogg
-[IMAGE]: data/campaign/andromeda.png
+[IMAGE]: data/campaign/andromeda.jpg
 [NEXT]: data/campaign/level8.mission
 
 //Level parameters

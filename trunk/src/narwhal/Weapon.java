@@ -14,6 +14,7 @@ public class Weapon {
 	public int techCost;
 	public String particle;
 	public String name;
+	public float slow;
 	
 	//Multipliers
 	public float shieldMul;			//How effective against shields?
@@ -45,6 +46,8 @@ public class Weapon {
 				else if(line.startsWith("[PARTICLE]:"))  	particle = parse(line);
 				else if(line.startsWith("[TECH]:"))  	    techCost = Integer.parseInt(parse(line));
 				else if(line.startsWith("[COOLDOWN]:"))	    cooldown = Integer.parseInt(parse(line));
+				else if(line.startsWith("[ENERGY_DAMAGE]:"))energyDamage = Float.parseFloat(parse(line));
+				else if(line.startsWith("[SLOW]:"))  		slow = Float.parseFloat(parse(line));
 				else if(line.startsWith("[SHIELD_MUL]:"))  	
 				{
 					//Translate percent to float
