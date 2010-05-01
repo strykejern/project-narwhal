@@ -1,0 +1,35 @@
+//Plasma bullet particle
+[IMAGE]: energyattack.png
+[TIME]: 150
+[SPEED]: 17
+[ATTACHED]: FALSE
+[FRIENDLY_FIRE]: FALSE
+
+//Size
+[SIZE]: 1.125
+[SIZE_ADD]: 0.0
+
+//Transparency
+[ALPHA]: 0.8
+[ALPHA_ADD]: -0.01
+
+//Rotation
+[ROTATE]: RANDOM
+[ROTATE_ADD]: 0.2
+
+//Direction
+[FACING]: 0
+[FACING_ADD]: 0.0
+
+//Sound effect
+[SOUND_SPAWN]: NONE
+[SOUND_END]: NONE
+
+//Ending conditions
+[CAN_COLLIDE]: TRUE
+[COLLISION_END]: TRUE
+
+//Spawn other particles on end
+[PARTICLE_END]: NONE
+[MULTISPAWN_END]: 0
+[END_FACING_ADD]: 0

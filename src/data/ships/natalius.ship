@@ -1,0 +1,26 @@
+//General data
+[NAME]:   Natalius
+[FILE]:   natalius.png
+[SIZE]:   1
+
+//Defense
+[LIFE]:   100
+[SHIELD]: 100
+[ENERGY]: 250
+
+//Regeneration
+[EREGEN]: 1.40
+[SREGEN]: 0.3
+
+//Weapons
+[PRIMARY]: lasercannon.wpn
+[SECONDARY]: antimattercannon.wpn
+
+//Special mods
+[RADAR]: 1
+[WARP]: TRUE
+
+//Engines
+[MAX_SPEED]: 16
+[TURN_RATE]: 0.08
+[ACCELERATION]: 0.8

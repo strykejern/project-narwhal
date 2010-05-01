@@ -312,6 +312,7 @@ public class CampaignScreen {
 			{
 				summaryScreen = true;
 				background = new Image2D("data/summary.jpg");
+				background.resize(GameEngine.getScreenWidth(), GameEngine.getScreenHeight());
 			}
 			else
 			{

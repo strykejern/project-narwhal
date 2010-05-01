@@ -1,0 +1,9 @@
+//Powerful energy blaster
+[NAME]: Antimatter Cannon
+[TECH]: 8
+[DAMAGE]: 75
+[COST]: 100
+[PARTICLE]: multicannon.prt
+[COOLDOWN]: 40
+[SHIELD_MUL]: 100%
+[LIFE_MUL]: 100%
