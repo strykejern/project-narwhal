@@ -20,9 +20,11 @@
 [SHIP]: data/ships/rombeda.ship 500 200 CONTROLLER GOOD
 [SHIP]: data/ships/rombeda.ship 700 400 CONTROLLER GOOD
 
-[SHIP]: data/ships/juggernaught.ship 2250 2400 BRUTE EVIL
-[SHIP]: data/ships/juggernaught.ship 2550 2500 FOOL EVIL
-[SHIP]: data/ships/juggernaught.ship 2300 2300 BRUTE EVIL
-[SHIP]: data/ships/pioneer.ship 2200 2100 CONTROLLER EVIL
+[SHIP]: data/ships/juggernaught.ship 2250 1400 BRUTE EVIL
+[SHIP]: data/ships/juggernaught.ship 2550 1500 FOOL EVIL
+[SHIP]: data/ships/juggernaught.ship 2300 1300 BRUTE EVIL
+[SHIP]: data/ships/pioneer.ship 2200 1100 CONTROLLER EVIL
+[SHIP]: data/ships/juggernaught.ship 2250 1200 FOOL EVIL
+[SHIP]: data/ships/juggernaught.ship 2250 1200 FOOL EVIL
 
 [PLANET]: data/planets/venus.png 1200 900 450

@@ -1,11 +1,11 @@
 //Slowing slime spore
 [IMAGE]: slime.png
 [TIME]: 200
-[SPEED]: 6
+[SPEED]: 12
 [ATTACHED]: FALSE
 
 //Size
-[SIZE]: 1.6
+[SIZE]: 2
 [SIZE_ADD]: 0
 
 //Transparency

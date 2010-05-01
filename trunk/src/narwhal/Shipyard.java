@@ -751,7 +751,7 @@ public class Shipyard {
 			case INTERCEPTOR:	
 			try 
 			{
-				ship = new SpaceshipTemplate(ship, false, ship.canStrafe, false, new SpaceshipTemplate("heavyfighet.interceptor"), ship.autoBreaks, false, null);
+				ship = new SpaceshipTemplate(ship, false, ship.canStrafe, false, new SpaceshipTemplate("heavyfigher.interceptor"), ship.autoBreaks, false, null);
 			}
 			catch (Exception e) 
 			{

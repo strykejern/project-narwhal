@@ -19,5 +19,7 @@
 [PLAYER]: 200 300 GOOD
 
 [SHIP]: data/ships/xenon.ship 2250 1400 CONTROLLER EVIL
+[SHIP]: data/ships/andromeda.ship 2250 1000 CONTROLLER EVIL
+[SHIP]: data/ships/andromeda.ship 2250 1100 CONTROLLER EVIL
 
 [PLANET]: data/planets/mineral.png 1000 1000 520

@@ -1,10 +1,10 @@
 //Slowing slime spore
 [NAME]: Spore
 [TECH]: 4
-[DAMAGE]: 30
-[SLOW]: 0.1
-[COST]: 125
+[DAMAGE]: 40
+[SLOW]: 0.25
+[COST]: 100
 [PARTICLE]: slime.prt
-[COOLDOWN]: 40
+[COOLDOWN]: 30
 [SHIELD_MUL]: 75%
 [LIFE_MUL]: 100%
