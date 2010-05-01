@@ -1,0 +1,27 @@
+//Laser cannon particle
+[IMAGE]: yellowlaser.png
+[TIME]: 150
+[SPEED]: 20
+[ATTACHED]: FALSE
+
+//Size
+[SIZE]: 0.55
+[SIZE_ADD]: 0
+
+//Transparency
+[ALPHA]: 0.75
+[ALPHA_ADD]: -0.02
+
+//Rotation
+[ROTATE]: 0
+[ROTATE_ADD]: 0
+
+//Sound effect
+[SOUND_SPAWN]: minilaser.ogg
+[SOUND_END]: NONE
+
+//Ending conditions
+[CAN_COLLIDE]: TRUE
+[COLLISION_END]: TRUE
+[PARTICLE_END]: NONE
+[FRIENDLY_FIRE]: FALSE

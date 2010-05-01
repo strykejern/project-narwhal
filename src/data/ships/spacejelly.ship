@@ -14,7 +14,8 @@
 [SREGEN]: 0
 
 //Weapons
-[PRIMARY]: phasor.wpn
+//[PRIMARY]: phasor.wpn
+[PRIMARY]: spore.wpn
 [SECONDARY]: tentacle.wpn
 
 //Special mods

@@ -50,6 +50,8 @@ public class CampaignScreen {
 
 	private String nextMission;
 	private boolean doNarrator;
+	private ArrayList<String> summary;
+	private boolean summaryScreen;
 
 	public CampaignScreen(Input key, Shipyard spawnShip) {
 		this.key = key;
@@ -58,11 +60,12 @@ public class CampaignScreen {
 		doNarrator = true;
 		
 		Vector pos = new Vector(GameEngine.getScreenWidth()-100, GameEngine.getScreenHeight()-100);
-		begin = new Button(pos, new Vector(150, 100 ), "Begin", 0, pos);
+		begin = new Button(pos, new Vector(150, 100 ), "Continue", 0, pos);
 		
 		//Set default values
 		spawnList = new ArrayList<SpawnPoint>();		
-		description = new ArrayList<String>();
+		description = new ArrayList<String>();		
+		summary = new ArrayList<String>();
 	}
 	
 	public void loadMission(String fileName) {
@@ -79,11 +82,14 @@ public class CampaignScreen {
 		
 		//Clear stuff from previous levels
 		description.clear();
+		mission = "";
 		spawnList.clear();
 		narrator = null;
 		alwaysWin = false;
 		universeSize = 4;
 		font = FontType.FONT_DESCRIBE;
+		summary.clear();
+		summary.add("You have gained 2 tech points! (Tech level " + spawnShip.maxTechLevel +")");
 		
 		//Parse the ship file
 		try 
@@ -115,7 +121,12 @@ public class CampaignScreen {
 					}
 					description.add(text.trim());
 				}
-				else if(line.startsWith("[SET_PLAYER_SHIP]:")) 	spawnShip.setCurrentShip( new SpaceshipTemplate( parse(line) ) );
+				else if(line.startsWith("[SET_PLAYER_SHIP]:")) 	
+				{
+					SpaceshipTemplate ship = new SpaceshipTemplate( parse(line) );
+					spawnShip.setCurrentShip( ship );
+					summary.add("You have a new spaceship! (" + ship.name + ")");
+				}
 				else if(line.startsWith("[VOICE]:")) 			narrator = new Sound( parse(line) );
 				else if(line.startsWith("[MUSIC]:")) 			Music.play( parse(line ) );
 				else if(line.startsWith("[IMAGE]:"))
@@ -195,17 +206,24 @@ public class CampaignScreen {
 					String module = parse(line);
 					if( module.equals("CREEPY") ) 		font = FontType.FONT_CREEPY;
 					else if( module.equals("CRYSTAL") ) font = FontType.FONT_CRYSTAL;
-
 				}
 
 				else if(line.startsWith("[ADD_TECH_WEAPON]:"))
 				{
 					String wpn = parse(line);
 					if( ResourceMananger.fileExists("data/weapons/" + wpn) )
-						spawnShip.addWeapon( new Weapon( wpn ) );
+					{
+						Weapon weapon = new Weapon( wpn );
+						spawnShip.addWeapon( weapon );
+						summary.add("New weapon technology: " + weapon.name);
+					}
 					else Log.warning("Mission " + fileName + " - Invalid weapon: " + wpn);
 				}
-				else if(line.startsWith("[ADD_TECH_RADAR]:")) spawnShip.maxRadarLevel = Short.parseShort(parse(line));
+				else if(line.startsWith("[ADD_TECH_RADAR]:")) 
+				{
+					spawnShip.maxRadarLevel = Short.parseShort(parse(line));
+					summary.add("New radar technology: Level " + spawnShip.maxRadarLevel + " radar.");
+				}
 				else if(line.startsWith("[ADD_TECH_MODULE]:")) 
 				{
 					String module = parse(line);
@@ -217,6 +235,7 @@ public class CampaignScreen {
 					else if( module.equals("NULLIFIER") ) spawnShip.addModule( SpecialModule.NULLIFIER );
 					else if( module.equals("TETIARY") ) spawnShip.addModule( SpecialModule.TETIARY );
 					else if( module.equals("INTERCEPTOR") ) spawnShip.addModule( SpecialModule.INTERCEPTOR );
+					summary.add("New tecnological special module: " + module);
 				}
 
 				//Could not figure it out
@@ -227,9 +246,6 @@ public class CampaignScreen {
 		{
 			Log.warning("Loading mission " + fileName + " - " + e);
 		}
-		
-		if( spawnList.size() == 0 ) begin.setText("Continue");
-		else						begin.setText("Start");
 		active = true;
 	}
 	
@@ -242,17 +258,35 @@ public class CampaignScreen {
 		GameFont.set(g, FontType.FONT_MENU, Color.YELLOW, size);
 		int y = GameFont.getHeight(g);
 		
-		//Mission name
-		g.drawString(mission, 20, y);
-		y += GameFont.getHeight(g) + 20;
-		
-		//Description text
-		size = GameEngine.getScreenWidth() / 36;
-		GameFont.set(g, font, Color.YELLOW, size);
-		for( String text : description )
+		if( !summaryScreen )
 		{
-			g.drawString(text, 20, y);
-			y += GameFont.getHeight(g);
+			//Mission name
+			g.drawString(mission, 20, y);
+			y += GameFont.getHeight(g) + 20;
+			
+			//Description text
+			size = GameEngine.getScreenWidth() / 36;
+			GameFont.set(g, font, Color.YELLOW, size);
+			for( String text : description )
+			{
+				g.drawString(text, 20, y);
+				y += GameFont.getHeight(g);
+			}
+		}
+		else
+		{
+			//Summary screen
+			g.drawString("Technology Summary", 20, y);
+			y += GameFont.getHeight(g) + 20;
+			
+			//Description text
+			size = GameEngine.getScreenWidth() / 64;
+			GameFont.set(g, font, Color.YELLOW, size);
+			for( String text : summary )
+			{
+				g.drawString(text, 20, y);
+				y += GameFont.getHeight(g) + 10;
+			}			
 		}
 	}
 	public GameState update() {
@@ -274,7 +308,16 @@ public class CampaignScreen {
 				loadMission(nextMission);
 				doNarrator = true;
 			}
-			else 						 return GameState.GAME_SELECT_SHIP;
+			else if( !summaryScreen )
+			{
+				summaryScreen = true;
+				background = new Image2D("data/summary.jpg");
+			}
+			else
+			{
+				summaryScreen = false;
+				return GameState.GAME_SELECT_SHIP;
+			}
 		}
 
 		return GameState.GAME_CAMPAIGN_SCREEN;

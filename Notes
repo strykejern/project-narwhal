@@ -1,6 +1,8 @@
 TODO:
 - Tutor screens
-- Fix new weapons
+- Interceptor that shoots lasers
+- Uber antimatter rockets
+- Level 3 ship for campaign
 
 SECONDARY TODO:
 - AI do not use Warp
@@ -10,8 +12,8 @@ SECONDARY TODO:
 - AI edge improvement
 
 Weapon Ideas
-EMP Rockets 			- Good vs. Shields and drains Energy, low Life damage
-Nuclear Rocket 			- Ongoing radiation damage if shields are penentrated
+*EMP Rockets 			- Good vs. Shields and drains Energy, low Life damage
+*Nuclear Rocket 		- Ongoing radiation damage if shields are penentrated
 Antimatter Torpedoes	- No homing, extreme high damage, big explosion (destroy planets?)
 *Laser 					- Low damage, fast fire 
 *Phasor					- Balls of energy, high damage, slow fire

@@ -1,0 +1,22 @@
+[IMAGE]: data/campaign/tutor1.jpg
+[NEXT]: data/campaign/level2.mission
+
+//Player will win this battle, no matter what happens
+[ALWAYS_WIN]: TRUE
+[SET_PLAYER_SHIP]: data/campaign/nasa.ship
+[SIZE]: 4
+
+
+//Give the player some new technologies to play with
+[ADD_TECH_RADAR]: 1
+
+//Spawning points for spaceships
+//      ShipName xSpawn ySpawn aiType Team 
+[PLAYER]: 600 800 GOOD
+
+[SHIP]: data/ships/juggernaught.ship 1800 1200 BRUTE EVIL
+[SHIP]: data/ships/juggernaught.ship 1900 1100 BRUTE EVIL
+[SHIP]: data/ships/juggernaught.ship 2000 1200 BRUTE EVIL
+[SHIP]: data/ships/juggernaught.ship 2100 1300 BRUTE EVIL
+
+[PLANET]: data/planets/mars.png 1200 900 550

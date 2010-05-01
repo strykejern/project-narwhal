@@ -3,20 +3,4 @@
 [MUSIC]: space.ogg
 [VOICE]: data/campaign/mission1.ogg
 [IMAGE]: data/campaign/human.jpg
-[NEXT]: data/campaign/level2.mission
-
-//Player will win this battle, no matter what happens
-[ALWAYS_WIN]: TRUE
-[SET_PLAYER_SHIP]: data/campaign/nasa.ship
-[SIZE]: 3
-
-//Spawning points for spaceships
-//      ShipName xSpawn ySpawn aiType Team 
-[PLAYER]: 600 800 GOOD
-
-[SHIP]: data/ships/juggernaught.ship 1600 1000 BRUTE EVIL
-[SHIP]: data/ships/juggernaught.ship 1500 1100 BRUTE EVIL
-[SHIP]: data/ships/juggernaught.ship 1700 1200 BRUTE EVIL
-[SHIP]: data/ships/juggernaught.ship 1600 1300 BRUTE EVIL
-
-[PLANET]: data/planets/mars.png 1200 900 550
+[NEXT]: data/campaign/level1b.mission

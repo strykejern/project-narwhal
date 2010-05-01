@@ -4,13 +4,13 @@
 [SIZE]:   1.25
 
 //Defense
-[LIFE]:   50
-[SHIELD]: 110
+[LIFE]:   125
+[SHIELD]: 100
 [ENERGY]: 300
 
 //Regeneration
 [EREGEN]: 1.5
-[SREGEN]: 0.15
+[SREGEN]: 0.12
 
 //Weapons
 [PRIMARY]: deathray.wpn

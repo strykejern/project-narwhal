@@ -1,0 +1,9 @@
+//Auto Laser cannon Weapon
+[NAME]: SD Laser Defense
+[TECH]: 3
+[DAMAGE]: 14
+[COST]: 18
+[PARTICLE]: fastlaser.prt
+[COOLDOWN]: 7
+[SHIELD_MUL]: 100%
+[LIFE_MUL]: 80%

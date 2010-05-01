@@ -49,7 +49,7 @@ public abstract class Physics extends Collidable {
 				Vector diff = us.getPosCentre().minus(them.getPosCentre());
 				
 				//Skip gravity pulls if distance is to far
-				if( diff.length() > 1200 ) continue;
+				if( diff.length() > Math.max(us.radius, them.radius)*2 ) continue;
 
 				float pull = G * (( us.mass * them.mass ) / ( diff.length() ));
 				

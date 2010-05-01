@@ -183,12 +183,16 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 			if( theGame.isEnded() || theGame.victory() )
 			{
 				screenFade = Math.min(1, screenFade+0.004f);
-				g.setColor( new Color(0, 0, 0, screenFade) );
-				g.fillRect(0, 0, GameEngine.getScreenWidth(), GameEngine.getScreenHeight());
 				
-				GameFont.set(g, FontType.FONT_MENU, new Color(0.05f, 1.0f, 0.05f, 1-screenFade), 42);
-				if( theGame.victory() ) g.drawString("VICTORY", GameEngine.getScreenWidth()/2-GameFont.getWidth("VICTORY", g)/2, GameEngine.getScreenHeight()/2);
-				else					g.drawString("DEFEAT", GameEngine.getScreenWidth()/2-GameFont.getWidth("DEFEAT", g)/2, GameEngine.getScreenHeight()/2);
+				if( screenFade >= 0.1f )
+				{
+					g.setColor( new Color(0, 0, 0, screenFade) );
+					g.fillRect(0, 0, GameEngine.getScreenWidth(), GameEngine.getScreenHeight());
+					
+					GameFont.set(g, FontType.FONT_MENU, new Color(0.05f, 1.0f, 0.05f, 1-screenFade), 42);
+					if( theGame.victory() ) g.drawString("VICTORY", GameEngine.getScreenWidth()/2-GameFont.getWidth("VICTORY", g)/2, GameEngine.getScreenHeight()/2);
+					else					g.drawString("DEFEAT", GameEngine.getScreenWidth()/2-GameFont.getWidth("DEFEAT", g)/2, GameEngine.getScreenHeight()/2);
+				}
 				
 				if( screenFade == 1 || keys.escape )
 				{
@@ -213,6 +217,7 @@ public class GameWindow extends JPanel implements Runnable, KeyListener, MouseLi
 					else state = GameState.GAME_END_CURRENT;
 				}
 			}
+			else screenFade = 0;
 		}
 		else if(state == GameState.GAME_MENU) 					theMenu.draw(g, theGame);
 		else if(state == GameState.GAME_SELECT_SHIP) 			selectShip.draw(g);
