@@ -1,8 +1,8 @@
-//Homing Proton Missile particle
-[IMAGE]: missile.png
+//Spawns 4 other nukes
+[IMAGE]: nuke.png
 [TIME]: 1
 [SPEED]: 0
-[ATTACHED]: False
+[ATTACHED]: FALSE
 
 //Size
 [SIZE]: 0.01
@@ -30,9 +30,9 @@
 [FRIENDLY_FIRE]: FALSE
 
 //Spawn other particles on end
-[PARTICLE_END]: protonmissile.prt
+[PARTICLE_END]: nuke.prt
 [MULTISPAWN_END]: 4
 [END_FACING_ADD]: 0.25
 
 //Homing distance
-[HOMING]: 2500
+[HOMING]: 1500

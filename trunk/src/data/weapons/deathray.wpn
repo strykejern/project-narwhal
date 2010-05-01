@@ -1,9 +1,10 @@
 //Deadly ray Weapon
 [NAME]: Death Ray
 [TECH]: 4
-[DAMAGE]: 35
+[DAMAGE]: 30
 [COST]: 40
 [PARTICLE]: deathray.prt
 [COOLDOWN]: 10
 [SHIELD_MUL]: 15%
-[LIFE_MUL]: 250%
+[LIFE_MUL]: 150%
+[RADIO_ACTIVE]: TRUE

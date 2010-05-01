@@ -1,0 +1,10 @@
+//Fast Nuclear missile launcher
+[NAME]: Armageddon Launcher
+[TECH]: 6
+[DAMAGE]: 30
+[COST]: 125
+[PARTICLE]: armageddon.prt
+[COOLDOWN]: 20
+[SHIELD_MUL]: 80%
+[LIFE_MUL]: 100%
+[RADIO_ACTIVE]: TRUE

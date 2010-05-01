@@ -10,7 +10,7 @@ import java.io.FileWriter;
 
 public class Configuration {
 	public boolean debugMode = false;
-	public boolean fullScreen = false;
+	public boolean fullScreen = true;
 	private VideoQuality videoQuality;
 	private RenderingHints quality = new RenderingHints(null);
 	
@@ -185,7 +185,7 @@ public class Configuration {
 					//Full screen
 					else if(line.startsWith("[FULL_SCREEN]:"))
 					{
-						if( line.endsWith("TRUE") ) fullScreen = true;
+						if( line.endsWith("FALSE") ) fullScreen = false;
 					}
 				}
 								

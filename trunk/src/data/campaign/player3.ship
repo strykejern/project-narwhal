@@ -1,0 +1,25 @@
+//General data
+[NAME]:   Last Hope
+[FILE]:   data/campaign/terran3.png
+[SIZE]:   1.5
+
+//Defense
+[LIFE]:   400
+[SHIELD]: 150
+[ENERGY]: 400
+
+//Regeneration
+[EREGEN]: 1.4
+[SREGEN]: 0.2
+
+//Weapons
+[PRIMARY]: antimattercannon.wpn
+[SECONDARY]: nukebarrage.wpn
+
+//Special mods
+[RADAR]: 3
+
+//Engines
+[MAX_SPEED]: 15
+[TURN_RATE]: 0.1
+[ACCELERATION]: 0.3

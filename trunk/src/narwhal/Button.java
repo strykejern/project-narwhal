@@ -93,8 +93,8 @@ public class Button {
 	public void hide(){
 		if( hidden ) return;
 		hidden = true;
-		movePos.x =  GameEngine.getScreenWidth()/2-size.x/2;
-		movePos.y = GameEngine.getScreenHeight()/2-size.y/2;
+//		movePos.x =  GameEngine.getScreenWidth()/2-size.x/2;
+//		movePos.y = GameEngine.getScreenHeight()/2-size.y/2;
 	}
 	
 	public void show(){
