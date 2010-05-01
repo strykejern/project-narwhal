@@ -13,6 +13,7 @@
 //Give the player some new technologies to play with
 [ADD_TECH_WEAPON]: nukebarrage.wpn
 [ADD_TECH_WEAPON]: antimattercannon.wpn
+[ADD_TECH_MODULE]: INTERCEPTOR
 [SET_PLAYER_SHIP]: data/campaign/player3.ship
 
 //Spawning points for spaceships

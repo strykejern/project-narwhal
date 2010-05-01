@@ -10,7 +10,7 @@
 
 //Regeneration
 [EREGEN]: 2.00
-[SREGEN]: 1.25
+[SREGEN]: 1.00
 
 //Weapons
 [PRIMARY]: autolaser.wpn

@@ -19,12 +19,12 @@
 [PLAYER]: 1600 1200 GOOD
 [SHIP]: data/campaign/terran.ship 1600 1100 CONTROLLER GOOD
 [SHIP]: data/campaign/terran.ship 1650 1250 CONTROLLER GOOD
-[SHIP]: data/campaign/terran.ship 1650 1150 CONTROLLER GOOD
 
 [SHIP]: data/ships/spacejelly.ship 4250 4400 BRUTE EVIL
 [SHIP]: data/ships/spacejelly.ship 4550 4100 BRUTE EVIL
 [SHIP]: data/ships/spacejelly.ship 4350 4200 BRUTE EVIL
 [SHIP]: data/ships/spacejelly.ship 4750 4300 BRUTE EVIL
 [SHIP]: data/ships/spacejelly.ship 4250 4500 BRUTE EVIL
+[SHIP]: data/ships/spacejelly.ship 4150 4600 BRUTE EVIL
 [SHIP]: data/ships/spacejelly.ship 4150 4600 BRUTE EVIL
 [SHIP]: data/campaign/sporebase.ship 4550 4500 FOOL EVIL

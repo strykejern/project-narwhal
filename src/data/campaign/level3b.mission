@@ -13,10 +13,10 @@
 
 //Spawning points for spaceships
 //      ShipName xSpawn ySpawn aiType Team 
-[PLAYER]: 1600 1200 GOOD
-[SHIP]: data/ships/rombeda.ship 1600 1100 CONTROLLER GOOD
+[PLAYER]: 300 500 GOOD
+[SHIP]: data/ships/rombeda.ship 500 300 CONTROLLER GOOD
 
-[SHIP]: data/ships/juggernaught.ship 4250 4400 BRUTE EVIL
-[SHIP]: data/ships/juggernaught.ship 4550 4500 FOOL EVIL
+[SHIP]: data/ships/juggernaught.ship 2250 1400 BRUTE EVIL
+[SHIP]: data/ships/juggernaught.ship 2550 1500 FOOL EVIL
 
 [PLANET]: data/planets/jupiter.png 1200 900 900

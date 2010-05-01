@@ -20,6 +20,7 @@ package narwhal;
 
 import gameEngine.GameObject;
 import gameEngine.Image2D;
+import gameEngine.Log;
 import gameEngine.Vector;
 import gameEngine.GameEngine;
 import gameEngine.Configuration.VideoQuality;
@@ -129,7 +130,7 @@ public class HUD {
 		}
 		
 		//Draw slowing status
-		if( observer.slow != 1 )
+		if( observer.slow < 1 )
 		{
 			slowing.draw(g, GameEngine.getScreenWidth()-radioActive.getWidth()-slowing.getWidth(), 0);
 		}

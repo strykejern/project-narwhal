@@ -1,6 +1,6 @@
 //Proton missile launcher
 [NAME]: Proton Missiles
-[TECH]: 5
+[TECH]: 4
 [DAMAGE]: 75
 [COST]: 130
 [PARTICLE]: protonmissile.prt

@@ -128,7 +128,7 @@ public abstract class Spaceship extends GameObject {
 			{
 				if(shield < shieldMax) shield += shieldRegen;
 				if(energy < energyMax) energy += energyRegen;
-				if(slow < 1)           slow += 0.01f;
+				if(slow < 1)           slow   += 0.0002f;
 				if( organic ) 		   setLife(getLife() + getLife()/2000);
 			}
 			
