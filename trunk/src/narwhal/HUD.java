@@ -19,8 +19,10 @@
 package narwhal;
 
 import gameEngine.GameObject;
+import gameEngine.Image2D;
 import gameEngine.Vector;
 import gameEngine.GameEngine;
+import gameEngine.Configuration.VideoQuality;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -50,6 +52,7 @@ public class HUD {
 	private final static Vector SCREEN_MID = new Vector(GameEngine.getScreenWidth()/2, GameEngine.getScreenHeight()/2);
 	private Spaceship observer;
 	private ArrayList<Spaceship> tracking;
+	private Image2D radioActive, slowing;
 	
 	/**
 	 * JJ> Constructs a new HUD object which is the overlay that shows the player how much
@@ -61,13 +64,16 @@ public class HUD {
 		this.tracking = new ArrayList<Spaceship>();
 		for( GameObject track : tracking )
 			if( track instanceof Spaceship ) this.tracking.add((Spaceship)track);
-	}
 		
+		radioActive = new Image2D("data/radioactive.png");
+		slowing = new Image2D("data/slow.png");
+	}
+
 	public void draw(Graphics2D g) {
 		
 		//Don't draw HUD for players who lost
 		if( !observer.active() ) return;
-		
+				
 		//Calculate positions		
 		Vector hudPos = GameEngine.getResolutionVector().minus(new Vector(200, 200));
 				
@@ -94,8 +100,9 @@ public class HUD {
 		g.fillArc(hudPos.getX()+100, hudPos.getY()+100, 200, 200, 180, -90);
 		
 		//Draw separation lines in the bars
-		for (int i = 1; i < 22; ++i)
-			g.drawLine(GameEngine.getScreenWidth(), GameEngine.getScreenHeight(), GameEngine.getScreenWidth()-(int)(Math.cos((Math.PI/44)*i)*200.0), GameEngine.getScreenHeight()-(int)(Math.sin((Math.PI/44)*i)*200.0));
+		if( GameEngine.getConfig().getQualityMode() != VideoQuality.VIDEO_LOW )
+			for (int i = 1; i < 22; ++i)
+				g.drawLine(GameEngine.getScreenWidth(), GameEngine.getScreenHeight(), GameEngine.getScreenWidth()-(int)(Math.cos((Math.PI/44)*i)*200.0), GameEngine.getScreenHeight()-(int)(Math.sin((Math.PI/44)*i)*200.0));
 		
 		hudPos.sub(new Vector(GameEngine.getScreenWidth(), 0));
 		
@@ -111,9 +118,22 @@ public class HUD {
 		g.fillArc(hudPos.getX()+50, hudPos.getY()+50, 300, 300, 0, 90);
 		
 		//Draw separation lines in the bars
-		for (int i = 1; i < 22; ++i)
-			g.drawLine(0, GameEngine.getScreenHeight(), (int)(Math.cos((Math.PI/44)*i)*200.0), GameEngine.getScreenHeight()-(int)(Math.sin((Math.PI/44)*i)*200.0));
+		if( GameEngine.getConfig().getQualityMode() != VideoQuality.VIDEO_LOW )
+			for (int i = 1; i < 22; ++i)
+				g.drawLine(0, GameEngine.getScreenHeight(), (int)(Math.cos((Math.PI/44)*i)*200.0), GameEngine.getScreenHeight()-(int)(Math.sin((Math.PI/44)*i)*200.0));
 		
+		//Draw radiation status
+		if( observer.radioActive != 0 )
+		{
+			radioActive.draw( g, GameEngine.getScreenWidth()-radioActive.getWidth(), 0 );
+		}
+		
+		//Draw slowing status
+		if( observer.slow != 1 )
+		{
+			slowing.draw(g, GameEngine.getScreenWidth()-radioActive.getWidth()-slowing.getWidth(), 0);
+		}
+
 		//Draw ships that are tracked
 		if(observer.radarLevel > 0)
 		{

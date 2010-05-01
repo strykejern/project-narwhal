@@ -39,7 +39,7 @@ public abstract class Spaceship extends GameObject {
 	private float acceleration;
 	private float turnRate;
 	private boolean autoBreaks;
-	private float slow = 1.00f;				//Slow factor, 0.5f means 50% of normal speed
+	float slow = 1.00f;				//Slow factor, 0.5f means 50% of normal speed
 	
 	//Weapon systems
 	protected Weapon primary;
@@ -53,6 +53,7 @@ public abstract class Spaceship extends GameObject {
 	protected float energyMax;
 	protected float energyRegen;
 	protected float energy;
+	protected float radioActive;
 	
 	//Special Modules
 	protected short radarLevel;
@@ -118,6 +119,7 @@ public abstract class Spaceship extends GameObject {
 	}
 	
 	public void update() {
+		
 		//Do ship regeneration
 		if(cooldown > 0) 	   cooldown--;
 		else
@@ -126,6 +128,7 @@ public abstract class Spaceship extends GameObject {
 			{
 				if(shield < shieldMax) shield += shieldRegen;
 				if(energy < energyMax) energy += energyRegen;
+				if(slow < 1)           slow += 0.01f;
 				if( organic ) 		   setLife(getLife() + getLife()/2000);
 			}
 			
@@ -149,6 +152,18 @@ public abstract class Spaceship extends GameObject {
 		{
 			energy -= 0.2f;
 			if( energy <= 0 ) cloak();
+		}
+		
+		//Take radio active damage
+		if( radioActive != 0 )
+		{
+			setLife( getLife() - (radioActive/100) );
+			radioActive *= 0.99f;
+			if( radioActive <= 1 ) 
+			{
+				radioActive = 0;
+				image.embossImage();
+			}
 		}
 		
 		//Key move
@@ -229,6 +244,13 @@ public abstract class Spaceship extends GameObject {
 		
 		//Next, lose some life
 		setLife(getLife() - lifeDamage);
+		
+		//Radio active damage that penetrated the shield
+		if( weapon.radioActive )
+		{
+			if( this.radioActive == 0 ) image.embossImage();
+			this.radioActive += lifeDamage;
+		}
 		
 		//Make the player camera shake
 		if( this instanceof AI && ((AI)this).isPlayer() )

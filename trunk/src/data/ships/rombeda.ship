@@ -13,7 +13,7 @@
 [SREGEN]: 1.25
 
 //Weapons
-[PRIMARY]: lasercannon.wpn
+[PRIMARY]: autolaser.wpn
 [SECONDARY]: emp.wpn
 
 //Special mods

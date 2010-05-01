@@ -17,7 +17,7 @@
 [ROTATE_ADD]: 0
 
 //Sound effect
-[SOUND_SPAWN]: missile.wav
+[SOUND_SPAWN]: fastmissile.ogg
 [SOUND_END]: NONE
 
 //Ending conditions
@@ -31,4 +31,4 @@
 [END_FACING_ADD]: 0
 
 //Homing distance
-[HOMING]: 1800
+[HOMING]: 3000

@@ -7,14 +7,19 @@ import gameEngine.Log;
 import gameEngine.ResourceMananger;
 
 public class Weapon {
-	public float energyDamage;
+	public String name;
+	public String particle;
+	public int techCost;
+
+	//Basic data
 	public float damage;
 	public int cost;
 	public int cooldown;
-	public int techCost;
-	public String particle;
-	public String name;
+	
+	//Special effects
+	public float energyDamage;
 	public float slow;
+	public boolean radioActive;
 	
 	//Multipliers
 	public float shieldMul;			//How effective against shields?
@@ -47,6 +52,7 @@ public class Weapon {
 				else if(line.startsWith("[TECH]:"))  	    techCost = Integer.parseInt(parse(line));
 				else if(line.startsWith("[COOLDOWN]:"))	    cooldown = Integer.parseInt(parse(line));
 				else if(line.startsWith("[ENERGY_DAMAGE]:"))energyDamage = Float.parseFloat(parse(line));
+				else if(line.startsWith("[RADIO_ACTIVE]:")) radioActive = Boolean.parseBoolean(parse(line));
 				else if(line.startsWith("[SLOW]:"))  		slow = Float.parseFloat(parse(line));
 				else if(line.startsWith("[SHIELD_MUL]:"))
 				{

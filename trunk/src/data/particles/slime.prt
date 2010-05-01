@@ -1,0 +1,29 @@
+//Slowing slime spore
+[IMAGE]: slime.png
+[TIME]: 200
+[SPEED]: 6
+[ATTACHED]: FALSE
+
+//Size
+[SIZE]: 1.6
+[SIZE_ADD]: 0
+
+//Transparency
+[ALPHA]: 1.00
+[ALPHA_ADD]: 0
+
+//Rotation
+[ROTATE]: RANDOM
+[ROTATE_ADD]: 0.1
+
+//Sound effect
+[SOUND_SPAWN]: slime.wav
+[SOUND_END]: slime.wav
+
+//Ending conditions
+[CAN_COLLIDE]: TRUE
+[COLLISION_END]: TRUE
+[FRIENDLY_FIRE]: FALSE
+
+//Homing distance
+[HOMING]: 1200

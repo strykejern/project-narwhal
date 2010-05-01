@@ -487,6 +487,7 @@ public class Shipyard {
 								buttonList.get(BUTTON_TEAM).hide();
 								buttonList.get(BUTTON_PLANETS).show();
 								buttonList.get(BUTTON_MAP_SIZE).show();
+								buttonList.get(BUTTON_START_GAME).setText("SELECT SHIP");
 							}
 							
 							fleetList.clear();							//Free some memory
@@ -544,6 +545,10 @@ public class Shipyard {
 				        	buttonList.get(BUTTON_SECONDARY).hide();
 				        }
 				        
+				        buttonList.get(BUTTON_ADD_SHIP).hide();
+				        buttonList.get(BUTTON_PLANETS).hide();
+				        buttonList.get(BUTTON_MAP_SIZE).hide();
+				        buttonList.get(BUTTON_TEAM).hide();
 				        buttonList.get(BUTTON_NEXT_SHIP).hide();
 						buttonList.get(BUTTON_UPGRADE).hide();
 						buttonList.get(BUTTON_START_GAME).hide();
@@ -692,6 +697,7 @@ public class Shipyard {
 		buttonList.get(BUTTON_NEXT_SHIP).show();
 		buttonList.get(BUTTON_MAP_SIZE).show();
 		buttonList.get(BUTTON_PLANETS).show();
+		buttonList.get(BUTTON_START_GAME).setText("SELECT SHIP");
 		
 		//Reset any previous selection
 		resetUpgrades();
@@ -708,6 +714,7 @@ public class Shipyard {
         //These are visible
 		buttonList.get(BUTTON_START_GAME).show();		
 		buttonList.get(BUTTON_UPGRADE).show();
+		buttonList.get(BUTTON_START_GAME).setText("START GAME");
         
 		//Upgrades
 		resetUpgrades();
@@ -751,7 +758,7 @@ public class Shipyard {
 	public void resetUpgrades(){
 		weaponList = new ArrayList<Weapon>();
 		techList = new ArrayList<SpecialModule>();
-		maxRadarLevel = 1;
+		maxRadarLevel = 0;
 		techList.add(SpecialModule.NONE);
 		currentTech = techList.iterator();
 		nullifier = false;
@@ -820,6 +827,7 @@ public class Shipyard {
 		buttonList.get(BUTTON_START_GAME).hide();
 		buttonList.get(BUTTON_PLANETS).hide();
 		buttonList.get(BUTTON_MAP_SIZE).hide();
+		buttonList.get(BUTTON_START_GAME).setText("START GAME");
 
 		//Image
 		Image2D image = ship.image.clone();		
