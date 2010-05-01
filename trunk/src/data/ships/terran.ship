@@ -1,7 +1,7 @@
 //General data
 [NAME]:   Terran Cruiser
-[FILE]:   data/campaign/terran3.png
-[SIZE]:   1.25
+[FILE]:   cruiser.png
+[SIZE]:   1.35
 
 //Defense
 [LIFE]:   250
@@ -13,12 +13,12 @@
 [SREGEN]: 0.15
 
 //Weapons
-[PRIMARY]: autolaser.wpn
+[PRIMARY]: energydrain.wpn
 [SECONDARY]: nukebarrage.wpn
 
 //Special mods
 [RADAR]: 2
-[JAMMING]: TRUE
+[INTERCEPTOR]: heavyfighter.interceptor
 
 //Engines
 [MAX_SPEED]: 15

@@ -1,0 +1,10 @@
+//Auto Laser cannon Weapon
+[NAME]: Fusion Blaster
+[TECH]: 5
+[DAMAGE]: 15
+[ENERGY_DAMAGE]: 50
+[COST]: 20
+[PARTICLE]: energylaser.prt
+[COOLDOWN]: 7
+[SHIELD_MUL]: 125%
+[LIFE_MUL]: 100%
