@@ -748,7 +748,16 @@ public class Shipyard {
 			case WARP:			ship = new SpaceshipTemplate(ship, false, ship.canStrafe, true, null, ship.autoBreaks, false, null);  break;		
 			case CLOAK:			ship = new SpaceshipTemplate(ship, false, ship.canStrafe, false, null, ship.autoBreaks, true, null);  break;
 			case ECM:			ship = new SpaceshipTemplate(ship, true, ship.canStrafe, false, null, ship.autoBreaks, false, null);  break;
-			//TODO: interceptor, disguise
+			case INTERCEPTOR:	
+			try 
+			{
+				ship = new SpaceshipTemplate(ship, false, ship.canStrafe, false, new SpaceshipTemplate("heavyfighet.interceptor"), ship.autoBreaks, false, null);
+			}
+			catch (Exception e) 
+			{
+				Log.warning("Applying special module Interceptor: " + e);
+			}  break;
+			//TODO: disguise, tetiary weapon
 		}
 	}
 	

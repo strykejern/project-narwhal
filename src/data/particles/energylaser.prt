@@ -1,0 +1,28 @@
+//Energy drain particle
+[IMAGE]: stars.png
+[TIME]: 50
+[SPEED]: 22
+[ATTACHED]: FALSE
+
+//Size
+[SIZE]: 0.75
+[SIZE_ADD]: 0.05
+
+//Transparency
+[ALPHA]: 0.75
+[ALPHA_ADD]: -0.005
+
+//Rotation
+[ROTATE]: RANDOM
+[ROTATE_ADD]: 0.1
+
+//Sound effect
+[SOUND_SPAWN]: zap.ogg
+[SOUND_END]: NONE
+
+//Ending conditions
+[CAN_COLLIDE]: TRUE
+[COLLISION_END]: TRUE
+[PARTICLE_END]: NONE
+[FRIENDLY_FIRE]: FALSE
+[SUBATOMIC]: TRUE

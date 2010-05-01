@@ -21,7 +21,7 @@
 [FACING_ADD]: 0
 
 //Sound effect
-[SOUND_SPAWN]: NONE
+[SOUND_SPAWN]: crash.au
 [SOUND_END]: NONE
 
 //Ending conditions
