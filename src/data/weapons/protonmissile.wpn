@@ -2,8 +2,8 @@
 [NAME]: Proton Missiles
 [TECH]: 4
 [DAMAGE]: 75
-[COST]: 130
+[COST]: 90
 [PARTICLE]: protonmissile.prt
-[COOLDOWN]: 50
-[SHIELD_MUL]: 120%
+[COOLDOWN]: 40
+[SHIELD_MUL]: 125%
 [LIFE_MUL]: 100%

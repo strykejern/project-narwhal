@@ -213,7 +213,7 @@ public class Sound
 					//Done playing sound
 					line.drain();
 					line.stop();
-					//line.close();
+					line.close();
 					//line.flush();
 					
 					//Finished with this stream
