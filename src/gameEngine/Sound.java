@@ -224,7 +224,7 @@ public class Sound
 			}
 			catch (Exception e) 
 			{ 
-				Log.warning("Error playing sound: " + e);
+				Log.warning("Error playing sound ("+ file +"): " + e);
 			}
 			finally
 			{

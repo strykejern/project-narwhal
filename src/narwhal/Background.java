@@ -35,10 +35,13 @@ import javax.swing.ImageIcon;
  *
  */
 public class Background {
+	
+	//Data that only need to be loaded once into memory
+	private static ArrayList<Image2D> nebulaList;
+	private static ImageIcon[] stars;
+	
 	private int universeSize;
 	private Vector[][] bgPos;
-	private ArrayList<Image2D> nebulaList;
-	private ImageIcon[] stars;
 	private Image[][] universe;
 	
 	//The resolution of the background
@@ -58,8 +61,8 @@ public class Background {
 		else 														                  BG_SIZE = new Vector(640, 480);
 		
 		//Load resources
-		loadNebulas();
-		loadStars();
+		if( nebulaList == null ) loadNebulas();
+		if( stars == null )      loadStars();
 		
 		//Generate the backgrounds
 		generateWorld(size, seed);
@@ -194,11 +197,10 @@ public class Background {
 	}
 				
 	public void drawBounds(Graphics2D g, Vector pos){
-		boolean debug = true;
 		
-		if(!debug) return;
+		if( !GameEngine.getConfig().debugMode ) return;
 				
-		final int SCREEN_X = GameEngine.getScreenWidth();			//Screen width
+		final int SCREEN_X = GameEngine.getScreenWidth();		//Screen width
 		final int SCREEN_Y = GameEngine.getScreenHeight();		//Screen height
 		
 		//Make rectangles yellow
@@ -213,7 +215,7 @@ public class Background {
 	}
 
 	/**
-	 * Generates a new universe with bounds equal to 'size' X 'size'
+	 * Generates a new universe with bounds equal to (size*size)
 	 * @param size how big?
 	 * @param seed randomizer
 	 */
@@ -251,19 +253,8 @@ public class Background {
     	        	Log.warning( e.toString() );
     	        	Profiler.memoryReport();
     	        	Runtime.getRuntime().runFinalization();
-	    	    }
-	    	   
+	    	    }	    	   
 			}
-
-		//Make sure everything is freed from memory
-		stars = null;
-		for( Image2D img : nebulaList )
-		{
-			img.dispose();
-			img = null;
-		}
-		nebulaList.clear();
-		nebulaList = null;		
 	}
 
 	public void drawBackground(Graphics2D g, Vector position, Vector speed) {
@@ -303,7 +294,10 @@ public class Background {
 		g.setComposite(reset);
 
 		//Debug info
-		g.setColor(Color.WHITE);
-		g.drawString("Backgrounds drawn: " + bg, 5, 80);
+		if( GameEngine.getConfig().debugMode )
+		{
+			g.setColor(Color.WHITE);
+			g.drawString("Backgrounds drawn: " + bg, 5, 80);
+		}
 	}
 }

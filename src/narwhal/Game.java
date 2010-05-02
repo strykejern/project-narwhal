@@ -153,37 +153,10 @@ public class Game {
 		}
 		victory = setVictory;
 		
-		//Collision detection
-		for(int i = 0; i < entities.size(); i++ )
-		{
-			GameObject us = entities.get(i);
-			
-			//Collision with other entities
-			for(int j = i + 1; j < entities.size(); j++)
-			{
-				GameObject them = entities.get(j);
-				
-				//Check if it is a interceptor that is docking first
-				if( them instanceof Interceptor )
-				{
-					Interceptor tiny = (Interceptor)them;
-					if( tiny.outOfFuel() && tiny.getMaster() == us && us.collidesWith(them) )
-					{
-						tiny.dock();
-						continue;
-					}
-				}
-					
-				if( us.collidesWith(them) )
-				{
-					us.collision( them );
-				}
-			}
-		}
-		Physics.updateGravitation(entities);
+		//Game physics
+		Physics.updatePhysics(entities);
 		
-		GameEngine.getParticleEngine().update(entities, universeSize);
-		
+		GameEngine.getParticleEngine().update(entities, universeSize);		
 		
 		return GameState.GAME_PLAYING;
 	}

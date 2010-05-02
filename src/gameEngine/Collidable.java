@@ -34,11 +34,10 @@ public abstract class Collidable {
 	}
 	
 	/**
-	 * Creates an uninitialized Collidable object
+	 * JJ> Test whether a specific Vector point is inside a this Collidable's shape
+	 * @param point The Vector point to be tested
+	 * @return True if it fits inside us, false otherwise
 	 */
-	public Collidable(){
-	}
-	
 	private boolean pointInsideShape(Vector point){
 		
 		//Circle
@@ -105,6 +104,11 @@ public abstract class Collidable {
 		return collision;
 	}
 		
+	/**
+	 * JJ> Changes the collision radius for this object. Also changes object
+	 *     new size bounds automatically (which equals radius*2 in a square rectangle)
+	 * @param radius The integer to set the new radius to
+	 */
 	protected void setRadius(int radius){
 		this.radius = radius;
 		this.size = new Vector(radius*2, radius*2);

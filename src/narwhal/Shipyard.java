@@ -727,8 +727,8 @@ public class Shipyard {
 		if( ship.primary != null ) 			techLevel += ship.primary.techCost;
 		if( ship.secondary != null ) 		techLevel += ship.secondary.techCost;
 		if( ship.tetiaryWeapon != null ) 	techLevel += ship.tetiaryWeapon.techCost;
-		if( ship.autoBreaks ) 				techLevel += 6;
-		if( ship.canStrafe ) 				techLevel += 2;
+		if( ship.autoBreaks ) 				techLevel += 5;
+		if( ship.canStrafe ) 				techLevel++;
 		if( ship.canCloak ) 				techLevel += 4;
 		if( ship.canJam ) 					techLevel += 2;
 		if( ship.canWarp ) 					techLevel += 3;

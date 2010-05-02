@@ -31,7 +31,8 @@ import java.awt.image.VolatileImage;
 import javax.swing.JFrame;
 
 /**
- * JJ> A static helper Video class for handling graphical stuff.
+ * JJ> This is the Main class where everything starts. It starts a new thread of GameWindow and
+ *     lets go, everything is handled by the thread from there.
  * @author Johan Jansen and Anders Eie
  *
  */
@@ -84,7 +85,7 @@ public abstract class GameEngine {
 		}   
 		
 		//Initialize the frame window where we draw stuff
-    	GameEngine.startNewGame("Project Narwhal");		
+    	GameEngine.startNewGame("Project Narwhal");
   	}
 	
 	/**
