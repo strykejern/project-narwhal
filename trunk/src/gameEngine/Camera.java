@@ -73,11 +73,14 @@ public class Camera {
 		}
 				
 		//Debug info
-		g.setColor(Color.WHITE);
-		g.drawString("cameraPos X: " + cameraPos.getX() + " Y: " + cameraPos.getY(), 5, 20);
-		g.drawString("shipPos       X: " + entities.get(0).pos.getX() + " Y: " + entities.get(0).pos.getY(), 5, 30);
-		g.drawString("PlanetPos   X: " + entities.get(1).pos.getX() + " Y: " + entities.get(1).pos.getY(), 5, 40);
-		g.drawString("Drawn entities: " + count, 5, 60);
+		if( GameEngine.getConfig().debugMode )
+		{
+			g.setColor(Color.WHITE);
+			g.drawString("cameraPos X: " + cameraPos.getX() + " Y: " + cameraPos.getY(), 5, 20);
+			g.drawString("shipPos       X: " + entities.get(0).pos.getX() + " Y: " + entities.get(0).pos.getY(), 5, 30);
+			g.drawString("PlanetPos   X: " + entities.get(1).pos.getX() + " Y: " + entities.get(1).pos.getY(), 5, 40);
+			g.drawString("Drawn entities: " + count, 5, 60);
+		}
 	}
 	
 	

@@ -21,7 +21,6 @@ package narwhal;
 import gameEngine.Input;
 import gameEngine.Sound;
 import gameEngine.Vector;
-import gameEngine.GameEngine;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

@@ -20,7 +20,6 @@ package narwhal;
 
 import gameEngine.GameObject;
 import gameEngine.Image2D;
-import gameEngine.Log;
 import gameEngine.Vector;
 import gameEngine.GameEngine;
 import gameEngine.Configuration.VideoQuality;
@@ -250,7 +249,7 @@ public class HUD {
 			g.fillRoundRect(drawX, drawY, width, height/8, 25, 25);
 		}
 		
-		//Life and Energy is only drawn on radar level 4 or higher
+		//Life and Energy is only drawn on radar level 3 or higher
 		if( observer.radarLevel < 3 ) return;
 
 		//Life
@@ -272,7 +271,6 @@ public class HUD {
 		g.setColor( RADAR_ENERGY );
 		width = Math.max( 0, (int)((width/target.energyMax) * target.energy) );
 		g.fillRoundRect(drawX, drawY, width, height/8, 25, 25);
-		
 	}
 	
 }

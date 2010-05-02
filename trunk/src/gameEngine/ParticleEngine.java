@@ -76,6 +76,10 @@ public class ParticleEngine {
 			
 	public void update( ArrayList<GameObject> entities, int universeSize ) {
 		
+		//Calculate universe size
+		final float uniX = universeSize * GameEngine.getScreenWidth();
+		final float uniY = universeSize * GameEngine.getScreenHeight();
+
 		//Update particle effects
 		for( int i = 0; i < particleList.size(); i++ )
 		{
@@ -92,9 +96,9 @@ public class ParticleEngine {
 			//Update this particle
 			prt.update();
 			
-			//Collision detection between particles and GameObjects
 			if( prt.canCollide )
 			{
+				//Collision detection between particles and GameObjects
 				for(int j = 0; j < entities.size(); j++ )
 				{	
 					GameObject object  = entities.get(j);
@@ -126,29 +130,40 @@ public class ParticleEngine {
 							}
 					}
 				}
-			}
-			
-			//Particle on particle collision
-			if( template.physics )
-			{
-				for( int j = i+1; j < particleList.size(); j++ )
+				
+				//Particle on particle collision
+				if( !template.subAtomicParticle ) for( int j = i+1; j < particleList.size(); j++ )
 				{
 					Particle cPrt = particleList.get(j);
 					ParticleTemplate cTemplate = cPrt.getParticleTemplate();
-					if( !cTemplate.physics ) continue;
 					
-					if( prt.collidesWith(cPrt) ) prt.collision(cPrt);
+					//Only do collisions if one of us can collide
+					if( cTemplate.subAtomicParticle || (!cTemplate.physics && !template.physics) ) continue;					
+					
+					//Don't collide with ourself
+					if( prt == cPrt ) continue;
+					
+					if( prt.collidesWith(cPrt) )
+					{
+						prt.collision(cPrt);
+						
+						//Destroy particles if needed
+						if( cTemplate.collisionEnd ) deleteParticle(cPrt);
+						if( template.collisionEnd )
+						{
+							deleteParticle(prt);
+							break;
+						}
+					}
 				}
+				
 			}
 			
-			// Quick implement of universe bounds
-			float uniX = universeSize * GameEngine.getScreenWidth();
-			float uniY = universeSize * GameEngine.getScreenHeight();
-			
-			if 		(prt.pos.x < 0) 	prt.pos.x = uniX + prt.pos.x;
+			// Quick implement of universe bounds			
+			if 		(prt.pos.x < 0) 	prt.pos.x += uniX;
 			else if (prt.pos.x > uniX)  prt.pos.x %= uniX;
 			
-			if 		(prt.pos.y < 0) 	prt.pos.y = uniY + prt.pos.y;
+			if 		(prt.pos.y < 0) 	prt.pos.y += uniY;
 			else if (prt.pos.y > uniY)  prt.pos.y %= uniY;
 		}
 	}
