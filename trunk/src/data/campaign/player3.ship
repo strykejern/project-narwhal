@@ -13,7 +13,7 @@
 [SREGEN]: 0.2
 
 //Weapons
-[PRIMARY]: antimattercannon.wpn
+[PRIMARY]: gatlinggun.wpn
 [SECONDARY]: nukebarrage.wpn
 
 //Special mods
